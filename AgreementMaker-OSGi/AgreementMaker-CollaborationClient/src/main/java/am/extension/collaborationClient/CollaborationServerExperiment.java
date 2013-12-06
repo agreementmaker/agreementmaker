@@ -19,6 +19,7 @@ import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
+import am.extension.collaborationClient.api.CollaborationAPI;
 import am.utility.WrapLayout;
 
 public class CollaborationServerExperiment extends JFrame implements ActionListener {
@@ -28,7 +29,7 @@ public class CollaborationServerExperiment extends JFrame implements ActionListe
 	private static final Logger sLog = Logger.getLogger(CollaborationServerExperiment.class);
 
 	private JButton btnCreateServer, btnCandidateSelection, btnRunUsersExperiment;
-	private CollaborationServer cs;
+	private CollaborationAPI cs;
 
 	private int ontoPair;
 	
@@ -64,11 +65,11 @@ public class CollaborationServerExperiment extends JFrame implements ActionListe
 			Logger log = Logger.getLogger(this.getClass());
 			log.setLevel(Level.DEBUG);
 			
-			cs = new CollaborationServerImpl();
+			//cs = new CollaborationServerImpl();
 			
 			log.debug("Loading and matching ontologies ...");
-			ontoPair = cs.addOntologyPair("/home/cosmin/Documents/eclipse/AgreementMaker_main_workspace/Ontologies/OAEI/2011/anatomy/mouse.owl", 
-					           "/home/cosmin/Documents/eclipse/AgreementMaker_main_workspace/Ontologies/OAEI/2011/anatomy/human.owl");
+			/*ontoPair = cs.addOntologyPair("/home/cosmin/Documents/eclipse/AgreementMaker_main_workspace/Ontologies/OAEI/2011/anatomy/mouse.owl", 
+					           "/home/cosmin/Documents/eclipse/AgreementMaker_main_workspace/Ontologies/OAEI/2011/anatomy/human.owl");*/
 		}
 		
 		
@@ -79,10 +80,10 @@ public class CollaborationServerExperiment extends JFrame implements ActionListe
 			
 			ReferenceAlignmentMatcher ram = new ReferenceAlignmentMatcher();
 			
-			CollaborationOntologyPair cop = cs.getPair(ontoPair);
+			//CollaborationOntologyPair cop = cs.getPair(ontoPair);
 			
-			ram.setSourceOntology(cop.sourceOntology);
-			ram.setTargetOntology(cop.targetOntology);
+			//ram.setSourceOntology(cop.sourceOntology);
+			//ram.setTargetOntology(cop.targetOntology);
 			
 			ReferenceAlignmentParameters rap = new ReferenceAlignmentParameters();
 			rap.fileName = "/home/cosmin/Documents/eclipse/AgreementMaker_main_workspace/Ontologies/OAEI/2011/anatomy/reference_2011.rdf";
@@ -98,7 +99,7 @@ public class CollaborationServerExperiment extends JFrame implements ActionListe
 				
 				log.debug("Saving top 1,000,000 disagreed upon mappings ...");
 				
-				Queue<Mapping> queue = cs.getRankingQueue(ontoPair);
+				/*Queue<Mapping> queue = cs.getRankingQueue(ontoPair);
 				
 				int sum = 0;
 				SimilarityMatrix ref = ram.getClassesMatrix();
@@ -112,7 +113,7 @@ public class CollaborationServerExperiment extends JFrame implements ActionListe
 					bwr.write(Integer.toString(i) + "," + Integer.toString(sum) + "\n");
 				}
 				
-				bwr.close();
+				bwr.close();*/
 				
 			} catch (Exception ex) {
 				sLog.error("", ex);
