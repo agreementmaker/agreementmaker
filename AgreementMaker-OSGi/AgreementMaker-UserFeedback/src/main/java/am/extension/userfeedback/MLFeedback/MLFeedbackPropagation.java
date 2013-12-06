@@ -213,7 +213,7 @@ public class MLFeedbackPropagation extends FeedbackPropagation<MLFExperiment> {
 
 				feedbackClassMatrix.setSimilarity(m.getSourceKey(), m.getTargetKey(), 1.0);
 				if (experiment.getAlignCardinalityType()==alignCardinality.c1_1)
-					feedbackClassMatrix=(zeroSim(experiment.getUflClassMatrix(), candidateMapping.getSourceKey(), candidateMapping.getTargetKey(),experiment.getSourceCardinality(),experiment.getTargetCardinality()));
+					feedbackClassMatrix=(zeroSim(experiment.getUflClassMatrix(), candidateMapping.getSourceKey(), candidateMapping.getTargetKey(),1,1));
 				//experiment.forbidden_row_classes.add(candidateMapping.getSourceKey());
 				//experiment.forbidden_column_classes.add(candidateMapping.getTargetKey());
 				experiment.classesSparseMatrix.setSimilarity(m.getSourceKey(), m.getTargetKey(), 1);
@@ -236,7 +236,7 @@ public class MLFeedbackPropagation extends FeedbackPropagation<MLFExperiment> {
 			{ 
 				feedbackPropertyMatrix.setSimilarity(m.getSourceKey(), m.getTargetKey(), 1.0);
 				if (experiment.getAlignCardinalityType()==alignCardinality.c1_1)
-					feedbackPropertyMatrix=zeroSim(experiment.getUflPropertyMatrix(), candidateMapping.getSourceKey(), candidateMapping.getTargetKey(),experiment.getSourceCardinality(),experiment.getTargetCardinality());
+					feedbackPropertyMatrix=zeroSim(experiment.getUflPropertyMatrix(), candidateMapping.getSourceKey(), candidateMapping.getTargetKey(),1,1);
 				//experiment.forbidden_row_properties.add(candidateMapping.getSourceKey());
 				//experiment.forbidden_column_properties.add(candidateMapping.getTargetKey());
 				experiment.propertiesSparseMatrix.setSimilarity(m.getSourceKey(), m.getTargetKey(), 1);

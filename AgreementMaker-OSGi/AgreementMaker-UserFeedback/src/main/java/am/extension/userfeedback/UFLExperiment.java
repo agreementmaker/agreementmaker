@@ -1,8 +1,11 @@
 package am.extension.userfeedback;
 
+import java.io.Serializable;
+
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.ontology.Ontology;
+
 import am.extension.userfeedback.UserFeedback.Validation;
 import am.extension.userfeedback.experiments.UFLControlLogic;
 import am.extension.userfeedback.ui.UFLControlGUI;
@@ -74,4 +77,6 @@ public abstract class UFLExperiment {
 	 *         to the user.
 	 */
 	public abstract String getDescription(); 
+	
+
 }

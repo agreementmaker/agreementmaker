@@ -4,12 +4,12 @@ import java.awt.event.ActionListener;
 
 import am.extension.userfeedback.UFLExperiment;
 
-public abstract class UFLControlLogic implements ActionListener {
+public abstract class UFLControlLogic<T extends UFLExperiment>  implements ActionListener {
 	
 	protected UFLExperiment experiment;
 	
 	
-	public abstract void runExperiment(UFLExperiment experiment);
+	public abstract void runExperiment(T experiment);
 	
 	/**
 	 * Starts a separate thread for running a piece of the experiment.

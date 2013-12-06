@@ -3,12 +3,13 @@ package am.extension.userfeedback.experiments;
 import java.awt.event.ActionEvent;
 
 import am.extension.userfeedback.UFLExperiment;
+import am.extension.userfeedback.MLFeedback.MLFExperiment;
 import am.extension.userfeedback.ui.UFLControlGUI.ActionCommands;
 
-public class IndependentSequentialLogicMultiUser extends UFLControlLogic {
+public class IndependentSequentialLogicMultiUser extends UFLControlLogic<MLFExperiment> {
 	
 	@Override
-	public void runExperiment(UFLExperiment exp) {
+	public void runExperiment(MLFExperiment exp) {
 		this.experiment = exp;
 		runInitialMatchers();
 	}
