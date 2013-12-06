@@ -23,7 +23,6 @@ public class ServerCandidateSelection extends MUCandidateSelection<MUExperiment>
 	private SimilarityMatrix classesMatrix;
 	private SimilarityMatrix propertiesMatrix;
 	private final double weight_um=0.5;
-	//private final double weight_mm=0.3;
 	
 	List<Mapping> allRanked=new ArrayList<Mapping>();
 	@Override

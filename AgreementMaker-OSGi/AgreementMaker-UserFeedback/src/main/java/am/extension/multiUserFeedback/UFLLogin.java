@@ -3,30 +3,32 @@ package am.extension.multiUserFeedback;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+
 import javax.swing.SwingUtilities;
 import javax.swing.event.EventListenerList;
 
-import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
-import am.extension.userfeedback.UFLExperiment;
-import am.extension.userfeedback.UserFeedback.Validation;
 import am.extension.userfeedback.ui.UFLControlGUI;
 
-public abstract class MUFeedbackStorage <T extends UFLExperiment>{
-	SimilarityMatrix classes;
-	SimilarityMatrix properties;
-	
+public abstract class UFLLogin {
+
 	EventListenerList listeners;  // list of listeners for this class
-	
-	public MUFeedbackStorage() {
+
+	public UFLLogin() {
 		listeners = new EventListenerList();
 	}
-	public abstract void addFeedback(T exp, Mapping candidateMapping, Validation val, String id);
 	
-	public abstract Object[][] getTrainingSet();
+	public abstract void login(MUExperiment exp, String id);
+
 	
-	public abstract void computeFinalMatrix();
 	
+	public void addActionListener( ActionListener l ) {
+		listeners.add(ActionListener.class, l);
+	}
+	
+	/**
+	 * This method fires an action event.
+	 * @param e Represents the action that was performed.
+	 */
 	protected void fireEvent( ActionEvent e ) {
 		final ActionEvent evt = e;
 		SwingUtilities.invokeLater(new Runnable() {
@@ -43,8 +45,9 @@ public abstract class MUFeedbackStorage <T extends UFLExperiment>{
 	}
 	
 	protected void done() {
-		ActionEvent e = new ActionEvent(this, 0, UFLControlGUI.ActionCommands.EXECUTION_SEMANTICS_DONE.name() );
+		ActionEvent e = new ActionEvent(this, 0, UFLControlGUI.ActionCommands.CANDIDATE_SELECTION_DONE.name() );
 		fireEvent(e);
 	}
+
 	
 }

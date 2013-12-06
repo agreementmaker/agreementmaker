@@ -71,6 +71,7 @@ public class UFLRegistry {
 		public Class<? extends UserFeedback> getEntryClass() { return clazz; }
 	}
 	
+	
 	public enum FeedbackPropagationRegistry {
 		
 		MLFeedbackPropagation (am.extension.userfeedback.MLFeedback.MLFeedbackPropagation.class),

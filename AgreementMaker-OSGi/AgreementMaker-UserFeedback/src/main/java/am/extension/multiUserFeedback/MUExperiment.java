@@ -30,7 +30,7 @@ import am.extension.userfeedback.experiments.UFLControlLogic;
 
 public class MUExperiment extends UFLExperiment {
 
-public 	MUFeedbackStorage	feedbackStorage;
+public 	MUFeedbackStorage<UFLExperiment>	feedbackStorage;
 	
 private BufferedWriter logFile;
 private Alignment<Mapping> MLAlignment;
