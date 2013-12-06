@@ -18,7 +18,7 @@
 		<module>AgreementMaker-UI</module>
 		<module>Matcher-LinkedOpenData</module>
 		<module>AgreementMaker-BatchMode</module>
-		<module>AgreementMaker-CollaborationEngine</module>
+		<module>AgreementMaker-CollaborationClient</module>
 		<module>AgreementMaker-UserFeedback</module>
 		<module>AgreementMaker-SemanticExplanation</module>
 		<module>AgreementMaker-UIGlue</module>
