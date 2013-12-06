@@ -116,7 +116,7 @@ public class DisagreementRanking extends CandidateSelection {
 	@Override
 	public Mapping getSelectedMapping() {
 		// TODO Auto-generated method stub
-		return null;
+		return selectedMapping;
 	}
 
 }
