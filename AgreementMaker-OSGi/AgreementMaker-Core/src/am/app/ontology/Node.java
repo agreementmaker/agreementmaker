@@ -50,6 +50,8 @@ public interface Node extends Comparable<Node> {
 	OntResource getPropertyDomain();
 	OntResource getPropertyRange();
 
+	
+	
 	String getLabel();
 
 	// Used in VertexDescriptionPane

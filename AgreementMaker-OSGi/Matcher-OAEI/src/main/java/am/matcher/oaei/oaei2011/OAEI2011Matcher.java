@@ -184,7 +184,8 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		break;
 		}
 		
-		
+    	System.out.println("config:"+conf);
+
 		return finalResult;
 		//throw new Exception("Automatic configuration not implemented.");
 	}
@@ -254,6 +255,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		}
 		
 		// VMM
+		
 		if( !isCancelled() ) {
 			AbstractMatcher vmm = MatcherFactory.getMatcherInstance(MultiWordsMatcher.class);
 			

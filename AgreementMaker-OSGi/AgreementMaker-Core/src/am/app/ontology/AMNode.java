@@ -634,6 +634,9 @@ public class AMNode extends AbstractNode implements Serializable {
 		return children == null || children.size() == 0;
 	}
 	
+	/**
+	 * FIXME: There should be a better way to find out if the node is the root node or not.
+	 */
 	public boolean isRoot() {
 		if( index == -1 ) return true; // roots have an index of -1
 		return false;
@@ -717,7 +720,12 @@ public class AMNode extends AbstractNode implements Serializable {
 	public Node getRoot(){
 		//System.out.println(this + " " + this.isRoot());
 		if(!this.isRoot()){
-			return this.getParents().get(0).getRoot();
+			if( this.getParentCount() != 0 ) {
+				return this.getParents().get(0).getRoot();
+			}
+			else {
+				return this;
+			}
 		}
 		return this;
 	}

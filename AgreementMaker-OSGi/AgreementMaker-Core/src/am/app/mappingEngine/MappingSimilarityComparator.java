@@ -16,6 +16,9 @@ public class MappingSimilarityComparator implements Comparator<Mapping> {
 	 */
 	@Override
 	public int compare(Mapping o1, Mapping o2) {
+		if( o1 == null && o2 == null ) return 0;
+		if( o1 == null ) return -1;
+		if( o2 == null ) return  1;
 		if( o1.getSimilarity() <  o2.getSimilarity() ) return -1;
 		if( o1.getSimilarity() == o2.getSimilarity() ) return 0;
 		if( o1.getSimilarity() >  o2.getSimilarity() ) return 1;

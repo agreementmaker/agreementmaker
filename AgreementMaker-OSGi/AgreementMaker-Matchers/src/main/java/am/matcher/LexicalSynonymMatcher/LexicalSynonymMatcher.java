@@ -18,6 +18,7 @@ import am.app.mappingEngine.MatcherFeature;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.ontology.Node;
+import am.utility.WordNetUtils;
 
 import com.hp.hpl.jena.ontology.OntResource;
 
@@ -183,49 +184,85 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 	/**
 	 * TODO: Update method to deal with SCS optimizations. - Cosmin.
 	 */
-/*	@Override
-	protected SimilarityMatrix alignUnmappedNodes(ArrayList<Node> sourceList,
-			ArrayList<Node> targetList, SimilarityMatrix inputMatrix,
-			Alignment<Mapping> inputAlignmentSet, alignType typeOfNodes)
-			throws Exception {
+	/*
+	 * @Override protected SimilarityMatrix alignUnmappedNodes(ArrayList<Node>
+	 * sourceList, ArrayList<Node> targetList, SimilarityMatrix inputMatrix,
+	 * Alignment<Mapping> inputAlignmentSet, alignType typeOfNodes) throws
+	 * Exception {
+	 * 
+	 * MappedNodes mappedNodes = new MappedNodes(sourceList, targetList,
+	 * inputAlignmentSet, param.maxSourceAlign, param.maxTargetAlign);
+	 * SimilarityMatrix matrix = new ArraySimilarityMatrix(sourceList.size(),
+	 * targetList.size(), typeOfNodes, relation); Node source; Node target;
+	 * Mapping alignment; Mapping inputAlignment; for(int i = 0; i <
+	 * sourceList.size(); i++) { source = sourceList.get(i); for(int j = 0; j <
+	 * targetList.size(); j++) { target = targetList.get(j);
+	 * 
+	 * if( !this.isCancelled() ) { //if both nodes have not been mapped yet
+	 * enough times //we map them regularly
+	 * if(!mappedNodes.isSourceMapped(source) &&
+	 * !mappedNodes.isTargetMapped(target)){ alignment = alignTwoNodes(source,
+	 * target, typeOfNodes); } //else we take the alignment that was computed
+	 * from the previous matcher else{ inputAlignment = inputMatrix.get(i, j);
+	 * alignment = new Mapping(inputAlignment.getEntity1(),
+	 * inputAlignment.getEntity2(), inputAlignment.getSimilarity(),
+	 * inputAlignment.getRelation()); } matrix.set(i,j,alignment); if(
+	 * isProgressDisplayed() ) stepDone(); // we have completed one step } else
+	 * { return matrix; } } if( isProgressDisplayed() ) updateProgress(); //
+	 * update the progress dialog, to keep the user informed. } return matrix;
+	 * 
+	 * }
+	 */
+	/**
+	 * MATCHING WITH SYNONYMS
+	 */
 
-		MappedNodes mappedNodes = new MappedNodes(sourceList, targetList, inputAlignmentSet, param.maxSourceAlign, param.maxTargetAlign);
-    	SimilarityMatrix matrix = new ArraySimilarityMatrix(sourceList.size(), targetList.size(), typeOfNodes, relation);
-		Node source;
-		Node target;
-		Mapping alignment; 
-		Mapping inputAlignment;
-		for(int i = 0; i < sourceList.size(); i++) {
-			source = sourceList.get(i);
-			for(int j = 0; j < targetList.size(); j++) {
-				target = targetList.get(j);
-				
-				if( !this.isCancelled() ) {
-					//if both nodes have not been mapped yet enough times
-					//we map them regularly
-					if(!mappedNodes.isSourceMapped(source) && !mappedNodes.isTargetMapped(target)){
-						alignment = alignTwoNodes(source, target, typeOfNodes); 
-					}
-					//else we take the alignment that was computed from the previous matcher
-					else{
-						inputAlignment = inputMatrix.get(i, j);
-						alignment = new Mapping(inputAlignment.getEntity1(), inputAlignment.getEntity2(), inputAlignment.getSimilarity(), inputAlignment.getRelation());
-					}
-					matrix.set(i,j,alignment);
-					if( isProgressDisplayed() ) stepDone(); // we have completed one step
-				}
-				else { return matrix; }
-			}
-			if( isProgressDisplayed() ) updateProgress(); // update the progress dialog, to keep the user informed.
-		}
-		return matrix;
-
-	}*/
-/**
- * MATCHING WITH SYNONYMS
- */
-	
 	@Override
+	protected Mapping alignTwoNodes(Node source, Node target,
+			alignType typeOfNodes, SimilarityMatrix matrix) throws Exception {
+
+		// use word-net method areSynonyms to see if there is any synonyms
+		// between the source and the target
+		String sourceName;
+		String targetName;
+
+		String sourceLabel;
+		String targetLabel;
+
+		// run treatString on each local name and label to clean it up
+		// treatString removes (and replaces them with a space): _ , .
+		sourceName = treatString(source.getLocalName());
+		targetName = treatString(target.getLocalName());
+
+		sourceLabel = treatString(source.getLabel());
+		targetLabel = treatString(target.getLabel());
+
+		WordNetUtils W = new WordNetUtils();
+		double sim = 1.0;
+		double finalSim = 0.0;
+		
+
+		boolean flag;
+		if (sourceName != "" && targetName != "") {
+			flag = W.areSynonyms(sourceName, targetName);
+			if (flag == true)
+				if (0.95 > finalSim)
+					finalSim = 0.95;
+		}
+		if (sourceLabel != "" && targetLabel != "") {
+			flag = W.areSynonyms(sourceLabel, targetLabel);
+			if (flag == true) {
+				if (0.95 > finalSim)
+					finalSim = 0.95;
+			}
+		}
+
+		return new Mapping(source, target, finalSim);
+
+	}
+	/*
+	@Override
+
 	protected Mapping alignTwoNodes(Node source, Node target,
 			alignType typeOfNodes, SimilarityMatrix matrix) throws Exception {
 
@@ -254,15 +291,56 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 			maxSim = 0.9d;
 		}
 		
+		//////////////////////////////////////////////////////////////
+		//Aseel
+		// use word-net method areSynonyms to see if there is any synonyms
+				// between the source and the target
+		String sourceName;
+		String targetName;
+
+		String sourceLabel;
+		String targetLabel;
+
+		// run treatString on each local name and label to clean it up
+		// treatString removes (and replaces them with a space): _ , .
+		sourceName = treatString(source.getLocalName());
+		targetName = treatString(target.getLocalName());
+
+		sourceLabel = treatString(source.getLabel());
+		targetLabel =treatString( target.getLabel());		
+		WordNetUtils W = new WordNetUtils();
+		double finalSim = 0.0;
+
+				boolean flag;
+				if (sourceName != "" && targetName != "") {
+					flag = W.areSynonyms(sourceName, targetName);
+					if (flag == true)
+						if (0.95 > finalSim)
+							finalSim = 0.95;
+				}
+				if (sourceLabel != "" && targetLabel != "") {
+					flag = W.areSynonyms(sourceLabel, targetLabel);
+					if (flag == true) {
+						if (0.95 > finalSim)
+							finalSim = 0.95;
+					}
+				}
+				/////////////////////////
 		ProvenanceStructure provNoTermSyn = computeLexicalSimilarity(sourceExtendedSynonyms, targetExtendedSynonyms, maxSim);
 		
 		if( provNoTermSyn != null && provNoTermSyn.similarity > 0.0d ) {
 			if( getParam().storeProvenance ) {
 				Mapping m = new Mapping(source, target, provNoTermSyn.similarity);
 				m.setProvenance(provNoTermSyn.getProvenanceString());
-				return m;
+				if (m.getSimilarity() > finalSim)
+					return m;
+				else//
+					return new Mapping(source, target, finalSim);//
 			} else {
+				if (provNoTermSyn.similarity > finalSim)
 				return new Mapping(source, target, provNoTermSyn.similarity);
+				else//
+					return new Mapping(source, target, finalSim);//
 			}
 		}
 		
@@ -270,7 +348,36 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 		return null;
 	}
 
-	
+*/
+	/**
+	 * This function treats a string to make it more comparable:
+	 * 1) Removes numbers, punctuation etc.
+	 * 2) Removes non-content words.
+	 * 3) Separates capitalized words, ( "BaseSimilarity" -> "Base Similarity" )
+	 */
+	 private String treatString(String label) throws Exception {
+		 
+		 //Remove anything from a string that isn't a Character or a space
+	     //e.g. numbers, punctuation etc.
+		 String result = "";
+		 for(int i=0; i<label.length(); i++){
+			 if( Character.isLetter(label.charAt(i)) || Character.isWhitespace( label.charAt(i) ) ){
+				 result += label.charAt(i);
+			 }
+		 }
+		 label = result;		 
+		
+		 int len = label.length();
+		 //Separate words with spaces
+		 for(int i=0;i<len-1; i++){
+			 if( Character.isLowerCase(label.charAt(i)) &&  Character.isUpperCase(label.charAt(i+1)) ){
+		    
+				 label = label.substring(0,i+1) + " " + label.substring(i+1); len++;}
+		 }
+		 
+		 label=label.toLowerCase();
+	    return label.trim();
+	 }
 
 	/**
 	 * Given the synsets associated with two concepts, calculate the "synonym similarity" between the concepts.
