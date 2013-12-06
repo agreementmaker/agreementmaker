@@ -1,4 +1,4 @@
-package am.extension.collaborationEngine;
+package am.extension.collaborationClient;
 
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;

@@ -1,4 +1,4 @@
-package am.extension.collaborationEngine;
+package am.extension.collaborationClient;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
