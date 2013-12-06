@@ -133,8 +133,8 @@ public class CombinationMatcher extends AbstractMatcher {
 			} else if (typeOfNodes == alignType.aligningProperties
 					&& a.arePropertiesAligned()) {
 				if (a.getPropertiesMatrix().get(sourceindex, targetindex) != null) {
-					//sim = a.getPropertiesMatrix().get(sourceindex, targetindex).getSimilarity();
-					//
+					sim = a.getPropertiesMatrix().get(sourceindex, targetindex).getSimilarity();
+					/*
 					String srcdomain, trgdomain, srcrange, trgrange;
 					OntResource stringuri;
 
@@ -161,7 +161,7 @@ public class CombinationMatcher extends AbstractMatcher {
 					} else {
 						sim = 0.4;
 					}
-					////
+					*////
 				} else {
 					sim = 0.0;
 				}
