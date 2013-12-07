@@ -8,14 +8,15 @@ public class VAGroup {
 	private int groupID;
 	private int parent;
 	private VAData rootNode;
-	private ArrayList<VAData> lstVAData;
+	// private ArrayList<VAData> lstVAData;
+	private HashMap<String, VAData> mapVAData;
 	private HashMap<String, Integer> slots;
 
 	public VAGroup() {
 		this.groupID = ++nodeCount;
 		this.parent = -1;
 		this.rootNode = null;
-		this.lstVAData = new ArrayList<VAData>();
+		this.mapVAData = new HashMap<String, VAData>();
 		this.slots = new HashMap<String, Integer>();
 	}
 
@@ -41,14 +42,14 @@ public class VAGroup {
 	 * Calculate the number of 10 slots
 	 */
 	private void setSlots() {
-		for (VAData data : lstVAData) {
+		for (VAData data : mapVAData.values()) {
 			double sim = data.getSimilarity();
 			for (int i = 0; i < VAVariables.slotsNum; i++) {
 				if (sim > VAVariables.threshold[i]
 						&& sim <= VAVariables.threshold[i + 1]) {
 					String key = VAVariables.thresholdName[i];
 					if (!slots.containsKey(VAVariables.thresholdName[i])) {
-						slots.put(key, 0);
+						slots.put(key, 1);
 					} else {
 						slots.put(key, slots.get(key) + 1);
 					}
@@ -58,16 +59,11 @@ public class VAGroup {
 		}
 	}
 
-	/**
-	 * Set the data list of this level then set slots for pie chart
-	 * 
-	 * @param lstVAData
-	 */
-	public void setDataList(ArrayList<VAData> lstVAData) {
-		this.lstVAData = lstVAData;
+	public void setMapVAData(HashMap<String, VAData> mapVAData) {
+		this.mapVAData = mapVAData;
 		setSlots();
 	}
-	
+
 	public static int getNodeCount() {
 		return nodeCount;
 	}
@@ -84,8 +80,8 @@ public class VAGroup {
 		return parent;
 	}
 
-	public ArrayList<VAData> getLstVAData() {
-		return lstVAData;
+	public HashMap<String, VAData> getMapVAData() {
+		return mapVAData;
 	}
 
 	public HashMap<String, Integer> getSlots() {

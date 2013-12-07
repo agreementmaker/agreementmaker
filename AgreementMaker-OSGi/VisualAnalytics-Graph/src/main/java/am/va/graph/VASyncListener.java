@@ -8,9 +8,11 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.JFXPanel;
+import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.chart.PieChart;
+import javafx.scene.input.MouseEvent;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
@@ -47,9 +49,10 @@ public class VASyncListener implements MatcherChangeListener {
 		if (!(e.getTask().matchingAlgorithm instanceof UserManualMatcher)) {
 			rootGroup = new VAGroup();
 			rootGroup.setParent(0);
-			rootGroup
-					.setRootNode(getRootVAData(VAVariables.ontologyType.Source));
-			rootGroup.setDataList(getChildrenData(rootGroup.getRootNode()));
+			rootGroup.setRootNode(VASyncData
+					.getRootVAData(VAVariables.ontologyType.Source));
+			rootGroup.setMapVAData(VASyncData.getChildrenData(rootGroup
+					.getRootNode()));
 			TEST(rootGroup);
 			Core.getInstance().removeMatcherChangeListener(this);
 
@@ -59,7 +62,6 @@ public class VASyncListener implements MatcherChangeListener {
 					testInitFrame();
 				}
 			});
-
 		}
 	}
 
@@ -72,8 +74,8 @@ public class VASyncListener implements MatcherChangeListener {
 		String rootNodeName = rootGroup.getRootNode().getSourceNode()
 				.getLocalName();
 		System.out.println(rootNodeName);
-		ArrayList<VAData> vaData = rootGroup.getLstVAData();
-		for (VAData d : vaData) {
+		HashMap<String, VAData> vaData = rootGroup.getMapVAData();
+		for (VAData d : vaData.values()) {
 			System.out.println(d.getSourceNode().getLocalName() + ","
 					+ d.getTargetNode().getLocalName() + ","
 					+ d.getSimilarity());
@@ -100,107 +102,41 @@ public class VASyncListener implements MatcherChangeListener {
 	}
 
 	public void testInitFX() {
-		Group root = new Group();
-		Scene myScene = new Scene(root);
+		final Group root = new Group();
+		final Scene myScene = new Scene(root);
 
-		ObservableList<PieChart.Data> pieChartData = FXCollections
-				.observableArrayList();
-		HashMap<String, Integer> slots = rootGroup.getSlots();
-		for (String s : slots.keySet()) {
-			if (slots.get(s) > 0)
-				pieChartData.add(new PieChart.Data(s, slots.get(s)));
-		}
-
-		PieChart chart = new PieChart(pieChartData);
-		chart.setClockwise(false);
-		root.getChildren().add(chart);
-		System.out.println(chart.startAngleProperty());
+		VAPieChart chart = new VAPieChart(this.rootGroup);
+		chart.getPieChart().setClockwise(false);
+		root.getChildren().add(chart.getPieChart());
 
 		fxPanel.setScene(myScene);
-	}
 
-	/**
-	 * Get the children list of current root node
-	 * 
-	 * @param rootNodeData
-	 * @return
-	 */
-	private ArrayList<VAData> getChildrenData(VAData rootNodeData) {
-		ArrayList<VAData> res = new ArrayList<VAData>();
-		Node rootNode = rootNodeData.sourceNode;
-		for (Node n : rootNode.getChildren()) {
-			// get target node info which best matches this node
-			VAData newChildData = getMatchingVAData(n);
-			res.add(newChildData);
+		for (PieChart.Data currentData : chart.getPieChart().getData()) {
+			currentData.getNode().addEventHandler(MouseEvent.MOUSE_PRESSED,
+					new EventHandler<MouseEvent>() {
+
+						@Override
+						public void handle(MouseEvent arg0) {
+							// TODO Auto-generated method stub
+							VAGroup newGroup = getNewGroup(rootGroup);
+							VAPieChart chart = new VAPieChart(newGroup);
+							chart.getPieChart().setClockwise(false);
+							root.getChildren().add(chart.getPieChart());
+							fxPanel.removeAll();
+							fxPanel.updateUI();//?
+						}
+
+					});
 		}
-		return res;
 	}
 
-	/**
-	 * Generate one child's matching VAData, called by getChildrenData
-	 * 
-	 * @param n
-	 * @return
-	 */
-	private VAData getMatchingVAData(Node n) {
-		Node matchingNode = null;
-		double sim = 0.00;
-		MatchingTask matchingTask = Core.getInstance()
-				.getMatchingTasksWithoutUserManualMatcher().get(0);
-		SimilarityMatrix smClass = matchingTask.matcherResult
-				.getClassesMatrix();
-		Mapping map[] = smClass.getRowMaxValues(n.getIndex(), 1); // bug
-		if (map != null) {
-			matchingNode = map[0].getEntity2();
-			// sim = map[0].getSimilarity();
-			sim = Math.random(); // only for testing
-		} else {
-			System.out.println("mapping data is null ???");
-		}
-		return new VAData(n, matchingNode, sim);
+	public VAGroup getNewGroup(VAGroup currentGroup) {
+		VAData newRootData = rootGroup.getMapVAData().get("Reference");
+		VAGroup newGroup = new VAGroup();
+		newGroup.setParent(currentGroup.getGroupID());
+		newGroup.setRootNode(newRootData);
+		newGroup.setMapVAData(VASyncData.getChildrenData(newRootData));
+		TEST(newGroup);
+		return newGroup;
 	}
-
-	// -------------Below functions for root ontologies only --------------
-	/**
-	 * Get VAData for Root node
-	 * 
-	 * @param ontologyType
-	 * @return
-	 */
-	private VAData getRootVAData(VAVariables.ontologyType ontologyType) {
-		Node sNode = null, tNode = null;
-		double Similarity = 0.0;
-		if (ontologyType == VAVariables.ontologyType.Source) { // pie chart for
-																// source
-																// ontology
-			sNode = getRootNode(VAVariables.ontologyType.Source);
-			tNode = null;
-		}
-		return new VAData(sNode, tNode, Similarity);
-	}
-
-	/**
-	 * Get the root Node
-	 * 
-	 * @param ontologyType
-	 * @return
-	 */
-	private Node getRootNode(VAVariables.ontologyType ontologyType) {
-		Node rootNode = null;
-		List<MatchingTask> matchingTask = Core.getInstance().getMatchingTasks();
-		MatchingTask currentTask = matchingTask.get(0); // for now only select
-														// the first task
-		if (ontologyType == VAVariables.ontologyType.Source) {
-			Ontology sourceOntology = currentTask.matcherResult
-					.getSourceOntology();
-			rootNode = sourceOntology.getClassesRoot();
-		} else {
-			Ontology targetOntology = currentTask.matcherResult
-					.getTargetOntology();
-			rootNode = targetOntology.getClassesRoot();
-		}
-
-		return rootNode;
-	}
-
 }
