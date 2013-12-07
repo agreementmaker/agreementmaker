@@ -1,6 +1,5 @@
 package am.va.graph;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class VAGroup {
@@ -8,7 +7,6 @@ public class VAGroup {
 	private int groupID;
 	private int parent;
 	private VAData rootNode;
-	// private ArrayList<VAData> lstVAData;
 	private HashMap<String, VAData> mapVAData;
 	private HashMap<String, Integer> slots;
 
