@@ -1,111 +1,130 @@
 package am.va.graph;
 
+import java.util.HashMap;
+
 import javax.swing.JFrame;
 
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.embed.swing.JFXPanel;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.chart.PieChart;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.SelectionMode;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.paint.Color;
 
 public class VAPanel {
-	
-	private static final boolean START_AGREEMENTMAKER = false;
+
 	private static JFrame frame;
-	private static ListView<String> listView;
-	
-	private static VAPieChart sourceChart;
-	private static VAPieChart targetChart;
-	
+	private static JFXPanel fxPanel;
+	private static VAGroup rootGroup;
+	private static VAGroup currentGroup;
+	private static int count = 1;
+
 	/**
-	 * Do initialization and show the interface
+	 * Init Frame
 	 */
-	private static void initAndShowGUI(VAGroup sourceVAGroup, VAGroup targetVAGroup) {
-		// This method is invoked on Swing thread
-		frame = new JFrame("FX");
-		frame.setSize(1200, 500);
-		final JFXPanel fxPanel = new JFXPanel();
+	public static void initAndShowGUI() {
+		frame = new JFrame("VA");
+		frame.setSize(500, 500);
+		fxPanel = new JFXPanel();
 		frame.add(fxPanel);
 		frame.setVisible(true);
 
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
-				initFX(fxPanel);
+				InitFX();
 			}
 		});
 	}
-	
+
 	/**
-	 * set the source and target pie chart data and location
-	 * @param sourceVAGroup
-	 * @param targetVAGroup
+	 * Init JavaFx panel, add mouse click Eventhandler
 	 */
-	private void setCharts( VAGroup sourceVAGroup, VAGroup targetVAGroup ){
-		sourceChart = new VAPieChart(sourceVAGroup);
-		targetChart = new VAPieChart(targetVAGroup);
-	}
-	private static void initFX(JFXPanel fxPanel) {
-		// This method is invoked on JavaFX thread
-
+	public static void InitFX() {
 		final Group root = new Group();
-		Scene myScene = new Scene(root);
+		final Scene myScene = new Scene(root);
 
-		ObservableList<PieChart.Data> pieChartData = FXCollections
-				.observableArrayList(new PieChart.Data("Sun", 20),
-									 new PieChart.Data("IBM", 12), 
-									 new PieChart.Data("HP",25), 
-									 new PieChart.Data("Dell", 22),
-									 new PieChart.Data("Apple", 30));
-		
-		ObservableList<PieChart.Data> pieChartData2 = FXCollections
-				.observableArrayList(new PieChart.Data("Sun", 22),
-									 new PieChart.Data("IBM", 32), 
-									 new PieChart.Data("HP",65), 
-									 new PieChart.Data("Dell", 12),
-									 new PieChart.Data("Apple", 10));
-		
-		final PieChart chart = new PieChart(pieChartData);
-		PieChart chart2 = new PieChart(pieChartData2);
-		//chart.setClockwise(false);
-		
-		//root.getChildren().add(new Group(chart, chart2));
-		root.getChildren().add(chart);
-		root.getChildren().add(chart2);
+		VAPieChart chart = new VAPieChart(rootGroup);
+		chart.getPieChart().setClockwise(false);
+		root.getChildren().add(chart.getPieChart());
 
-		System.out.println(chart.getWidth());
-
-		// Scene scene = createScene();
 		fxPanel.setScene(myScene);
-		
-		final Label caption = new Label("");
-		caption.setTextFill(Color.DARKORANGE);
-		//caption.setStyle("-fx-font: 24 arial;");
+		updateCurrentGroup(rootGroup);
 
-		for (final PieChart.Data data : chart.getData()) {
-		    data.getNode().addEventHandler(MouseEvent.MOUSE_PRESSED,
-		        new EventHandler<MouseEvent>() {
-		            @Override public void handle(MouseEvent e) {
-		   
-		                //Circle circle1 = new Circle(e.getSceneX(),e.getSceneY(),10, Color.RED);
-		        		//root.getChildren().add(new Group(circle1));
-		                listView = new ListView<String>(); 
-		                listView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-		                listView.setPrefWidth(100);
-		                root.getChildren().add(listView);
-		                System.out.println("pressed " + String.valueOf(data.getPieValue()));
-		             }
-		        });
+		for (PieChart.Data currentData : chart.getPieChart().getData()) {
+			currentData.getNode().addEventHandler(MouseEvent.MOUSE_PRESSED,
+					new EventHandler<MouseEvent>() {
+
+						@Override
+						public void handle(MouseEvent arg0) {
+							// TODO Auto-generated method stub
+							getNewGroup(currentGroup);
+							VAPieChart chart = new VAPieChart(currentGroup);
+							chart.getPieChart().setClockwise(false);
+							root.getChildren().remove(0);// remove the previous
+															// chart
+							root.getChildren().add(chart.getPieChart());// add
+																		// new
+																		// chart
+							TEST(currentGroup);
+							fxPanel.updateUI();
+						}
+
+					});
 		}
 	}
-	
 
+	/**
+	 * Generate new VAGroup according user's click
+	 * 
+	 * @param currentGroup
+	 * @return
+	 */
+	public static void getNewGroup(VAGroup currentGroup) {
+		// Need a function here, return value:VAData
+		VAData newRootData;
+		if (count == 1)
+			newRootData = rootGroup.getMapVAData().get("Reference");
+		else
+			newRootData = rootGroup.getMapVAData().get("Book");
+		count++;
+		VAGroup newGroup = new VAGroup();
+		newGroup.setParent(currentGroup.getGroupID());
+		newGroup.setRootNode(newRootData);
+		newGroup.setMapVAData(VASyncData.getChildrenData(newRootData));
+		updateCurrentGroup(newGroup);
+	}
+
+	private static void updateCurrentGroup(VAGroup group) {
+		currentGroup = new VAGroup();
+		currentGroup.setParent(group.getParent());
+		currentGroup.setRootNode(group.getRootNode());
+		currentGroup.setMapVAData(group.getMapVAData());
+	}
+
+	/**
+	 * Init rootGroup
+	 * 
+	 * @param group
+	 */
+	public static void setRootGroup(VAGroup group) {
+		rootGroup = group;
+	}
+
+	private static void TEST(VAGroup rootGroup) {
+		String rootNodeName = rootGroup.getRootNode().getSourceNode()
+				.getLocalName();
+		System.out.println(rootNodeName);
+		HashMap<String, VAData> vaData = rootGroup.getMapVAData();
+		for (VAData d : vaData.values()) {
+			System.out.println(d.getSourceNode().getLocalName() + ","
+					+ d.getTargetNode().getLocalName() + ","
+					+ d.getSimilarity());
+		}
+		HashMap<String, Integer> slots = rootGroup.getSlots();
+		for (String s : slots.keySet()) {
+			System.out.println(s + ":" + slots.get(s));
+		}
+	}
 }
