@@ -112,8 +112,8 @@ public class MaxInformationRanking extends CandidateSelection<MLFExperiment> {
 	@Override
 	public void rank(MLFExperiment ex) {
 		this.experiment = ex;
-		//if (ex.getIterationNumber()==0)
-		//	initializeRankedMatrix(ex);
+		if (ex.getIterationNumber()==0)
+			initializeRankedMatrix(ex);
 		// get the matchers from the execution semantics
 		Alignment<Mapping> mappings= ex.getFinalAlignment();
 		List<AbstractMatcher> matchers = ex.initialMatcher.getComponentMatchers();
@@ -169,19 +169,19 @@ public class MaxInformationRanking extends CandidateSelection<MLFExperiment> {
 		}
 	}
 	
-//	private void initializeRankedMatrix(MLFExperiment ex)
-//	{
-//		SimilarityMatrix smClass=ex.initialMatcher.getFinalMatcher().getClassesMatrix().clone();
-//		SimilarityMatrix smProperty=ex.initialMatcher.getFinalMatcher().getPropertiesMatrix().clone();
-//		for(int i=0;i<smClass.getRows();i++)
-//			for(int j=0;j<smClass.getColumns();j++)
-//				smClass.setSimilarity(i, j, 0.5);
-//		for(int i=0;i<smProperty.getRows();i++)
-//			for(int j=0;j<smProperty.getColumns();j++)
-//				smProperty.setSimilarity(i, j, 0.5);
-//		ex.setUflClassMatrix(smClass);
-//		ex.setUflPropertyMatrix(smProperty);
-//	}
+	private void initializeRankedMatrix(MLFExperiment ex)
+	{
+		SimilarityMatrix smClass=ex.initialMatcher.getFinalMatcher().getClassesMatrix().clone();
+		SimilarityMatrix smProperty=ex.initialMatcher.getFinalMatcher().getPropertiesMatrix().clone();
+		for(int i=0;i<smClass.getRows();i++)
+			for(int j=0;j<smClass.getColumns();j++)
+				smClass.setSimilarity(i, j, 0.5);
+		for(int i=0;i<smProperty.getRows();i++)
+			for(int j=0;j<smProperty.getColumns();j++)
+				smProperty.setSimilarity(i, j, 0.5);
+		ex.setUflClassMatrix(smClass);
+		ex.setUflPropertyMatrix(smProperty);
+	}
 	
 	
 	
