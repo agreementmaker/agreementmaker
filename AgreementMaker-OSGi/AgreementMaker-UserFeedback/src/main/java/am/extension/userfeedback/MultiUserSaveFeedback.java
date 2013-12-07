@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.math.BigDecimal;
 import java.util.List;
 
 import am.app.mappingEngine.Alignment;
@@ -30,6 +31,14 @@ public class MultiUserSaveFeedback extends SaveFeedback<MLFExperiment> {
 		saveRankedMappings(exp.alreadyEvaluated);
 		saveCorrectMapping(exp.correctMappings);
 		saveIncorrectMapping(exp.incorrectMappings);
+		try {
+			saveTrainingSet(exp.getTrainingSet_classes(),"classes");
+			saveTrainingSet(exp.getTrainingSet_property(),"properties");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 	private void saveFinalAlignment(Alignment<Mapping> finalAlignment)
 	{
@@ -125,8 +134,42 @@ public class MultiUserSaveFeedback extends SaveFeedback<MLFExperiment> {
 	          i.printStackTrace();
 	      }
 	}
+	
+	private void saveTrainingSet(Object[][] obj, String type) throws IOException
+	{
+		
+		File file = new File(path+"trainingSet_"+type+".txt");
+		// if file doesnt exists, then create it
+		if (!file.exists()) 
+			file.createNewFile();
+		FileWriter fw=null;
+
+		fw = new FileWriter(file.getAbsoluteFile());
+
+		BufferedWriter bw = new BufferedWriter(fw);
+
+		for(int i=0;i<obj.length;i++)
+		{
+
+			//bw.write(i+"\t");
+			for (int j=0;j<obj[0].length;j++)
+			{
+				bw.write(round((Double)obj[i][j],2)+"\t");
+				
+			}
+			bw.write("\n");
+		}
+
+		bw.close();
+	}
 		
 	
+	private double round(double value, int places) {
+	    if (places < 0) throw new IllegalArgumentException();
 
+	    BigDecimal bd = new BigDecimal(value);
+	    bd = bd.setScale(places, BigDecimal.ROUND_HALF_UP);
+	    return bd.doubleValue();
+	}
 	
 }
