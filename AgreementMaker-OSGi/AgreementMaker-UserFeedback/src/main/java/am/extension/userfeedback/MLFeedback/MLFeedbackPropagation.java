@@ -264,17 +264,17 @@ public class MLFeedbackPropagation extends FeedbackPropagation<MLFExperiment> {
 //				}
 //			}
 		
-//		if( candidateMapping.getAlignmentType() == alignType.aligningClasses )
-//		{
-//			feedbackClassMatrix=com(experiment.classesSparseMatrix , feedbackClassMatrix, trainingSet);
-//		}
-//		else
-//		{
-//			if( candidateMapping.getAlignmentType() == alignType.aligningProperties ) 
-//			{
-//				feedbackPropertyMatrix=com(experiment.propertiesSparseMatrix, feedbackPropertyMatrix, trainingSet);
-//			}
-//		}
+		if( candidateMapping.getAlignmentType() == alignType.aligningClasses )
+		{
+			feedbackClassMatrix=com(experiment.classesSparseMatrix , feedbackClassMatrix, trainingSet);
+		}
+		else
+		{
+			if( candidateMapping.getAlignmentType() == alignType.aligningProperties ) 
+			{
+				feedbackPropertyMatrix=com(experiment.propertiesSparseMatrix, feedbackPropertyMatrix, trainingSet);
+			}
+		}
 		
 		AbstractMatcher ufl=new CombinationMatcher();
 		ufl.setClassesMatrix(feedbackClassMatrix);
@@ -312,12 +312,7 @@ public class MLFeedbackPropagation extends FeedbackPropagation<MLFExperiment> {
 	private Object[][] optimizeTrainingSet(Object[][] set)
 	{
 		int count=0;
-		List<Object[]> obj=new ArrayList<Object[]>(Arrays.asList(set));
-		Object[] invalidSV=new Object[set[0].length];
 		List<Integer> pos=new ArrayList<Integer>();
-//		for(int i=0;i<invalidSV.length;i++)
-//			invalidSV[i]=0.0;
-//		obj.remove(Arrays.asList(invalidSV));
 		for(int i=0;i<set.length;i++)
 		{
 			count=0;
@@ -543,12 +538,6 @@ public class MLFeedbackPropagation extends FeedbackPropagation<MLFExperiment> {
 	
 	private SimilarityMatrix com(SparseMatrix forbidden_pos, SimilarityMatrix sm,Object[][] trainingSet)
 	{
-
-		
-		int max_row=-1;
-		int max_col=-1;
-		double max_nBayes=treshold_up;
-		double tmp; 
 		Mapping mp;
 		Object[] ssv;
 		
