@@ -25,6 +25,7 @@ import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.MatchingTaskChangeEvent;
 import am.app.mappingEngine.MatchingTaskChangeEvent.EventType;
 import am.app.mappingEngine.SelectionAlgorithm;
+import am.app.mappingEngine.manualMatcher.UserManualMatcher;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.OntologyChangeEvent;
@@ -292,6 +293,16 @@ public class Core {
 	public List<MatcherResult> getMatcherResults(){ return matcherResults;}
 	
 	public List<MatchingTask> getMatchingTasks() { return completedMatchingTasks; }
+	
+	public List<MatchingTask> getMatchingTasksWithoutUserManualMatcher() {
+		List<MatchingTask> tasks = new LinkedList<>();
+		for( MatchingTask task : completedMatchingTasks ) {
+			if( !(task.matchingAlgorithm instanceof UserManualMatcher) ) {
+				tasks.add(task);
+			}
+		}
+		return tasks;
+	}
 	
 	/** Matcher IDs no longer make sense. -- Cosmin. */
 	@Deprecated
