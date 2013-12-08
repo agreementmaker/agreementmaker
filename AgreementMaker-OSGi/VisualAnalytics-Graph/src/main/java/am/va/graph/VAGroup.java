@@ -1,5 +1,6 @@
 package am.va.graph;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class VAGroup {
@@ -7,14 +8,16 @@ public class VAGroup {
 	private int groupID;
 	private int parent;
 	private VAData rootNode;
-	private HashMap<String, VAData> mapVAData;
+	//private HashMap<String, VAData> mapVAData;
+	private ArrayList<VAData> listVAData;
 	private HashMap<String, Integer> slots;
 
 	public VAGroup() {
 		this.groupID = ++nodeCount;
 		this.parent = -1;
 		this.rootNode = null;
-		this.mapVAData = new HashMap<String, VAData>();
+		//this.mapVAData = new HashMap<String, VAData>();
+		this.listVAData = new ArrayList<VAData>();
 		this.slots = new HashMap<String, Integer>();
 	}
 
@@ -40,7 +43,8 @@ public class VAGroup {
 	 * Calculate the number of 10 slots
 	 */
 	private void setSlots() {
-		for (VAData data : mapVAData.values()) {
+		//for (VAData data : mapVAData.values()) {
+		for(VAData data : listVAData){
 			double sim = data.getSimilarity();
 			for (int i = 0; i < VAVariables.slotsNum; i++) {
 				if (sim > VAVariables.threshold[i]
@@ -57,8 +61,13 @@ public class VAGroup {
 		}
 	}
 
-	public void setMapVAData(HashMap<String, VAData> mapVAData) {
-		this.mapVAData = mapVAData;
+//	public void setMapVAData(HashMap<String, VAData> mapVAData) {
+//		this.mapVAData = mapVAData;
+//		setSlots();
+//	}
+	
+	public void setListVAData(ArrayList<VAData> listVAData){
+		this.listVAData = listVAData;
 		setSlots();
 	}
 
@@ -78,8 +87,12 @@ public class VAGroup {
 		return parent;
 	}
 
-	public HashMap<String, VAData> getMapVAData() {
-		return mapVAData;
+//	public HashMap<String, VAData> getMapVAData() {
+//		return mapVAData;
+//	}
+	
+	public ArrayList<VAData> getListVAData(){
+		return listVAData;
 	}
 
 	public HashMap<String, Integer> getSlots() {
