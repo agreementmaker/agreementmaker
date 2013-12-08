@@ -14,21 +14,22 @@ import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.chart.PieChart;
+import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
 
 public class VAPanel {
 
 	private static JFrame frame;
 	private static JFXPanel fxPanel;
+	private static ListView<String> listView;
 	private static Group root;
 	private static VAGroup rootGroup;
 	private static VAGroup currentGroup;
 	private static int count = 1;
-	private static int stop = 0;
-	
+	private static int stop = -1;
 
 	/**
-	 * Init Frame 
+	 * Init Frame
 	 */
 	public static void initAndShowGUI() {
 		frame = new JFrame("VA");
@@ -50,12 +51,16 @@ public class VAPanel {
 	 */
 	public static void InitFX() {
 		root = new Group();
+		listView = new ListView<String>();
 		final Scene myScene = new Scene(root);
 		final VAPieChart chart = new VAPieChart(rootGroup);
 
-
 		chart.getPieChart().setClockwise(false);
 		root.getChildren().add(chart.getPieChart());
+		root.getChildren().add(listView);
+		//listView.setVisible(false);
+		listView.setPrefHeight(500);
+		listView.setPrefWidth(100);
 
 		fxPanel.setScene(myScene);
 		updateCurrentGroup(rootGroup);
@@ -67,21 +72,22 @@ public class VAPanel {
 	private static void setLocation(VAPieChart chart) {
 		// TODO Auto-generated method stub
 		double minX = Double.MAX_VALUE;
-	    double maxX = Double.MAX_VALUE * -1;
-	    double minY = Double.MAX_VALUE;
-	    double maxY = Double.MAX_VALUE * -1;
-	             
-	    for( PieChart.Data d : chart.getPieChart().getData() ) {
-	      minX = Math.min(minX, d.getNode().getBoundsInParent().getMinX());
-	      maxX = Math.max(maxX, d.getNode().getBoundsInParent().getMaxX());
-	      minY = Math.min(minY, d.getNode().getBoundsInParent().getMinY());
-	      maxY = Math.max(maxY, d.getNode().getBoundsInParent().getMaxY());
-	    }
-	 
-	    double radius = (maxX - minX)/2;
-	    chart.setRadius(radius);
-	    chart.setPieCenter( new Point2D(minX + radius, minY + radius));
-	    System.out.println("radius " + radius + " center " + chart.getPieCenter());
+		double maxX = Double.MAX_VALUE * -1;
+		double minY = Double.MAX_VALUE;
+		double maxY = Double.MAX_VALUE * -1;
+
+		for (PieChart.Data d : chart.getPieChart().getData()) {
+			minX = Math.min(minX, d.getNode().getBoundsInParent().getMinX());
+			maxX = Math.max(maxX, d.getNode().getBoundsInParent().getMaxX());
+			minY = Math.min(minY, d.getNode().getBoundsInParent().getMinY());
+			maxY = Math.max(maxY, d.getNode().getBoundsInParent().getMaxY());
+		}
+
+		double radius = (maxX - minX) / 2;
+		chart.setRadius(radius);
+		chart.setPieCenter(new Point2D(minX + radius, minY + radius));
+		System.out.println("radius " + radius + " center "
+				+ chart.getPieCenter());
 	}
 
 	/**
@@ -95,7 +101,7 @@ public class VAPanel {
 		VAData newRootData;
 		System.out.println(count);
 		if (count == 1)
-			newRootData = currentGroup.getVADataArray().get(4);
+			newRootData = currentGroup.getVADataArray().get(3);
 		else
 			newRootData = currentGroup.getVADataArray().get(1);
 		count++;
@@ -158,8 +164,20 @@ public class VAPanel {
 	public static int getStop() {
 		return stop;
 	}
-	
+
 	public static Group getFXGroup() {
 		return root;
+	}
+
+	public static void setStop(int i) {
+		stop = i;
+	}
+
+	public static ListView<String> getlistView() {
+		return listView;
+	}
+
+	public static void setListView(ListView<String> list) {
+		listView = list;
 	}
 }
