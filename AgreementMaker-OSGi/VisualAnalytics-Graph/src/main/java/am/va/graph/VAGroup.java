@@ -112,6 +112,10 @@ public class VAGroup {
 //		setslotCountMap();
 //	}
 	
+	/**
+	 * Set the children of this node
+	 * @param listVAData
+	 */
 	public void setListVAData(ArrayList<VAData> listVAData){
 		this.VADataArray = listVAData;
 		setslotCountMap();

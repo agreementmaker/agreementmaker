@@ -46,6 +46,9 @@ public class VAPieChart {
 
 	}
 
+	/**
+	 * Update current pie chart and add listeners
+	 */
 	public void updatePieChart() {
 		if (VAPanel.getStop() == 0) {
 			int num = pieCharDatalist.size();
@@ -109,6 +112,9 @@ public class VAPieChart {
 		this.center = c;
 	}
 
+	/**
+	 * Add show new pie chart listener (mouse pressed event)
+	 */
 	public void addListener() {
 		for (final PieChart.Data currentData : pieChart.getData()) {
 			currentData.getNode().addEventHandler(MouseEvent.MOUSE_PRESSED,
@@ -131,6 +137,9 @@ public class VAPieChart {
 		}
 	}
 
+	/**
+	 * Add update list info listener (mouse entered event)
+	 */
 	public void addListListener() {
 		for (final PieChart.Data currentData : pieChart.getData()) {
 			currentData.getNode().addEventHandler(MouseEvent.MOUSE_ENTERED,
