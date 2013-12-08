@@ -17,6 +17,8 @@ import play.mvc.Controller;
 import play.mvc.Http.Request;
 import play.mvc.Result;
 import views.html.index;
+
+import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.extension.collaborationClient.restful.RESTfulUser;
 import am.extension.collaborationClient.restful.RESTfulTask;
 
@@ -56,6 +58,30 @@ public class Application extends Controller {
 						"ontologies/sigkdd.owl"
 				};
 				
+				String[] references={
+						"reference/cmt-conference.rdf",
+						"reference/conference-confOf.rdf",
+						"reference/confOf-ekaw.rdf",
+						"reference/ekaw-iasted.rdf",
+						"reference/cmt-confOf.rdf",
+						"reference/conference-edas.rdf",
+						"reference/confOf-iasted.rdf",
+						"reference/ekaw-sigkdd.rdf",
+						"reference/cmt-edas.rdf",
+						"reference/conference-ekaw.rdf",
+						"reference/confOf-sigkdd.rdf",
+						"reference/iasted-sigkdd.rdf",
+						"reference/cmt-ekaw.rdf",
+						"reference/conference-iasted.rdf",
+						"reference/edas-ekaw.rdf",
+						"reference/cmt-iasted.rdf",
+						"reference/conference-sigkdd.rdf",
+						"reference/edas-iasted.rdf",
+						"reference/cmt-sigkdd.rdf",
+						"reference/confOf-edas.rdf",
+						"reference/edas-sigkdd.rdf"
+				};
+				
 				Ontology[] onts = new Ontology[ontologies.length];
 				
 				int i = 1;
@@ -67,6 +93,7 @@ public class Application extends Controller {
 					onts[i-1] = o;
 					out.write(i++ + " Created ontology " + o.id + ": " + o.ontologyURL + "\n");
 				}
+				
 				
 				MatchingTask m1 = new MatchingTask();
 				m1.name = "cmt-Cocus";

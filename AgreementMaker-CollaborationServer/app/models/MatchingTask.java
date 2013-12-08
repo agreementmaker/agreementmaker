@@ -24,6 +24,8 @@ public class MatchingTask extends Model {
 	@Constraints.Required
 	@ManyToMany
 	public String targetOntologyURL;
+	
+	public String referenceURL;
 
     public static Model.Finder<Long,MatchingTask> find = 
     		new Model.Finder<Long,MatchingTask>(Long.class, MatchingTask.class);
