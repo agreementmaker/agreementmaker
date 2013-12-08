@@ -31,6 +31,7 @@ public class VASyncListener implements MatcherChangeListener {
 			rootGroup.setRootNode(VASyncData
 					.getRootVAData(VAVariables.ontologyType.Source));
 			//rootGroup.setMapVAData(VASyncData.getChildrenData(rootGroup.getRootNode()));
+			// get all the children data sorted by similarity
 			rootGroup.setListVAData(VASyncData.getChildrenData(rootGroup
 					.getRootNode()));
 			// TEST(rootGroup);
