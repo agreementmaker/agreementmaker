@@ -22,6 +22,7 @@ import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.app.ontology.Ontology;
 import am.extension.userfeedback.UFLExperiment;
 import am.extension.userfeedback.UserFeedback.Validation;
+import am.extension.userfeedback.experiments.IndependentSequentialLogicML;
 import am.extension.userfeedback.experiments.IndependentSequentialLogicMultiUser;
 import am.extension.userfeedback.experiments.UFLControlLogic;
 
@@ -218,7 +219,7 @@ public void setMLAlignment(Alignment<Mapping> mLAlignment) {
 
 	@Override
 	public UFLControlLogic getControlLogic() {
-		return new IndependentSequentialLogicMultiUser();
+		return new IndependentSequentialLogicML();
 		//return new IndependentSequentialLogic();
 	}
 

@@ -266,13 +266,13 @@ public class MLFeedbackPropagation extends FeedbackPropagation<MLFExperiment> {
 		
 		if( candidateMapping.getAlignmentType() == alignType.aligningClasses )
 		{
-			feedbackClassMatrix=com(experiment.classesSparseMatrix , feedbackClassMatrix, trainingSet);
+			feedbackClassMatrix=com(experiment.classesSparseMatrix , feedbackClassMatrix, trainingSet, "classes");
 		}
 		else
 		{
 			if( candidateMapping.getAlignmentType() == alignType.aligningProperties ) 
 			{
-				feedbackPropertyMatrix=com(experiment.propertiesSparseMatrix, feedbackPropertyMatrix, trainingSet);
+				feedbackPropertyMatrix=com(experiment.propertiesSparseMatrix, feedbackPropertyMatrix, trainingSet, "properties");
 			}
 		}
 		
@@ -536,7 +536,7 @@ public class MLFeedbackPropagation extends FeedbackPropagation<MLFExperiment> {
 	}
 	
 	
-	private SimilarityMatrix com(SparseMatrix forbidden_pos, SimilarityMatrix sm,Object[][] trainingSet)
+	private SimilarityMatrix com(SparseMatrix forbidden_pos, SimilarityMatrix sm,Object[][] trainingSet, String type)
 	{
 		Mapping mp;
 		Object[] ssv;
@@ -572,6 +572,11 @@ public class MLFeedbackPropagation extends FeedbackPropagation<MLFExperiment> {
 				if (min==0)
 				{
 					sm.setSimilarity(k, h, (double)trainingSet[index][trainingSet[0].length-1]);
+					if (type=="classes")
+						experiment.classesSparseMatrix.setSimilarity(k, h, 1);
+					else
+						experiment.propertiesSparseMatrix.setSimilarity(k, h, 1);
+					
 				}
 			}
 		}

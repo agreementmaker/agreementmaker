@@ -14,19 +14,20 @@ import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MappingSimilarityComparator;
 import am.evaluation.disagreement.variance.VarianceDisagreement;
 import am.evaluation.disagreement.variance.VarianceDisagreementParameters;
+import am.extension.multiUserFeedback.MUExperiment;
 import am.extension.userfeedback.CandidateSelection;
 import am.extension.userfeedback.MLFeedback.MLFExperiment;
 
-public class MultiStrategyRanking extends CandidateSelection<MLFExperiment>{
+public class MultiStrategyRanking extends CandidateSelection<MUExperiment>{
 
 	private SimilarityMatrix classesMatrix;
 	private SimilarityMatrix propertiesMatrix;
 	private final double weight_um=0.5;
 	private final double weight_mm=0.3;
-	private MLFExperiment experiment;
+	private MUExperiment experiment;
 	
 	@Override
-	public void rank(MLFExperiment exp) {
+	public void rank(MUExperiment exp) {
 		this.experiment=exp;
 		//Inizialization
 		inizialization();
