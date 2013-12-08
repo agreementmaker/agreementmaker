@@ -3,9 +3,6 @@ package am.va.graph;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import java_cup.internal_error;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.collections.FXCollections;
 import javafx.event.EventHandler;
@@ -13,7 +10,6 @@ import javafx.geometry.Point2D;
 
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.ListView;
-import javafx.scene.control.SelectionMode;
 import javafx.scene.input.MouseEvent;
 
 @SuppressWarnings("restriction")
@@ -23,8 +19,6 @@ public class VAPieChart {
 	private double radius; // Radius of the pie chart
 	private Point2D center; // pie chart center point
 	private static VAData selectedVAData;
-
-	private static int debug = 0;
 
 	public VAPieChart() {
 		this.pieCharDatalist = null;
@@ -41,7 +35,7 @@ public class VAPieChart {
 	public VAPieChart(VAGroup group) {
 		pieCharDatalist = FXCollections.observableArrayList();
 		HashMap<String, Integer> slotsMap = group.getslotCountMap();
-		for (String key : slotsMap.keySet()) {
+		for (String key : VAVariables.thresholdName) {
 			pieCharDatalist.add(new PieChart.Data(key, slotsMap.get(key)));
 		}
 		pieChart = new PieChart(this.pieCharDatalist);
@@ -66,7 +60,6 @@ public class VAPieChart {
 			VAPanel.setStop(0);
 		}
 		addListener();
-		// addListListener();
 	}
 
 	/**
@@ -115,37 +108,11 @@ public class VAPieChart {
 	}
 
 	/**
-	 * Add show new pie chart listener (mouse pressed event)
+	 * Add update list info listener (mouse entered event)
 	 */
 	public void addListener() {
 		for (final PieChart.Data currentData : pieChart.getData()) {
 			currentData.getNode().addEventHandler(MouseEvent.MOUSE_PRESSED,
-					new EventHandler<MouseEvent>() {
-
-						@Override
-						public void handle(MouseEvent arg0) {
-							System.out
-									.println("-----------------click new pie chart!!!!");
-
-							// VAPanel.setListView(getNodesList(arg0,
-							// currentData));
-
-							VAPanel.getNewGroup(VAPanel.getCurrentGroup());
-							// VAPanel.TEST(VAPanel.getCurrentGroup());
-							if (VAPanel.getStop() == 0)
-								updatePieChart();
-						}
-
-					});
-		}
-	}
-
-	/**
-	 * Add update list info listener (mouse entered event)
-	 */
-	public void addListListener() {
-		for (final PieChart.Data currentData : pieChart.getData()) {
-			currentData.getNode().addEventHandler(MouseEvent.MOUSE_ENTERED,
 					new EventHandler<MouseEvent>() {
 
 						@Override
@@ -161,6 +128,12 @@ public class VAPieChart {
 		}
 	}
 
+	/**
+	 * based on the position of mouse click, compute the arc index of area 
+	 * @param MouseEvent e, 
+	 * @param Pie Chart data, the data user clicked
+	 * @return 
+	 */
 	private int getArcIdxByPosition(MouseEvent e, PieChart.Data data) {
 		/**
 		 * every slot is 10%, every arc is 2% so every slot has 5 arcs arcs are
@@ -171,12 +144,18 @@ public class VAPieChart {
 		int sliceIndex = pieChart.getData().indexOf(data);
 		int arcIndex = sliceIndex * VAVariables.arcNumPerSlice
 				+ (int) (VAVariables.arcNumPerSlice * dist / radius);
-		if (debug == 1)
-			System.out.println("Pos = " + pos + " arcIndex " + arcIndex);
+		System.out.println("Pos = " + pos + " arcIndex " + arcIndex);
 		return arcIndex;
 
 	}
 
+	/**
+	 * Get the list of node in the area, show in the list view
+	 * If user click one item, update the pie chart of the ontology user selects
+	 * @param e
+	 * @param data
+	 * @return
+	 */
 	private ListView<String> getNodesList(MouseEvent e, PieChart.Data data) {
 
 		// get the arcindexArray, in order to get nodes by similarity range
@@ -190,10 +169,8 @@ public class VAPieChart {
 
 		int sliceIndex = pieChart.getData().indexOf(data);
 		int startDataIdx, endDataIdx;
-		if (debug == 1)
-			System.out.println("slice index is " + sliceIndex
-					+ " slot count is "
-					+ slotCountMap.get(VAVariables.thresholdName[sliceIndex]));
+		System.out.println("slice index is " + sliceIndex + " slot count is "
+				+ slotCountMap.get(VAVariables.thresholdName[sliceIndex]));
 		// if number of nodes in this slice is smaller than a threshold, show
 		// them all
 		if (slotCountMap.get(VAVariables.thresholdName[sliceIndex]) <= VAVariables.showAllNodesThresh) {
@@ -202,31 +179,62 @@ public class VAPieChart {
 			endDataIdx = arcIndexArray.get(startArcIdx
 					+ VAVariables.arcNumPerSlice);
 		} else {
+			// Show them by arc area
 			int arcIndex = getArcIdxByPosition(e, data);
 			startDataIdx = arcIndexArray.get(arcIndex) + 1;
 			endDataIdx = arcIndexArray.get(arcIndex + 1);
 		}
 		System.out.println("start = " + startDataIdx + " end= " + endDataIdx);
+		
+		final ListView<String> listView = VAPanel.getlistView();
 		ObservableList<String> arcListData = FXCollections
 				.observableArrayList();
 
-		for (int i = startDataIdx; i < endDataIdx; i++) {
+		// Put data in list view
+		for (int i = startDataIdx; i <= endDataIdx; i++) {
 			String name = dataArrayList.get(i).getSourceNode().getLocalName();
 			arcListData.add(name);
 			// arcListData.add(dataArrayList.get(i));
 			listMap.put(name, dataArrayList.get(i));
+			System.out.println("data " + i + " = " + name);
 		}
-		final ListView<String> listView = new ListView<String>(arcListData);
-		listView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-		listView.setOnMouseClicked(new EventHandler<MouseEvent>() {
-			public void handle(MouseEvent event) {
-				if (debug == 1)
-					System.out.println("clicked on "
-							+ listView.getSelectionModel().getSelectedItems());
-			}
-		});
+		
+		listView.setItems(arcListData);
+		setListViewAction(listView, listMap);
 
 		return listView;
+	}
+	
+	/**
+	 * return slected VAData
+	 * often called after user clicks one item on ListView, passed to 
+	 * getNewGroup in VAPanel
+	 * @return
+	 */
+	public static VAData getSelectedVAData() {
+		return selectedVAData;
+	}
+	
+	/**
+	 * Set click action of listView
+	 * @param listView
+	 * @param listMap
+	 */
+	private void setListViewAction(final ListView<String> listView,
+			final HashMap<String, VAData> listMap) {
+		// Add handler, if user click one ontology,
+		// Update the pie chart
+		listView.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			public void handle(MouseEvent event) {
+				String selectedLocalName = listView.getSelectionModel()
+						.getSelectedItems().get(0);
+				System.out.println("clicked on " + selectedLocalName);
+				selectedVAData = listMap.get(selectedLocalName);
+				VAPanel.getNewGroup(VAPanel.getCurrentGroup());
+				if (VAPanel.getStop() == 0)
+					updatePieChart();
+			}
+		});
 	}
 
 }
