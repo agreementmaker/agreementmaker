@@ -35,14 +35,18 @@ public class VAPieChart {
 	}
 
 	public void updatePieChart() {
-		int num = pieCharDatalist.size();
-		System.out.println("remove=" + num);
-		for (int i = 0; i < num; i++)
-			pieCharDatalist.remove(0);
-		HashMap<String, Integer> slotsMap = VAPanel.getCurrentGroup()
-				.getSlots();
-		for (String key : slotsMap.keySet()) {
-			pieCharDatalist.add(new PieChart.Data(key, slotsMap.get(key)));
+		if (VAPanel.getStop() == 0) {
+			int num = pieCharDatalist.size();
+			for (int i = 0; i < num; i++) {
+				pieCharDatalist.remove(0);
+			}
+			HashMap<String, Integer> slotsMap = VAPanel.getCurrentGroup()
+					.getSlots();
+			for (String key : slotsMap.keySet()) {
+				pieCharDatalist.add(new PieChart.Data(key, slotsMap.get(key)));
+			}
+		} else if (VAPanel.getStop() == -1) {
+			VAPanel.setStop(0);
 		}
 		addListener();
 	}
@@ -66,9 +70,12 @@ public class VAPieChart {
 							public void handle(MouseEvent arg0) {
 								System.out
 										.println("-----------------click!!!!");
+								// new list
+								//
 								VAPanel.getNewGroup(VAPanel.getCurrentGroup());
 								VAPanel.TEST(VAPanel.getCurrentGroup());
-								updatePieChart();
+								if (VAPanel.getStop() == 0)
+									updatePieChart();
 							}
 
 						});
