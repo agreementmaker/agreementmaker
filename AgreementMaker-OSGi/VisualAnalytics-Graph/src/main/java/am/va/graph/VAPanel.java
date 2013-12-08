@@ -121,6 +121,10 @@ public class VAPanel {
 		}
 	}
 
+	/**
+	 * Update current group
+	 * @param group
+	 */
 	private static void updateCurrentGroup(VAGroup group) {
 		if (group != null) {
 			currentGroup = new VAGroup();
@@ -141,6 +145,10 @@ public class VAPanel {
 		rootGroup = group;
 	}
 
+	/**
+	 * Print info. Testing only.
+	 * @param rootGroup
+	 */
 	public static void TEST(VAGroup rootGroup) {
 		String rootNodeName = rootGroup.getRootNode().getSourceNode()
 				.getLocalName();
