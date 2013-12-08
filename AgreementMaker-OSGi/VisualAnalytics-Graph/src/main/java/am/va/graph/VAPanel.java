@@ -5,9 +5,12 @@ import java.util.HashMap;
 
 import javax.swing.JFrame;
 
+import com.sun.media.jfxmedia.events.NewFrameEvent;
+
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.event.EventHandler;
+import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.chart.PieChart;
@@ -17,10 +20,12 @@ public class VAPanel {
 
 	private static JFrame frame;
 	private static JFXPanel fxPanel;
+	private static Group root;
 	private static VAGroup rootGroup;
 	private static VAGroup currentGroup;
 	private static int count = 1;
-	private static int stop = -1;
+	private static int stop = 0;
+	
 
 	/**
 	 * Init Frame 
@@ -44,17 +49,39 @@ public class VAPanel {
 	 * Init JavaFx panel, add mouse click Eventhandler
 	 */
 	public static void InitFX() {
-		final Group root = new Group();
+		root = new Group();
 		final Scene myScene = new Scene(root);
 		final VAPieChart chart = new VAPieChart(rootGroup);
+
 
 		chart.getPieChart().setClockwise(false);
 		root.getChildren().add(chart.getPieChart());
 
 		fxPanel.setScene(myScene);
 		updateCurrentGroup(rootGroup);
+		setLocation(chart);
 		TEST(currentGroup);
 		chart.updatePieChart();
+	}
+
+	private static void setLocation(VAPieChart chart) {
+		// TODO Auto-generated method stub
+		double minX = Double.MAX_VALUE;
+	    double maxX = Double.MAX_VALUE * -1;
+	    double minY = Double.MAX_VALUE;
+	    double maxY = Double.MAX_VALUE * -1;
+	             
+	    for( PieChart.Data d : chart.getPieChart().getData() ) {
+	      minX = Math.min(minX, d.getNode().getBoundsInParent().getMinX());
+	      maxX = Math.max(maxX, d.getNode().getBoundsInParent().getMaxX());
+	      minY = Math.min(minY, d.getNode().getBoundsInParent().getMinY());
+	      maxY = Math.max(maxY, d.getNode().getBoundsInParent().getMaxY());
+	    }
+	 
+	    double radius = (maxX - minX)/2;
+	    chart.setRadius(radius);
+	    chart.setPieCenter( new Point2D(minX + radius, minY + radius));
+	    System.out.println("radius " + radius + " center " + chart.getPieCenter());
 	}
 
 	/**
@@ -68,9 +95,9 @@ public class VAPanel {
 		VAData newRootData;
 		System.out.println(count);
 		if (count == 1)
-			newRootData = currentGroup.getListVAData().get(3);
+			newRootData = currentGroup.getVADataArray().get(4);
 		else
-			newRootData = currentGroup.getListVAData().get(1);
+			newRootData = currentGroup.getVADataArray().get(1);
 		count++;
 		if (newRootData != null
 				&& newRootData.getSourceNode().getChildCount() > 0) { // if
@@ -93,7 +120,7 @@ public class VAPanel {
 			currentGroup = new VAGroup();
 			currentGroup.setParent(group.getParent());
 			currentGroup.setRootNode(group.getRootNode());
-			currentGroup.setListVAData(group.getListVAData());
+			currentGroup.setListVAData(group.getVADataArray());
 		} else {
 			System.out.println("New group is NULL");
 		}
@@ -112,13 +139,13 @@ public class VAPanel {
 		String rootNodeName = rootGroup.getRootNode().getSourceNode()
 				.getLocalName();
 		System.out.println(rootNodeName);
-		ArrayList<VAData> vaData = rootGroup.getListVAData();
+		ArrayList<VAData> vaData = rootGroup.getVADataArray();
 		for (VAData d : vaData) {
 			System.out.println(d.getSourceNode().getLocalName() + ","
 					+ d.getTargetNode().getLocalName() + ","
 					+ d.getSimilarity());
 		}
-		HashMap<String, Integer> slots = rootGroup.getSlots();
+		HashMap<String, Integer> slots = rootGroup.getslotCountMap();
 		for (String s : slots.keySet()) {
 			System.out.println(s + ":" + slots.get(s));
 		}
@@ -132,7 +159,7 @@ public class VAPanel {
 		return stop;
 	}
 	
-	public static void setStop(int s){
-		stop = s;
+	public static Group getFXGroup() {
+		return root;
 	}
 }
