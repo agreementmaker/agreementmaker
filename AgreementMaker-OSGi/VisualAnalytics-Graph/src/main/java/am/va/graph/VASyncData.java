@@ -1,5 +1,6 @@
 package am.va.graph;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -77,19 +78,30 @@ public class VASyncData {
 		return new VAData(n, matchingNode, sim);
 	}
 
+	// public static HashMap<String, VAData> getChildrenData(VAData
+	// rootNodeData) {
+	// HashMap<String, VAData> res = new HashMap<String, VAData>();
+	// Node rootNode = rootNodeData.sourceNode;
+	// for (Node n : rootNode.getChildren()) {
+	// // get target node info which best matches this node
+	// VAData newChildData = VASyncData.getMatchingVAData(n);
+	// res.put(newChildData.getSourceNode().getLocalName(), newChildData);
+	// }
+	// return res;
+	// }
 	/**
-	 * Get the children list of current root node
+	 * Get children nodes of current root node
 	 * 
 	 * @param rootNodeData
 	 * @return
 	 */
-	public static HashMap<String, VAData> getChildrenData(VAData rootNodeData) {
-		HashMap<String, VAData> res = new HashMap<String, VAData>();
+	public static ArrayList<VAData> getChildrenData(VAData rootNodeData) {
+		ArrayList<VAData> res = new ArrayList<VAData>();
 		Node rootNode = rootNodeData.sourceNode;
 		for (Node n : rootNode.getChildren()) {
 			// get target node info which best matches this node
 			VAData newChildData = VASyncData.getMatchingVAData(n);
-			res.put(newChildData.getSourceNode().getLocalName(), newChildData);
+			res.add(newChildData);
 		}
 		return res;
 	}

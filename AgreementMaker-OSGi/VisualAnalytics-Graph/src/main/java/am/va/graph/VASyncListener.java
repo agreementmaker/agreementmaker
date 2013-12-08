@@ -30,7 +30,8 @@ public class VASyncListener implements MatcherChangeListener {
 			rootGroup.setParent(0);
 			rootGroup.setRootNode(VASyncData
 					.getRootVAData(VAVariables.ontologyType.Source));
-			rootGroup.setMapVAData(VASyncData.getChildrenData(rootGroup
+			//rootGroup.setMapVAData(VASyncData.getChildrenData(rootGroup.getRootNode()));
+			rootGroup.setListVAData(VASyncData.getChildrenData(rootGroup
 					.getRootNode()));
 			// TEST(rootGroup);
 			Core.getInstance().removeMatcherChangeListener(this);
@@ -45,27 +46,6 @@ public class VASyncListener implements MatcherChangeListener {
 					VAPanel.initAndShowGUI();
 				}
 			});
-		}
-	}
-
-	/**
-	 * Test only
-	 * 
-	 * @param rootGroup
-	 */
-	private void TEST(VAGroup rootGroup) {
-		String rootNodeName = rootGroup.getRootNode().getSourceNode()
-				.getLocalName();
-		System.out.println(rootNodeName);
-		HashMap<String, VAData> vaData = rootGroup.getMapVAData();
-		for (VAData d : vaData.values()) {
-			System.out.println(d.getSourceNode().getLocalName() + ","
-					+ d.getTargetNode().getLocalName() + ","
-					+ d.getSimilarity());
-		}
-		HashMap<String, Integer> slots = rootGroup.getSlots();
-		for (String s : slots.keySet()) {
-			System.out.println(s + ":" + slots.get(s));
 		}
 	}
 }

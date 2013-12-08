@@ -1,5 +1,6 @@
 package am.va.graph;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.swing.JFrame;
@@ -67,15 +68,20 @@ public class VAPanel {
 		VAData newRootData;
 		System.out.println(count);
 		if (count == 1)
-			newRootData = currentGroup.getMapVAData().get("Reference");
+			newRootData = currentGroup.getListVAData().get(4);
 		else
-			newRootData = currentGroup.getMapVAData().get("Book");
+			newRootData = currentGroup.getListVAData().get(1);
 		count++;
-		if (newRootData != null) { // if there's still new group
+		if (newRootData != null
+				&& newRootData.getSourceNode().getChildCount() > 0) { // if
+																		// there's
+																		// still
+																		// new
+																		// group
 			VAGroup newGroup = new VAGroup();
 			newGroup.setParent(currentGroup.getGroupID());
 			newGroup.setRootNode(newRootData);
-			newGroup.setMapVAData(VASyncData.getChildrenData(newRootData));
+			newGroup.setListVAData(VASyncData.getChildrenData(newRootData));
 			updateCurrentGroup(newGroup);
 		} else {
 			stop = 1;
@@ -87,7 +93,7 @@ public class VAPanel {
 			currentGroup = new VAGroup();
 			currentGroup.setParent(group.getParent());
 			currentGroup.setRootNode(group.getRootNode());
-			currentGroup.setMapVAData(group.getMapVAData());
+			currentGroup.setListVAData(group.getListVAData());
 		} else {
 			System.out.println("New group is NULL");
 		}
@@ -106,8 +112,8 @@ public class VAPanel {
 		String rootNodeName = rootGroup.getRootNode().getSourceNode()
 				.getLocalName();
 		System.out.println(rootNodeName);
-		HashMap<String, VAData> vaData = rootGroup.getMapVAData();
-		for (VAData d : vaData.values()) {
+		ArrayList<VAData> vaData = rootGroup.getListVAData();
+		for (VAData d : vaData) {
 			System.out.println(d.getSourceNode().getLocalName() + ","
 					+ d.getTargetNode().getLocalName() + ","
 					+ d.getSimilarity());
@@ -121,8 +127,8 @@ public class VAPanel {
 	public static VAGroup getCurrentGroup() {
 		return currentGroup;
 	}
-	
-	public static int getStop(){
+
+	public static int getStop() {
 		return stop;
 	}
 }
