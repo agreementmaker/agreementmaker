@@ -1,4 +1,4 @@
-package am.extension.userfeedback.inizialization;
+package am.extension.multiUserFeedback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,17 +9,16 @@ import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.ontology.Node;
 import am.extension.multiUserFeedback.MUExperiment;
 import am.extension.userfeedback.FeedbackLoopInizialization;
-import am.extension.userfeedback.MLFeedback.MLFExperiment;
 
-public class DataInizialization extends FeedbackLoopInizialization<MLFExperiment> {
+public class MUDataInizialization  extends FeedbackLoopInizialization<MUExperiment> {
 	List<AbstractMatcher> inputMatchers = new ArrayList<AbstractMatcher>();
-	public DataInizialization()
+	public MUDataInizialization()
 	{
 		super();
 	}
 	
 	@Override
-	public void inizialize(MLFExperiment exp) {
+	public void inizialize(MUExperiment exp) {
 		// TODO Auto-generated method stub
 		SimilarityMatrix smClass=exp.initialMatcher.getFinalMatcher().getClassesMatrix().clone();
 		SimilarityMatrix smProperty=exp.initialMatcher.getFinalMatcher().getPropertiesMatrix().clone();
