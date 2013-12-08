@@ -24,6 +24,8 @@ public class VAPieChart {
 	private Point2D center; // pie chart center point
 	private static VAData selectedVAData;
 
+	private static int debug = 0;
+
 	public VAPieChart() {
 		this.pieCharDatalist = null;
 		this.pieChart = null;
@@ -63,8 +65,8 @@ public class VAPieChart {
 		} else if (VAPanel.getStop() == -1) {
 			VAPanel.setStop(0);
 		}
-		//addListener();
-		addListListener();
+		addListener();
+		// addListListener();
 	}
 
 	/**
@@ -125,10 +127,11 @@ public class VAPieChart {
 							System.out
 									.println("-----------------click new pie chart!!!!");
 
-							//VAPanel.setListView(getNodesList(arg0, currentData));
+							// VAPanel.setListView(getNodesList(arg0,
+							// currentData));
 
 							VAPanel.getNewGroup(VAPanel.getCurrentGroup());
-							VAPanel.TEST(VAPanel.getCurrentGroup());
+							// VAPanel.TEST(VAPanel.getCurrentGroup());
 							if (VAPanel.getStop() == 0)
 								updatePieChart();
 						}
@@ -151,7 +154,7 @@ public class VAPieChart {
 									.println("-----------------click update list!!!!");
 
 							VAPanel.setListView(getNodesList(arg0, currentData));
-							
+
 						}
 
 					});
@@ -168,7 +171,8 @@ public class VAPieChart {
 		int sliceIndex = pieChart.getData().indexOf(data);
 		int arcIndex = sliceIndex * VAVariables.arcNumPerSlice
 				+ (int) (VAVariables.arcNumPerSlice * dist / radius);
-		System.out.println("Pos = " + pos + " arcIndex " + arcIndex);
+		if (debug == 1)
+			System.out.println("Pos = " + pos + " arcIndex " + arcIndex);
 		return arcIndex;
 
 	}
@@ -186,8 +190,10 @@ public class VAPieChart {
 
 		int sliceIndex = pieChart.getData().indexOf(data);
 		int startDataIdx, endDataIdx;
-		System.out.println("slice index is " + sliceIndex + " slot count is "
-				+ slotCountMap.get(VAVariables.thresholdName[sliceIndex]));
+		if (debug == 1)
+			System.out.println("slice index is " + sliceIndex
+					+ " slot count is "
+					+ slotCountMap.get(VAVariables.thresholdName[sliceIndex]));
 		// if number of nodes in this slice is smaller than a threshold, show
 		// them all
 		if (slotCountMap.get(VAVariables.thresholdName[sliceIndex]) <= VAVariables.showAllNodesThresh) {
@@ -214,8 +220,9 @@ public class VAPieChart {
 		listView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 		listView.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			public void handle(MouseEvent event) {
-				System.out.println("clicked on "
-						+ listView.getSelectionModel().getSelectedItems());
+				if (debug == 1)
+					System.out.println("clicked on "
+							+ listView.getSelectionModel().getSelectedItems());
 			}
 		});
 
