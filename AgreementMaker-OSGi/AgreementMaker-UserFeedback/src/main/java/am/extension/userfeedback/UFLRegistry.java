@@ -10,6 +10,7 @@ public class UFLRegistry {
 
 	/* Different experimental setups (Ontologies + Reference alignment) */
 	public enum ExperimentRegistry {
+		MultiUser ( am.extension.multiUserFeedback.MUExperiment.class ),
 		MachineLearning ( am.extension.userfeedback.MLFeedback.MLFExperiment.class),
 		Manual ( am.extension.userfeedback.common.ManualExperimentSetup.class );
 		/* *********************** DO NOT EDIT BELOW THIS LINE **************************** */

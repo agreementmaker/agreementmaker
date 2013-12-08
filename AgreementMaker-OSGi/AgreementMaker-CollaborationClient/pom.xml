@@ -16,7 +16,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<bundle.namespace>am.extension.collaborationEngine</bundle.namespace>
+		<bundle.namespace>am.extension.collaborationClient</bundle.namespace>
 	</properties>
 
 	<build>

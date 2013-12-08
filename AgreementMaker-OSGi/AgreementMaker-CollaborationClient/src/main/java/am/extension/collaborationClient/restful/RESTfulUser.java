@@ -11,14 +11,19 @@ import am.extension.collaborationClient.api.CollaborationUser;
  */
 public class RESTfulUser implements CollaborationUser {
 
-	private final String id;
-	
-	public RESTfulUser(String clientID) {
-		this.id = clientID;
+	private String id;
+		
+	public void setId(String id) {
+		this.id = id;
 	}
 	
 	@Override
-	public String getID() {
+	public String getId() {
 		return id;
+	}
+	
+	@Override
+	public String toString() {
+		return "ClientID " + id;
 	}
 }

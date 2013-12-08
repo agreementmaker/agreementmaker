@@ -6,7 +6,7 @@ import am.extension.userfeedback.UFLExperiment;
 
 public abstract class UFLControlLogic<T extends UFLExperiment>  implements ActionListener {
 	
-	protected UFLExperiment experiment;
+	protected T experiment;
 	
 	
 	public abstract void runExperiment(T experiment);

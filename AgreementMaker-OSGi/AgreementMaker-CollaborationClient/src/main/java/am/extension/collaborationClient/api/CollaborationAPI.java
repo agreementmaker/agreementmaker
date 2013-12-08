@@ -2,6 +2,8 @@ package am.extension.collaborationClient.api;
 
 import java.util.List;
 
+import am.app.ontology.ontologyParser.OntologyDefinition;
+
 /**
  * This interface reflects the Collaboration Server API.
  * 
@@ -37,5 +39,7 @@ public interface CollaborationAPI {
 	 * @param feedback
 	 */
 	public void putFeedback(CollaborationUser client, CollaborationFeedback feedback);
+	
+	public OntologyDefinition getOntologyDefinition(String ontologyURL);
 	
 }
