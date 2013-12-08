@@ -23,7 +23,7 @@ public class VAPanel {
 	private static int stop = 0;
 
 	/**
-	 * Init Frame
+	 * Init Frame 
 	 */
 	public static void initAndShowGUI() {
 		frame = new JFrame("VA");
