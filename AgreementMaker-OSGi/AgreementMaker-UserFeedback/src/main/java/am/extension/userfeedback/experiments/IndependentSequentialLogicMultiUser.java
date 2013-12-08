@@ -2,14 +2,18 @@ package am.extension.userfeedback.experiments;
 
 import java.awt.event.ActionEvent;
 
-import am.extension.userfeedback.UFLExperiment;
-import am.extension.userfeedback.MLFeedback.MLFExperiment;
+import org.apache.log4j.Logger;
+
+import am.extension.collaborationClient.restful.RESTfulCollaborationServer;
+import am.extension.multiUserFeedback.MUExperiment;
 import am.extension.userfeedback.ui.UFLControlGUI.ActionCommands;
 
-public class IndependentSequentialLogicMultiUser extends UFLControlLogic<MLFExperiment> {
+public class IndependentSequentialLogicMultiUser extends UFLControlLogic<MUExperiment> {
+	
+	private static Logger LOG = Logger.getLogger(IndependentSequentialLogicMultiUser.class);
 	
 	@Override
-	public void runExperiment(MLFExperiment exp) {
+	public void runExperiment(MUExperiment exp) {
 		this.experiment = exp;
 		runInitialMatchers();
 	}

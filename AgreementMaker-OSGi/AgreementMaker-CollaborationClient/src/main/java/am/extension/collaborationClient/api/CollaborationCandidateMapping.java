@@ -2,7 +2,7 @@ package am.extension.collaborationClient.api;
 
 public interface CollaborationCandidateMapping {
 
-	public String getID();
+	public long getId();
 	
 	public String getSourceURI();
 	

@@ -262,13 +262,16 @@ public class OrthoCombinationMatcher extends ExecutionSemantics {
 		// output the reference alignment
 		Alignment<Mapping> referenceAlignment = experiment.getReferenceAlignment();
 		
-		log.info("Referene alignment has " + referenceAlignment.size() + " mappings.");
-		for( int i = 0; i < referenceAlignment.size(); i++ ) {
-			Mapping currentMapping = referenceAlignment.get(i);
-			log.info( i + ". " + currentMapping.toString() );
+		//FIXME: We should not be looking at the reference alignment here.
+		if( referenceAlignment != null ) {
+			log.info("Referene alignment has " + referenceAlignment.size() + " mappings.");
+			for( int i = 0; i < referenceAlignment.size(); i++ ) {
+				Mapping currentMapping = referenceAlignment.get(i);
+				log.info( i + ". " + currentMapping.toString() );
+			}
+			
+			log.info("");
 		}
-		
-		log.info("");
 		
 		// save to log file the alignment we start with.
 		
@@ -285,12 +288,13 @@ public class OrthoCombinationMatcher extends ExecutionSemantics {
 			Mapping currentMapping = classAlignment.get(i);
 			boolean mappingCorrect = false;
 			
-			if( experiment.getReferenceAlignment().contains(currentMapping.getEntity1(),currentMapping.getEntity2(), currentMapping.getRelation()) ) {
+			if( referenceAlignment != null && 
+					referenceAlignment.contains(currentMapping.getEntity1(),currentMapping.getEntity2(), currentMapping.getRelation()) ) {
 				mappingCorrect = true;
 			}
 			
 			String mappingAnnotation = "X";
-			if( mappingCorrect ) mappingAnnotation = " ";
+			if( mappingCorrect || referenceAlignment == null ) mappingAnnotation = " ";
 			
 			log.info( i + ". " + mappingAnnotation + " " + currentMapping.toString() );
 		}
@@ -302,28 +306,31 @@ public class OrthoCombinationMatcher extends ExecutionSemantics {
 			Mapping currentMapping = propertiesAlignment.get(i);
 			boolean mappingCorrect = false;
 			
-			if( experiment.getReferenceAlignment().contains(currentMapping.getEntity1(), currentMapping.getEntity2(), currentMapping.getRelation()) ) {
+			if( referenceAlignment != null && 
+					referenceAlignment.contains(currentMapping.getEntity1(), currentMapping.getEntity2(), currentMapping.getRelation()) ) {
 				mappingCorrect = true;
 			}
 			
 			String mappingAnnotation = "X";
-			if( mappingCorrect ) mappingAnnotation = " ";
+			if( mappingCorrect || referenceAlignment == null ) mappingAnnotation = " ";
 			
 			log.info( i + ". " + mappingAnnotation + " " + currentMapping.toString() );
 		}
 		
 		log.info("");
 		
-		log.info("Missed mappings:");
-		int missedMappingNumber = 0;
-		for( Mapping referenceMapping : referenceAlignment ) {
-			if( !finalAlignment.contains(referenceMapping.getEntity1(), referenceMapping.getEntity2(), referenceMapping.getRelation()) ) {
-				log.info( missedMappingNumber + ". " + referenceMapping );
-				missedMappingNumber++;
+		if( referenceAlignment != null ) {
+			log.info("Missed mappings:");
+			int missedMappingNumber = 0;
+			for( Mapping referenceMapping : referenceAlignment ) {
+				if( !finalAlignment.contains(referenceMapping.getEntity1(), referenceMapping.getEntity2(), referenceMapping.getRelation()) ) {
+					log.info( missedMappingNumber + ". " + referenceMapping );
+					missedMappingNumber++;
+				}
 			}
+			
+			log.info("");
 		}
-		
-		log.info("");
 		
 		super.done();
 	}

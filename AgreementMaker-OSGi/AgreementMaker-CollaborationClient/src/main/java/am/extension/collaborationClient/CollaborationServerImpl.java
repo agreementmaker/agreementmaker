@@ -16,6 +16,7 @@ import org.apache.log4j.Logger;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
+import am.app.ontology.ontologyParser.OntologyDefinition;
 import am.evaluation.disagreement.variance.VarianceDisagreementComparator;
 import am.extension.batchmode.simpleBatchMode.SimpleBatchModeRunner;
 import am.extension.collaborationClient.api.CollaborationCandidateMapping;
@@ -35,7 +36,9 @@ import am.matcher.oaei.oaei2011.OAEI2011Matcher.SubMatcherID;
  * 
  * @author cosmin
  * 
+ * @deprecated This class is here only for historical documentation.  It will be removed in the future.
  */
+@Deprecated
 @Path("/collaborationServer")
 public class CollaborationServerImpl implements CollaborationAPI {
 	
@@ -189,6 +192,13 @@ public class CollaborationServerImpl implements CollaborationAPI {
 			CollaborationFeedback feedback) {
 		// TODO Auto-generated method stub
 		
+	}
+
+
+	@Override
+	public OntologyDefinition getOntologyDefinition(String ontologyURL) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }

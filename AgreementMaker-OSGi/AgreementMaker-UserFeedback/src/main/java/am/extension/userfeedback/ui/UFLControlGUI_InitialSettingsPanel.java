@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
@@ -215,12 +217,13 @@ public class UFLControlGUI_InitialSettingsPanel extends JPanel implements Action
 	/* Test entrypoint */
 	public static void main(String[] args)
 	{
-		 JDialog newFrame = new JDialog(); 
-		 newFrame.setLayout(new BorderLayout());
-		 newFrame.add(new UFLControlGUI_InitialSettingsPanel(), BorderLayout.CENTER);
-		 newFrame.pack();  newFrame.setLocationRelativeTo(null); newFrame.setVisible(true);
-		//UFLControl_InitialSettingsPanel p=new UFLControl_InitialSettingsPanel();
+		JDialog newFrame = new JDialog();
+		newFrame.setModal(true); // stop execution on setVisible(true) until the dialog is closed.
+		newFrame.setLayout(new BorderLayout());
+		newFrame.add(new UFLControlGUI_InitialSettingsPanel(), BorderLayout.CENTER);
+		newFrame.pack();  newFrame.setLocationRelativeTo(null); newFrame.setVisible(true);
 		
+		System.exit(0);
 	}
 	
 }

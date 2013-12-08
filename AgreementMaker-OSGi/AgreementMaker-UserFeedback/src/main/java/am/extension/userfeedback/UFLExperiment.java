@@ -5,7 +5,6 @@ import java.io.Serializable;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.ontology.Ontology;
-
 import am.extension.userfeedback.UserFeedback.Validation;
 import am.extension.userfeedback.experiments.UFLControlLogic;
 import am.extension.userfeedback.ui.UFLControlGUI;
@@ -45,7 +44,7 @@ public abstract class UFLExperiment {
 	public abstract Alignment<Mapping>  getFinalAlignment();
 	public abstract void				info(String line);   // FIXME: Change this, or get rid of it. Or learn how to use log4j.
 	
-	public abstract UFLControlLogic		getControlLogic();
+	public abstract UFLControlLogic<? extends UFLExperiment>	getControlLogic();
 	
 	public abstract boolean 			experimentHasCompleted();  // return true if the experiment is done, false otherwise.
 	

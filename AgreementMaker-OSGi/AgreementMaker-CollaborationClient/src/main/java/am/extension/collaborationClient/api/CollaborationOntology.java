@@ -1,6 +1,6 @@
 package am.extension.collaborationClient.api;
 
-import java.io.File;
+import am.app.ontology.ontologyParser.OntologyDefinition;
 
 public interface CollaborationOntology {
 
@@ -8,9 +8,9 @@ public interface CollaborationOntology {
 	
 	/**
 	 * Download this ontology from the server to a file in the temporary
-	 * directory on the computer.
+	 * directory on the computer and create a corresponding ontology definition.
 	 * 
-	 * @return The java.io.File object for the downloaded ontology.
+	 * @return The OntologyDefinition object for the downloaded ontology.
 	 */
-	public File getFile();
+	public OntologyDefinition getDefinition();
 }
