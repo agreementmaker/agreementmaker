@@ -20,7 +20,7 @@ public class VAPanel {
 	private static VAGroup rootGroup;
 	private static VAGroup currentGroup;
 	private static int count = 1;
-	private static int stop = 0;
+	private static int stop = -1;
 
 	/**
 	 * Init Frame 
@@ -68,7 +68,7 @@ public class VAPanel {
 		VAData newRootData;
 		System.out.println(count);
 		if (count == 1)
-			newRootData = currentGroup.getListVAData().get(4);
+			newRootData = currentGroup.getListVAData().get(3);
 		else
 			newRootData = currentGroup.getListVAData().get(1);
 		count++;
@@ -130,5 +130,9 @@ public class VAPanel {
 
 	public static int getStop() {
 		return stop;
+	}
+	
+	public static void setStop(int s){
+		stop = s;
 	}
 }
