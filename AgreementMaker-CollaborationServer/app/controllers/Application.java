@@ -8,8 +8,10 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import views.html.index;
 
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+
 
 public class Application extends Controller {
 
@@ -27,6 +29,7 @@ public class Application extends Controller {
 		return ok(result);
 	}
 	
+	
 	public static Result createTask() {
 		MatchingTask newTask = new MatchingTask();
 		newTask.name = "TestTask 01";
@@ -34,6 +37,7 @@ public class Application extends Controller {
 		newTask.targetOntology = "target.owl";
 		
 		newTask.save();
+
 		
 		return ok("Created Task " + newTask.id);
 	}

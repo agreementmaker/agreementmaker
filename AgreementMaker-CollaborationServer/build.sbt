@@ -6,8 +6,14 @@ libraryDependencies ++= Seq(
   javaJdbc,
   javaEbean,
   cache,
-  "edu.uic.cs.advis.am" % "AgreementMaker-Core" % "0.3.0-SNAPSHOT"
-)
+  "edu.uic.cs.advis.am" % "AgreementMaker-Core" % "0.3.0-SNAPSHOT",
+  "edu.uic.cs.advis.am" % "AgreementMaker-Matchers" % "1.0.0-SNAPSHOT",
+  "edu.uic.cs.advis.am" % "AgreementMaker-UserFeedback" % "1.0.0-SNAPSHOT",
+  "edu.uic.cs.advis.am" % "Matcher-AdvancedSimilarity" % "1.0.0-SNAPSHOT",
+  "edu.uic.cs.advis.am" % "Matcher-BaseSimilarity" % "1.0.0-SNAPSHOT",
+  "edu.uic.cs.advis.am" % "Matcher-OAEI" % "1.0.0-SNAPSHOT",
+  "edu.uic.cs.advis.am" % "Matcher-PRA" % "1.0.0-SNAPSHOT"
+  )
 
 play.Project.playJavaSettings
 
