@@ -1,7 +1,8 @@
 package am.va.graph;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import am.app.Core;
@@ -70,8 +71,8 @@ public class VASyncData {
 		Mapping map[] = smClass.getRowMaxValues(n.getIndex(), 1); // bug
 		if (map != null) {
 			matchingNode = map[0].getEntity2();
-			sim = map[0].getSimilarity();
-			//sim = Math.random(); // only for testing
+			// sim = map[0].getSimilarity();
+			sim = Math.random(); // only for testing
 		} else {
 			System.out.println("mapping data is null ???");
 		}
@@ -91,7 +92,7 @@ public class VASyncData {
 	// }
 	/**
 	 * Get children nodes of current root node
-	 * 
+	 * Sorted by similarity
 	 * @param rootNodeData
 	 * @return
 	 */
@@ -103,6 +104,9 @@ public class VASyncData {
 			VAData newChildData = VASyncData.getMatchingVAData(n);
 			res.add(newChildData);
 		}
+		
+		Collections.sort(res);
+		
 		return res;
 	}
 }

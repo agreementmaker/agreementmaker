@@ -2,7 +2,7 @@ package am.va.graph;
 
 import am.app.ontology.Node;
 
-public class VAData {
+public class VAData implements Comparable<VAData>{
 	Node sourceNode;
 	Node targetNode;
 	double Similarity;
@@ -36,6 +36,15 @@ public class VAData {
 
 	public void setSimilarity(double similarity) {
 		Similarity = similarity;
+	}
+
+	@Override
+	public int compareTo(VAData data) {
+		// TODO Auto-generated method stub
+		if(this.Similarity >= data.Similarity)
+			return 1;
+		else 
+			return -1;
 	}
 
 }
