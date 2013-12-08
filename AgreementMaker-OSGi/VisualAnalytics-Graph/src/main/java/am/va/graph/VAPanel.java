@@ -19,6 +19,7 @@ public class VAPanel {
 	private static VAGroup rootGroup;
 	private static VAGroup currentGroup;
 	private static int count = 1;
+	private static int stop = 0;
 
 	/**
 	 * Init Frame
@@ -44,35 +45,15 @@ public class VAPanel {
 	public static void InitFX() {
 		final Group root = new Group();
 		final Scene myScene = new Scene(root);
+		final VAPieChart chart = new VAPieChart(rootGroup);
 
-		VAPieChart chart = new VAPieChart(rootGroup);
 		chart.getPieChart().setClockwise(false);
 		root.getChildren().add(chart.getPieChart());
 
 		fxPanel.setScene(myScene);
 		updateCurrentGroup(rootGroup);
-
-		for (PieChart.Data currentData : chart.getPieChart().getData()) {
-			currentData.getNode().addEventHandler(MouseEvent.MOUSE_PRESSED,
-					new EventHandler<MouseEvent>() {
-
-						@Override
-						public void handle(MouseEvent arg0) {
-							// TODO Auto-generated method stub
-							getNewGroup(currentGroup);
-							VAPieChart chart = new VAPieChart(currentGroup);
-							chart.getPieChart().setClockwise(false);
-							root.getChildren().remove(0);// remove the previous
-															// chart
-							root.getChildren().add(chart.getPieChart());// add
-																		// new
-																		// chart
-							TEST(currentGroup);
-							fxPanel.updateUI();
-						}
-
-					});
-		}
+		TEST(currentGroup);
+		chart.updatePieChart();
 	}
 
 	/**
@@ -84,23 +65,32 @@ public class VAPanel {
 	public static void getNewGroup(VAGroup currentGroup) {
 		// Need a function here, return value:VAData
 		VAData newRootData;
+		System.out.println(count);
 		if (count == 1)
-			newRootData = rootGroup.getMapVAData().get("Reference");
+			newRootData = currentGroup.getMapVAData().get("Reference");
 		else
-			newRootData = rootGroup.getMapVAData().get("Book");
+			newRootData = currentGroup.getMapVAData().get("Book");
 		count++;
-		VAGroup newGroup = new VAGroup();
-		newGroup.setParent(currentGroup.getGroupID());
-		newGroup.setRootNode(newRootData);
-		newGroup.setMapVAData(VASyncData.getChildrenData(newRootData));
-		updateCurrentGroup(newGroup);
+		if (newRootData != null) { // if there's still new group
+			VAGroup newGroup = new VAGroup();
+			newGroup.setParent(currentGroup.getGroupID());
+			newGroup.setRootNode(newRootData);
+			newGroup.setMapVAData(VASyncData.getChildrenData(newRootData));
+			updateCurrentGroup(newGroup);
+		} else {
+			stop = 1;
+		}
 	}
 
 	private static void updateCurrentGroup(VAGroup group) {
-		currentGroup = new VAGroup();
-		currentGroup.setParent(group.getParent());
-		currentGroup.setRootNode(group.getRootNode());
-		currentGroup.setMapVAData(group.getMapVAData());
+		if (group != null) {
+			currentGroup = new VAGroup();
+			currentGroup.setParent(group.getParent());
+			currentGroup.setRootNode(group.getRootNode());
+			currentGroup.setMapVAData(group.getMapVAData());
+		} else {
+			System.out.println("New group is NULL");
+		}
 	}
 
 	/**
@@ -112,7 +102,7 @@ public class VAPanel {
 		rootGroup = group;
 	}
 
-	private static void TEST(VAGroup rootGroup) {
+	public static void TEST(VAGroup rootGroup) {
 		String rootNodeName = rootGroup.getRootNode().getSourceNode()
 				.getLocalName();
 		System.out.println(rootNodeName);
@@ -126,5 +116,13 @@ public class VAPanel {
 		for (String s : slots.keySet()) {
 			System.out.println(s + ":" + slots.get(s));
 		}
+	}
+
+	public static VAGroup getCurrentGroup() {
+		return currentGroup;
+	}
+	
+	public static int getStop(){
+		return stop;
 	}
 }
