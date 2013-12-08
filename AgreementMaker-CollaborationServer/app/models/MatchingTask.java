@@ -2,6 +2,7 @@ package models;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 
 import play.data.validation.Constraints;
 import play.db.ebean.Model;
@@ -18,10 +19,11 @@ public class MatchingTask extends Model {
 	public String name;
 	
 	@Constraints.Required
-	public String sourceOntology;
+	public String sourceOntologyURL;
 	
 	@Constraints.Required
-	public String targetOntology;
+	@ManyToMany
+	public String targetOntologyURL;
 
     public static Model.Finder<Long,MatchingTask> find = 
     		new Model.Finder<Long,MatchingTask>(Long.class, MatchingTask.class);
