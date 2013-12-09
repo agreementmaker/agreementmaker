@@ -170,7 +170,7 @@ public void setMLAlignment(Alignment<Mapping> mLAlignment) {
 	MLAlignment = mLAlignment;
 }
 
-
+	private Alignment<Mapping> referenceAlignment;
 
 
 	public MUExperiment() {
@@ -203,6 +203,16 @@ public void setMLAlignment(Alignment<Mapping> mLAlignment) {
 		Ontology targetOnt = UICore.getUI().openFile(targetOntDef);
 		Core.getInstance().setTargetOntology(targetOnt);
 		
+		LOG.info("Loading the reference alignment from: " + selectedTask.getReferenceAlignmentURL());
+		referenceAlignment = server.getReferenceAlignment(selectedTask.getReferenceAlignmentURL());
+		
+		if( referenceAlignment == null ) {
+			LOG.info("Reference alignment was not loaded.");
+		}
+		else {
+			LOG.info("Reference alignment loaded: " + referenceAlignment.size() + " mappings");
+		}
+		
 		classesSparseMatrix = 
 				new SparseMatrix(
 						Core.getInstance().getSourceOntology(),
@@ -217,7 +227,7 @@ public void setMLAlignment(Alignment<Mapping> mLAlignment) {
 		
 		// setup the log file
 		try {
-			FileWriter fr = new FileWriter("/home/frank/Desktop/ufllog.txt");
+			FileWriter fr = new FileWriter("/home/cosmin/Desktop/ufllog.txt");
 			logFile = new BufferedWriter(fr);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -241,14 +251,7 @@ public void setMLAlignment(Alignment<Mapping> mLAlignment) {
 
 	@Override
 	public Alignment<Mapping> getReferenceAlignment() {
-		List<MatchingTask> tasks = Core.getInstance().getMatchingTasks();
-		for( MatchingTask m : tasks ) {
-			if( m.matchingAlgorithm instanceof ReferenceAlignmentMatcher ) {
-				// return the alignment of the first reference alignment matcher
-				return m.selectionResult.getAlignment();
-			}
-		}
-		return null;
+		return referenceAlignment;
 	}
 	
 

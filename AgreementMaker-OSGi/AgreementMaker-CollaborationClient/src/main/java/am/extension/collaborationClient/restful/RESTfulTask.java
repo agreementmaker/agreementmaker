@@ -8,7 +8,8 @@ public class RESTfulTask implements CollaborationTask {
 	private String name;
 	private String sourceOntologyURL;
 	private String targetOntologyURL;
-	
+	private String referenceAlignmentURL;
+
 	@Override
 	public long getId() {
 		return id;
@@ -42,4 +43,12 @@ public class RESTfulTask implements CollaborationTask {
 		return name;
 	}
 	
+	@Override
+	public String getReferenceAlignmentURL() {
+		return referenceAlignmentURL;
+	}
+
+	public void setReferenceAlignmentURL(String referenceAlignmentURL) {
+		this.referenceAlignmentURL = referenceAlignmentURL;
+	}
 }

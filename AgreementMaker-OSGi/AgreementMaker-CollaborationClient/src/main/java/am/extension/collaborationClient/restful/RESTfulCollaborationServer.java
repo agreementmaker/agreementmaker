@@ -13,6 +13,11 @@ import java.util.List;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 
+import am.app.Core;
+import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
+import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
 import am.app.ontology.ontologyParser.OntologyDefinition;
 import am.app.ontology.ontologyParser.OntologyDefinition.OntologyLanguage;
 import am.app.ontology.ontologyParser.OntologyDefinition.OntologySyntax;
@@ -126,7 +131,7 @@ public class RESTfulCollaborationServer implements CollaborationAPI {
 	}
 
 	
-	public static File downloadOWLFile(String url) {
+	public static File downloadFile(String url, String prefix, String suffix) {
 		URL uri;
 		try {
 			uri = new URL(url);
@@ -148,7 +153,7 @@ public class RESTfulCollaborationServer implements CollaborationAPI {
 		try {
 			s = connection.getInputStream();
 			
-			File tempFile = File.createTempFile("ont", ".owl");
+			File tempFile = File.createTempFile(prefix, suffix);
 			tempFile.deleteOnExit();
 			o = new FileOutputStream(tempFile);
 			
@@ -184,8 +189,31 @@ public class RESTfulCollaborationServer implements CollaborationAPI {
 	}
 	
 	@Override
+	public Alignment<Mapping> getReferenceAlignment(String referenceAlignmentURL) {
+		File refFile = downloadFile(referenceAlignmentURL, "ref", ".rdf");
+		ReferenceAlignmentMatcher matcher = new ReferenceAlignmentMatcher();
+		ReferenceAlignmentParameters p = new ReferenceAlignmentParameters();
+		p.fileName = refFile.getAbsolutePath();
+		p.format = ReferenceAlignmentMatcher.OAEI;
+		
+		matcher.setSourceOntology(Core.getInstance().getSourceOntology());
+		matcher.setTargetOntology(Core.getInstance().getTargetOntology());
+		
+		matcher.setParameters(p);
+		
+		try {
+			matcher.match();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+		
+		return matcher.getAlignment();
+	}
+	
+	@Override
 	public OntologyDefinition getOntologyDefinition(String ontologyURL) {
-		File ontFile = RESTfulCollaborationServer.downloadOWLFile(ontologyURL);
+		File ontFile = downloadFile(ontologyURL,"ont",".owl");
 		OntologyDefinition o = new OntologyDefinition(true, ontFile.getAbsolutePath(), OntologyLanguage.OWL, OntologySyntax.RDFXML);
 		return o;
 	}
