@@ -16,4 +16,6 @@ public interface CollaborationTask {
 	public String getSourceOntologyURL();
 	
 	public String getTargetOntologyURL();
+	
+	public String getReferenceAlignmentURL();
 }

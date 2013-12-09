@@ -2,6 +2,8 @@ package am.extension.collaborationClient.api;
 
 import java.util.List;
 
+import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.Mapping;
 import am.app.ontology.ontologyParser.OntologyDefinition;
 
 /**
@@ -41,5 +43,7 @@ public interface CollaborationAPI {
 	public void putFeedback(CollaborationUser client, CollaborationFeedback feedback);
 	
 	public OntologyDefinition getOntologyDefinition(String ontologyURL);
+	
+	public Alignment<Mapping> getReferenceAlignment(String referenceURL);
 	
 }
