@@ -23,18 +23,19 @@ import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.app.mappingEngine.utility.OAEI_Track;
 import am.app.ontology.Node;
+import am.extension.multiUserFeedback.MUExperiment;
 import am.extension.userfeedback.FeedbackPropagation;
 import am.extension.userfeedback.UserFeedback.Validation;
 import am.extension.userfeedback.MLFeedback.MLFExperiment.alignCardinality;
 import am.matcher.Combination.CombinationMatcher;
 import am.matcher.Combination.CombinationParameters;
 
-public class MLFeedbackPropagation extends FeedbackPropagation<MLFExperiment> {
+public class MLFeedbackPropagation extends FeedbackPropagation<MUExperiment> {
 	
 	final double treshold_up=0.6;
 	final double treshold_down=0.01;
 	final double penalize_ratio=0.9;
-	private MLFExperiment experiment;
+	private MUExperiment experiment;
 	List<AbstractMatcher> inputMatchers = new ArrayList<AbstractMatcher>();
 	
 
@@ -160,7 +161,7 @@ public class MLFeedbackPropagation extends FeedbackPropagation<MLFExperiment> {
 	}
 
 	@Override
-	public void propagate( MLFExperiment exp ) 
+	public void propagate( MUExperiment exp ) 
 	{
 		this.experiment=exp;
 		int iteration=experiment.getIterationNumber();
@@ -213,8 +214,8 @@ public class MLFeedbackPropagation extends FeedbackPropagation<MLFExperiment> {
 			{ 
 
 				feedbackClassMatrix.setSimilarity(m.getSourceKey(), m.getTargetKey(), 1.0);
-				if (experiment.getAlignCardinalityType()==alignCardinality.c1_1)
-					feedbackClassMatrix=(zeroSim(experiment.getUflClassMatrix(), candidateMapping.getSourceKey(), candidateMapping.getTargetKey(),1,1));
+//				if (experiment.getAlignCardinalityType()==alignCardinality.c1_1)
+//					feedbackClassMatrix=(zeroSim(experiment.getUflClassMatrix(), candidateMapping.getSourceKey(), candidateMapping.getTargetKey(),1,1));
 				experiment.classesSparseMatrix.setSimilarity(m.getSourceKey(), m.getTargetKey(), 1);
 				
 			}
@@ -234,8 +235,8 @@ public class MLFeedbackPropagation extends FeedbackPropagation<MLFExperiment> {
 			if( userFeedback == Validation.CORRECT ) 
 			{ 
 				feedbackPropertyMatrix.setSimilarity(m.getSourceKey(), m.getTargetKey(), 1.0);
-				if (experiment.getAlignCardinalityType()==alignCardinality.c1_1)
-					feedbackPropertyMatrix=zeroSim(experiment.getUflPropertyMatrix(), candidateMapping.getSourceKey(), candidateMapping.getTargetKey(),1,1);
+//				if (experiment.getAlignCardinalityType()==alignCardinality.c1_1)
+//					feedbackPropertyMatrix=zeroSim(experiment.getUflPropertyMatrix(), candidateMapping.getSourceKey(), candidateMapping.getTargetKey(),1,1);
 				experiment.propertiesSparseMatrix.setSimilarity(m.getSourceKey(), m.getTargetKey(), 1);
 			}
 			else if( userFeedback == Validation.INCORRECT ) 
