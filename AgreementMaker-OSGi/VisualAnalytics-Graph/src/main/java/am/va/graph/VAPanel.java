@@ -5,6 +5,8 @@ import java.util.HashMap;
 
 import javax.swing.JFrame;
 
+import am.va.graph.VAVariables.ontologyType;
+
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -27,7 +29,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.TilePane;
-import ensemble.Ensemble2;
+
+//import ensemble.Ensemble2;
 
 public class VAPanel {
 
@@ -36,6 +39,7 @@ public class VAPanel {
 	private static ListView<String> listView;
 	private static Group root;
 	private static VAGroup rootGroupLeft;
+	private static VAGroup rootGroupRight;
 	private static VAGroup previousGroup;
 	private static VAGroup currentGroup;
 	private static int stop = -1;
@@ -48,7 +52,7 @@ public class VAPanel {
 	private static Label lblTarget;
 
 	private static VAPieChart chartLeft;
-	private static PieChart chartRight;
+	private static VAPieChart chartRight;
 	private static Tooltip pieTooltip;
 	private static VASearchBox searchBox;
 
@@ -95,7 +99,7 @@ public class VAPanel {
 		spacer.setStyle("-fx-padding: 0 8em 0 0;");
 		spacer.getStyleClass().setAll("spacer");
 		HBox buttonBar = new HBox();
-		
+
 		// set three buttons
 		btnRoot = new Button("Top level");
 		btnUp = new Button("Go up");
@@ -108,31 +112,33 @@ public class VAPanel {
 		searchBox = new VASearchBox();
 		searchBox.getStyleClass().add("search-box");
 		searchboxborderPane.setRight(searchBox);
-		
+
 		Region spacer2 = new Region();
-		spacer2.setStyle("-fx-padding: 0 50em 0 0;");
+		spacer2.setStyle("-fx-padding: 0 40em 0 0;");
 		spacer2.getStyleClass().setAll("spacer");
 		HBox.setMargin(searchBox, new Insets(0, 5, 0, 0));
-		toolbar.getItems().addAll(spacer, buttonBar, spacer2, searchboxborderPane);
+		toolbar.getItems().addAll(spacer, buttonBar, spacer2,
+				searchboxborderPane);
 		borderPane.setTop(toolbar);
-		
+
 		// Center side: two piecharts as a group, tilepane layout is used
 		Group chartGroup = new Group();
 		TilePane tilePane = new TilePane();
 		tilePane.setPrefColumns(2); // preferred columns
-		
+
 		// set two pies
 		chartLeft = new VAPieChart(rootGroupLeft);
 		chartLeft.getPieChart().setClockwise(false);
-		chartRight = testPieChart();
+		chartRight = new VAPieChart(rootGroupRight);
 		lblSource = new Label("Source ontology", chartLeft.getPieChart());
 		lblSource.setContentDisplay(ContentDisplay.TOP);
-		lblTarget = new Label("Target ontology", chartRight);
+		lblTarget = new Label("Target ontology", chartRight.getPieChart());
 		lblTarget.setContentDisplay(ContentDisplay.TOP);
-		
+
 		// tooltip
 		pieTooltip = new Tooltip("click to view more");
-		for (final PieChart.Data currentData : chartLeft.getPieChart().getData()) {
+		for (final PieChart.Data currentData : chartLeft.getPieChart()
+				.getData()) {
 			Tooltip.install(currentData.getNode(), getPieTooltip());
 		}
 		tilePane.getChildren().add(lblSource);
@@ -142,27 +148,16 @@ public class VAPanel {
 
 		root.getChildren().add(borderPane);
 		fxPanel.setScene(myScene);
-		
+
 		// update pie data
 		updatePreviousGroup(rootGroupLeft);
 		updateCurrentGroup(rootGroupLeft);
 		setLocation(chartLeft);
 		// TEST(currentGroup);
-		chartLeft.updatePieChart();
-		
-		myScene.getStylesheets().add(Ensemble2.class.getResource("ensemble2.css").toExternalForm());
-		//myScene.getStylesheets().add(VAPanel.class.getResource("VA.css").toExternalForm());
-	}
+		chartLeft.updatePieChart(ontologyType.Source);
 
-	private static PieChart testPieChart() {
-		ObservableList<PieChart.Data> pieChartData = FXCollections
-				.observableArrayList(new PieChart.Data("Sun", 20),
-						new PieChart.Data("IBM", 12), new PieChart.Data("HP",
-								25), new PieChart.Data("Dell", 22),
-						new PieChart.Data("Apple", 30));
-		PieChart chart = new PieChart(pieChartData);
-		chart.setClockwise(false);
-		return chart;
+		// myScene.getStylesheets().add(Ensemble2.class.getResource("ensemble2.css").toExternalForm());
+		// myScene.getStylesheets().add(VAPanel.class.getResource("VA.css").toExternalForm());
 	}
 
 	/**
@@ -197,7 +192,7 @@ public class VAPanel {
 	 * @param currentGroup
 	 * @return
 	 */
-	public static void getNewGroup() {
+	public static void getNewGroup(VAVariables.ontologyType ontologyType) {
 		// Need a function here, return value:VAData
 		VAData newRootData = VAPieChart.getSelectedVAData();
 		System.out.println("New data " + newRootData.getNodeName());
@@ -205,7 +200,8 @@ public class VAPanel {
 		newGroup.setRootNode(newRootData);
 		if (newRootData != null && newRootData.hasChildren()) {
 			newGroup.setParent(currentGroup.getGroupID());
-			newGroup.setListVAData(VASyncData.getChildrenData(newRootData));
+			newGroup.setListVAData(VASyncData.getChildrenData(newRootData,
+					ontologyType));
 		} else {
 			newGroup.setParent(previousGroup.getGroupID());
 		}
@@ -242,6 +238,10 @@ public class VAPanel {
 	 */
 	public static void setRootGroupLeft(VAGroup group) {
 		rootGroupLeft = group;
+	}
+
+	public static void setRootGroupRight(VAGroup group) {
+		rootGroupRight = group;
 	}
 
 	/**
@@ -309,6 +309,14 @@ public class VAPanel {
 	public static void setTargetLabel(String label) {
 		lblTarget.setText(label);
 	}
+	
+	public static VAPieChart getRightPie(){
+		return chartRight;
+	}
+	
+	public static VAGroup getRightGroup(){
+		return rootGroupRight;
+	}
 
 	/**
 	 * Add event for buttons
@@ -322,7 +330,7 @@ public class VAPanel {
 			@Override
 			public void handle(ActionEvent arg0) {
 				updateCurrentGroup(rootGroupLeft);
-				chartLeft.updatePieChart();
+				chartLeft.updatePieChart(ontologyType.Source);
 				System.out.println("Go to root panel");
 			}
 
@@ -336,7 +344,7 @@ public class VAPanel {
 			@Override
 			public void handle(ActionEvent arg0) {
 				updateCurrentGroup(previousGroup);
-				chartLeft.updatePieChart();
+				chartLeft.updatePieChart(ontologyType.Source);
 				System.out.println("Go to previous panel");
 				btnUp.setDisable(true);
 			}

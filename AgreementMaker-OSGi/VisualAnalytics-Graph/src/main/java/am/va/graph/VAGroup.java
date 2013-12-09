@@ -104,7 +104,7 @@ public class VAGroup {
 
 		// Print for testing, comment if you don't need it.
 		// printData();
-		 printArcInterval();
+		printArcInterval();
 	}
 
 	/**
@@ -148,6 +148,7 @@ public class VAGroup {
 
 	/**
 	 * Return root node's local name
+	 * 
 	 * @return
 	 */
 	public String getRootNodeName() {
@@ -156,10 +157,15 @@ public class VAGroup {
 
 	/**
 	 * If root node has children or not
+	 * 
 	 * @return
 	 */
 	public boolean hasChildren() {
 		return rootNode.hasChildren();
+	}
+
+	public boolean hasMatching() {
+		return rootNode.getTargetNode() != null;
 	}
 
 	/**
@@ -169,8 +175,8 @@ public class VAGroup {
 		int VADataNum = VADataArray.size();
 		System.out.println(VADataNum + " data");
 		for (int i = 0; i < VADataNum; i++) {
-			System.out.println(VADataArray.get(i).getNodeName()
-					+ " " + VADataArray.get(i).getSimilarity() + " ");
+			System.out.println(VADataArray.get(i).getNodeName() + " "
+					+ VADataArray.get(i).getSimilarity() + " ");
 		}
 	}
 

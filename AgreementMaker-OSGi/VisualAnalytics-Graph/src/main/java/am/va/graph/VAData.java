@@ -40,6 +40,7 @@ public class VAData implements Comparable<VAData> {
 
 	/**
 	 * Return source node's local name
+	 * 
 	 * @return
 	 */
 	public String getNodeName() {
@@ -48,6 +49,7 @@ public class VAData implements Comparable<VAData> {
 
 	/**
 	 * If source node has children or not
+	 * 
 	 * @return
 	 */
 	public boolean hasChildren() {
@@ -62,9 +64,9 @@ public class VAData implements Comparable<VAData> {
 		else
 			return -1;
 	}
-	
+
 	public String toString() {
-		return new String( this.getNodeName() + " " + this.Similarity);
-	} 
+		return new String(this.getNodeName() + " " + this.Similarity);
+	}
 
 }
