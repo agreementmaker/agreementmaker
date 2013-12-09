@@ -68,7 +68,7 @@ public class VASyncData {
 				.getMatchingTasksWithoutUserManualMatcher().get(0);
 		SimilarityMatrix smClass = matchingTask.matcherResult
 				.getClassesMatrix();
-		Mapping map[] = smClass.getRowMaxValues(n.getIndex(), 1); // bug
+		Mapping map[] = smClass.getRowMaxValues(n.getIndex(), 1); 
 		if (map != null) {
 			matchingNode = map[0].getEntity2();
 			// sim = map[0].getSimilarity();
@@ -79,17 +79,6 @@ public class VASyncData {
 		return new VAData(n, matchingNode, sim);
 	}
 
-	// public static HashMap<String, VAData> getChildrenData(VAData
-	// rootNodeData) {
-	// HashMap<String, VAData> res = new HashMap<String, VAData>();
-	// Node rootNode = rootNodeData.sourceNode;
-	// for (Node n : rootNode.getChildren()) {
-	// // get target node info which best matches this node
-	// VAData newChildData = VASyncData.getMatchingVAData(n);
-	// res.put(newChildData.getSourceNode().getLocalName(), newChildData);
-	// }
-	// return res;
-	// }
 	/**
 	 * Get children nodes of current root node
 	 * Sorted by similarity
@@ -104,9 +93,7 @@ public class VASyncData {
 			VAData newChildData = VASyncData.getMatchingVAData(n);
 			res.add(newChildData);
 		}
-		
 		Collections.sort(res);
-		
 		return res;
 	}
 }

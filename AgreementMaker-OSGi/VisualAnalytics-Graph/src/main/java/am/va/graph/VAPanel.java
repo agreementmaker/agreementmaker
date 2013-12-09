@@ -18,6 +18,8 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContentDisplay;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.ToolBar;
@@ -33,15 +35,17 @@ public class VAPanel {
 	private static JFXPanel fxPanel;
 	private static ListView<String> listView;
 	private static Group root;
-	private static VAGroup rootGroup;
+	private static VAGroup rootGroupLeft;
 	private static VAGroup previousGroup;
 	private static VAGroup currentGroup;
-	private static int count = 1;
 	private static int stop = -1;
 
 	private static Button btnRoot;
 	private static Button btnUp;
 	private static Button btn3;
+
+	private static Label lblSource;
+	private static Label lblTarget;
 
 	private static VAPieChart chartLeft;
 	private static PieChart chartRight;
@@ -101,17 +105,22 @@ public class VAPanel {
 		Group chartGroup = new Group();
 		TilePane tilePane = new TilePane();
 		tilePane.setPrefColumns(2); // preferred columns
-		chartLeft = new VAPieChart(rootGroup);
+		chartLeft = new VAPieChart(rootGroupLeft);
 		chartLeft.getPieChart().setClockwise(false);
 		chartRight = testPieChart();
-		tilePane.getChildren().add(chartLeft.getPieChart());
-		tilePane.getChildren().add(chartRight);
+		lblSource = new Label("Source ontology", chartLeft.getPieChart());
+		lblSource.setContentDisplay(ContentDisplay.TOP);
+		lblTarget = new Label("Target ontology", chartRight);
+		lblTarget.setContentDisplay(ContentDisplay.TOP);
+		tilePane.getChildren().add(lblSource);
+		tilePane.getChildren().add(lblTarget);
 		chartGroup.getChildren().add(tilePane);
 		borderPane.setCenter(chartGroup);
 
 		root.getChildren().add(borderPane);
 		fxPanel.setScene(myScene);
-		updateCurrentGroup(rootGroup);
+		updatePreviousGroup(rootGroupLeft);
+		updateCurrentGroup(rootGroupLeft);
 		setLocation(chartLeft);
 		// TEST(currentGroup);
 		chartLeft.updatePieChart();
@@ -163,26 +172,16 @@ public class VAPanel {
 	public static void getNewGroup() {
 		// Need a function here, return value:VAData
 		VAData newRootData = VAPieChart.getSelectedVAData();
-		System.out.println("New data "
-				+ newRootData.getSourceNode().getLocalName());
-		count++;
-		if (newRootData != null
-				&& newRootData.getSourceNode().getChildCount() > 0) { // if
-																		// there's
-																		// still
-																		// new
-																		// group
-			VAGroup newGroup = new VAGroup();
-			if (currentGroup != null)
-				newGroup.setParent(currentGroup.getGroupID());
-			else
-				newGroup.setParent(previousGroup.getGroupID());
-			newGroup.setRootNode(newRootData);
+		System.out.println("New data " + newRootData.getNodeName());
+		VAGroup newGroup = new VAGroup();
+		newGroup.setRootNode(newRootData);
+		if (newRootData != null && newRootData.hasChildren()) {
+			newGroup.setParent(currentGroup.getGroupID());
 			newGroup.setListVAData(VASyncData.getChildrenData(newRootData));
-			updateCurrentGroup(newGroup);
 		} else {
-			updateCurrentGroup(null);
+			newGroup.setParent(previousGroup.getGroupID());
 		}
+		updateCurrentGroup(newGroup);
 	}
 
 	private static void updatePreviousGroup(VAGroup group) {
@@ -205,16 +204,12 @@ public class VAPanel {
 	 * @param group
 	 */
 	private static void updateCurrentGroup(VAGroup group) {
-		updatePreviousGroup(currentGroup);
-		if (group != null) {
-			currentGroup = new VAGroup();
-			currentGroup.setParent(group.getParent());
-			currentGroup.setRootNode(group.getRootNode());
-			currentGroup.setListVAData(group.getVADataArray());
-		} else {
-			System.out.println("New group is NULL");
-			currentGroup = null;
-		}
+		if (stop != -1)
+			updatePreviousGroup(currentGroup);
+		currentGroup = new VAGroup();
+		currentGroup.setParent(group.getParent());
+		currentGroup.setRootNode(group.getRootNode());
+		currentGroup.setListVAData(group.getVADataArray());
 	}
 
 	/**
@@ -222,8 +217,8 @@ public class VAPanel {
 	 * 
 	 * @param group
 	 */
-	public static void setRootGroup(VAGroup group) {
-		rootGroup = group;
+	public static void setRootGroupLeft(VAGroup group) {
+		rootGroupLeft = group;
 	}
 
 	/**
@@ -249,7 +244,7 @@ public class VAPanel {
 					System.out.println(s + ":" + slots.get(s));
 			}
 		} else {
-			System.out.println("Empty group!");
+			System.out.println("Empty group ?!!");
 		}
 	}
 
@@ -277,6 +272,17 @@ public class VAPanel {
 		listView = list;
 	}
 
+	public static void setSourceLabel(String label) {
+		lblSource.setText(label);
+	}
+
+	public static void setTargetLabel(String label) {
+		lblTarget.setText(label);
+	}
+
+	/**
+	 * Add event for buttons
+	 */
 	private static void setButtonActions() {
 		/**
 		 * Go to root panel
@@ -285,7 +291,7 @@ public class VAPanel {
 
 			@Override
 			public void handle(ActionEvent arg0) {
-				updateCurrentGroup(rootGroup);
+				updateCurrentGroup(rootGroupLeft);
 				chartLeft.updatePieChart();
 				System.out.println("Go to root panel");
 			}
