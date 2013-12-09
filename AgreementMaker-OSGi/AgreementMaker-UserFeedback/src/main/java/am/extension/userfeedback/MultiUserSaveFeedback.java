@@ -13,9 +13,10 @@ import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
+import am.extension.multiUserFeedback.MUExperiment;
 import am.extension.userfeedback.MLFeedback.MLFExperiment;
 
-public class MultiUserSaveFeedback extends SaveFeedback<MLFExperiment> {
+public class MultiUserSaveFeedback extends SaveFeedback<MUExperiment> {
 	
 	public MultiUserSaveFeedback()
 	{
@@ -23,7 +24,7 @@ public class MultiUserSaveFeedback extends SaveFeedback<MLFExperiment> {
 	}
 	
 	@Override
-	public void save(MLFExperiment exp) 
+	public void save(MUExperiment exp) 
 	{
 		// TODO Auto-generated method stub
 		saveFinalAlignment(exp.getMLAlignment());
