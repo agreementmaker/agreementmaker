@@ -22,7 +22,6 @@ public class MatchingTask extends Model {
 	public String sourceOntologyURL;
 	
 	@Constraints.Required
-	@ManyToMany
 	public String targetOntologyURL;
 	
 	public String referenceURL;

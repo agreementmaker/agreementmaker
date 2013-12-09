@@ -1,5 +1,6 @@
 package controllers;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
@@ -17,15 +18,30 @@ import play.mvc.Controller;
 import play.mvc.Http.Request;
 import play.mvc.Result;
 import views.html.index;
-
-import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
-import am.extension.collaborationClient.restful.RESTfulUser;
+import am.app.Core;
+import am.app.ontology.ontologyParser.OntoTreeBuilder;
+import am.app.ontology.ontologyParser.OntologyDefinition;
+import am.app.ontology.ontologyParser.TreeBuilder;
+import am.app.ontology.ontologyParser.OntologyDefinition.OntologyLanguage;
+import am.app.ontology.ontologyParser.OntologyDefinition.OntologySyntax;
+import am.extension.collaborationClient.restful.RESTfulCollaborationServer;
 import am.extension.collaborationClient.restful.RESTfulTask;
+import am.extension.collaborationClient.restful.RESTfulUser;
+import am.extension.multiUserFeedback.MUExperiment;
+import am.extension.userfeedback.UFLExperimentSetup;
+import am.extension.userfeedback.UFLRegistry.CandidateSelectionRegistry;
+import am.extension.userfeedback.UFLRegistry.FeedbackPropagationRegistry;
+import am.extension.userfeedback.UFLRegistry.InitialMatcherRegistry;
+import am.extension.userfeedback.UFLRegistry.LoopInizializationRegistry;
+import am.extension.userfeedback.UFLRegistry.SaveFeedbackRegistry;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+
 public class Application extends Controller {
 
+	private static MUExperiment[] experiments;
+	
 	/**
 	 * Initialize the server.
 	 * Create the ontologies and the matching tasks.
@@ -37,7 +53,7 @@ public class Application extends Controller {
 		
 		Chunks<String> chunks = new StringChunks() {
 			@Override
-			public void onReady(play.mvc.Results.Chunks.Out<String> out) {
+			public void onReady(final play.mvc.Results.Chunks.Out<String> out) {
 				out.write("Starting server initialization ...\n");
 				
 				String[] ontologies = {
@@ -92,8 +108,8 @@ public class Application extends Controller {
 					o.save();
 					onts[i-1] = o;
 					out.write(i++ + " Created ontology " + o.id + ": " + o.ontologyURL + "\n");
+					System.out.println(i + " Created ontology " + o.id + ": " + o.ontologyURL + "\n");
 				}
-				
 				
 				MatchingTask m1 = new MatchingTask();
 				m1.name = "conference-ekaw";
@@ -102,8 +118,81 @@ public class Application extends Controller {
 				m1.referenceURL = controllers.routes.Assets.at(references[9]).absoluteURL(r);
 				
 				m1.save();
-				
 				out.write(i++ + " Created matching task " + m1.id + ": " + m1.name + "\n");
+				System.out.println(i + " Created matching task " + m1.id + ": " + m1.name + "\n");
+				
+				experiments = new MUExperiment[1];
+				
+				experiments[0] = new MUExperiment();
+				
+				experiments[0].setup = new UFLExperimentSetup();
+				UFLExperimentSetup setup = experiments[0].setup;
+				
+				setup.im  = InitialMatcherRegistry.OrthoCombination;
+				setup.fli = LoopInizializationRegistry.DataInizialization;
+				setup.cs  = CandidateSelectionRegistry.MultiStrategyRanking;
+				setup.cse = null;
+				setup.uv  = null;
+				setup.fp  = FeedbackPropagationRegistry.MLFeedbackPropagation;
+				setup.pe  = null;
+				setup.sf  = SaveFeedbackRegistry.MultiUserSaveFeedback; 
+				
+				{
+					out.write("Loading the source ontology...");
+					System.out.println("Loading the source ontology...");
+					File sourceOntFile = RESTfulCollaborationServer.downloadFile(m1.sourceOntologyURL, "ont", ".owl");
+					OntologyDefinition sourceOntDef = new OntologyDefinition(true, sourceOntFile.getAbsolutePath(), OntologyLanguage.OWL, OntologySyntax.RDFXML);
+					try {
+						OntoTreeBuilder t = new OntoTreeBuilder(sourceOntDef);
+						t.build();
+						am.app.ontology.Ontology sourceOnt = t.getOntology();
+						Core.getInstance().setSourceOntology(sourceOnt);
+					} catch (Exception e1) {
+						e1.printStackTrace();
+						out.write("Exception while loading the source ontology.");
+						System.out.println("Exception while loading the source ontology.");
+					}
+				}
+				
+				{
+					out.write("Loading the target ontology...");
+					System.out.println("Loading the source ontology...");
+					File targetOntFile = RESTfulCollaborationServer.downloadFile(m1.targetOntologyURL, "ont", ".owl");
+					OntologyDefinition targetOntDef = new OntologyDefinition(true, targetOntFile.getAbsolutePath(), OntologyLanguage.OWL, OntologySyntax.RDFXML);
+					TreeBuilder t = TreeBuilder.buildTreeBuilder(targetOntDef);
+					try {
+						t.build();
+					} catch (Exception e1) {
+						e1.printStackTrace();
+						out.write("Exception while loading the source ontology.");
+						System.out.println("Exception while loading the target ontology.");
+					}
+					am.app.ontology.Ontology targetOnt = t.getOntology();
+					Core.getInstance().setTargetOntology(targetOnt);
+				}
+							
+				out.write("Running the initial matchers...");
+				System.out.println("Running the initial matchers...");
+				try {
+					experiments[0].initialMatcher = experiments[0].setup.im.getEntryClass().newInstance();
+					experiments[0].initialMatcher.run(experiments[0]);
+				} catch (InstantiationException | IllegalAccessException e) {
+					e.printStackTrace();
+					out.write("Exception while running initial matchers.");
+				}
+				
+				out.write("Running the data initialization...");
+				System.out.println("Running the initial matchers...");
+				try {
+					experiments[0].dataInizialization = experiments[0].setup.fli.getEntryClass().newInstance();
+					experiments[0].dataInizialization.inizialize(experiments[0]);
+				} catch (InstantiationException | IllegalAccessException e) {
+					e.printStackTrace();
+					out.write("Exception while running data initialization.");
+					System.out.println("Exception while running data initialization.");
+				}
+				
+				System.out.print("Initialization done!");
 				out.close();
 			}
 		};
