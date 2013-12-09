@@ -50,8 +50,11 @@ public class VASyncData {
 																// source
 																// ontology
 			sNode = getRootNode(VAVariables.ontologyType.Source);
-			tNode = null;
+
+		} else {
+			sNode = getRootNode(VAVariables.ontologyType.Target);
 		}
+		tNode = null;
 		return new VAData(sNode, tNode, Similarity);
 	}
 
@@ -61,17 +64,27 @@ public class VASyncData {
 	 * @param n
 	 * @return
 	 */
-	private static VAData getMatchingVAData(Node n) {
+	private static VAData getMatchingVAData(Node n,
+			VAVariables.ontologyType ontologyType) {
 		Node matchingNode = null;
 		double sim = 0.00;
 		MatchingTask matchingTask = Core.getInstance()
 				.getMatchingTasksWithoutUserManualMatcher().get(0);
 		SimilarityMatrix smClass = matchingTask.matcherResult
 				.getClassesMatrix();
-		Mapping map[] = smClass.getRowMaxValues(n.getIndex(), 1); 
+		Mapping map[] = null;
+		if (ontologyType == VAVariables.ontologyType.Source) // input is source,
+																// find target
+			map = smClass.getRowMaxValues(n.getIndex(), 1);
+		else
+			map = smClass.getColMaxValues(n.getIndex(), 1); // input is target,
+															// find source
 		if (map != null) {
-			matchingNode = map[0].getEntity2();
-			//sim = map[0].getSimilarity();
+			if (ontologyType == VAVariables.ontologyType.Source)
+				matchingNode = map[0].getEntity2();
+			else
+				matchingNode = map[0].getEntity1();
+			// sim = map[0].getSimilarity();
 			sim = Math.random(); // only for testing
 		} else {
 			System.out.println("mapping data is null ???");
@@ -80,17 +93,18 @@ public class VASyncData {
 	}
 
 	/**
-	 * Get children nodes of current root node
-	 * Sorted by similarity
+	 * Get children nodes of current root node Sorted by similarity
+	 * 
 	 * @param rootNodeData
 	 * @return
 	 */
-	public static ArrayList<VAData> getChildrenData(VAData rootNodeData) {
+	public static ArrayList<VAData> getChildrenData(VAData rootNodeData,
+			VAVariables.ontologyType ontologyType) {
 		ArrayList<VAData> res = new ArrayList<VAData>();
 		Node rootNode = rootNodeData.sourceNode;
 		for (Node n : rootNode.getChildren()) {
 			// get target node info which best matches this node
-			VAData newChildData = VASyncData.getMatchingVAData(n);
+			VAData newChildData = VASyncData.getMatchingVAData(n, ontologyType);
 			res.add(newChildData);
 		}
 		Collections.sort(res);
