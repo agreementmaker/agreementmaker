@@ -11,6 +11,7 @@ import javafx.collections.ObservableList;
 import javafx.embed.swing.JFXPanel;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -26,6 +27,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.TilePane;
+import ensemble.Ensemble2;
 
 public class VAPanel {
 
@@ -40,7 +42,7 @@ public class VAPanel {
 
 	private static Button btnRoot;
 	private static Button btnUp;
-	private static Button btn3;
+	private static Button btnHelp;
 
 	private static Label lblSource;
 	private static Label lblTarget;
@@ -48,6 +50,7 @@ public class VAPanel {
 	private static VAPieChart chartLeft;
 	private static PieChart chartRight;
 	private static Tooltip pieTooltip;
+	private static VASearchBox searchBox;
 
 	/**
 	 * Init Frame
@@ -89,21 +92,36 @@ public class VAPanel {
 		// Top side: HBox, contains toolbar
 		ToolBar toolbar = new ToolBar();
 		Region spacer = new Region();
-		spacer.setStyle("-fx-padding: 0 7em 0 0;");
+		spacer.setStyle("-fx-padding: 0 8em 0 0;");
 		spacer.getStyleClass().setAll("spacer");
 		HBox buttonBar = new HBox();
+		
+		// set three buttons
 		btnRoot = new Button("Top level");
 		btnUp = new Button("Go up");
-		btn3 = new Button("Help");
+		btnHelp = new Button("Help");
 		setButtonActions();
-		buttonBar.getChildren().addAll(btnRoot, btnUp, btn3);
-		toolbar.getItems().addAll(spacer, buttonBar);
-		borderPane.setTop(toolbar);
+		buttonBar.getChildren().addAll(btnRoot, btnUp, btnHelp);
 
+		// set search box
+		BorderPane searchboxborderPane = new BorderPane();
+		searchBox = new VASearchBox();
+		searchBox.getStyleClass().add("search-box");
+		searchboxborderPane.setRight(searchBox);
+		
+		Region spacer2 = new Region();
+		spacer2.setStyle("-fx-padding: 0 50em 0 0;");
+		spacer2.getStyleClass().setAll("spacer");
+		HBox.setMargin(searchBox, new Insets(0, 5, 0, 0));
+		toolbar.getItems().addAll(spacer, buttonBar, spacer2, searchboxborderPane);
+		borderPane.setTop(toolbar);
+		
 		// Center side: two piecharts as a group, tilepane layout is used
 		Group chartGroup = new Group();
 		TilePane tilePane = new TilePane();
 		tilePane.setPrefColumns(2); // preferred columns
+		
+		// set two pies
 		chartLeft = new VAPieChart(rootGroupLeft);
 		chartLeft.getPieChart().setClockwise(false);
 		chartRight = testPieChart();
@@ -111,6 +129,8 @@ public class VAPanel {
 		lblSource.setContentDisplay(ContentDisplay.TOP);
 		lblTarget = new Label("Target ontology", chartRight);
 		lblTarget.setContentDisplay(ContentDisplay.TOP);
+		
+		// tooltip
 		pieTooltip = new Tooltip("click to view more");
 		for (final PieChart.Data currentData : chartLeft.getPieChart().getData()) {
 			Tooltip.install(currentData.getNode(), getPieTooltip());
@@ -122,11 +142,16 @@ public class VAPanel {
 
 		root.getChildren().add(borderPane);
 		fxPanel.setScene(myScene);
+		
+		// update pie data
 		updatePreviousGroup(rootGroupLeft);
 		updateCurrentGroup(rootGroupLeft);
 		setLocation(chartLeft);
 		// TEST(currentGroup);
 		chartLeft.updatePieChart();
+		
+		myScene.getStylesheets().add(Ensemble2.class.getResource("ensemble2.css").toExternalForm());
+		//myScene.getStylesheets().add(VAPanel.class.getResource("VA.css").toExternalForm());
 	}
 
 	private static PieChart testPieChart() {
