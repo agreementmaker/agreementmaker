@@ -33,6 +33,7 @@ public class UFLRegistry {
 	}
 	
 	public enum LoopInizializationRegistry {
+		RestFulDataInizialization (am.extension.userfeedback.inizialization.RestfulDataInizialization.class),
 		MUDataInizialization (am.extension.multiUserFeedback.MUDataInizialization.class),
 		DataInizialization ( am.extension.userfeedback.inizialization.DataInizialization.class);
 			
