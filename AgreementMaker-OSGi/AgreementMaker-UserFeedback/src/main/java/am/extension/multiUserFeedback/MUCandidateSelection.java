@@ -15,6 +15,7 @@ import am.extension.userfeedback.ui.UFLControlGUI;
 public abstract class MUCandidateSelection <T extends UFLExperiment> {
 	EventListenerList listeners;  // list of listeners for this class
 	public Mapping selectedMapping;
+	
 	public MUCandidateSelection() {
 		listeners = new EventListenerList();
 	}

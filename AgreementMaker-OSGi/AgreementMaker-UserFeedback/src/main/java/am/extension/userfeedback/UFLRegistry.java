@@ -1,5 +1,7 @@
 package am.extension.userfeedback;
 
+import am.extension.multiUserFeedback.MUCandidateSelection;
+
 /**
  * This class is just a wrapper class for several registry enums.
  * 
@@ -41,7 +43,18 @@ public class UFLRegistry {
 		public Class<? extends FeedbackLoopInizialization> getEntryClass() { return clazz; }
 	}
 	
+//	public enum MultiUserCandidateSelectionRegistry {
+//		ClientCandidateSelection (am.extension.multiUserFeedback.ClientCandidateSelection.class);
+//		/* *********************** DO NOT EDIT BELOW THIS LINE **************************** */
+//		Class<? extends MUCandidateSelection> clazz;
+//		
+//		void MUCandidateSelectionRegistry( Class<? extends MUCandidateSelection> mucs ) { clazz = mucs; }
+//		public Class<? extends MUCandidateSelection> getEntryClass() { return clazz; }
+//	}
+	
+	
 	public enum CandidateSelectionRegistry {
+		ClientCandidateSelection (am.extension.multiUserFeedback.ClientCandidateSelection.class),
 		MultiStrategyRanking (am.extension.userfeedback.clustering.disagreement.MultiStrategyRanking.class),
 		MaxInformationRanking (am.extension.userfeedback.clustering.disagreement.MaxInformationRanking.class   ),
 		DisagreementRank ( am.extension.userfeedback.clustering.disagreement.DisagreementRanking.class );
@@ -63,6 +76,7 @@ public class UFLRegistry {
 	}
 	
 	public enum UserValidationRegistry {
+		ClientFeedbackValidation (am.extension.multiUserFeedback.ClientFeedbackValidation.class),
 		AutomaticReference ( am.extension.userfeedback.common.AutomaticUserValidation.class ),
 		Manual ( am.extension.userfeedback.common.ManualUserValidation.class );
 		

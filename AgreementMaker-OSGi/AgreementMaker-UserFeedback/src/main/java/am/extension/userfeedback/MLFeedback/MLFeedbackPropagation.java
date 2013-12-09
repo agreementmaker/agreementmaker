@@ -9,26 +9,19 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.TreeSet;
-
 
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.AbstractMatcher.alignType;
-import am.app.mappingEngine.qualityEvaluation.QualityMetricRegistry;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
-import am.app.mappingEngine.utility.OAEI_Track;
 import am.app.ontology.Node;
 import am.extension.multiUserFeedback.MUExperiment;
 import am.extension.userfeedback.FeedbackPropagation;
 import am.extension.userfeedback.UserFeedback.Validation;
-import am.extension.userfeedback.MLFeedback.MLFExperiment.alignCardinality;
 import am.matcher.Combination.CombinationMatcher;
-import am.matcher.Combination.CombinationParameters;
 
 public class MLFeedbackPropagation extends FeedbackPropagation<MUExperiment> {
 	

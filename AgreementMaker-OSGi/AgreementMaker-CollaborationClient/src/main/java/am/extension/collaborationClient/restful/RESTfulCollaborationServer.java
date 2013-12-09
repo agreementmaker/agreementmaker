@@ -26,6 +26,7 @@ import am.extension.collaborationClient.api.CollaborationCandidateMapping;
 import am.extension.collaborationClient.api.CollaborationFeedback;
 import am.extension.collaborationClient.api.CollaborationTask;
 import am.extension.collaborationClient.api.CollaborationUser;
+import am.extension.*;
 
 public class RESTfulCollaborationServer implements CollaborationAPI {
 
@@ -119,7 +120,6 @@ public class RESTfulCollaborationServer implements CollaborationAPI {
 	@Override
 	public CollaborationCandidateMapping getCandidateMapping(
 			CollaborationUser client) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
