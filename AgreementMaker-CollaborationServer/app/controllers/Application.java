@@ -59,16 +59,16 @@ public class Application extends Controller {
 				};
 				
 				String[] references={
-						"reference/cmt-conference.rdf",
+						"reference/cmt-conference.rdf",       // 0
 						"reference/conference-confOf.rdf",
 						"reference/confOf-ekaw.rdf",
 						"reference/ekaw-iasted.rdf",
-						"reference/cmt-confOf.rdf",
+						"reference/cmt-confOf.rdf",     //4
 						"reference/conference-edas.rdf",
 						"reference/confOf-iasted.rdf",
 						"reference/ekaw-sigkdd.rdf",
 						"reference/cmt-edas.rdf",
-						"reference/conference-ekaw.rdf",
+						"reference/conference-ekaw.rdf", //9
 						"reference/confOf-sigkdd.rdf",
 						"reference/iasted-sigkdd.rdf",
 						"reference/cmt-ekaw.rdf",
@@ -96,9 +96,10 @@ public class Application extends Controller {
 				
 				
 				MatchingTask m1 = new MatchingTask();
-				m1.name = "cmt-Cocus";
-				m1.sourceOntologyURL = onts[0].ontologyURL;
-				m1.targetOntologyURL = onts[1].ontologyURL;
+				m1.name = "conference-ekaw";
+				m1.sourceOntologyURL = onts[2].ontologyURL;
+				m1.targetOntologyURL = onts[7].ontologyURL;
+				m1.referenceURL = controllers.routes.Assets.at(references[9]).absoluteURL(r);
 				
 				m1.save();
 				
@@ -142,7 +143,8 @@ public class Application extends Controller {
 			t.setName(task.name);
 			t.setSourceOntologyURL(task.sourceOntologyURL);
 			t.setTargetOntologyURL(task.targetOntologyURL);
-			restfulTasks.add(t);
+			t.setReferenceAlignmentURL(task.referenceURL);
+			restfulTasks.add(t); 
 		}
 		
 		JsonNode taskJson = Json.toJson(restfulTasks);
