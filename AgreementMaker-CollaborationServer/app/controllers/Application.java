@@ -59,27 +59,27 @@ public class Application extends Controller {
 				};
 				
 				String[] references={
-						"reference/cmt-conference.rdf",       // 0
-						"reference/conference-confOf.rdf",
-						"reference/confOf-ekaw.rdf",
-						"reference/ekaw-iasted.rdf",
-						"reference/cmt-confOf.rdf",     //4
-						"reference/conference-edas.rdf",
-						"reference/confOf-iasted.rdf",
-						"reference/ekaw-sigkdd.rdf",
-						"reference/cmt-edas.rdf",
-						"reference/conference-ekaw.rdf", //9
-						"reference/confOf-sigkdd.rdf",
-						"reference/iasted-sigkdd.rdf",
-						"reference/cmt-ekaw.rdf",
-						"reference/conference-iasted.rdf",
-						"reference/edas-ekaw.rdf",
-						"reference/cmt-iasted.rdf",
-						"reference/conference-sigkdd.rdf",
-						"reference/edas-iasted.rdf",
-						"reference/cmt-sigkdd.rdf",
-						"reference/confOf-edas.rdf",
-						"reference/edas-sigkdd.rdf"
+						"references/cmt-conference.rdf",       // 0
+						"references/conference-confOf.rdf",
+						"references/confOf-ekaw.rdf",
+						"references/ekaw-iasted.rdf",
+						"references/cmt-confOf.rdf",     //4
+						"references/conference-edas.rdf",
+						"references/confOf-iasted.rdf",
+						"references/ekaw-sigkdd.rdf",
+						"references/cmt-edas.rdf",
+						"references/conference-ekaw.rdf", //9
+						"references/confOf-sigkdd.rdf",
+						"references/iasted-sigkdd.rdf",
+						"references/cmt-ekaw.rdf",
+						"references/conference-iasted.rdf",
+						"references/edas-ekaw.rdf",
+						"references/cmt-iasted.rdf",
+						"references/conference-sigkdd.rdf",
+						"references/edas-iasted.rdf",
+						"references/cmt-sigkdd.rdf",
+						"references/confOf-edas.rdf",
+						"references/edas-sigkdd.rdf"
 				};
 				
 				Ontology[] onts = new Ontology[ontologies.length];
