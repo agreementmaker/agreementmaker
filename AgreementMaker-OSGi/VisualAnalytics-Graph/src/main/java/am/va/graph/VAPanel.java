@@ -5,8 +5,6 @@ import java.util.HashMap;
 
 import javax.swing.JFrame;
 
-import com.sun.media.jfxmedia.events.NewFrameEvent;
-
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -23,7 +21,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.ToolBar;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
@@ -49,6 +47,7 @@ public class VAPanel {
 
 	private static VAPieChart chartLeft;
 	private static PieChart chartRight;
+	private static Tooltip pieTooltip;
 
 	/**
 	 * Init Frame
@@ -112,6 +111,10 @@ public class VAPanel {
 		lblSource.setContentDisplay(ContentDisplay.TOP);
 		lblTarget = new Label("Target ontology", chartRight);
 		lblTarget.setContentDisplay(ContentDisplay.TOP);
+		pieTooltip = new Tooltip("click to view more");
+		for (final PieChart.Data currentData : chartLeft.getPieChart().getData()) {
+			Tooltip.install(currentData.getNode(), getPieTooltip());
+		}
 		tilePane.getChildren().add(lblSource);
 		tilePane.getChildren().add(lblTarget);
 		chartGroup.getChildren().add(tilePane);
@@ -189,10 +192,8 @@ public class VAPanel {
 			if (btnUp.isDisable()) {
 				btnUp.setDisable(false);
 			}
-			previousGroup = new VAGroup();
-			previousGroup.setParent(group.getParent());
-			previousGroup.setRootNode(group.getRootNode());
-			previousGroup.setListVAData(group.getVADataArray());
+			previousGroup = group;
+
 		} else {
 			System.out.println("- Previous group is empty ?!!");
 		}
@@ -206,10 +207,7 @@ public class VAPanel {
 	private static void updateCurrentGroup(VAGroup group) {
 		if (stop != -1)
 			updatePreviousGroup(currentGroup);
-		currentGroup = new VAGroup();
-		currentGroup.setParent(group.getParent());
-		currentGroup.setRootNode(group.getRootNode());
-		currentGroup.setListVAData(group.getVADataArray());
+		currentGroup = group;
 	}
 
 	/**
@@ -229,12 +227,11 @@ public class VAPanel {
 	public static void testVAGroup(VAGroup rootGroup) {
 		System.out.println("-----------------------------");
 		if (rootGroup != null) {
-			String rootNodeName = rootGroup.getRootNode().getSourceNode()
-					.getLocalName();
+			String rootNodeName = rootGroup.getRootNode().getNodeName();
 			System.out.println(rootNodeName);
 			ArrayList<VAData> vaData = rootGroup.getVADataArray();
 			for (VAData d : vaData) {
-				System.out.println(d.getSourceNode().getLocalName() + ","
+				System.out.println(d.getNodeName() + ","
 						+ d.getTargetNode().getLocalName() + ","
 						+ d.getSimilarity());
 			}
@@ -258,6 +255,14 @@ public class VAPanel {
 
 	public static Group getFXGroup() {
 		return root;
+	}
+
+	public static Tooltip getPieTooltip() {
+		return pieTooltip;
+	}
+
+	public static void setPieTooltip(Tooltip pieTooltip) {
+		VAPanel.pieTooltip = pieTooltip;
 	}
 
 	public static void setStop(int i) {

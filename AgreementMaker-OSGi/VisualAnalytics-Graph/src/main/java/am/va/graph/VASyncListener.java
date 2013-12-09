@@ -35,7 +35,6 @@ public class VASyncListener implements MatcherChangeListener {
 			// get all the children data sorted by similarity
 			rootGroup.setListVAData(VASyncData.getChildrenData(rootGroup
 					.getRootNode()));
-			// TEST(rootGroup);
 			Core.getInstance().removeMatcherChangeListener(this);
 
 			/**

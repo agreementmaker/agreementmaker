@@ -62,5 +62,9 @@ public class VAData implements Comparable<VAData> {
 		else
 			return -1;
 	}
+	
+	public String toString() {
+		return new String( this.getNodeName() + " " + this.Similarity);
+	} 
 
 }

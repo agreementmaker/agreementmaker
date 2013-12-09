@@ -104,7 +104,7 @@ public class VAGroup {
 
 		// Print for testing, comment if you don't need it.
 		// printData();
-		// printArcInterval();
+		 printArcInterval();
 	}
 
 	/**
@@ -169,8 +169,7 @@ public class VAGroup {
 		int VADataNum = VADataArray.size();
 		System.out.println(VADataNum + " data");
 		for (int i = 0; i < VADataNum; i++) {
-			System.out.println(VADataArray.get(i).getSourceNode()
-					.getLocalName()
+			System.out.println(VADataArray.get(i).getNodeName()
 					+ " " + VADataArray.get(i).getSimilarity() + " ");
 		}
 	}

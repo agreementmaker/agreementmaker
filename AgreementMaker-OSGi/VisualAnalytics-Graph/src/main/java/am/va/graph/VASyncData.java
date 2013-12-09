@@ -71,7 +71,7 @@ public class VASyncData {
 		Mapping map[] = smClass.getRowMaxValues(n.getIndex(), 1); 
 		if (map != null) {
 			matchingNode = map[0].getEntity2();
-			// sim = map[0].getSimilarity();
+			//sim = map[0].getSimilarity();
 			sim = Math.random(); // only for testing
 		} else {
 			System.out.println("mapping data is null ???");
