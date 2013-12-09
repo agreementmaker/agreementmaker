@@ -40,13 +40,12 @@ public class VAGroup {
 	}
 
 	/**
-	 * Calculate the number of data in every slot
-	 * (see threshold in VAVariables for value)
-	 * stored in slotCountMap
+	 * Calculate the number of data in every slot (see threshold in VAVariables
+	 * for value) stored in slotCountMap
 	 */
 	private void setslotCountMap() {
-		//for (VAData data : mapVAData.values()) {
-		for(VAData data : VADataArray){
+		// for (VAData data : mapVAData.values()) {
+		for (VAData data : VADataArray) {
 			double sim = data.getSimilarity();
 			for (int i = 0; i < VAVariables.slotNum; i++) {
 				if (sim > VAVariables.threshold[i]
@@ -62,34 +61,36 @@ public class VAGroup {
 			}
 		}
 	}
-	
+
 	/**
-	 * set the index(in VADataArray) of arcs 
-	 * Every Arc is a sub-area in a pie chart slice, corresponding to one subset of nodes
-	 * We set this in case of large ontologies
+	 * set the index(in VADataArray) of arcs Every Arc is a sub-area in a pie
+	 * chart slice, corresponding to one subset of nodes We set this in case of
+	 * large ontologies
 	 */
-	private void setArcIntervalIndex(){
+	private void setArcIntervalIndex() {
 		// Data with smallest similarity starts from -1
 		for (int i = 0; i < VAVariables.totalArcNumOfPieChart; i++) {
 			arcIntervalIndexArray.add(-1);
 		}
-		
+
 		// add the last, the last must be the last data in VADataArray
 		int VADataNum = VADataArray.size();
-		arcIntervalIndexArray.add(VADataNum);	
-		
-		int lastPos = -1;			// end index of last arc interval
-		int intervalCount = 1;		// start from the first interval
-		
-		// Iterate through all the sorted data, get the index for each arc interval in dataArray
-		for (int i = 0; i < VADataNum; ) {
-			double thresh = 1.0/VAVariables.totalArcNumOfPieChart*intervalCount;
+		arcIntervalIndexArray.add(VADataNum);
+
+		int lastPos = -1; // end index of last arc interval
+		int intervalCount = 1; // start from the first interval
+
+		// Iterate through all the sorted data, get the index for each arc
+		// interval in dataArray
+		for (int i = 0; i < VADataNum;) {
+			double thresh = 1.0 / VAVariables.totalArcNumOfPieChart
+					* intervalCount;
 			// new slot, add previous index as the end of last slot
-			if( VADataArray.get(i).getSimilarity() <= thresh ){
+			if (VADataArray.get(i).getSimilarity() <= thresh) {
 				arcIntervalIndexArray.set(intervalCount, i);
-				lastPos = i;	
+				lastPos = i;
 				i++;
-			}else {
+			} else {
 				// Threshod not large enough, increase
 				intervalCount++;
 				arcIntervalIndexArray.set(intervalCount, lastPos);
@@ -97,21 +98,21 @@ public class VAGroup {
 		}
 		// If the largest number is smaller than the last slot threshold
 		// Set the remainings arc indexes
-		while(intervalCount <= VAVariables.totalArcNumOfPieChart){
+		while (intervalCount <= VAVariables.totalArcNumOfPieChart) {
 			arcIntervalIndexArray.set(intervalCount++, lastPos);
 		}
-		
-		
+
 		// Print for testing, comment if you don't need it.
-		//printData();
-		//printArcInterval();
+		// printData();
+		// printArcInterval();
 	}
-	
+
 	/**
 	 * Set the children of this node
+	 * 
 	 * @param listVAData
 	 */
-	public void setListVAData(ArrayList<VAData> listVAData){
+	public void setListVAData(ArrayList<VAData> listVAData) {
 		this.VADataArray = listVAData;
 		setslotCountMap();
 		setArcIntervalIndex();
@@ -132,39 +133,57 @@ public class VAGroup {
 	public int getParent() {
 		return parent;
 	}
-	
-	public ArrayList<VAData> getVADataArray(){
+
+	public ArrayList<VAData> getVADataArray() {
 		return VADataArray;
 	}
 
 	public HashMap<String, Integer> getslotCountMap() {
 		return slotCountMap;
 	}
-	
+
 	public ArrayList<Integer> getArcIntervalIndexArray() {
 		return arcIntervalIndexArray;
 	}
-	
+
+	/**
+	 * Return root node's local name
+	 * @return
+	 */
+	public String getRootNodeName() {
+		return rootNode.getNodeName();
+	}
+
+	/**
+	 * If root node has children or not
+	 * @return
+	 */
+	public boolean hasChildren() {
+		return rootNode.hasChildren();
+	}
+
 	/**
 	 * Print out the name and similarity of all the data
 	 */
-	public void printData(){
+	public void printData() {
 		int VADataNum = VADataArray.size();
-		System.out.println( VADataNum + " data");
+		System.out.println(VADataNum + " data");
 		for (int i = 0; i < VADataNum; i++) {
-			System.out.println( VADataArray.get(i).getSourceNode().getLocalName()
+			System.out.println(VADataArray.get(i).getSourceNode()
+					.getLocalName()
 					+ " " + VADataArray.get(i).getSimilarity() + " ");
 		}
 	}
-	
+
 	/**
-	 * Print out the arc interval indexes( index in VADataArray)
-	 * Number of arc intervals = VAVariables.totalArcNumOfPieChart;
+	 * Print out the arc interval indexes( index in VADataArray) Number of arc
+	 * intervals = VAVariables.totalArcNumOfPieChart;
 	 */
 	public void printArcInterval() {
-		System.out.println( "Interval index array: " + arcIntervalIndexArray.size() + " intervals");
+		System.out.println("Interval index array: "
+				+ arcIntervalIndexArray.size() + " intervals");
 		for (int i = 0; i <= VAVariables.totalArcNumOfPieChart; i++) {
-			System.out.print(arcIntervalIndexArray.get(i)+ " ");
+			System.out.print(arcIntervalIndexArray.get(i) + " ");
 		}
 		System.out.print("\n");
 	}

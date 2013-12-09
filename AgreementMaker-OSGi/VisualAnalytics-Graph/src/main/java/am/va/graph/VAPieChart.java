@@ -49,7 +49,8 @@ public class VAPieChart {
 	public void updatePieChart() {
 		VAGroup currentGroup = VAPanel.getCurrentGroup();
 		VAPanel.testVAGroup(currentGroup);
-		if (currentGroup != null) {
+		VAPanel.setSourceLabel(currentGroup.getRootNodeName());
+		if (currentGroup != null && currentGroup.hasChildren()) {
 			if (VAPanel.getStop() != -1) {// Renew pie chart and build a new one
 				int num = pieCharDatalist.size();
 				for (int i = 0; i < num; i++)
@@ -132,7 +133,6 @@ public class VAPieChart {
 							System.out.println(VAPanel.getCurrentGroup()
 									.getRootNode().getSourceNode()
 									.getLocalName());
-							// if (VAPanel.getStop() == 0)
 							ListView<String> newlist = getNodesList(arg0,
 									currentData);
 							VAPanel.setListView(newlist);
@@ -260,7 +260,7 @@ public class VAPieChart {
 					selectedVAData = listMap.get(selectedLocalName);
 					VAPanel.getNewGroup();
 					updatePieChart();
-				}else{
+				} else {
 					System.out.println("- select empty!");
 				}
 			}

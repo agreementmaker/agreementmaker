@@ -2,7 +2,7 @@ package am.va.graph;
 
 import am.app.ontology.Node;
 
-public class VAData implements Comparable<VAData>{
+public class VAData implements Comparable<VAData> {
 	Node sourceNode;
 	Node targetNode;
 	double Similarity;
@@ -38,12 +38,28 @@ public class VAData implements Comparable<VAData>{
 		Similarity = similarity;
 	}
 
+	/**
+	 * Return source node's local name
+	 * @return
+	 */
+	public String getNodeName() {
+		return sourceNode.getLocalName();
+	}
+
+	/**
+	 * If source node has children or not
+	 * @return
+	 */
+	public boolean hasChildren() {
+		return sourceNode.getChildren().size() > 0;
+	}
+
 	@Override
 	public int compareTo(VAData data) {
 		// TODO Auto-generated method stub
-		if(this.Similarity >= data.Similarity)
+		if (this.Similarity >= data.Similarity)
 			return 1;
-		else 
+		else
 			return -1;
 	}
 

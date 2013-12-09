@@ -41,7 +41,7 @@ public class VASyncListener implements MatcherChangeListener {
 			/**
 			 * Init the JavaFx framework
 			 */
-			VAPanel.setRootGroup(this.rootGroup);
+			VAPanel.setRootGroupLeft(this.rootGroup);
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {
