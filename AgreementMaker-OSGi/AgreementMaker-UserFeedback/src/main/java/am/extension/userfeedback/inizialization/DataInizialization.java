@@ -9,9 +9,8 @@ import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.ontology.Node;
 import am.extension.multiUserFeedback.MUExperiment;
 import am.extension.userfeedback.FeedbackLoopInizialization;
-import am.extension.userfeedback.MLFeedback.MLFExperiment;
 
-public class DataInizialization extends FeedbackLoopInizialization<MLFExperiment> {
+public class DataInizialization extends FeedbackLoopInizialization<MUExperiment> {
 	List<AbstractMatcher> inputMatchers = new ArrayList<AbstractMatcher>();
 	public DataInizialization()
 	{
@@ -19,7 +18,7 @@ public class DataInizialization extends FeedbackLoopInizialization<MLFExperiment
 	}
 	
 	@Override
-	public void inizialize(MLFExperiment exp) {
+	public void inizialize(MUExperiment exp) {
 		// TODO Auto-generated method stub
 		SimilarityMatrix smClass=exp.initialMatcher.getFinalMatcher().getClassesMatrix().clone();
 		SimilarityMatrix smProperty=exp.initialMatcher.getFinalMatcher().getPropertiesMatrix().clone();
