@@ -15,6 +15,7 @@ import javafx.scene.input.MouseEvent;
 @SuppressWarnings("restriction")
 public class VAPieChart {
 	private PieChart pieChart;
+	private ListView<String> listView;
 	private ObservableList<PieChart.Data> pieCharDatalist;
 	private double radius; // Radius of the pie chart
 	private Point2D center; // pie chart center point
@@ -46,22 +47,29 @@ public class VAPieChart {
 	 * Update current pie chart and add listeners
 	 */
 	public void updatePieChart() {
-		if (VAPanel.getStop() == 0) {
+		VAGroup currentGroup = VAPanel.getCurrentGroup();
+		VAPanel.testVAGroup(currentGroup);
+		if (currentGroup != null) {
+			if (VAPanel.getStop() != -1) {// Renew pie chart and build a new one
+				int num = pieCharDatalist.size();
+				for (int i = 0; i < num; i++)
+					pieCharDatalist.remove(0);
+				HashMap<String, Integer> slotsMap = currentGroup
+						.getslotCountMap();
+				for (String key : VAVariables.thresholdName) {
+					if (slotsMap.containsKey(key))
+						pieCharDatalist.add(new PieChart.Data(key, slotsMap
+								.get(key)));
+				}
+			} else if (VAPanel.getStop() == -1) {
+				VAPanel.setStop(0);
+			}
+			addListener();
+		} else {
 			int num = pieCharDatalist.size();
-			System.out.println("remove=" + num);
 			for (int i = 0; i < num; i++)
 				pieCharDatalist.remove(0);
-			HashMap<String, Integer> slotsMap = VAPanel.getCurrentGroup()
-					.getslotCountMap();
-			for (String key : VAVariables.thresholdName) {
-				if (slotsMap.containsKey(key))
-					pieCharDatalist.add(new PieChart.Data(key, slotsMap
-							.get(key)));
-			}
-		} else if (VAPanel.getStop() == -1) {
-			VAPanel.setStop(0);
 		}
-		addListener();
 	}
 
 	/**
@@ -121,10 +129,13 @@ public class VAPieChart {
 						public void handle(MouseEvent arg0) {
 							System.out
 									.println("-----------------click update list!!!!");
-							if (VAPanel.getStop() == 0)
-								VAPanel.setListView(getNodesList(arg0,
-										currentData));
-
+							System.out.println(VAPanel.getCurrentGroup()
+									.getRootNode().getSourceNode()
+									.getLocalName());
+							// if (VAPanel.getStop() == 0)
+							ListView<String> newlist = getNodesList(arg0,
+									currentData);
+							VAPanel.setListView(newlist);
 						}
 
 					});
@@ -150,7 +161,7 @@ public class VAPieChart {
 		int sliceIndex = pieChart.getData().indexOf(data);
 		int arcIndex = sliceIndex * VAVariables.arcNumPerSlice
 				+ (int) (VAVariables.arcNumPerSlice * dist / radius);
-		System.out.println("Pos = " + pos + " arcIndex " + arcIndex);
+		// System.out.println("Pos = " + pos + " arcIndex " + arcIndex);
 		return arcIndex;
 
 	}
@@ -165,51 +176,57 @@ public class VAPieChart {
 	 */
 	private ListView<String> getNodesList(MouseEvent e, PieChart.Data data) {
 
+		VAGroup currentGroup = VAPanel.getCurrentGroup();
+
+		if (currentGroup == null) {
+			System.out.println("- group is empty, return empty list");
+			return listView;
+		}
+
 		// get the arcindexArray, in order to get nodes by similarity range
-		ArrayList<Integer> arcIndexArray = VAPanel.getCurrentGroup()
+		ArrayList<Integer> arcIndexArray = currentGroup
 				.getArcIntervalIndexArray();
-		ArrayList<VAData> dataArrayList = VAPanel.getCurrentGroup()
-				.getVADataArray();
-		HashMap<String, Integer> slotCountMap = VAPanel.getCurrentGroup()
-				.getslotCountMap();
+		ArrayList<VAData> dataArrayList = currentGroup.getVADataArray();
+		HashMap<String, Integer> slotCountMap = currentGroup.getslotCountMap();
 		final HashMap<String, VAData> listMap = new HashMap<String, VAData>();
 
-		int sliceIndex = pieChart.getData().indexOf(data);
-		int startDataIdx, endDataIdx;
-		// System.out.println("slice index is " + sliceIndex +
-		// " slot count is "+
-		// slotCountMap.get(VAVariables.thresholdName[sliceIndex]));
-		// if number of nodes in this slice is smaller than a threshold, show
-		// them all
-		if (slotCountMap.containsKey(VAVariables.thresholdName[sliceIndex])
-				&& slotCountMap.get(VAVariables.thresholdName[sliceIndex]) <= VAVariables.showAllNodesThresh) {
-			int startArcIdx = sliceIndex * VAVariables.arcNumPerSlice;
-			startDataIdx = arcIndexArray.get(startArcIdx) + 1;
-			endDataIdx = arcIndexArray.get(startArcIdx
-					+ VAVariables.arcNumPerSlice);
+		if (pieChart.getData().size() > 0) {
+			int sliceIndex = pieChart.getData().indexOf(data);
+			int startDataIdx, endDataIdx;
+			if (slotCountMap.containsKey(VAVariables.thresholdName[sliceIndex])
+					&& slotCountMap.get(VAVariables.thresholdName[sliceIndex]) <= VAVariables.showAllNodesThresh) {
+				int startArcIdx = sliceIndex * VAVariables.arcNumPerSlice;
+				startDataIdx = arcIndexArray.get(startArcIdx) + 1;
+				endDataIdx = arcIndexArray.get(startArcIdx
+						+ VAVariables.arcNumPerSlice);
+			} else {
+				// Show them by arc area
+				int arcIndex = getArcIdxByPosition(e, data);
+				startDataIdx = arcIndexArray.get(arcIndex) + 1;
+				endDataIdx = arcIndexArray.get(arcIndex + 1);
+			}
+			// System.out.println("start = " + startDataIdx + " end= " +
+			// endDataIdx);
+
+			listView = VAPanel.getlistView();
+			ObservableList<String> arcListData = FXCollections
+					.observableArrayList();
+
+			// Put data in list view
+			for (int i = startDataIdx; i <= endDataIdx; i++) {
+				String name = dataArrayList.get(i).getSourceNode()
+						.getLocalName();
+				arcListData.add(name);
+				// arcListData.add(dataArrayList.get(i));
+				listMap.put(name, dataArrayList.get(i));
+				// System.out.println("data " + i + " = " + name);
+			}
+
+			listView.setItems(arcListData);
+			setListViewAction(listView, listMap);
 		} else {
-			// Show them by arc area
-			int arcIndex = getArcIdxByPosition(e, data);
-			startDataIdx = arcIndexArray.get(arcIndex) + 1;
-			endDataIdx = arcIndexArray.get(arcIndex + 1);
+			System.out.println("- pie chart is empty, return empty list");
 		}
-		System.out.println("start = " + startDataIdx + " end= " + endDataIdx);
-
-		final ListView<String> listView = VAPanel.getlistView();
-		ObservableList<String> arcListData = FXCollections
-				.observableArrayList();
-
-		// Put data in list view
-		for (int i = startDataIdx; i <= endDataIdx; i++) {
-			String name = dataArrayList.get(i).getSourceNode().getLocalName();
-			arcListData.add(name);
-			// arcListData.add(dataArrayList.get(i));
-			listMap.put(name, dataArrayList.get(i));
-			System.out.println("data " + i + " = " + name);
-		}
-
-		listView.setItems(arcListData);
-		setListViewAction(listView, listMap);
 
 		return listView;
 	}
@@ -238,11 +255,14 @@ public class VAPieChart {
 			public void handle(MouseEvent event) {
 				String selectedLocalName = listView.getSelectionModel()
 						.getSelectedItems().get(0);
-				System.out.println("clicked on " + selectedLocalName);
-				selectedVAData = listMap.get(selectedLocalName);
-				VAPanel.getNewGroup(VAPanel.getCurrentGroup());
-				// if (VAPanel.getStop() == 0)
-				updatePieChart();
+				if (selectedLocalName != null) {
+					System.out.println("clicked on " + selectedLocalName);
+					selectedVAData = listMap.get(selectedLocalName);
+					VAPanel.getNewGroup();
+					updatePieChart();
+				}else{
+					System.out.println("- select empty!");
+				}
 			}
 		});
 	}

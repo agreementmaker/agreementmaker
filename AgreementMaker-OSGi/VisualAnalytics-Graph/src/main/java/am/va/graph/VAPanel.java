@@ -11,6 +11,7 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.JFXPanel;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
@@ -33,9 +34,17 @@ public class VAPanel {
 	private static ListView<String> listView;
 	private static Group root;
 	private static VAGroup rootGroup;
+	private static VAGroup previousGroup;
 	private static VAGroup currentGroup;
 	private static int count = 1;
 	private static int stop = -1;
+
+	private static Button btnRoot;
+	private static Button btnUp;
+	private static Button btn3;
+
+	private static VAPieChart chartLeft;
+	private static PieChart chartRight;
 
 	/**
 	 * Init Frame
@@ -80,10 +89,11 @@ public class VAPanel {
 		spacer.setStyle("-fx-padding: 0 7em 0 0;");
 		spacer.getStyleClass().setAll("spacer");
 		HBox buttonBar = new HBox();
-		Button btn1 = new Button("Home");
-		Button btn2 = new Button("Option");
-		Button btn3 = new Button("Help");
-		buttonBar.getChildren().addAll(btn1, btn2, btn3);
+		btnRoot = new Button("Top level");
+		btnUp = new Button("Go up");
+		btn3 = new Button("Help");
+		setButtonActions();
+		buttonBar.getChildren().addAll(btnRoot, btnUp, btn3);
 		toolbar.getItems().addAll(spacer, buttonBar);
 		borderPane.setTop(toolbar);
 
@@ -91,9 +101,9 @@ public class VAPanel {
 		Group chartGroup = new Group();
 		TilePane tilePane = new TilePane();
 		tilePane.setPrefColumns(2); // preferred columns
-		VAPieChart chartLeft = new VAPieChart(rootGroup);
+		chartLeft = new VAPieChart(rootGroup);
 		chartLeft.getPieChart().setClockwise(false);
-		PieChart chartRight = testPieChart();
+		chartRight = testPieChart();
 		tilePane.getChildren().add(chartLeft.getPieChart());
 		tilePane.getChildren().add(chartRight);
 		chartGroup.getChildren().add(tilePane);
@@ -140,8 +150,8 @@ public class VAPanel {
 		double radius = (maxX - minX) / 2;
 		chart.setRadius(radius);
 		chart.setPieCenter(new Point2D(minX + radius, minY + radius));
-		System.out.println("radius " + radius + " center "
-				+ chart.getPieCenter());
+		// System.out.println("radius " + radius + " center "+
+		// chart.getPieCenter());
 	}
 
 	/**
@@ -150,16 +160,11 @@ public class VAPanel {
 	 * @param currentGroup
 	 * @return
 	 */
-	public static void getNewGroup(VAGroup currentGroup) {
+	public static void getNewGroup() {
 		// Need a function here, return value:VAData
 		VAData newRootData = VAPieChart.getSelectedVAData();
 		System.out.println("New data "
 				+ newRootData.getSourceNode().getLocalName());
-		/*
-		 * System.out.println(count); if (count == 1) newRootData =
-		 * currentGroup.getVADataArray().get(3); else newRootData =
-		 * currentGroup.getVADataArray().get(1);
-		 */
 		count++;
 		if (newRootData != null
 				&& newRootData.getSourceNode().getChildCount() > 0) { // if
@@ -168,12 +173,29 @@ public class VAPanel {
 																		// new
 																		// group
 			VAGroup newGroup = new VAGroup();
-			newGroup.setParent(currentGroup.getGroupID());
+			if (currentGroup != null)
+				newGroup.setParent(currentGroup.getGroupID());
+			else
+				newGroup.setParent(previousGroup.getGroupID());
 			newGroup.setRootNode(newRootData);
 			newGroup.setListVAData(VASyncData.getChildrenData(newRootData));
 			updateCurrentGroup(newGroup);
 		} else {
-			stop = 1;
+			updateCurrentGroup(null);
+		}
+	}
+
+	private static void updatePreviousGroup(VAGroup group) {
+		if (group != null) {
+			if (btnUp.isDisable()) {
+				btnUp.setDisable(false);
+			}
+			previousGroup = new VAGroup();
+			previousGroup.setParent(group.getParent());
+			previousGroup.setRootNode(group.getRootNode());
+			previousGroup.setListVAData(group.getVADataArray());
+		} else {
+			System.out.println("- Previous group is empty ?!!");
 		}
 	}
 
@@ -183,6 +205,7 @@ public class VAPanel {
 	 * @param group
 	 */
 	private static void updateCurrentGroup(VAGroup group) {
+		updatePreviousGroup(currentGroup);
 		if (group != null) {
 			currentGroup = new VAGroup();
 			currentGroup.setParent(group.getParent());
@@ -190,6 +213,7 @@ public class VAPanel {
 			currentGroup.setListVAData(group.getVADataArray());
 		} else {
 			System.out.println("New group is NULL");
+			currentGroup = null;
 		}
 	}
 
@@ -208,19 +232,24 @@ public class VAPanel {
 	 * @param rootGroup
 	 */
 	public static void testVAGroup(VAGroup rootGroup) {
-		String rootNodeName = rootGroup.getRootNode().getSourceNode()
-				.getLocalName();
-		System.out.println(rootNodeName);
-		ArrayList<VAData> vaData = rootGroup.getVADataArray();
-		for (VAData d : vaData) {
-			System.out.println(d.getSourceNode().getLocalName() + ","
-					+ d.getTargetNode().getLocalName() + ","
-					+ d.getSimilarity());
-		}
-		HashMap<String, Integer> slots = rootGroup.getslotCountMap();
-		for (String s : VAVariables.thresholdName) {
-			if (slots.containsKey(s))
-				System.out.println(s + ":" + slots.get(s));
+		System.out.println("-----------------------------");
+		if (rootGroup != null) {
+			String rootNodeName = rootGroup.getRootNode().getSourceNode()
+					.getLocalName();
+			System.out.println(rootNodeName);
+			ArrayList<VAData> vaData = rootGroup.getVADataArray();
+			for (VAData d : vaData) {
+				System.out.println(d.getSourceNode().getLocalName() + ","
+						+ d.getTargetNode().getLocalName() + ","
+						+ d.getSimilarity());
+			}
+			HashMap<String, Integer> slots = rootGroup.getslotCountMap();
+			for (String s : VAVariables.thresholdName) {
+				if (slots.containsKey(s))
+					System.out.println(s + ":" + slots.get(s));
+			}
+		} else {
+			System.out.println("Empty group!");
 		}
 	}
 
@@ -246,5 +275,36 @@ public class VAPanel {
 
 	public static void setListView(ListView<String> list) {
 		listView = list;
+	}
+
+	private static void setButtonActions() {
+		/**
+		 * Go to root panel
+		 */
+		btnRoot.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent arg0) {
+				updateCurrentGroup(rootGroup);
+				chartLeft.updatePieChart();
+				System.out.println("Go to root panel");
+			}
+
+		});
+
+		/**
+		 * Go to previous panel (can only click once)
+		 */
+		btnUp.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent arg0) {
+				updateCurrentGroup(previousGroup);
+				chartLeft.updatePieChart();
+				System.out.println("Go to previous panel");
+				btnUp.setDisable(true);
+			}
+
+		});
 	}
 }

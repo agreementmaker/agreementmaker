@@ -8,7 +8,6 @@ public class VAGroup {
 	private int groupID;
 	private int parent;
 	private VAData rootNode;
-	//private HashMap<String, VAData> mapVAData;
 	private ArrayList<VAData> VADataArray;
 	private HashMap<String, Integer> slotCountMap;
 	private ArrayList<Integer> arcIntervalIndexArray;
@@ -17,7 +16,6 @@ public class VAGroup {
 		this.groupID = ++nodeCount;
 		this.parent = -1;
 		this.rootNode = null;
-		//this.mapVAData = new HashMap<String, VAData>();
 		this.VADataArray = new ArrayList<VAData>();
 		this.slotCountMap = new HashMap<String, Integer>();
 		this.arcIntervalIndexArray = new ArrayList<Integer>();
@@ -105,14 +103,9 @@ public class VAGroup {
 		
 		
 		// Print for testing, comment if you don't need it.
-		printData();
-		printArcInterval();
+		//printData();
+		//printArcInterval();
 	}
-
-//	public void setMapVAData(HashMap<String, VAData> mapVAData) {
-//		this.mapVAData = mapVAData;
-//		setslotCountMap();
-//	}
 	
 	/**
 	 * Set the children of this node
@@ -139,10 +132,6 @@ public class VAGroup {
 	public int getParent() {
 		return parent;
 	}
-
-//	public HashMap<String, VAData> getMapVAData() {
-//		return mapVAData;
-//	}
 	
 	public ArrayList<VAData> getVADataArray(){
 		return VADataArray;
