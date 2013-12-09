@@ -1,5 +1,7 @@
 package am.va.graph;
 
+import com.sun.javafx.tk.quantum.PathIteratorHelper.Struct;
+
 public interface VAVariables {
 	int slotNum = 5;
 	/*
@@ -26,4 +28,5 @@ public interface VAVariables {
 	enum ontologyType {
 		Source, Target;
 	}
+	
 }
