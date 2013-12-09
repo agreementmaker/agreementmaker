@@ -15,7 +15,7 @@ public abstract class UFLExperiment {
 	
 	public ExecutionSemantics 								initialMatcher;
 	public FeedbackLoopInizialization<UFLExperiment>        dataInizialization;
-	public CandidateSelection< UFLExperiment> 				candidateSelection;
+	public CandidateSelection<UFLExperiment> 				candidateSelection;
 	public CandidateSelectionEvaluation 					csEvaluation;
 	public UserFeedback										userFeedback;
 	public FeedbackPropagation< UFLExperiment>				feedbackPropagation;

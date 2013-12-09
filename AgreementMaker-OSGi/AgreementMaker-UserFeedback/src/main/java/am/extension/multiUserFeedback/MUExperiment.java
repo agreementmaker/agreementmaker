@@ -45,7 +45,7 @@ public  CollaborationTask selectedTask;
 
 public 	MUFeedbackStorage<UFLExperiment>	feedbackStorage;
 	
-private BufferedWriter logFile;
+public BufferedWriter logFile;
 private Alignment<Mapping> MLAlignment;
 private Object[][] trainingSet_classes;
 private Object[][] trainingSet_property;
@@ -170,73 +170,9 @@ public void setMLAlignment(Alignment<Mapping> mLAlignment) {
 	MLAlignment = mLAlignment;
 }
 
-	private Alignment<Mapping> referenceAlignment;
+	public Alignment<Mapping> referenceAlignment;
 
 
-	public MUExperiment() {
-		// connect to the server
-		// TODO: Make the server baseURL be configured by the user?
-		String baseURL = "http://127.0.0.1:9000";
-		server = new RESTfulCollaborationServer(baseURL);
-		clientID = server.register();
-		
-		LOG.info("Connected to " + baseURL + ", ClientID: " + clientID);
-		
-		List<CollaborationTask> taskList = server.getTaskList();
-		
-		LOG.info("Retrieved " + taskList.size() + " tasks.");
-		
-		TaskSelectionDialog tsd = new TaskSelectionDialog(taskList);
-		selectedTask = tsd.getTask();
-		
-		LOG.info("User selected task: " + selectedTask);
-		
-		
-		OntologyDefinition sourceOntDef = server.getOntologyDefinition(selectedTask.getSourceOntologyURL());
-		LOG.info("Loading source ontology: " + sourceOntDef);
-		Ontology sourceOnt = UICore.getUI().openFile(sourceOntDef);
-		Core.getInstance().setSourceOntology(sourceOnt);
-		
-		
-		OntologyDefinition targetOntDef = server.getOntologyDefinition(selectedTask.getTargetOntologyURL());
-		LOG.info("Loading target ontology: " + targetOntDef);
-		Ontology targetOnt = UICore.getUI().openFile(targetOntDef);
-		Core.getInstance().setTargetOntology(targetOnt);
-		
-		LOG.info("Loading the reference alignment from: " + selectedTask.getReferenceAlignmentURL());
-		referenceAlignment = server.getReferenceAlignment(selectedTask.getReferenceAlignmentURL());
-		
-		if( referenceAlignment == null ) {
-			LOG.info("Reference alignment was not loaded.");
-		}
-		else {
-			LOG.info("Reference alignment loaded: " + referenceAlignment.size() + " mappings");
-		}
-		
-		classesSparseMatrix = 
-				new SparseMatrix(
-						Core.getInstance().getSourceOntology(),
-						Core.getInstance().getTargetOntology(), 
-						alignType.aligningClasses);
-		
-		propertiesSparseMatrix = 
-				new SparseMatrix(
-						Core.getInstance().getSourceOntology(),
-						Core.getInstance().getTargetOntology(), 
-						alignType.aligningProperties);
-		
-		// setup the log file
-		try {
-			FileWriter fr = new FileWriter("/home/cosmin/Desktop/ufllog.txt");
-			logFile = new BufferedWriter(fr);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		
-	}
-	
 	
 	
 	@Override
