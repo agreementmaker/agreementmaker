@@ -96,7 +96,7 @@ public class VAPieChart {
 				slotsMap = newRightGroup.getslotCountMap();
 			}
 			newLabel = currentGroup.getRootNodeName();
-		} else if (currentGroup != null && currentGroup.getGroupID() == 1) {
+		} else if (currentGroup != null && currentGroup.getParent() == 0) {
 			slotsMap = VAPanel.getRightRootGroup().getslotCountMap();
 			newLabel = "";
 		} else {
@@ -108,7 +108,7 @@ public class VAPieChart {
 					pieCharDatalist.add(new PieChart.Data(key, slotsMap
 							.get(key)));
 			}
-		VAPanel.setSourceLabel(newLabel);
+		VAPanel.setTargetLabel(newLabel);
 	}
 
 	/**
@@ -201,8 +201,14 @@ public class VAPieChart {
 				if (selectedLocalName != null) {
 					System.out.println("clicked on " + selectedLocalName);
 					selectedVAData = listMap.get(selectedLocalName);
-					VAPanel.getNewGroup(ontologyType);
-					updatePieChart(ontologyType);
+					// Still need to figure the color
+					if (selectedVAData.hasChildren()) {
+						// listView.setStyle("-fx-selection-bar-text: Yellow;");
+						VAPanel.getNewGroup(ontologyType);
+						updatePieChart(ontologyType);
+					} else {
+						// listView.setStyle("-fx-selection-bar-text: White;");
+					}
 				} else {
 					System.out.println("- select empty!");
 				}

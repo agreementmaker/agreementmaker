@@ -8,6 +8,8 @@ import javax.swing.JFrame;
 import am.va.graph.VAVariables.ontologyType;
 
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.JFXPanel;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -17,6 +19,7 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -45,6 +48,8 @@ public class VAPanel {
 	private static Button btnRoot;
 	private static Button btnUp;
 	private static Button btnHelp;
+
+	private static ChoiceBox<String> cbOntology;
 
 	private static Label lblSource;
 	private static Label lblTarget;
@@ -91,11 +96,14 @@ public class VAPanel {
 		listView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 		borderPane.setLeft(listView);
 
-		// Top side: HBox, contains toolbar
+		// Top side: HBox, contains toolbar (buttons & choiceBox & searchBox)
 		ToolBar toolbar = new ToolBar();
-		Region spacer = new Region();
-		spacer.setStyle("-fx-padding: 0 8em 0 0;");
-		spacer.getStyleClass().setAll("spacer");
+		Region spacer1 = new Region();
+		spacer1.setStyle("-fx-padding: 0 8em 0 0;");
+		Region spacer2 = new Region();
+		spacer2.setStyle("-fx-padding: 0 8em 0 0;");
+		Region spacer3 = new Region();
+		spacer3.setStyle("-fx-padding: 0 20em 0 0;");
 		HBox buttonBar = new HBox();
 
 		// set three buttons
@@ -105,18 +113,20 @@ public class VAPanel {
 		setButtonActions();
 		buttonBar.getChildren().addAll(btnRoot, btnUp, btnHelp);
 
+		// set choice box
+		cbOntology = new ChoiceBox<String>();
+		cbOntology.getItems().addAll("Class", "Properity");
+		cbOntology.getSelectionModel().selectFirst();
+		setChoiceBoxActions();
+
 		// set search box
 		BorderPane searchboxborderPane = new BorderPane();
 		searchBox = new VASearchBox();
 		searchBox.getStyleClass().add("search-box");
 		searchboxborderPane.setRight(searchBox);
-
-		Region spacer2 = new Region();
-		spacer2.setStyle("-fx-padding: 0 40em 0 0;");
-		spacer2.getStyleClass().setAll("spacer");
 		HBox.setMargin(searchBox, new Insets(0, 5, 0, 0));
-		toolbar.getItems().addAll(spacer, buttonBar, spacer2,
-				searchboxborderPane);
+		toolbar.getItems().addAll(spacer1, buttonBar, spacer2, cbOntology,
+				spacer3, searchboxborderPane);
 		borderPane.setTop(toolbar);
 
 		// Center side: two piecharts as a group, tilepane layout is used
@@ -157,7 +167,6 @@ public class VAPanel {
 		// myScene.getStylesheets().add(VAPanel.class.getResource("VA.css").toExternalForm());
 	}
 
-	
 	/**
 	 * Generate new VAGroup according user's click
 	 * 
@@ -281,13 +290,36 @@ public class VAPanel {
 	public static void setTargetLabel(String label) {
 		lblTarget.setText(label);
 	}
-	
-	public static VAPieChart getRightPie(){
+
+	public static VAPieChart getRightPie() {
 		return chartRight;
 	}
-	
-	public static VAGroup getRightRootGroup(){
+
+	public static VAGroup getRightRootGroup() {
 		return rootGroupRight;
+	}
+
+	private static void setChoiceBoxActions() {
+		cbOntology.getSelectionModel().selectedIndexProperty()
+				.addListener(new ChangeListener<Number>() {
+					@Override
+					public void changed(
+							ObservableValue<? extends Number> observableValue,
+							Number number, Number number2) {
+						String choice = cbOntology.getItems().get(
+								(Integer) number2);
+						if (choice.equals(VAVariables.nodeType.Class.toString())) {
+							VASyncListener
+									.setNodeType(VAVariables.nodeType.Class);
+						} else {
+							VASyncListener
+									.setNodeType(VAVariables.nodeType.Property);
+						}
+						VASyncListener.InitData();
+						updateCurrentGroup(rootGroupLeft);
+						chartLeft.updatePieChart(ontologyType.Source);
+					}
+				});
 	}
 
 	/**
