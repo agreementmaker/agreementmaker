@@ -1,7 +1,5 @@
 package am.extension.userfeedback;
 
-import java.io.Serializable;
-
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.ontology.Ontology;

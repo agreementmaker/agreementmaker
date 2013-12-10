@@ -13,7 +13,7 @@ import am.extension.userfeedback.CandidateSelection;
 import am.extension.userfeedback.UFLExperiment;
 import am.extension.userfeedback.ui.UFLControlGUI;
 
-public abstract class MUCandidateSelection extends CandidateSelection<MUExperiment> {
+public abstract class MUCandidateSelection<T extends MUExperiment> extends CandidateSelection<T> {
 	EventListenerList listeners;  // list of listeners for this class
 	public Mapping selectedMapping;
 	
@@ -21,12 +21,27 @@ public abstract class MUCandidateSelection extends CandidateSelection<MUExperime
 		listeners = new EventListenerList();
 	}
 	
-	public abstract void rank( MUExperiment exp );
+	public abstract void rank( T exp );
 	
 	public abstract List<Mapping> getRankedMappings(alignType typeOfRanking, String id);
 	public abstract List<Mapping> getRankedMappings(String id);
 	
-	public abstract Mapping getCandidateMapping( String id);
+	public abstract Mapping getCandidateMapping(String id);
+	
+	@Override
+	public Mapping getCandidateMapping() {
+		throw new RuntimeException("Use getCandidateMapping(String id)");
+	}
+	
+	@Override
+	public List<Mapping> getRankedMappings() {
+		throw new RuntimeException("Use getRankedMappings(String id)");
+	}
+	
+	@Override
+	public List<Mapping> getRankedMappings(alignType typeOfRanking) {
+		throw new RuntimeException("Use getRankedMappings(alignType typeOfRanking, String id)");
+	}
 	
 	public void addActionListener( ActionListener l ) {
 		listeners.add(ActionListener.class, l);

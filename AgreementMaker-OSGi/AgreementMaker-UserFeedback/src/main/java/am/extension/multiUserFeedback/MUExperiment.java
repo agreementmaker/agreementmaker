@@ -57,6 +57,7 @@ public List<Mapping> disRanked;
 public List<Mapping> uncertainRanking;
 public List<Mapping> almostRanking;
 public Mapping selectedMapping;
+public String feedback;
 public List<Mapping> alreadyEvaluated=new ArrayList<Mapping>();
 public List<Mapping> conflictualClass;
 public List<Mapping> conflictualProp;
