@@ -89,7 +89,7 @@ public class LocalByThresholdMethod extends ClusteringMethod {
 			// matcherList.get(0).getTargetOntology(), t );
 			c = new Cluster<Mapping>(mappingTimes, matcherList.get(0)
 					.getSourceOntology(), matcherList.get(0)
-					.getTargetOntology(), t, numOfMatcher);
+					.getTargetOntology(), t);
 		}
 
 		return c;
