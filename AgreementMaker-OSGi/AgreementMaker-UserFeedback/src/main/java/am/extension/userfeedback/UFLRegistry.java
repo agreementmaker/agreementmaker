@@ -90,7 +90,7 @@ public class UFLRegistry {
 	
 	
 	public enum FeedbackPropagationRegistry {
-		
+		MUFeedbackPropagation (am.extension.multiUserFeedback.MUFeedbackPropagation.class),
 		MLFeedbackPropagation (am.extension.userfeedback.MLFeedback.MLFeedbackPropagation.class),
 		ClusterBoost ( am.extension.userfeedback.clustering.disagreement.ClusterBoostPropagation.class );
 		
