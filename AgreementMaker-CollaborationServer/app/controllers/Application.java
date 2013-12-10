@@ -133,7 +133,7 @@ public class Application extends Controller {
 				setup.cs  = CandidateSelectionRegistry.MultiStrategyRanking;
 				setup.cse = null;
 				setup.uv  = null;
-				setup.fp  = FeedbackPropagationRegistry.MLFeedbackPropagation;
+				setup.fp  = FeedbackPropagationRegistry.MUFeedbackPropagation;
 				setup.pe  = null;
 				setup.sf  = SaveFeedbackRegistry.MultiUserSaveFeedback; 
 				
