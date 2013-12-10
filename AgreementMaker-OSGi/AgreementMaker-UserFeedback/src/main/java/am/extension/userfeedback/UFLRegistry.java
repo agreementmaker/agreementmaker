@@ -45,7 +45,7 @@ public class UFLRegistry {
 	}
 	
 //	public enum MultiUserCandidateSelectionRegistry {
-//		ClientCandidateSelection (am.extension.multiUserFeedback.ClientCandidateSelection.class);
+//		ServerCandidateSelection (am.extension.multiUserFeedback.ServerCandidateSelection.class);
 //		/* *********************** DO NOT EDIT BELOW THIS LINE **************************** */
 //		Class<? extends MUCandidateSelection> clazz;
 //		
@@ -55,6 +55,7 @@ public class UFLRegistry {
 	
 	
 	public enum CandidateSelectionRegistry {
+		ServerCandidateSelection (am.extension.multiUserFeedback.ServerCandidateSelection.class),
 		ClientCandidateSelection (am.extension.multiUserFeedback.ClientCandidateSelection.class),
 		MultiStrategyRanking (am.extension.userfeedback.clustering.disagreement.MultiStrategyRanking.class),
 		MaxInformationRanking (am.extension.userfeedback.clustering.disagreement.MaxInformationRanking.class   ),

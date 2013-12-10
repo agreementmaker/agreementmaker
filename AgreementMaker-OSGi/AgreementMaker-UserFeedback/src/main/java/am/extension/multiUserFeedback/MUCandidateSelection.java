@@ -9,10 +9,11 @@ import javax.swing.event.EventListenerList;
 
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.extension.userfeedback.CandidateSelection;
 import am.extension.userfeedback.UFLExperiment;
 import am.extension.userfeedback.ui.UFLControlGUI;
 
-public abstract class MUCandidateSelection <T extends UFLExperiment> {
+public abstract class MUCandidateSelection extends CandidateSelection<MUExperiment> {
 	EventListenerList listeners;  // list of listeners for this class
 	public Mapping selectedMapping;
 	
@@ -20,7 +21,7 @@ public abstract class MUCandidateSelection <T extends UFLExperiment> {
 		listeners = new EventListenerList();
 	}
 	
-	public abstract void rank( T exp );
+	public abstract void rank( MUExperiment exp );
 	
 	public abstract List<Mapping> getRankedMappings(alignType typeOfRanking, String id);
 	public abstract List<Mapping> getRankedMappings(String id);
