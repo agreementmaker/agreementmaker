@@ -103,7 +103,7 @@ public class ClusterBoostPropagation extends FeedbackPropagation<UFLExperiment> 
 		int correctlyPropagated = 0;
 		int totalPropagated = 0;
 
-		HashMap<Point, Double> pointSimilarity = new HashMap<Point, Double>();
+		HashMap<Point, Double> pointSimilarity = cluster.map;
 		for (Mapping clusterMapping : cluster) {
 			int i = clusterMapping.getSourceKey();
 			int j = clusterMapping.getTargetKey();

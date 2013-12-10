@@ -42,48 +42,56 @@ public class LocalByThresholdMethod extends ClusteringMethod {
 
 		// build all the sets
 		ArrayList<TreeSet<Point>> setList = new ArrayList<TreeSet<Point>>();
-		
+
 		List<AbstractMatcher> matcherList = params.getMatchers();
-		for( AbstractMatcher m : matcherList ) {
-			setList.add( buildSet( m, t, row, col ) );
+		for (AbstractMatcher m : matcherList) {
+			setList.add(buildSet(m, t, row, col));
 		}
+
+		int numOfMatcher = setList.size();
 		
 		// find the intersection of the sets
 		TreeSet<Point> intersectionSet = null;
 		HashMap<Point, Integer> mappingTimes = null;
-		
-		if( setList.size() == 0 ) {
+
+		if (setList.size() == 0) {
 			// no sets, leave intersectionSet == null
 		}
-		if( setList.size() == 1 ) {
+		if (setList.size() == 1) {
 			// one set
 			intersectionSet = setList.get(0);
 			mappingTimes = new HashMap<Point, Integer>();
-			
+
 			for (Point p : setList.get(0)) {
 				mappingTimes.put(p, 1);
 			}
-			
+
 		} else {
 			// more than one set, must compute intersection.
-//			intersectionSet = computeIntersection( setList.get(0), setList.get(1) ); // the first two sets
-			
+			intersectionSet = computeIntersection(setList.get(0),
+					setList.get(1)); // the first two sets
+
 			// the rest of the sets
-//			for( int i = 2; i < setList.size(); i++ ) {
-//				intersectionSet = computeIntersection( intersectionSet, setList.get(i) ); 
-//			}
+			for (int i = 2; i < setList.size(); i++) {
+				intersectionSet = computeIntersection(intersectionSet,
+						setList.get(i));
+			}
 			mappingTimes = computeCooccurTimes(setList);
-			
+
 		}
-		
+
 		Cluster<Mapping> c = null;
-		
-		if( intersectionSet != null ) {
+
+		if (intersectionSet != null) {
 			// create the cluster
-//			c = new Cluster<Mapping>(intersectionSet, matcherList.get(0).getSourceOntology(), matcherList.get(0).getTargetOntology(), t );
-			c = new Cluster<Mapping>(mappingTimes, matcherList.get(0).getSourceOntology(), matcherList.get(0).getTargetOntology(), t );
+			// c = new Cluster<Mapping>(intersectionSet,
+			// matcherList.get(0).getSourceOntology(),
+			// matcherList.get(0).getTargetOntology(), t );
+			c = new Cluster<Mapping>(mappingTimes, matcherList.get(0)
+					.getSourceOntology(), matcherList.get(0)
+					.getTargetOntology(), t, numOfMatcher);
 		}
-		
+
 		return c;
 	}
 

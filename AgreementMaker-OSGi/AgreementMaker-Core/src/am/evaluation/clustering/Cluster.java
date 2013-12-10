@@ -23,6 +23,7 @@ public class Cluster<E extends Mapping> implements Iterable<E> {
 	public Cluster() {
 		clusterSet = new ArrayList<E>();
 	}
+	
 
 	@SuppressWarnings("unchecked")
 	public Cluster(TreeSet<Point> set, Ontology sourceOntology,
@@ -52,13 +53,14 @@ public class Cluster<E extends Mapping> implements Iterable<E> {
 	}
 
 	public Cluster(HashMap<Point, Integer> map, Ontology sourceOntology,
-			Ontology targetOntology, alignType t) {
-		int total = 0;
-		for (Point p : map.keySet()) {
-			total += map.get(p);
-		}
+			Ontology targetOntology, alignType t, int numOfMatcher) {
+//		int total = 0;
+//		for (Point p : map.keySet()) {
+//			total += map.get(p);
+//		}
 
 		clusterSet = new ArrayList<E>();
+		this.map = new HashMap<Point, Double>();
 
 		List<Node> sourceList = null;
 		List<Node> targetList = null;
@@ -78,7 +80,7 @@ public class Cluster<E extends Mapping> implements Iterable<E> {
 			clusterSet.add((E) new Mapping(sourceList.get(p.x), targetList
 					.get(p.y), 1.0, MappingRelation.EQUIVALENCE, aType)); // unchecked
 																			// conversion
-			this.map.put(p, 1.0 * map.get(p) / total);
+			this.map.put(p, 1.0 * map.get(p) / numOfMatcher);
 		}
 
 	}

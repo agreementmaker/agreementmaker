@@ -46,7 +46,7 @@ public class WordNetLexiconBuilder implements LexiconBuilder {
 		ontologyLexicon = ontLexicon;
 		
 		// Initialize the WordNet interface.
-		String wordnetdir = Core.getInstance().getRoot() + "/wordnet-3.0";
+		String wordnetdir =  "C:/Users/GELI/WorkFolder/Courseproject/AgreementMaker-OSGi/AM_ROOT/wordnet-3.0";
 		System.setProperty("wordnet.database.dir", wordnetdir);
 		
 		
