@@ -1,7 +1,5 @@
 package am.va.graph;
 
-import com.sun.javafx.tk.quantum.PathIteratorHelper.Struct;
-
 public interface VAVariables {
 	int slotNum = 5;
 	/*
@@ -12,8 +10,6 @@ public interface VAVariables {
 	double threshold[] = { 0.00, 0.20, 0.40, 0.60, 0.80, 1.00 };
 	String thresholdName[] = { "0-20%", "20-40%", "40-60%", "60-80%", "80-100%"};
 	
-	// If the area node number is small, show all of them
-	int showAllNodesThresh = 20;
 	/**
 	 * Here every slice of pie chart corresponds to a set of nodes in a certain similarity range
 	 * (defined in array threshold)

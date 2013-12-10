@@ -6,28 +6,21 @@ import java.util.HashMap;
 import javafx.collections.ObservableList;
 import javafx.collections.FXCollections;
 import javafx.event.EventHandler;
-import javafx.geometry.Point2D;
 
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.ListView;
-import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.text.Font;
 
 @SuppressWarnings("restriction")
 public class VAPieChart {
 	private PieChart pieChart;
 	private ListView<String> listView;
 	private ObservableList<PieChart.Data> pieCharDatalist;
-	private double radius; // Radius of the pie chart
-	private Point2D center; // pie chart center point
 	private static VAData selectedVAData;
 
 	public VAPieChart() {
 		this.pieCharDatalist = null;
 		this.pieChart = null;
-		this.radius = 0;
-		center = new Point2D(-1, -1);
 	}
 
 	/**
@@ -50,7 +43,9 @@ public class VAPieChart {
 	 */
 	public void updatePieChart(VAVariables.ontologyType ontologyType) {
 		VAGroup currentGroup = VAPanel.getCurrentGroup();
-		// VAPanel.testVAGroup(currentGroup);
+		//VAPanel.testVAGroup(currentGroup);
+		System.out.println("=============slots=============");
+		currentGroup.printSlots();
 
 		if (currentGroup != null && currentGroup.hasChildren()) {
 			if (VAPanel.getStop() != -1) {// Renew pie chart and build a new one
@@ -83,7 +78,8 @@ public class VAPieChart {
 			VAPanel.setStop(0);
 		}
 	}
-
+	
+	
 	/**
 	 * Update current right pie chart (display only)
 	 */
@@ -128,42 +124,6 @@ public class VAPieChart {
 	}
 
 	/**
-	 * Get pie radius
-	 * 
-	 * @return
-	 */
-	public double getRadius() {
-		return this.radius;
-	}
-
-	/**
-	 * Get pie center
-	 * 
-	 * @return
-	 */
-	public Point2D getPieCenter() {
-		return this.center;
-	}
-
-	/**
-	 * Set pie radius
-	 * 
-	 * @return
-	 */
-	public void setRadius(double r) {
-		this.radius = r;
-	}
-
-	/**
-	 * Get pie center
-	 * 
-	 * @return
-	 */
-	public void setPieCenter(Point2D c) {
-		this.center = c;
-	}
-
-	/**
 	 * Add update list info listener (mouse entered event)
 	 */
 	public void addListener(final VAVariables.ontologyType ontologyType) {
@@ -177,36 +137,12 @@ public class VAPieChart {
 									+ currentData.getName() + " ("
 									+ (int) currentData.getPieValue()
 									+ " ontologies)" + "!!!!");
-							getNodesList(e, currentData, ontologyType);
+							getNodesList(currentData, ontologyType);
 							VAPanel.setListView(listView);
 						}
 
 					});
 		}
-	}
-
-	/**
-	 * based on the position of mouse click, compute the arc index of area
-	 * 
-	 * @param MouseEvent
-	 *            e,
-	 * @param Pie
-	 *            Chart data, the data user clicked
-	 * @return
-	 */
-	private int getArcIdxByPosition(MouseEvent e, PieChart.Data data) {
-		/**
-		 * every slot is 10%, every arc is 2% so every slot has 5 arcs arcs are
-		 * divided by the distance to the center pointer
-		 */
-		Point2D pos = new Point2D(e.getSceneX(), e.getSceneY());
-		double dist = pos.distance(center);
-		int sliceIndex = pieChart.getData().indexOf(data);
-		int arcIndex = sliceIndex * VAVariables.arcNumPerSlice
-				+ (int) (VAVariables.arcNumPerSlice * dist / radius);
-		// System.out.println("Pos = " + pos + " arcIndex " + arcIndex);
-		return arcIndex;
-
 	}
 
 	/**
@@ -217,7 +153,7 @@ public class VAPieChart {
 	 * @param data
 	 * @return
 	 */
-	private void getNodesList(MouseEvent e, PieChart.Data data,
+	private void getNodesList(PieChart.Data data,
 			VAVariables.ontologyType ontologyType) {
 
 		VAGroup currentGroup = VAPanel.getCurrentGroup();
@@ -227,17 +163,13 @@ public class VAPieChart {
 			return;
 		}
 
-		// get the arcindexArray, in order to get nodes by similarity range
-		final ArrayList<Integer> arcIndexArray = currentGroup
-				.getArcIntervalIndexArray();
 		final ArrayList<VAData> dataArrayList = currentGroup.getVADataArray();
 		final HashMap<String, Integer> slotCountMap = currentGroup
 				.getslotCountMap();
 		final HashMap<String, VAData> listMap = new HashMap<String, VAData>();
 
-		VARange idxRange = getPieChartDataIdxRange(data, slotCountMap,
-				arcIndexArray, e);
-
+		VARange idxRange = getPieSliceDataIdxRange(data, slotCountMap);
+		
 		if (idxRange.isValid()) {
 			listView = VAPanel.getlistView();
 			ObservableList<String> arcListData = getListData(idxRange,
@@ -291,9 +223,8 @@ public class VAPieChart {
 	}
 
 	/**
-	 * given start and end index of the data list, put the corresponding data
-	 * into a list in order to show in listView
-	 * 
+	 * given start and end index of the data list, put the corresponding data into a list
+	 * in order to show in listView
 	 * @param start
 	 * @param end
 	 * @param dataArrayList
@@ -301,10 +232,12 @@ public class VAPieChart {
 	 * @return
 	 */
 	private ObservableList<String> getListData(VARange idxRange,
-			ArrayList<VAData> dataArrayList, HashMap<String, VAData> listMap) {
+			ArrayList<VAData> dataArrayList,
+			HashMap<String, VAData> listMap) {
 		ObservableList<String> arcListData = FXCollections
 				.observableArrayList();
 
+		System.out.println(dataArrayList.size() + " data");
 		int start = idxRange.getStartIdx(), end = idxRange.getEndIdx();
 		// Put data in list view
 		for (int i = start; i <= end; i++) {
@@ -313,16 +246,16 @@ public class VAPieChart {
 			listMap.put(name, dataArrayList.get(i));
 			// System.out.println("data " + i + " = " + name);
 		}
-
+		
 		return arcListData;
 	}
-
+	
 	/**
 	 * given a range, print out the data in the list
-	 * 
 	 * @param data
 	 */
-	private void printData(VARange idxRange, ArrayList<VAData> dataArrayList) {
+	private void printData(VARange idxRange,
+			ArrayList<VAData> dataArrayList) {
 		int start = idxRange.getStartIdx(), end = idxRange.getEndIdx();
 		// Put data in list view
 		System.out.println("print data " + idxRange.toString());
@@ -335,43 +268,40 @@ public class VAPieChart {
 	}
 
 	/**
-	 * given a slice of pie chart, return the index range of the pie chart slice
-	 * in the dataArray
+	 * Given a pie chart slice, return the start and end index of the slice
 	 * 
 	 * @param data
+	 * @param slotCountMap
+	 * @return
 	 */
-	private VARange getPieChartDataIdxRange(PieChart.Data data,
-			HashMap<String, Integer> slotCountMap,
-			ArrayList<Integer> arcIndexArray, MouseEvent e) {
-		if (pieChart.getData().size() > 0) {
-			int sliceIndex = pieChart.getData().indexOf(data);
+	private VARange getPieSliceDataIdxRange(PieChart.Data data,
+			HashMap<String, Integer> slotCountMap){
 
-			// get the first slice that is not empty
-			// Pie Chart start to show this slice first, empty slots are omitted
-			int firstNoneEmptySliceIdx = 0;
-			while (arcIndexArray.get(firstNoneEmptySliceIdx) == -1)
-				firstNoneEmptySliceIdx++;
-			firstNoneEmptySliceIdx = (int) (firstNoneEmptySliceIdx / VAVariables.arcNumPerSlice);
+		System.out.println(data.getName());
 
-			VARange idxRange;
-			// If the node is few, show all the ontology nodes
-			if (slotCountMap.containsKey(VAVariables.thresholdName[sliceIndex])
-					&& slotCountMap.get(VAVariables.thresholdName[sliceIndex]) <= VAVariables.showAllNodesThresh) {
-				int startArcIdx = (sliceIndex + firstNoneEmptySliceIdx)
-						* VAVariables.arcNumPerSlice;
-				idxRange = new VARange(arcIndexArray.get(startArcIdx) + 1,
-						arcIndexArray.get(startArcIdx
-								+ VAVariables.arcNumPerSlice));
-			} else {
-				// Show them by arc area
-				int arcIndex = getArcIdxByPosition(e, data);
-				idxRange = new VARange(arcIndexArray.get(arcIndex) + 1,
-						arcIndexArray.get(arcIndex + 1));
+		VAPanel.getCurrentGroup().printSlots();
+		System.out.println("------------------------");
+		if (slotCountMap.containsKey(data.getName())) {
+
+			int start = 0, end = 1;
+			for (int i = 0;; i++) {
+				/*System.out.println("thresholdName[" + i + "]="
+						+ VAVariables.thresholdName[i] + " "
+						+ (data.getName() == VAVariables.thresholdName[i]));*/
+				if (data.getName() == VAVariables.thresholdName[i]
+						|| i == VAVariables.slotNum)
+					break;
+				if (slotCountMap.containsKey(VAVariables.thresholdName[i])) {
+					/*System.out.println("start = " + start + "+"
+							+ slotCountMap.get(VAVariables.thresholdName[i]));*/
+					start += slotCountMap.get(VAVariables.thresholdName[i]);
+				}
 			}
-			return idxRange;
-		} else {
+			end = start + slotCountMap.get(data.getName()) - 1;
+			System.out.println("get range (" + start + " " + end + ")");
+			return new VARange(start, end);
+		} else
 			return new VARange();
-		}
+		
 	}
-
 }
