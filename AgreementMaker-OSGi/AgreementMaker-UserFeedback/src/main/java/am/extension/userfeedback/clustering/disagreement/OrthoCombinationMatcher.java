@@ -167,19 +167,20 @@ public class OrthoCombinationMatcher extends ExecutionSemantics {
 		param_bsm.useDictionary = false;
 		m_bsm = new BaseSimilarityMatcher(param_bsm);
 		m_bsm.setOntologies(sourceOntology, targetOntology);
-		m_bsm.addProgressDisplay(progressDisplay);
+		if (progressDisplay!=null)
+			m_bsm.addProgressDisplay(progressDisplay);
 		
 		// ASM
 		param_asm.initForOAEI2009();
 		m_asm = new AdvancedSimilarityMatcher(param_asm);
 		m_asm.setOntologies(sourceOntology, targetOntology);
-		m_asm.addProgressDisplay(progressDisplay);
+		if (progressDisplay!=null)m_asm.addProgressDisplay(progressDisplay);
 		
 		// PSM
 		param_psm.initForOAEI2010(OAEI_Track.Benchmarks);  // use the OAEI 2010 settings
 		m_psm = new ParametricStringMatcher( param_psm );
 		m_psm.setOntologies(sourceOntology, targetOntology);
-		m_psm.addProgressDisplay(progressDisplay);
+		if (progressDisplay!=null)m_psm.addProgressDisplay(progressDisplay);
 		
 		// VMM
 		try {
@@ -191,12 +192,12 @@ public class OrthoCombinationMatcher extends ExecutionSemantics {
 		}  
 		m_vmm = new MultiWordsMatcher( param_vmm );
 		m_vmm.setOntologies(sourceOntology, targetOntology);
-		m_vmm.addProgressDisplay(progressDisplay);
+		if (progressDisplay!=null)m_vmm.addProgressDisplay(progressDisplay);
 		
 		param_lsm.useSynonymTerms = false;
 		m_lsm = new LexicalSynonymMatcher( param_lsm );
 		m_lsm.setOntologies(sourceOntology, targetOntology);
-		m_lsm.addProgressDisplay(progressDisplay);
+		if (progressDisplay!=null)m_lsm.addProgressDisplay(progressDisplay);
 				
 		// LWC
 		try {
@@ -207,14 +208,14 @@ public class OrthoCombinationMatcher extends ExecutionSemantics {
 		} 
 		m_lwc = new CombinationMatcher( param_lwc );
 		m_lwc.setOntologies(sourceOntology, targetOntology);
-		m_lwc.addProgressDisplay(progressDisplay);
+		if (progressDisplay!=null)m_lwc.addProgressDisplay(progressDisplay);
 		
 		// IISM
 		param_iism.setForOAEI2010();
 		m_iism = new IterativeInstanceStructuralMatcher();
 		m_iism.setParameters(param_iism);
 		m_iism.setOntologies(sourceOntology, targetOntology);
-		m_iism.addProgressDisplay(progressDisplay);
+		if (progressDisplay!=null)m_iism.addProgressDisplay(progressDisplay);
 		
 		// Initialize the OntologyProfiling algorithm because The BSM needs an ontology profiler.
 		if( Core.getInstance().getOntologyProfiler() == null ) {

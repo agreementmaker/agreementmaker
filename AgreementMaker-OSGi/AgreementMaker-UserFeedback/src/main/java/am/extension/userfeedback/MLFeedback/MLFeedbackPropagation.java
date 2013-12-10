@@ -23,12 +23,12 @@ import am.extension.userfeedback.FeedbackPropagation;
 import am.extension.userfeedback.UserFeedback.Validation;
 import am.matcher.Combination.CombinationMatcher;
 
-public class MLFeedbackPropagation extends FeedbackPropagation<MUExperiment> {
+public class MLFeedbackPropagation extends FeedbackPropagation<MLFExperiment> {
 	
 	final double treshold_up=0.6;
 	final double treshold_down=0.01;
 	final double penalize_ratio=0.9;
-	private MUExperiment experiment;
+	private MLFExperiment experiment;
 	List<AbstractMatcher> inputMatchers = new ArrayList<AbstractMatcher>();
 	
 
@@ -154,7 +154,7 @@ public class MLFeedbackPropagation extends FeedbackPropagation<MUExperiment> {
 	}
 
 	@Override
-	public void propagate( MUExperiment exp ) 
+	public void propagate( MLFExperiment exp ) 
 	{
 		this.experiment=exp;
 		int iteration=experiment.getIterationNumber();
