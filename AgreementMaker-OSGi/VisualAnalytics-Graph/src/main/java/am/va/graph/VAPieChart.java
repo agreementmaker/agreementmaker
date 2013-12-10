@@ -43,9 +43,6 @@ public class VAPieChart {
 	 */
 	public void updatePieChart(VAVariables.ontologyType ontologyType) {
 		VAGroup currentGroup = VAPanel.getCurrentGroup();
-		//VAPanel.testVAGroup(currentGroup);
-		System.out.println("=============slots=============");
-		currentGroup.printSlots();
 
 		if (currentGroup != null && currentGroup.hasChildren()) {
 			if (VAPanel.getStop() != -1) {// Renew pie chart and build a new one
@@ -60,9 +57,6 @@ public class VAPieChart {
 								.get(key)));
 				}
 			}
-			// else if (VAPanel.getStop() == -1) {
-			// VAPanel.setStop(0);
-			// }
 			addListener(ontologyType);
 		} else {
 			int num = pieCharDatalist.size();
@@ -70,7 +64,6 @@ public class VAPieChart {
 				pieCharDatalist.remove(0);
 		}
 		if (VAPanel.getStop() != -1) {
-			VAPanel.setSourceLabel(currentGroup.getRootNodeName());
 			VAPanel.getRightPie().updateRightPieChart();
 		}
 
@@ -78,8 +71,7 @@ public class VAPieChart {
 			VAPanel.setStop(0);
 		}
 	}
-	
-	
+
 	/**
 	 * Update current right pie chart (display only)
 	 */
@@ -89,29 +81,34 @@ public class VAPieChart {
 		int num = pieCharDatalist.size();
 		for (int i = 0; i < num; i++)
 			pieCharDatalist.remove(0);
-
+		String newLabel = "";
 		// build new pie chart
 		VAGroup currentGroup = VAPanel.getCurrentGroup();
-		if (currentGroup == null)
-			currentGroup = VAPanel.getRightGroup();
-		if (currentGroup.hasMatching()) {
+		VAGroup newRightGroup = new VAGroup();
+		HashMap<String, Integer> slotsMap = null;
+		if (currentGroup != null && currentGroup.hasMatching()) {
 			VAData newRightRootData = new VAData(currentGroup.getRootNode()
 					.getTargetNode(), null, 0);
-
 			VAPanel.setTargetLabel(newRightRootData.getNodeName());
-
 			if (newRightRootData.hasChildren()) {
-				currentGroup.setListVAData(VASyncData.getChildrenData(
+				newRightGroup.setListVAData(VASyncData.getChildrenData(
 						newRightRootData, VAVariables.ontologyType.Target));
-				HashMap<String, Integer> slotsMap = currentGroup
-						.getslotCountMap();
-				for (String key : VAVariables.thresholdName) {
-					if (slotsMap.containsKey(key))
-						pieCharDatalist.add(new PieChart.Data(key, slotsMap
-								.get(key)));
-				}
+				slotsMap = newRightGroup.getslotCountMap();
 			}
+			newLabel = currentGroup.getRootNodeName();
+		} else if (currentGroup != null && currentGroup.getGroupID() == 1) {
+			slotsMap = VAPanel.getRightRootGroup().getslotCountMap();
+			newLabel = "";
+		} else {
+			newLabel = "No matching found.";
 		}
+		if (slotsMap != null)
+			for (String key : VAVariables.thresholdName) {
+				if (slotsMap.containsKey(key))
+					pieCharDatalist.add(new PieChart.Data(key, slotsMap
+							.get(key)));
+			}
+		VAPanel.setSourceLabel(newLabel);
 	}
 
 	/**
@@ -133,10 +130,6 @@ public class VAPieChart {
 
 						@Override
 						public void handle(MouseEvent e) {
-							System.out.println("-----------------click "
-									+ currentData.getName() + " ("
-									+ (int) currentData.getPieValue()
-									+ " ontologies)" + "!!!!");
 							getNodesList(currentData, ontologyType);
 							VAPanel.setListView(listView);
 						}
@@ -158,18 +151,13 @@ public class VAPieChart {
 
 		VAGroup currentGroup = VAPanel.getCurrentGroup();
 
-		if (currentGroup == null) {
-			System.out.println("- group is empty, return empty list");
-			return;
-		}
-
 		final ArrayList<VAData> dataArrayList = currentGroup.getVADataArray();
 		final HashMap<String, Integer> slotCountMap = currentGroup
 				.getslotCountMap();
 		final HashMap<String, VAData> listMap = new HashMap<String, VAData>();
 
 		VARange idxRange = getPieSliceDataIdxRange(data, slotCountMap);
-		
+
 		if (idxRange.isValid()) {
 			listView = VAPanel.getlistView();
 			ObservableList<String> arcListData = getListData(idxRange,
@@ -223,8 +211,9 @@ public class VAPieChart {
 	}
 
 	/**
-	 * given start and end index of the data list, put the corresponding data into a list
-	 * in order to show in listView
+	 * given start and end index of the data list, put the corresponding data
+	 * into a list in order to show in listView
+	 * 
 	 * @param start
 	 * @param end
 	 * @param dataArrayList
@@ -232,8 +221,7 @@ public class VAPieChart {
 	 * @return
 	 */
 	private ObservableList<String> getListData(VARange idxRange,
-			ArrayList<VAData> dataArrayList,
-			HashMap<String, VAData> listMap) {
+			ArrayList<VAData> dataArrayList, HashMap<String, VAData> listMap) {
 		ObservableList<String> arcListData = FXCollections
 				.observableArrayList();
 
@@ -246,16 +234,16 @@ public class VAPieChart {
 			listMap.put(name, dataArrayList.get(i));
 			// System.out.println("data " + i + " = " + name);
 		}
-		
+
 		return arcListData;
 	}
-	
+
 	/**
 	 * given a range, print out the data in the list
+	 * 
 	 * @param data
 	 */
-	private void printData(VARange idxRange,
-			ArrayList<VAData> dataArrayList) {
+	private void printData(VARange idxRange, ArrayList<VAData> dataArrayList) {
 		int start = idxRange.getStartIdx(), end = idxRange.getEndIdx();
 		// Put data in list view
 		System.out.println("print data " + idxRange.toString());
@@ -275,25 +263,26 @@ public class VAPieChart {
 	 * @return
 	 */
 	private VARange getPieSliceDataIdxRange(PieChart.Data data,
-			HashMap<String, Integer> slotCountMap){
+			HashMap<String, Integer> slotCountMap) {
 
 		System.out.println(data.getName());
-
-		VAPanel.getCurrentGroup().printSlots();
-		System.out.println("------------------------");
 		if (slotCountMap.containsKey(data.getName())) {
 
 			int start = 0, end = 1;
 			for (int i = 0;; i++) {
-				/*System.out.println("thresholdName[" + i + "]="
-						+ VAVariables.thresholdName[i] + " "
-						+ (data.getName() == VAVariables.thresholdName[i]));*/
+				/*
+				 * System.out.println("thresholdName[" + i + "]=" +
+				 * VAVariables.thresholdName[i] + " " + (data.getName() ==
+				 * VAVariables.thresholdName[i]));
+				 */
 				if (data.getName() == VAVariables.thresholdName[i]
 						|| i == VAVariables.slotNum)
 					break;
 				if (slotCountMap.containsKey(VAVariables.thresholdName[i])) {
-					/*System.out.println("start = " + start + "+"
-							+ slotCountMap.get(VAVariables.thresholdName[i]));*/
+					/*
+					 * System.out.println("start = " + start + "+" +
+					 * slotCountMap.get(VAVariables.thresholdName[i]));
+					 */
 					start += slotCountMap.get(VAVariables.thresholdName[i]);
 				}
 			}
@@ -302,6 +291,6 @@ public class VAPieChart {
 			return new VARange(start, end);
 		} else
 			return new VARange();
-		
+
 	}
 }

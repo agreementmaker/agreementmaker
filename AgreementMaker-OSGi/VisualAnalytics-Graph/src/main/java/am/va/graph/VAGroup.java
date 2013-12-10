@@ -192,11 +192,12 @@ public class VAGroup {
 		}
 		System.out.print("\n");
 	}
-	
+
 	public void printSlots() {
+		System.out.println("current root node:" + getRootNodeName());
 		System.out.println(slotCountMap.keySet().size() + " Slots");
-		for( String s: VAVariables.thresholdName ){
-			if( slotCountMap.containsKey(s) )
+		for (String s : VAVariables.thresholdName) {
+			if (slotCountMap.containsKey(s))
 				System.out.println(s + " " + slotCountMap.get(s));
 		}
 	}

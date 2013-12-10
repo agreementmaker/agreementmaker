@@ -128,6 +128,7 @@ public class VAPanel {
 		chartLeft = new VAPieChart(rootGroupLeft);
 		chartLeft.getPieChart().setClockwise(false);
 		chartRight = new VAPieChart(rootGroupRight);
+		chartRight.getPieChart().setClockwise(false);
 		lblSource = new Label("Source ontology", chartLeft.getPieChart());
 		lblSource.setContentDisplay(ContentDisplay.TOP);
 		lblTarget = new Label("Target ontology", chartRight.getPieChart());
@@ -150,7 +151,6 @@ public class VAPanel {
 		// update pie data
 		updatePreviousGroup(rootGroupLeft);
 		updateCurrentGroup(rootGroupLeft);
-		// TEST(currentGroup);
 		chartLeft.updatePieChart(ontologyType.Source);
 
 		// myScene.getStylesheets().add(Ensemble2.class.getResource("ensemble2.css").toExternalForm());
@@ -286,7 +286,7 @@ public class VAPanel {
 		return chartRight;
 	}
 	
-	public static VAGroup getRightGroup(){
+	public static VAGroup getRightRootGroup(){
 		return rootGroupRight;
 	}
 
