@@ -10,14 +10,20 @@ import am.va.graph.VAVariables.ontologyType;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.embed.swing.JFXPanel;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.chart.BubbleChart;
+import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.PieChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ContentDisplay;
@@ -37,9 +43,10 @@ import javafx.scene.text.Font;
 
 public class VAPanel {
 
-	private static JFrame frame;
+	private static JFrame frameMain;
+	private static JFrame frameBubble;
 	private static JFXPanel fxPanel;
-	private static ListView<String> listView;
+	private static ListView<String> listViewLeft;
 	private static Group root;
 	private static Scene myScene;
 	private static VAGroup rootGroupLeft;
@@ -50,7 +57,7 @@ public class VAPanel {
 
 	private static Button btnRoot;
 	private static Button btnUp;
-	private static Button btnHelp;
+	private static Button btnBubble;
 
 	private static ChoiceBox<String> cbOntology;
 
@@ -66,12 +73,12 @@ public class VAPanel {
 	 * Init Frame
 	 */
 	public static void initAndShowGUI() {
-		frame = new JFrame("VA");
-		frame.setSize(1100, 550);
-		frame.setLocation(100, 100);
+		frameMain = new JFrame("VA");
+		frameMain.setSize(1200, 550);
+		frameMain.setLocation(100, 100);
 		fxPanel = new JFXPanel();
-		frame.add(fxPanel);
-		frame.setVisible(true);
+		frameMain.add(fxPanel);
+		frameMain.setVisible(true);
 
 		Platform.runLater(new Runnable() {
 			@Override
@@ -98,15 +105,22 @@ public class VAPanel {
 	private static void setLayout() {
 		// Main layout: BorderPane
 		BorderPane borderPane = new BorderPane();
+		initLeftAddList(borderPane);
+		initTopToolbar(borderPane);
+		initCenterTwoPies(borderPane);
 
-		// left side: listView
-		listView = new ListView<String>();
-		listView.setPrefHeight(500);
-		listView.setPrefWidth(100);
-		listView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-		borderPane.setLeft(listView);
+		root.getChildren().add(borderPane);
+	}
 
-		// Top side: HBox, contains toolbar (buttons & choiceBox & searchBox)
+	private static void initLeftAddList(BorderPane borderPane) {
+		listViewLeft = new ListView<String>();
+		listViewLeft.setPrefHeight(500);
+		listViewLeft.setPrefWidth(100);
+		listViewLeft.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+		borderPane.setLeft(listViewLeft);
+	}
+
+	private static void initTopToolbar(BorderPane borderPane) {
 		ToolBar toolbar = new ToolBar();
 		Region spacer1 = new Region();
 		spacer1.setStyle("-fx-padding: 0 8em 0 0;");
@@ -115,36 +129,44 @@ public class VAPanel {
 		Region spacer3 = new Region();
 		spacer3.setStyle("-fx-padding: 0 20em 0 0;");
 		HBox buttonBar = new HBox();
-
-		// set three buttons
-		btnRoot = new Button("Top level");
-		btnUp = new Button("Go back");
-		btnHelp = new Button("Help");
-		setButtonActions();
-		buttonBar.getChildren().addAll(btnRoot, btnUp, btnHelp);
-
-		// set choice box
-		cbOntology = new ChoiceBox<String>();
-		cbOntology.getItems().addAll("Class", "Properity");
-		cbOntology.getSelectionModel().selectFirst();
-		setChoiceBoxActions();
-
-		// set search box
+		initButtons(buttonBar);
+		initChoiceBox();
 		BorderPane searchboxborderPane = new BorderPane();
-		searchBox = new VASearchBox();
-		searchBox.getStyleClass().add("search-box");
+		initSearchBox();
 		searchboxborderPane.setRight(searchBox);
 		HBox.setMargin(searchBox, new Insets(0, 5, 0, 0));
 		toolbar.getItems().addAll(spacer1, buttonBar, spacer2, cbOntology,
 				spacer3, searchboxborderPane);
-		borderPane.setTop(toolbar);
 
-		// Center side: two piecharts as a group, tilepane layout is used
+		borderPane.setTop(toolbar);
+	}
+
+	private static void initButtons(HBox buttonBar) {
+		btnRoot = new Button("Top level");
+		btnUp = new Button("Go back");
+		btnBubble = new Button("Bubble");
+		setButtonActions();
+		buttonBar.getChildren().addAll(btnRoot, btnUp, btnBubble);
+
+	}
+
+	private static void initChoiceBox() {
+		cbOntology = new ChoiceBox<String>();
+		cbOntology.getItems().addAll("Class", "Properity");
+		cbOntology.getSelectionModel().selectFirst();
+		setChoiceBoxActions();
+	}
+
+	private static void initSearchBox() {
+		searchBox = new VASearchBox();
+		searchBox.getStyleClass().add("search-box");
+	}
+
+	private static void initCenterTwoPies(BorderPane borderPane) {
 		Group chartGroup = new Group();
 		TilePane tilePane = new TilePane();
 		tilePane.setPrefColumns(2); // preferred columns
 
-		// set two pies
 		chartLeft = new VAPieChart(rootGroupLeft);
 		chartLeft.getPieChart().setClockwise(false);
 		chartRight = new VAPieChart(rootGroupRight);
@@ -153,19 +175,19 @@ public class VAPanel {
 		lblSource.setContentDisplay(ContentDisplay.CENTER);
 		lblTarget = new Label("Target ontology", chartRight.getPieChart());
 		lblTarget.setContentDisplay(ContentDisplay.CENTER);
+		tilePane.getChildren().add(lblSource);
+		tilePane.getChildren().add(lblTarget);
+		chartGroup.getChildren().add(tilePane);
+		borderPane.setCenter(chartGroup);
+		initTooltip();
+	}
 
-		// tooltip
+	private static void initTooltip() {
 		pieTooltip = new Tooltip("click to view more");
 		for (final PieChart.Data currentData : chartLeft.getPieChart()
 				.getData()) {
 			Tooltip.install(currentData.getNode(), getPieTooltip());
 		}
-		tilePane.getChildren().add(lblSource);
-		tilePane.getChildren().add(lblTarget);
-		chartGroup.getChildren().add(tilePane);
-		borderPane.setCenter(chartGroup);
-
-		root.getChildren().add(borderPane);
 	}
 
 	/**
@@ -251,11 +273,11 @@ public class VAPanel {
 	}
 
 	public static ListView<String> getlistView() {
-		return listView;
+		return listViewLeft;
 	}
 
 	public static void setListView(ListView<String> list) {
-		listView = list;
+		listViewLeft = list;
 	}
 
 	public static void setSourceLabel(String label, int empty) {
@@ -340,6 +362,44 @@ public class VAPanel {
 				btnUp.setDisable(true);
 			}
 
+		});
+
+		btnBubble.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				frameBubble = new JFrame("Bubble");
+				frameBubble.setSize(500, 550);
+				frameBubble.setLocation(150, 150);
+				JFXPanel fxPanel = new JFXPanel();
+				frameBubble.add(fxPanel);
+				frameBubble.setVisible(true);
+				Group root = new Group();
+				Scene scene = new Scene(root);
+
+				NumberAxis xAxis = new NumberAxis("X", 0d, 150d, 20d);
+
+				NumberAxis yAxis = new NumberAxis("Y", 0d, 150d, 20d);
+
+				@SuppressWarnings({ "rawtypes", "unchecked" })
+				ObservableList<BubbleChart.Series> bubbleChartData = FXCollections.observableArrayList(
+						new BubbleChart.Series("Series 1", FXCollections
+								.observableArrayList(new XYChart.Data(30d, 40d,
+										10d), new XYChart.Data(60d, 20d, 13d),
+										new XYChart.Data(10d, 90d, 7d),
+										new XYChart.Data(100d, 40d, 10d),
+										new XYChart.Data(50d, 23d, 5d))),
+						new BubbleChart.Series("Series 2", FXCollections
+								.observableArrayList(new XYChart.Data(20d,
+										100d, 5d))));
+
+				BubbleChart chart = new BubbleChart(xAxis, yAxis,
+						bubbleChartData);
+				xAxis.setVisible(false);
+				fxPanel.setScene(scene);
+				root.getChildren().add(chart);
+			}
 		});
 	}
 }
