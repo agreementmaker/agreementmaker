@@ -67,7 +67,7 @@ public class VAPieChart {
 			VAPanel.getRightPie().updateRightPieChart();
 			String newLabel = currentGroup.getRootNodeName() + ": "
 					+ currentGroup.getRootNode().getSimilarity();
-			if (currentGroup.getGroupID() == 1)
+			if (currentGroup.getParent() == 0)
 				newLabel = "Source ontoloty";
 			if (currentGroup.hasChildren())
 				VAPanel.setSourceLabel(newLabel, 0);
