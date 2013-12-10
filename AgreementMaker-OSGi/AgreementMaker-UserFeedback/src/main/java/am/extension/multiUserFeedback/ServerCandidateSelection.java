@@ -4,20 +4,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import am.app.mappingEngine.AbstractMatcher.alignType;
-import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MappingSimilarityComparator;
-import am.app.ontology.Ontology;
+import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.evaluation.disagreement.variance.VarianceDisagreement;
 import am.evaluation.disagreement.variance.VarianceDisagreementParameters;
-import am.extension.userfeedback.CandidateSelection;
-import am.extension.userfeedback.MLFeedback.MLFExperiment;
-import am.extension.feedback.FeedbackLoop;
 
-public class ServerCandidateSelection extends MUCandidateSelection{
+public class ServerCandidateSelection extends MUCandidateSelection<MUExperiment> {
 	
 	MUExperiment experiment;
 	private SimilarityMatrix classesMatrix;
@@ -32,8 +28,8 @@ public class ServerCandidateSelection extends MUCandidateSelection{
 	
 	@Override
 	public void rank(MUExperiment exp) {
-		inizialization();
 		this.experiment=exp;
+		inizialization();
 		
 		if(exp.getIterationNumber()==2)
 		{
@@ -66,7 +62,7 @@ public class ServerCandidateSelection extends MUCandidateSelection{
 
 	@Override
 	public Mapping getCandidateMapping(String id) {
-		if (experiment.getIterationNumber()<3)
+		if (experiment.usersMappings.get(id).size()<3)
 		{
 			return getCandidateMappingDisagreementBegining(id);
 		}
@@ -352,24 +348,6 @@ public class ServerCandidateSelection extends MUCandidateSelection{
 		}
 		
 		return mpng;
-	}
-
-	@Override
-	public List<Mapping> getRankedMappings(alignType typeOfRanking) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<Mapping> getRankedMappings() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Mapping getCandidateMapping() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override

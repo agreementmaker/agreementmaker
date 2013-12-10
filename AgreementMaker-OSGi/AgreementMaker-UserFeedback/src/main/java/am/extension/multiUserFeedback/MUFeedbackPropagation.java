@@ -21,7 +21,7 @@ import am.extension.userfeedback.FeedbackPropagation;
 import am.extension.userfeedback.UserFeedback.Validation;
 import am.matcher.Combination.CombinationMatcher;
 
-public abstract class MUFeedbackPropagation  extends FeedbackPropagation<MUExperiment> {
+public class MUFeedbackPropagation  extends FeedbackPropagation<MUExperiment> {
 		
 		final double treshold_up=0.6;
 		final double treshold_down=0.01;
@@ -157,7 +157,7 @@ public abstract class MUFeedbackPropagation  extends FeedbackPropagation<MUExper
 			this.experiment=exp;
 			int iteration=experiment.getIterationNumber();
 			inputMatchers=experiment.initialMatcher.getComponentMatchers();
-			Mapping candidateMapping = experiment.userFeedback.getCandidateMapping();
+			Mapping candidateMapping = experiment.selectedMapping;
 			List<AbstractMatcher> availableMatchers = experiment.initialMatcher.getComponentMatchers();
 			Object[][] trainingSet=new Object[1][availableMatchers.size()];
 			int trainset_index=0;
@@ -180,8 +180,8 @@ public abstract class MUFeedbackPropagation  extends FeedbackPropagation<MUExper
 					trainset_index=experiment.getTrainingSet_property().length;
 				}
 			}
-			Validation userFeedback = experiment.userFeedback.getUserFeedback();
-			if( userFeedback == Validation.CORRECT )
+			String userFeedback = experiment.feedback;
+			if( userFeedback == "CORRECT" )
 			{
 				trainingSet[trainset_index]=addToSV(candidateMapping, true);
 			}
@@ -201,7 +201,7 @@ public abstract class MUFeedbackPropagation  extends FeedbackPropagation<MUExper
 				if( m == null ) 
 					m = new Mapping(candidateMapping);
 				
-				if( userFeedback == Validation.CORRECT ) 
+				if( userFeedback == "CORRECT" ) 
 				{ 
 
 					feedbackClassMatrix.setSimilarity(m.getSourceKey(), m.getTargetKey(), 1.0);
@@ -210,7 +210,7 @@ public abstract class MUFeedbackPropagation  extends FeedbackPropagation<MUExper
 					experiment.classesSparseMatrix.setSimilarity(m.getSourceKey(), m.getTargetKey(), 1);
 					
 				}
-				else if( userFeedback == Validation.INCORRECT ) 
+				else if( userFeedback == "INCORRECT" ) 
 				{ 
 					feedbackClassMatrix.setSimilarity(m.getSourceKey(), m.getTargetKey(), 0.0);
 					experiment.classesSparseMatrix.setSimilarity(m.getSourceKey(), m.getTargetKey(), 1);
@@ -223,14 +223,14 @@ public abstract class MUFeedbackPropagation  extends FeedbackPropagation<MUExper
 				if( m == null ) 
 					m = new Mapping(candidateMapping);
 				
-				if( userFeedback == Validation.CORRECT ) 
+				if( userFeedback == "CORRECT" ) 
 				{ 
 					feedbackPropertyMatrix.setSimilarity(m.getSourceKey(), m.getTargetKey(), 1.0);
 //					if (experiment.getAlignCardinalityType()==alignCardinality.c1_1)
 //						feedbackPropertyMatrix=zeroSim(experiment.getUflPropertyMatrix(), candidateMapping.getSourceKey(), candidateMapping.getTargetKey(),1,1);
 					experiment.propertiesSparseMatrix.setSimilarity(m.getSourceKey(), m.getTargetKey(), 1);
 				}
-				else if( userFeedback == Validation.INCORRECT ) 
+				else if( userFeedback == "INCORRECT" ) 
 				{
 					feedbackPropertyMatrix.setSimilarity(m.getSourceKey(), m.getTargetKey(), 0.0);
 					experiment.propertiesSparseMatrix.setSimilarity(m.getSourceKey(), m.getTargetKey(), 1);

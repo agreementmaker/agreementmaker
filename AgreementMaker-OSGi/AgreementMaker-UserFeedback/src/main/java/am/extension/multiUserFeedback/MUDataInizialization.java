@@ -3,9 +3,12 @@ package am.extension.multiUserFeedback;
 import java.util.ArrayList;
 import java.util.List;
 
+import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
+import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.app.ontology.Node;
 import am.extension.multiUserFeedback.MUExperiment;
 import am.extension.userfeedback.FeedbackLoopInizialization;
@@ -33,6 +36,18 @@ public class MUDataInizialization  extends FeedbackLoopInizialization<MUExperime
 		
 		exp.setUflClassMatrix(smClass);
 		exp.setUflPropertyMatrix(smProperty);
+		
+		exp.classesSparseMatrix = 
+				new SparseMatrix(
+						Core.getInstance().getSourceOntology(),
+						Core.getInstance().getTargetOntology(), 
+						alignType.aligningClasses);
+		
+		exp.propertiesSparseMatrix = 
+				new SparseMatrix(
+						Core.getInstance().getSourceOntology(),
+						Core.getInstance().getTargetOntology(), 
+						alignType.aligningProperties);
 		
 		done();
 	}
