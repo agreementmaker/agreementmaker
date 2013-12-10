@@ -21,6 +21,8 @@ import play.mvc.Result;
 import views.html.index;
 import am.app.Core;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.Mapping.MappingRelation;
+import am.app.ontology.Node;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.app.ontology.ontologyParser.OntologyDefinition;
 import am.app.ontology.ontologyParser.TreeBuilder;
@@ -31,7 +33,11 @@ import am.extension.collaborationClient.restful.RESTfulCollaborationServer;
 import am.extension.collaborationClient.restful.RESTfulTask;
 import am.extension.collaborationClient.restful.RESTfulUser;
 import am.extension.multiUserFeedback.MUExperiment;
+import am.extension.multiUserFeedback.ServerCandidateSelection;
+import am.extension.userfeedback.CandidateSelection;
+import am.extension.userfeedback.UFLExperiment;
 import am.extension.userfeedback.UFLExperimentSetup;
+import am.extension.userfeedback.MLFeedback.MLFeedbackPropagation;
 import am.extension.userfeedback.UFLRegistry.CandidateSelectionRegistry;
 import am.extension.userfeedback.UFLRegistry.FeedbackPropagationRegistry;
 import am.extension.userfeedback.UFLRegistry.InitialMatcherRegistry;
@@ -45,7 +51,10 @@ public class Application extends Controller {
 
 	private static MUExperiment[] experiments;
 	
-	private final static Object syncronizeObject = new Object();
+	private static ServerCandidateSelection[] cs;
+	
+	private final static Object syncronizeCandidateSelection = new Object();
+	private final static Object syncronizeFeedbackPropagation = new Object();
 	
 	/**
 	 * Initialize the server.
@@ -127,6 +136,7 @@ public class Application extends Controller {
 				System.out.println(i + " Created matching task " + m1.id + ": " + m1.name + "\n");
 				
 				experiments = new MUExperiment[1];
+				cs = new ServerCandidateSelection[1];
 				
 				experiments[0] = new MUExperiment();
 				
@@ -135,7 +145,7 @@ public class Application extends Controller {
 				
 				setup.im  = InitialMatcherRegistry.OrthoCombination;
 				setup.fli = LoopInizializationRegistry.MUDataInizialization;
-				setup.cs  = CandidateSelectionRegistry.MultiStrategyRanking;
+				setup.cs  = CandidateSelectionRegistry.ServerCandidateSelection;
 				setup.cse = null;
 				setup.uv  = null;
 				setup.fp  = FeedbackPropagationRegistry.MUFeedbackPropagation;
@@ -205,22 +215,18 @@ public class Application extends Controller {
 		return ok(chunks);
 	}
 	
-	public static Result getCandidateMapping() {
+	public static Result getCandidateMapping(String id) {
 		
-		
-		if( experiments[0].candidateSelection == null ) {
-			try {
-				experiments[0].candidateSelection = experiments[0].setup.cs.getEntryClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException e) {
-				e.printStackTrace();
+		synchronized(syncronizeCandidateSelection) {
+			if( experiments[0].candidateSelection == null ) {
+				cs[0] = new ServerCandidateSelection();
+				experiments[0].candidateSelection = (CandidateSelection) cs[0];
 			}
+			
+			cs[0].rank(experiments[0]);
 		}
 		
-		synchronized(syncronizeObject) {
-			experiments[0].candidateSelection.rank(experiments[0]);
-		}
-		
-		Mapping m = experiments[0].candidateSelection.getCandidateMapping();
+		Mapping m = cs[0].getCandidateMapping(id);
 		
 		ServerCandidateMapping scm = new ServerCandidateMapping();
 		scm.sourceURI = m.getEntity1().getUri();
@@ -249,7 +255,7 @@ public class Application extends Controller {
 		RESTfulUser newUser = new RESTfulUser();
 		newUser.setId(Long.toString(newClient.clientID));
 		
-		//experiments[0].
+		experiments[0].login(newUser.getId());
 		
 		return ok(Json.toJson(newUser));
 	}
@@ -276,5 +282,33 @@ public class Application extends Controller {
 		JsonNode taskJson = Json.toJson(restfulTasks);
 		return ok(taskJson);
 	}
+	
+	public static Result setFeedback(String id, String feedback)
+	{
+		ServerCandidateMapping m= ServerCandidateMapping.find.byId(Long.parseLong(id));
+		m.feedback=feedback;
+		m.save();
+		
+		synchronized (syncronizeFeedbackPropagation) {
+			if( experiments[0].feedbackPropagation == null ) {
+				try {
+					experiments[0].feedbackPropagation = experiments[0].setup.fp.getEntryClass().newInstance();
+				} catch (InstantiationException | IllegalAccessException e) {
+					e.printStackTrace();
+				}
+			}
+			experiments[0].feedback=feedback;
+			Node source=experiments[0].getSourceOntology().getNodeByURI(m.sourceURI);
+			Node target=experiments[0].getTargetOntology().getNodeByURI(m.targetURI);
+			Mapping selectedMapping=new Mapping(source,target,0.0,MappingRelation.EQUIVALENCE);
+			experiments[0].selectedMapping=selectedMapping;
+			experiments[0].feedbackPropagation.propagate(experiments[0]);
+		}
+
+		
+		return null;
+	}
+	
+	
 	
 }

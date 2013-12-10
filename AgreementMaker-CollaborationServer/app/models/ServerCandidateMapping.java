@@ -2,6 +2,7 @@ package models;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.validation.Constraint;
 
 import play.data.validation.Constraints;
 import play.db.ebean.Model;
@@ -19,4 +20,10 @@ public class ServerCandidateMapping extends Model {
 	
 	@Constraints.Required
 	public String targetURI;
+	
+
+	public String feedback;
+	
+	public static Model.Finder<Long,ServerCandidateMapping> find = 
+    		new Model.Finder<Long,ServerCandidateMapping>(Long.class, ServerCandidateMapping.class);
 }
