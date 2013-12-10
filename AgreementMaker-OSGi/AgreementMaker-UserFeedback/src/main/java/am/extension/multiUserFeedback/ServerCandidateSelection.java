@@ -17,7 +17,7 @@ import am.extension.userfeedback.CandidateSelection;
 import am.extension.userfeedback.MLFeedback.MLFExperiment;
 import am.extension.feedback.FeedbackLoop;
 
-public class ServerCandidateSelection extends MUCandidateSelection<MUExperiment>{
+public class ServerCandidateSelection extends MUCandidateSelection{
 	
 	MUExperiment experiment;
 	private SimilarityMatrix classesMatrix;
@@ -25,6 +25,11 @@ public class ServerCandidateSelection extends MUCandidateSelection<MUExperiment>
 	private final double weight_um=0.5;
 	
 	List<Mapping> allRanked=new ArrayList<Mapping>();
+	
+	public ServerCandidateSelection(){
+		super();
+	}
+	
 	@Override
 	public void rank(MUExperiment exp) {
 		inizialization();
@@ -69,9 +74,9 @@ public class ServerCandidateSelection extends MUCandidateSelection<MUExperiment>
 		{
 			 switch (experiment.usersGroup.get(id)) 
 			 {
-	            case 1:  return getCandidateMapping(id, allRanked);
-	            case 2:  return getCandidateMapping(id, experiment.uncertainRanking);
-	            case 3:  return getCandidateMapping(id, experiment.almostRanking);
+	            case 0:  return getCandidateMapping(id, allRanked);
+	            case 1:  return getCandidateMapping(id, experiment.uncertainRanking);
+	            case 2:  return getCandidateMapping(id, experiment.almostRanking);
 	        }
 		}
 		return null;
@@ -347,6 +352,30 @@ public class ServerCandidateSelection extends MUCandidateSelection<MUExperiment>
 		}
 		
 		return mpng;
+	}
+
+	@Override
+	public List<Mapping> getRankedMappings(alignType typeOfRanking) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Mapping> getRankedMappings() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Mapping getCandidateMapping() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Mapping getSelectedMapping() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 

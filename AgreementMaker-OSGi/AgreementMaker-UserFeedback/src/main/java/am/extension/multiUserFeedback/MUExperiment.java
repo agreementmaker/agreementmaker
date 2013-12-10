@@ -279,6 +279,18 @@ public void setMLAlignment(Alignment<Mapping> mLAlignment) {
 
 
 	}
+	
+	public void login(String id) {
+		usersMappings.put(id, new ArrayList<Mapping>());
+		usersGroup.put(id, getGroup());
+	}
+
+	
+	private int getGroup()
+	{
+		int size=usersGroup.size();
+		return size%3;
+	}
 }
 
 
