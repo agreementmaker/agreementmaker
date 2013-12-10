@@ -1,4 +1,4 @@
-package am.extension.userfeedback.clustering.disagreement;
+package am.extension.multiUserFeedback;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -9,15 +9,14 @@ import am.evaluation.alignment.DeltaFromReference;
 import am.extension.multiUserFeedback.MUExperiment;
 import am.extension.userfeedback.PropagationEvaluation;
 import am.extension.userfeedback.UFLExperiment;
-import am.extension.userfeedback.MLFeedback.MLFExperiment;
 
-public class SMatrixDeltaEvaluetion extends PropagationEvaluation<MLFExperiment>  {
+public class MUDeltaEvaluation extends PropagationEvaluation<MUExperiment>  {
 	
 	private DeltaFromReference deltaFromReference;
 	
 	private BufferedWriter fileWriter = null;
 	
-	public SMatrixDeltaEvaluetion() {
+	public MUDeltaEvaluation() {
 		try {
 			FileWriter fstream = new FileWriter("/home/frank/Desktop/deltaPlot.dat", true);
 			BufferedWriter bfr = new BufferedWriter(fstream);
@@ -30,7 +29,7 @@ public class SMatrixDeltaEvaluetion extends PropagationEvaluation<MLFExperiment>
 	}
 	
 	@Override
-	public void evaluate(MLFExperiment exp) {
+	public void evaluate(MUExperiment exp) {
 
 		deltaFromReference = new DeltaFromReference(exp.getReferenceAlignment());
 		
