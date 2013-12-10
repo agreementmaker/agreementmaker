@@ -27,11 +27,17 @@ public class VASyncData {
 		if (ontologyType == VAVariables.ontologyType.Source) {
 			Ontology sourceOntology = currentTask.matcherResult
 					.getSourceOntology();
-			rootNode = sourceOntology.getClassesRoot();
+			if (VASyncListener.getNodeType() == VAVariables.nodeType.Class)
+				rootNode = sourceOntology.getClassesRoot();
+			else
+				rootNode = sourceOntology.getPropertiesRoot();
 		} else {
 			Ontology targetOntology = currentTask.matcherResult
 					.getTargetOntology();
-			rootNode = targetOntology.getClassesRoot();
+			if (VASyncListener.getNodeType() == VAVariables.nodeType.Class)
+				rootNode = targetOntology.getClassesRoot();
+			else
+				rootNode = targetOntology.getPropertiesRoot();
 		}
 
 		return rootNode;
@@ -70,15 +76,18 @@ public class VASyncData {
 		double sim = 0.00;
 		MatchingTask matchingTask = Core.getInstance()
 				.getMatchingTasksWithoutUserManualMatcher().get(0);
-		SimilarityMatrix smClass = matchingTask.matcherResult
-				.getClassesMatrix();
+		SimilarityMatrix smMatrix = null;
+		if (VASyncListener.getNodeType() == VAVariables.nodeType.Class)
+			smMatrix = matchingTask.matcherResult.getClassesMatrix();
+		else
+			smMatrix = matchingTask.matcherResult.getPropertiesMatrix();
 		Mapping map[] = null;
 		if (ontologyType == VAVariables.ontologyType.Source) // input is source,
 																// find target
-			map = smClass.getRowMaxValues(n.getIndex(), 1);
+			map = smMatrix.getRowMaxValues(n.getIndex(), 1);
 		else
-			map = smClass.getColMaxValues(n.getIndex(), 1); // input is target,
-															// find source
+			map = smMatrix.getColMaxValues(n.getIndex(), 1); // input is target,
+																// find source
 		if (map != null) {
 			if (ontologyType == VAVariables.ontologyType.Source)
 				matchingNode = map[0].getEntity2();
