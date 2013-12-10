@@ -84,6 +84,9 @@ public class VASyncData {
 		Mapping map[] = null;
 		if (ontologyType == VAVariables.ontologyType.Source) // input is source,
 																// find target
+			/**
+			 * Array out of bound error sometimes happen here, just ignore
+			 */
 			map = smMatrix.getRowMaxValues(n.getIndex(), 1);
 		else
 			map = smMatrix.getColMaxValues(n.getIndex(), 1); // input is target,
@@ -110,13 +113,14 @@ public class VASyncData {
 	public static ArrayList<VAData> getChildrenData(VAData rootNodeData,
 			VAVariables.ontologyType ontologyType) {
 		ArrayList<VAData> res = new ArrayList<VAData>();
-		Node rootNode = rootNodeData.sourceNode;
+		Node rootNode = rootNodeData.getSourceNode();
 		for (Node n : rootNode.getChildren()) {
 			// get target node info which best matches this node
 			VAData newChildData = VASyncData.getMatchingVAData(n, ontologyType);
 			res.add(newChildData);
 		}
-		Collections.sort(res);
+		if (ontologyType == VAVariables.ontologyType.Source)
+			Collections.sort(res);
 		return res;
 	}
 }

@@ -3,9 +3,9 @@ package am.va.graph;
 import am.app.ontology.Node;
 
 public class VAData implements Comparable<VAData> {
-	Node sourceNode;
-	Node targetNode;
-	double Similarity;
+	private Node sourceNode;
+	private Node targetNode;
+	private double Similarity;
 
 	public VAData(Node sourceNode, Node targetNode, double similarity) {
 		super();
@@ -59,10 +59,12 @@ public class VAData implements Comparable<VAData> {
 	@Override
 	public int compareTo(VAData data) {
 		// TODO Auto-generated method stub
-		if (this.Similarity >= data.Similarity)
+		if (this.Similarity > data.Similarity)
 			return 1;
-		else
+		else if (this.Similarity < data.Similarity)
 			return -1;
+		else
+			return 0;
 	}
 
 	public String toString() {
