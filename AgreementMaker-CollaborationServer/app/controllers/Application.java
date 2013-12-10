@@ -129,7 +129,7 @@ public class Application extends Controller {
 				UFLExperimentSetup setup = experiments[0].setup;
 				
 				setup.im  = InitialMatcherRegistry.OrthoCombination;
-				setup.fli = LoopInizializationRegistry.DataInizialization;
+				setup.fli = LoopInizializationRegistry.MUDataInizialization;
 				setup.cs  = CandidateSelectionRegistry.MultiStrategyRanking;
 				setup.cse = null;
 				setup.uv  = null;
