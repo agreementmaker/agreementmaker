@@ -30,6 +30,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.TilePane;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 
 //import ensemble.Ensemble2;
 
@@ -140,9 +142,9 @@ public class VAPanel {
 		chartRight = new VAPieChart(rootGroupRight);
 		chartRight.getPieChart().setClockwise(false);
 		lblSource = new Label("Source ontology", chartLeft.getPieChart());
-		lblSource.setContentDisplay(ContentDisplay.TOP);
+		lblSource.setContentDisplay(ContentDisplay.CENTER);
 		lblTarget = new Label("Target ontology", chartRight.getPieChart());
-		lblTarget.setContentDisplay(ContentDisplay.TOP);
+		lblTarget.setContentDisplay(ContentDisplay.CENTER);
 
 		// tooltip
 		pieTooltip = new Tooltip("click to view more");
@@ -225,32 +227,6 @@ public class VAPanel {
 		rootGroupRight = group;
 	}
 
-	/**
-	 * Print info. Testing only.
-	 * 
-	 * @param rootGroup
-	 */
-	public static void testVAGroup(VAGroup rootGroup) {
-		System.out.println("-----------------------------");
-		if (rootGroup != null) {
-			String rootNodeName = rootGroup.getRootNode().getNodeName();
-			System.out.println(rootNodeName);
-			ArrayList<VAData> vaData = rootGroup.getVADataArray();
-			for (VAData d : vaData) {
-				System.out.println(d.getNodeName() + ","
-						+ d.getTargetNode().getLocalName() + ","
-						+ d.getSimilarity());
-			}
-			HashMap<String, Integer> slots = rootGroup.getslotCountMap();
-			for (String s : VAVariables.thresholdName) {
-				if (slots.containsKey(s))
-					System.out.println(s + ":" + slots.get(s));
-			}
-		} else {
-			System.out.println("Empty group ?!!");
-		}
-	}
-
 	public static VAGroup getCurrentGroup() {
 		return currentGroup;
 	}
@@ -283,12 +259,26 @@ public class VAPanel {
 		listView = list;
 	}
 
-	public static void setSourceLabel(String label) {
+	public static void setSourceLabel(String label, int empty) {
 		lblSource.setText(label);
+		if (empty == 1) {
+			lblSource.setFont(Font.font("Verdana", 20));
+			lblSource.setTextFill(Color.RED);
+		} else {
+			lblSource.setFont(Font.font("Verdana", 15));
+			lblSource.setTextFill(Color.WHITESMOKE);
+		}
 	}
 
-	public static void setTargetLabel(String label) {
+	public static void setTargetLabel(String label, int empty) {
 		lblTarget.setText(label);
+		if (empty == 1) {
+			lblTarget.setFont(Font.font("Verdana", 20));
+			lblTarget.setTextFill(Color.RED);
+		} else {
+			lblTarget.setFont(Font.font("Verdana", 15));
+			lblTarget.setTextFill(Color.WHITESMOKE);
+		}
 	}
 
 	public static VAPieChart getRightPie() {
@@ -299,6 +289,9 @@ public class VAPanel {
 		return rootGroupRight;
 	}
 
+	/**
+	 * Add event for choice box
+	 */
 	private static void setChoiceBoxActions() {
 		cbOntology.getSelectionModel().selectedIndexProperty()
 				.addListener(new ChangeListener<Number>() {

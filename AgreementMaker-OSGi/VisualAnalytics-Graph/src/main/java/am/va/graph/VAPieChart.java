@@ -65,6 +65,12 @@ public class VAPieChart {
 		}
 		if (VAPanel.getStop() != -1) {
 			VAPanel.getRightPie().updateRightPieChart();
+			String newLabel = currentGroup.getRootNodeName() + ": "
+					+ currentGroup.getRootNode().getSimilarity();
+			if (currentGroup.hasChildren())
+				VAPanel.setSourceLabel(newLabel, 0);
+			else
+				VAPanel.setSourceLabel(newLabel, 1);
 		}
 
 		if (VAPanel.getStop() == -1) {
@@ -89,7 +95,7 @@ public class VAPieChart {
 		if (currentGroup != null && currentGroup.hasMatching()) {
 			VAData newRightRootData = new VAData(currentGroup.getRootNode()
 					.getTargetNode(), null, 0);
-			VAPanel.setTargetLabel(newRightRootData.getNodeName());
+			// VAPanel.setTargetLabel(newRightRootData.getNodeName());
 			if (newRightRootData.hasChildren()) {
 				newRightGroup.setListVAData(VASyncData.getChildrenData(
 						newRightRootData, VAVariables.ontologyType.Target));
@@ -108,7 +114,7 @@ public class VAPieChart {
 					pieCharDatalist.add(new PieChart.Data(key, slotsMap
 							.get(key)));
 			}
-		VAPanel.setTargetLabel(newLabel);
+		VAPanel.setTargetLabel(newLabel, 1);
 	}
 
 	/**
@@ -209,6 +215,8 @@ public class VAPieChart {
 					} else {
 						// listView.setStyle("-fx-selection-bar-text: White;");
 					}
+					VAPanel.getNewGroup(ontologyType);
+					updatePieChart(ontologyType);
 				} else {
 					System.out.println("- select empty!");
 				}
