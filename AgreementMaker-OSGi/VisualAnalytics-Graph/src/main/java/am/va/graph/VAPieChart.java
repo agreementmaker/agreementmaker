@@ -67,6 +67,8 @@ public class VAPieChart {
 			VAPanel.getRightPie().updateRightPieChart();
 			String newLabel = currentGroup.getRootNodeName() + ": "
 					+ currentGroup.getRootNode().getSimilarity();
+			if (currentGroup.getGroupID() == 1)
+				newLabel = "Source ontoloty";
 			if (currentGroup.hasChildren())
 				VAPanel.setSourceLabel(newLabel, 0);
 			else
@@ -104,7 +106,7 @@ public class VAPieChart {
 			newLabel = currentGroup.getRootNodeName();
 		} else if (currentGroup != null && currentGroup.getParent() == 0) {
 			slotsMap = VAPanel.getRightRootGroup().getslotCountMap();
-			newLabel = "";
+			newLabel = "Target ontology";
 		} else {
 			newLabel = "No matching found.";
 		}
@@ -114,7 +116,7 @@ public class VAPieChart {
 					pieCharDatalist.add(new PieChart.Data(key, slotsMap
 							.get(key)));
 			}
-		VAPanel.setTargetLabel(newLabel, 1);
+		VAPanel.setTargetLabel(newLabel);
 	}
 
 	/**
