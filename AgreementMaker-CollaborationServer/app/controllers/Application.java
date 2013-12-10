@@ -8,6 +8,7 @@ import java.util.List;
 import models.Client;
 import models.MatchingTask;
 import models.Ontology;
+import models.ServerCandidateMapping;
 
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
@@ -19,11 +20,13 @@ import play.mvc.Http.Request;
 import play.mvc.Result;
 import views.html.index;
 import am.app.Core;
+import am.app.mappingEngine.Mapping;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.app.ontology.ontologyParser.OntologyDefinition;
 import am.app.ontology.ontologyParser.TreeBuilder;
 import am.app.ontology.ontologyParser.OntologyDefinition.OntologyLanguage;
 import am.app.ontology.ontologyParser.OntologyDefinition.OntologySyntax;
+import am.extension.collaborationClient.restful.RESTfulCandidateMapping;
 import am.extension.collaborationClient.restful.RESTfulCollaborationServer;
 import am.extension.collaborationClient.restful.RESTfulTask;
 import am.extension.collaborationClient.restful.RESTfulUser;
@@ -41,6 +44,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 public class Application extends Controller {
 
 	private static MUExperiment[] experiments;
+	
+	private final static Object syncronizeObject = new Object();
 	
 	/**
 	 * Initialize the server.
@@ -200,6 +205,36 @@ public class Application extends Controller {
 		return ok(chunks);
 	}
 	
+	public static Result getCandidateMapping() {
+		
+		
+		if( experiments[0].candidateSelection == null ) {
+			try {
+				experiments[0].candidateSelection = experiments[0].setup.cs.getEntryClass().newInstance();
+			} catch (InstantiationException | IllegalAccessException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		synchronized(syncronizeObject) {
+			experiments[0].candidateSelection.rank(experiments[0]);
+		}
+		
+		Mapping m = experiments[0].candidateSelection.getCandidateMapping();
+		
+		ServerCandidateMapping scm = new ServerCandidateMapping();
+		scm.sourceURI = m.getEntity1().getUri();
+		scm.targetURI = m.getEntity2().getUri();
+		scm.save();
+		
+		RESTfulCandidateMapping restfulMapping = new RESTfulCandidateMapping();
+		restfulMapping.setId(scm.id);
+		restfulMapping.setSourceURI(scm.sourceURI);
+		restfulMapping.setTargetURI(scm.targetURI);
+		
+		return ok(Json.toJson(restfulMapping));
+	}
+	
     public static Result index() {
         return ok(index.render());
     }
@@ -213,6 +248,8 @@ public class Application extends Controller {
 		
 		RESTfulUser newUser = new RESTfulUser();
 		newUser.setId(Long.toString(newClient.clientID));
+		
+		//experiments[0].
 		
 		return ok(Json.toJson(newUser));
 	}
