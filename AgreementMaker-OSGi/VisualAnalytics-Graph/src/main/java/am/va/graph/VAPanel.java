@@ -41,6 +41,7 @@ public class VAPanel {
 	private static JFXPanel fxPanel;
 	private static ListView<String> listView;
 	private static Group root;
+	private static Scene myScene;
 	private static VAGroup rootGroupLeft;
 	private static VAGroup rootGroupRight;
 	private static VAGroup previousGroup;
@@ -85,9 +86,16 @@ public class VAPanel {
 	 */
 	public static void InitFX() {
 		root = new Group();
+		myScene = new Scene(root);
+		setLayout();
+		fxPanel.setScene(myScene);
 
-		Scene myScene = new Scene(root);
+		updatePreviousGroup(rootGroupLeft);
+		updateCurrentGroup(rootGroupLeft);
+		chartLeft.updatePieChart(ontologyType.Source);
+	}
 
+	private static void setLayout() {
 		// Main layout: BorderPane
 		BorderPane borderPane = new BorderPane();
 
@@ -110,7 +118,7 @@ public class VAPanel {
 
 		// set three buttons
 		btnRoot = new Button("Top level");
-		btnUp = new Button("Go up");
+		btnUp = new Button("Go back");
 		btnHelp = new Button("Help");
 		setButtonActions();
 		buttonBar.getChildren().addAll(btnRoot, btnUp, btnHelp);
@@ -158,15 +166,6 @@ public class VAPanel {
 		borderPane.setCenter(chartGroup);
 
 		root.getChildren().add(borderPane);
-		fxPanel.setScene(myScene);
-
-		// update pie data
-		updatePreviousGroup(rootGroupLeft);
-		updateCurrentGroup(rootGroupLeft);
-		chartLeft.updatePieChart(ontologyType.Source);
-
-		// myScene.getStylesheets().add(Ensemble2.class.getResource("ensemble2.css").toExternalForm());
-		// myScene.getStylesheets().add(VAPanel.class.getResource("VA.css").toExternalForm());
 	}
 
 	/**
@@ -270,15 +269,10 @@ public class VAPanel {
 		}
 	}
 
-	public static void setTargetLabel(String label, int empty) {
+	public static void setTargetLabel(String label) {
 		lblTarget.setText(label);
-		if (empty == 1) {
-			lblTarget.setFont(Font.font("Verdana", 20));
-			lblTarget.setTextFill(Color.RED);
-		} else {
-			lblTarget.setFont(Font.font("Verdana", 15));
-			lblTarget.setTextFill(Color.WHITESMOKE);
-		}
+		lblTarget.setFont(Font.font("Verdana", 20));
+		lblTarget.setTextFill(Color.RED);
 	}
 
 	public static VAPieChart getRightPie() {
