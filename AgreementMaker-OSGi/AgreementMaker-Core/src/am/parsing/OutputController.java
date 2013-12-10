@@ -113,7 +113,10 @@ public class OutputController {
 	 * @param alignment The alignment to be saved.
 	 * @param matcherName The name of the matcher that created this alignment. (This is used to name the alignment when we import)
 	 * @throws Exception
+	 * 
+	 * @deprecated Use {@link AlignmentOutput} directly.
 	 */
+	@Deprecated
 	public static void printDocumentOAEI(File completeFileName, Alignment<Mapping> alignment, String matcherName) throws Exception{
 
 		AlignmentOutput output = new AlignmentOutput(alignment, completeFileName);

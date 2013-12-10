@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	
+
 	<groupId>edu.uic.cs.advis.am</groupId>
 	<artifactId>AgreementMaker-OSGi</artifactId>
 	<version>0.3.0-SNAPSHOT</version>
@@ -11,46 +11,251 @@
 	<modules>
 		<module>AgreementMaker-Core</module>
 		<module>Matcher-BaseSimilarity</module>
+		<module>AgreementMaker-Matchers</module>
+		<module>Matcher-PRA</module>
 		<module>Matcher-AdvancedSimilarity</module>
 		<module>Matcher-OAEI</module>
+		<module>AgreementMaker-UI</module>
+		<module>Matcher-LinkedOpenData</module>
 		<module>AgreementMaker-BatchMode</module>
-		<module>AgreementMaker-CollaborationEngine</module>
+		<module>AgreementMaker-CollaborationClient</module>
 		<module>AgreementMaker-UserFeedback</module>
 		<module>AgreementMaker-SemanticExplanation</module>
-		<module>AgreementMaker-UI</module>
 		<module>AgreementMaker-UIGlue</module>
-		<module>Matcher-LinkedOpenData</module>
-		<module>Matcher-PRA</module>
-		<module>AgreementMaker-Matchers</module>
+		<!-- <module>VisualAnalytics-Graph</module> -->
+		<module>Matcher-Benchmarks2013</module>
+		<!-- <module>AgreementMaker-Tests</module> -->
+		<module>Matcher-IMEI2013</module>
 		<!-- <module>AM_ROOT</module> -->
-		<module>VisualAnalytics-Graph</module>
 	</modules>
-	
+
 	<name>AgreementMaker OSGi</name>
 	<description>OSGi version of AgreementMaker</description>
 
 	<properties>
-		<tycho-version>0.18.1</tycho-version>
+		<exam.version>3.0.0</exam.version>
+		<url.version>1.5.2</url.version>
+		<drombler-fx.version>0.2</drombler-fx.version>
 	</properties>
 
+	<!-- Repositories from where we get our dependencies. -->
 	<repositories>
 		<repository>
-			<id>indigo</id>
-			<layout>p2</layout>
-			<url>http://download.eclipse.org/releases/indigo</url>
+			<id>AgreementMaker Maven Repo</id>
+			<url>http://agreementmaker.org/maven2</url>
+		</repository>
+		<repository>
+			<id>Aduna</id>
+			<url>http://repo.aduna-software.org/maven2/releases</url>
+		</repository>
+		<repository>
+			<id>bliki</id>
+			<url>https://gwtwiki.googlecode.com/svn/maven-repository/</url>
+		</repository>
+		<repository>
+			<id>Apache Jena Releases</id>
+			<url>https://repository.apache.org/content/repositories/releases/</url>
 		</repository>
 	</repositories>
 
 	<build>
 		<plugins>
+			<!-- Specify our Java version here. -->
 			<plugin>
-				<groupId>org.eclipse.tycho</groupId>
-				<artifactId>tycho-maven-plugin</artifactId>
-				<version>${tycho-version}</version>
-				<extensions>true</extensions>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.0</version>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+				</configuration>
+			</plugin>
+			<!-- This is NECESSARY for maven-bundle-plugin to work properly inside 
+				Eclipse. -->
+			<plugin>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
+
+		<pluginManagement>
+			<plugins>
+				<!-- Ignore/Execute plugin execution -->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<!-- copy-dependency plugin -->
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.apache.maven.plugins</groupId>
+										<artifactId>maven-dependency-plugin</artifactId>
+										<versionRange>[1.0.0,)</versionRange>
+										<goals>
+											<goal>copy-dependencies</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore />
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+<!--				<plugin>
+                    <groupId>org.drombler.fx</groupId>
+                    <artifactId>drombler-fx-maven-plugin</artifactId>
+                    <version>${drombler-fx.version}</version>
+                </plugin> -->
+			</plugins>
+		</pluginManagement>
 	</build>
 	
+	<!-- Put the OSGi manifest where Eclipse Plugin Development Environment (PDE) expects it. -->
+	<profiles>
+		<profile>
+			<activation>
+				<property>
+					<name>m2e.version</name>
+				</property>
+			</activation>
+			<properties>
+				<osgi-version-qualifier>qualifier</osgi-version-qualifier>
+			</properties>
+			<build>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<groupId>org.apache.felix</groupId>
+							<artifactId>maven-bundle-plugin</artifactId>
+							<configuration>
+								<!-- PDE does not honour custom manifest location -->
+								<manifestLocation>META-INF</manifestLocation>
+							</configuration>
+						</plugin>
+					</plugins>
+				</pluginManagement>
+			</build>
+		</profile>
 
+		<!-- Maven Graph Plugin: http://mvnplugins.fusesource.org/maven/1.4/maven-graph-plugin/index.html 
+			To generate the dependency graphs, use: 
+			$ mvn -P graph graph:project
+		OR
+			$ mvn -P graph graph:reactor
+			
+			dot must be on your PATH.
+		-->
+		<profile>
+			<id>graph</id>
+			<pluginRepositories>
+				<pluginRepository>
+					<id>mvnplugins.fusesource.org</id>
+					<url>http://mvnplugins.fusesource.org/repo/release</url>
+					<releases>
+						<enabled>true</enabled>
+					</releases>
+				</pluginRepository>
+			</pluginRepositories>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.fusesource.mvnplugins</groupId>
+						<artifactId>maven-graph-plugin</artifactId>
+						<version>1.5</version>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		
+	</profiles>
+
+	<!-- Dependencies common to ALL modules of this project. -->
+	<dependencies>
+
+		<!-- OSGi dependencies -->
+		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>org.osgi.core</artifactId>
+			<version>4.3.1</version>
+			<scope>provided</scope>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>org.osgi.compendium</artifactId>
+			<version>4.3.1</version>
+			<scope>provided</scope>
+			<optional>true</optional>
+		</dependency>
+
+		<!-- Test dependencies -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.8.1</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+	
+	<!-- <dependencyManagement>
+       <dependencies>
+            <dependency>
+                <groupId>org.drombler.fx</groupId>
+                <artifactId>drombler-fx-core-action</artifactId>
+                <version>${drombler-fx.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.drombler.fx</groupId>
+                <artifactId>drombler-fx-core-application</artifactId>
+                <version>${drombler-fx.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.drombler.fx</groupId>
+                <artifactId>drombler-fx-core-application-locale-de</artifactId>
+                <version>${drombler-fx.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.drombler.fx</groupId>
+                <artifactId>drombler-fx-core-commons</artifactId>
+                <version>${drombler-fx.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.drombler.fx</groupId>
+                <artifactId>drombler-fx-core-docking</artifactId>
+                <version>${drombler-fx.version}</version>
+            </dependency>
+			<dependency>
+                <groupId>org.drombler.fx</groupId>
+                <artifactId>drombler-fx-locale-all</artifactId>
+                <type>pom</type>
+                <version>${drombler-fx.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.drombler.fx</groupId>
+                <artifactId>drombler-fx-locale-de</artifactId>
+                <type>pom</type>
+                <version>${drombler-fx.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.drombler.fx</groupId>
+                <artifactId>drombler-fx-startup-main</artifactId>
+                <version>${drombler-fx.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement> -->
+	
 </project>

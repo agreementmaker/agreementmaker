@@ -38,7 +38,7 @@ public interface AlignmentFormat {
 	/**
 	 * Read an alignment from an input reader.
 	 */
-	public Alignment<Mapping> readAlignment( Reader inputReader, Alignment<Mapping> alignment );
+	public Alignment<Mapping> readAlignment( Reader inputReader );
 	
 	/** Read an alignment from a file. */
 	public Alignment<Mapping> readAlignmentFromFile( File alignmentFile );

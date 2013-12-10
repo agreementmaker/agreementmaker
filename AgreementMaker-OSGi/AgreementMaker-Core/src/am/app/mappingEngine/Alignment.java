@@ -1,9 +1,12 @@
 package am.app.mappingEngine;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+
+import javax.tools.JavaCompiler;
 
 import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.ontology.Node;
@@ -15,7 +18,7 @@ import am.app.ontology.Ontology;
  *
  * @param <E>  This represents a Mapping object.
  */
-public class Alignment<E extends Mapping> extends ArrayList<E> implements OntologyAlignment
+public class Alignment<E extends Mapping> extends ArrayList<E> implements OntologyAlignment, Serializable
 {
 	private static final long serialVersionUID = -8090732896473529999L;
 	

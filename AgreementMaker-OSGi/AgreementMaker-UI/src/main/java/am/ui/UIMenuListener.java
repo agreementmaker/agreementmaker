@@ -14,13 +14,13 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.SwingUtilities;
 import javax.swing.border.LineBorder;
 
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 
 import am.AMException;
 import am.Utility;
@@ -756,16 +756,24 @@ public class UIMenuListener implements ActionListener {
 
 			}
 			else if( obj == menu.mnuListBundles ) {
-				Bundle[] bundles = Core.getInstance().getRegistry().getInstalledBundles();
-				StringBuilder strBuilder = new StringBuilder("Installed bundles in the embedded framework:\n");
-				for( Bundle b : bundles ) {
-					strBuilder.append(b.getSymbolicName());
-					strBuilder.append("\n");
+				
+				BundleContext bundleContext = Core.getInstance().getBundleContext();
+				StringBuilder strBuilder = new StringBuilder();
+				if( bundleContext != null ) {
+					Bundle[] bundles = bundleContext.getBundles(); 
+					strBuilder.append("Installed bundles in the embedded framework:\n");
+					for( Bundle b : bundles ) {
+						strBuilder.append(b.getSymbolicName());
+						strBuilder.append("\n");
+					}
+				}
+				else {
+					strBuilder.append("No bundle context is available (bundleContext==null)");
 				}
 				strBuilder.append("\n\nMatcher names:\n");
-				List<String> matcherNames=Core.getInstance().getRegistry().getMatcherNames();
-				for(String s:matcherNames){
-					strBuilder.append(s);
+				List<AbstractMatcher> matcherNames=Core.getInstance().getRegistry().getMatchers();
+				for(AbstractMatcher s:matcherNames){
+					strBuilder.append(s.getName());
 					strBuilder.append("\n");
 				}
 				//strBuilder.append("existing services in the system\n");
@@ -892,42 +900,42 @@ public class UIMenuListener implements ActionListener {
 	}
 
 	public void ontologyDetails() {
+		StringBuilder report = new StringBuilder();
+		
 		Core c = Core.getInstance();
 		Ontology sourceO = c.getSourceOntology();
 		Ontology targetO = c.getTargetOntology();
-		String sourceTitleString = "Not loaded\n";
-		String sourceClassString = "Not loaded\n";
-		String sourcePropString = "Not loaded\n";
-		String targetTitleString = "Not loaded\n";
-		String targetClassString = "Not loaded\n";
-		String targetPropString = "Not loaded\n";
+		
+		report.append("Source Ontology:\t");
 		if(sourceO != null) {
-			sourceClassString = sourceO.getClassDetails();
-			sourcePropString = sourceO.getPropDetails();
-			sourceTitleString = sourceO.getTitle() + "\n";
+			report.append(sourceO.getTitle());
+			report.append('\n');
+			report.append("Hierarchies             \t#concepts\tdepth\tUC-diameter\tLC-diameter\t#roots\t#leaves\n");
+			report.append( sourceO.getClassDetails() );
+			report.append( sourceO.getPropDetails() );
+			report.append( sourceO.getInstanceDetails() );
 		}
+		else {
+			report.append("Not loaded\n");
+		}
+		
+		report.append("Target Ontology:\t");
 		if(targetO != null) {
-			targetClassString = targetO.getClassDetails();
-			targetPropString = targetO.getPropDetails();
-			targetTitleString = targetO.getTitle() + "\n";
+			report.append(targetO.getTitle());
+			report.append('\n');
+			report.append("Hierarchies             \t#concepts\tdepth\tUC-diameter\tLC-diameter\t#roots\t#leaves\n");
+			report.append( targetO.getClassDetails() );
+			report.append( targetO.getPropDetails() );
+			report.append( targetO.getInstanceDetails() );
 		}
-		String report = new String();
-
-		report+= "Source Ontology:\t" + sourceTitleString;
-		report+= "Target Ontology:\t" + targetTitleString;
-		report+= "\n";
-		report+= "Hierarchies             \t#concepts\tdepth\tUC-diameter\tLC-diameter\t#roots\t#leaves\n";
-		report+= "Source Classes:\t"+sourceClassString;
-		report+= "Source Properties:\t"+sourcePropString;
-		report+= "\n";
-		report+= "Target Classes:\t"+targetClassString;
-		report+= "Target Properties:\t"+targetPropString;
-
-		report += "\n\nOntology Metrics:\n\n";
-
+		else {
+			report.append("Not loaded\n");
+		}
+		
 		for( OntologyMetricsRegistry currentOntMetric :  OntologyMetricsRegistry.values() ) {
 			Constructor<?>[] constructors = currentOntMetric.getMetricClass().getConstructors();
-			report += currentOntMetric.getMetricName() + "\n\n";
+			report.append( currentOntMetric.getMetricName() );
+			report.append("\n\n");
 			for( Constructor<?> constructor : constructors ) {
 				Class<?>[] parameterTypes = constructor.getParameterTypes();
 				if( parameterTypes.length == 1 && parameterTypes[0].equals(Ontology.class) ) {
@@ -937,9 +945,10 @@ public class UIMenuListener implements ActionListener {
 							OntologyMetric sourceMetric = (OntologyMetric) constructor.newInstance(sourceO);
 							sourceMetric.runMetric();
 							List<AvgMinMaxNumber> result = sourceMetric.getResult();
-							if( result.size() != 0 ) report += "Source Ontology: \n";
+							if( result.size() != 0 ) report.append("Source Ontology: \n");
 							for( AvgMinMaxNumber num : result ) {
-								report += num.toString() + "\n";
+								report.append( num );
+								report.append( "\n" );
 							}
 						}
 						//report += "\n";
@@ -947,9 +956,10 @@ public class UIMenuListener implements ActionListener {
 							OntologyMetric targetMetric = (OntologyMetric) constructor.newInstance(targetO);
 							targetMetric.runMetric();
 							List<AvgMinMaxNumber> result = targetMetric.getResult();
-							if( result.size() != 0 ) report += "Target Ontology: \n";
+							if( result.size() != 0 ) report.append("Target Ontology: \n");
 							for( AvgMinMaxNumber num : result ) {
-								report += num.toString() + "\n";
+								report.append( num );
+								report.append( "\n" );
 							}
 						}
 
@@ -965,11 +975,11 @@ public class UIMenuListener implements ActionListener {
 						e.printStackTrace();
 					}
 				}
-				report += "\n";
+				report.append("\n");
 			}
 		}
 
-		Utility.displayTextAreaWithDim(report,"Ontology Details", 12, 60);
+		Utility.displayTextAreaWithDim(report.toString(),"Ontology Details", 12, 80);
 	}
 
 	public void displayOptionPane(String desc, String title){

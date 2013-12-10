@@ -37,19 +37,16 @@ public class MatcherFactory {
 	/**
 	 * @param matcherClass The matcher's class name.
 	 */
-	public static AbstractMatcher getMatcherInstance( String matcherClass ) {
-		try {
-			return Core.getInstance().getRegistry().getMatcherByClass(matcherClass);
-		}
-		catch (MatcherNotFoundException e) {
-			e.printStackTrace();
-			return null;
-		}
+	public static AbstractMatcher getMatcherInstance( String matcherClass ) throws MatcherNotFoundException {
+		return Core.getInstance().getRegistry().getMatcherByClass(matcherClass);
 	}
 	
-	public static AbstractMatcher getMatcherInstance(Class<? extends AbstractMatcher> clazz) 
-			throws MatcherNotFoundException {
-		return Core.getInstance().getRegistry().getMatcherByClass(clazz);
+	/**
+	 * @deprecated Use {@link #getMatcherInstance(String)}
+	 */
+	@Deprecated
+	public static AbstractMatcher getMatcherInstance( Class<? extends AbstractMatcher> clazz ) throws MatcherNotFoundException {
+		return Core.getInstance().getRegistry().getMatcherByClass(clazz.getName());
 	}
 	
 	/**

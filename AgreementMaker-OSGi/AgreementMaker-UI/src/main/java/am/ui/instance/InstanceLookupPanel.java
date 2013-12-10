@@ -3,6 +3,7 @@ package am.ui.instance;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
@@ -237,7 +238,7 @@ public class InstanceLookupPanel extends AMTabSupportPanel {
 		
 		private void doLookup( String queryString, String type ) throws AMException {
 			
-			List<Instance> instances = dataset.getCandidateInstances(queryString, type);
+			Collection<Instance> instances = dataset.getCandidateInstances(queryString, type);
 			
 			JTextArea textarea = textareas[0];
 			

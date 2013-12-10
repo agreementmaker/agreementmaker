@@ -9,15 +9,17 @@ import am.extension.userfeedback.ui.UFLControlGUI;
 
 public abstract class UFLExperiment {
 
-	public UFLExperimentSetup				setup;  
+	public UFLExperimentSetup								setup;  
 	
-	public ExecutionSemantics 										initialMatcher;
-	public CandidateSelection 										candidateSelection;
-	public CandidateSelectionEvaluation 							csEvaluation;
-	public UserFeedback												userFeedback;
-	public FeedbackPropagation<UFLExperiment>						feedbackPropagation;
-	public PropagationEvaluation									propagationEvaluation;
-	public UFLControlGUI											gui;
+	public ExecutionSemantics 								initialMatcher;
+	public CandidateSelection< UFLExperiment> 				candidateSelection;
+	public CandidateSelectionEvaluation 					csEvaluation;
+	public UserFeedback										userFeedback;
+	public FeedbackPropagation< UFLExperiment>				feedbackPropagation;
+	public PropagationEvaluation< UFLExperiment>			propagationEvaluation;
+	public UFLControlGUI									gui;
+	public SaveFeedback< UFLExperiment>						saveFeedback;
+	
 	
 	/**
 	 * These mappings were validated by the user as being CORRECT.

@@ -1,14 +1,19 @@
 package am.matcher.lod.LinkedOpenData;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import am.app.Core;
+
 public class LODAlignAnalyzer {
 	public static void main(String[] args) throws IOException {
 		LODEvaluator eval = new LODEvaluator();
-		String report = eval.testDiff("LOD/batchNoLimit/music-bbc.txt", LODReferences.MUSIC_BBC, null, null, true);
+		String report = eval.testDiff(
+				Core.getInstance().getRoot() + File.separator + "LOD/batchNoLimit/music-bbc.txt", 
+				LODReferences.MUSIC_BBC.getPath(), null, null, true);
 		
 		//System.out.println(report);
 		

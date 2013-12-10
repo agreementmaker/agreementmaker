@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+
+<simpleBatchMode xmlns='http://www.example.org/SimpleBatchMode'>
+	<ontologies>
+		<ontology>
+			<sourceOntology>/home/cosmin/Documents/OAEI/2013/benchmarks/101/onto.rdf</sourceOntology>
+			<targetOntology>/home/cosmin/Documents/OAEI/2013/benchmarks/301/onto.rdf</targetOntology>
+			<matcherRegistryEntry>NOT USED YET</matcherRegistryEntry>
+			<outputAlignmentFile>/home/cosmin/output-101-301.rdf</outputAlignmentFile>
+		</ontology>
+	</ontologies>
+</simpleBatchMode>

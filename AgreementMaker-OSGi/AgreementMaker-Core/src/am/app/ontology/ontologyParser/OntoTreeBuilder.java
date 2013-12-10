@@ -159,7 +159,6 @@ public class OntoTreeBuilder extends TreeBuilder<OntologyDefinition> {
 		timer.stop();
 		
 		fireEvent(ProgressEvent.APPEND_LINE, "Done. " + timer.getFormattedRunTime());
-		fireEvent(ProgressEvent.ONTOLOGY_LOADED);
 	}
 	
 	

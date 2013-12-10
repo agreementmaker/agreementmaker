@@ -6,6 +6,7 @@ import am.extension.userfeedback.UFLRegistry.FeedbackPropagationRegistry;
 import am.extension.userfeedback.UFLRegistry.InitialMatcherRegistry;
 import am.extension.userfeedback.UFLRegistry.PropagationEvaluationRegistry;
 import am.extension.userfeedback.UFLRegistry.UserValidationRegistry;
+import am.extension.userfeedback.UFLRegistry.SaveFeedbackRegistry;
 
 public class UFLExperimentSetup {
 
@@ -15,5 +16,6 @@ public class UFLExperimentSetup {
 	public UserValidationRegistry			uv;
 	public FeedbackPropagationRegistry		fp;
 	public PropagationEvaluationRegistry	pe;
+	public SaveFeedbackRegistry				sf;
 	
 }

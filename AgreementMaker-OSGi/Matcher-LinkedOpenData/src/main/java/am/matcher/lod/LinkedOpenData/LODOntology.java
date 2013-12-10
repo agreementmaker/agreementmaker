@@ -1,12 +1,15 @@
 package am.matcher.lod.LinkedOpenData;
 
+import java.io.File;
+
+import am.app.Core;
 import am.app.ontology.ontologyParser.OntologyDefinition.OntologyLanguage;
 import am.app.ontology.ontologyParser.OntologyDefinition.OntologySyntax;
 
 public enum LODOntology {
 	
 	DBPEDIA("http://dbpedia.org/ontology/", "LOD/dbpedia_3.5.1.owl", OntologyLanguage.OWL, OntologySyntax.RDFXML),
-	MUSIC_ONTOLOGY("http://purl.org/ontology/mo/", "LOD/musicontology_NoImports.rdfs", OntologyLanguage.OWL, OntologySyntax.RDFXML),
+	MUSIC_ONTOLOGY("http://purl.org/ontology/mo/", "LOD/musicontology_noImports.rdfs", OntologyLanguage.OWL, OntologySyntax.RDFXML),
 	SW_CONFERENCE("http://data.semanticweb.org/ns/swc/ontology#", "LOD/swc_2009-05-09_noDeprecated.rdf", OntologyLanguage.OWL, OntologySyntax.RDFXML ),
 	BBC_PROGRAM("http://purl.org/ontology/po/", "LOD/BBC Program - 2009-09-07.n3", OntologyLanguage.OWL, OntologySyntax.N3),
 	GEONAMES("http://www.geonames.org/ontology", "LOD/geonames_v2.2.1.rdf", OntologyLanguage.OWL, OntologySyntax.RDFXML),
@@ -37,7 +40,10 @@ public enum LODOntology {
 	}
 	
 	public String getFilename() {
-		return filename;
+		if( Core.getInstance().getRoot() != null ) 
+			return Core.getInstance().getRoot() + File.separator + filename;
+		else
+			return filename;
 	}
 	
 	public OntologyLanguage getLang() {

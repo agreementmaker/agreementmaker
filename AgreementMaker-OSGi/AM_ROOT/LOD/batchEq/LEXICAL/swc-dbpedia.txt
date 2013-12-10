@@ -1,0 +1,15 @@
+AGREEMENT DOCUMENT
+
+Date: Mon Nov 14 11:22:11 CST 2011
+Source Ontology: http://data.semanticweb.org/ns/swc/ontology#
+Target Ontology: http://dbpedia.org/ontology/
+
+Class Alignments: 6
+Source Concept	 ->	Target Concept	Similarity	Relation	Provenance
+
+Journal	--->	Journalist	0.8583235248222071	 = 
+Person	--->	Person	1.0	 = 
+Organization	--->	Organisation	1.0	 = 
+Institute	--->	EducationalInstitution	0.8144285228213896	 = 
+Place	--->	Place	0.9406623441146719	 = 
+Magazine	--->	Magazine	0.8631215394313437	 = 

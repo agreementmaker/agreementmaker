@@ -12,24 +12,65 @@
 
 	<artifactId>Matcher-OAEI</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
-	<packaging>eclipse-plugin</packaging>
+	<packaging>bundle</packaging>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<bundle.namespace>am.matcher.oaei</bundle.namespace>
 	</properties>
-
+	
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.0</version>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<version>2.4.0</version>
+				<extensions>true</extensions>
 				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
+					<manifestLocation>META-INF</manifestLocation>
+					<instructions>
+						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+						<Bundle-Version>${project.version}</Bundle-Version>
+						<Export-Package>${bundle.namespace}.*</Export-Package>
+						<Bundle-Activator>${bundle.namespace}.OAEIMatcherBundleActivator</Bundle-Activator>
+						<Import-Package>*</Import-Package>
+					</instructions>
 				</configuration>
 			</plugin>
 		</plugins>
 	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>${project.parent.groupId}</groupId>
+			<artifactId>AgreementMaker-Core</artifactId>
+			<version>${project.parent.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>${project.parent.groupId}</groupId>
+			<artifactId>AgreementMaker-Matchers</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>${project.parent.groupId}</groupId>
+			<artifactId>Matcher-BaseSimilarity</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>${project.parent.groupId}</groupId>
+			<artifactId>Matcher-AdvancedSimilarity</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>${project.parent.groupId}</groupId>
+			<artifactId>Matcher-PRA</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
 
 </project>

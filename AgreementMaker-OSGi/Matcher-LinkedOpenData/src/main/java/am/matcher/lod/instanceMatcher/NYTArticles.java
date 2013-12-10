@@ -15,7 +15,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import am.app.ontology.Ontology;
-import am.app.ontology.instance.SeparateFileInstanceDataset;
+import am.app.ontology.instance.datasets.SeparateFileInstanceDataset;
 
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntClass;

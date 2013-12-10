@@ -1,6 +1,7 @@
 package am.app.mappingEngine.instance;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -13,6 +14,7 @@ import am.AMException;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.InstanceMatchingReport;
 import am.app.mappingEngine.Mapping.MappingRelation;
+import am.app.mappingEngine.MatchingPairAlignment;
 import am.app.mappingEngine.MatchingProgressListener;
 import am.app.mappingEngine.instance.EntityTypeMapper.EntityType;
 import am.app.mappingEngine.utility.MatchingPair;
@@ -50,13 +52,13 @@ public abstract class AbstractInstanceMatcher extends AbstractMatcher {
 	private static final Logger sLog = Logger.getLogger(AbstractInstanceMatcher.class);
 	
 	/** True if the matcher will match instances, false otherwise. */
-	protected boolean alignInstances;
+	protected boolean alignInstances = true;
 
 
 	protected transient InstanceDataset sourceInstanceDataset;
 	protected transient InstanceDataset targetInstanceDataset;
 
-	protected transient List<MatchingPair> instanceAlignmentSet;
+	protected transient MatchingPairAlignment instanceAlignmentSet;
 
 	protected InstanceMatchingReport instanceMatchingReport;
 
@@ -144,6 +146,15 @@ public abstract class AbstractInstanceMatcher extends AbstractMatcher {
 	public InstanceMatchingReport getInstanceMatchingReport() {
 		return instanceMatchingReport;
 	}
+	
+	/**
+	 * AgreementMaker doesn't calculate instances matching, if you add this you
+	 * should also modify getAlignmenSet.
+	 */
+	public MatchingPairAlignment getInstanceAlignment() {
+		return instanceAlignmentSet;
+	}
+	
 
 	/**
 	 * 
@@ -151,9 +162,9 @@ public abstract class AbstractInstanceMatcher extends AbstractMatcher {
 	 * @return
 	 * @throws Exception
 	 */
-	protected List<MatchingPair> alignInstances(Iterator<Instance> sourceInstances) throws Exception {
+	protected MatchingPairAlignment alignInstances(Iterator<Instance> sourceInstances) throws Exception {
 
-		List<MatchingPair> mappings = new ArrayList<MatchingPair>();
+		MatchingPairAlignment mappings = new MatchingPairAlignment();
 
 		while (sourceInstances.hasNext()) {
 			Instance currentInstance = sourceInstances.next();
@@ -191,18 +202,21 @@ public abstract class AbstractInstanceMatcher extends AbstractMatcher {
 			MatchingPair mapping = null;
 			if( targetTypes != null ){
 				for( MatchingPair mp : targetTypes ) {
-					List<Instance> targetCandidates = targetInstanceDataset.getCandidateInstances(label, mp.targetURI);
+					Collection<Instance> targetCandidates = targetInstanceDataset.getCandidateInstances(label, mp.targetURI);
 					allCandidates.addAll(targetCandidates);
 				}
 				mapping = alignInstanceCandidates(currentInstance, allCandidates);
 			}
 			else{
-				List<Instance> targetCandidates = targetInstanceDataset.getCandidateInstances(label, null);
+				Collection<Instance> targetCandidates = targetInstanceDataset.getCandidateInstances(label, null);
 				allCandidates.addAll(targetCandidates);
 				mapping = alignInstanceCandidates(currentInstance, allCandidates);
 			}
 
-			if(mapping != null) mappings.add(mapping);
+			if(mapping != null) {
+				System.out.println("Found mapping: " + mapping);
+				mappings.add(mapping);
+			}
 
 			//			stepDone();
 			//			updateProgress();
@@ -223,7 +237,7 @@ public abstract class AbstractInstanceMatcher extends AbstractMatcher {
 		return new MatchingPair(sourceInstance.getUri(), scoredInstance.getInstance().getUri(), scoredInstance.getScore(), MappingRelation.EQUIVALENCE);	
 	}
 
-	/**
+	/**align
 	 * Basic implementation of the label processing before candidates retrieval. The type is not actually used
 	 * but may be used by overriding matchers 
 	 */

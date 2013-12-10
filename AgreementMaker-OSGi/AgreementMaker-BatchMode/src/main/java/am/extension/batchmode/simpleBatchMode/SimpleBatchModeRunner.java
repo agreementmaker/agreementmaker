@@ -12,12 +12,14 @@ import javax.xml.bind.Unmarshaller;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
+import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
-import am.matcher.oaei2011.OAEI2011Matcher;
-import am.matcher.oaei2011.OAEI2011MatcherParameters;
+import am.matcher.oaei.oaei2011.OAEI2011Matcher;
+import am.matcher.oaei.oaei2011.OAEI2011MatcherParameters;
 import am.output.console.ConsoleProgressDisplay;
+import am.parsing.AlignmentOutput;
 import am.parsing.OutputController;
 
 /**
@@ -95,8 +97,8 @@ public class SimpleBatchModeRunner {
 			if( !checkOntologyFiles( sourceOnt, targetOnt, log ) ) continue;
 			
 			// load the Ontologies.
-			Ontology sourceOntology = OntoTreeBuilder.loadOWLOntology(sourceOnt.getAbsolutePath());
-			Ontology targetOntology = OntoTreeBuilder.loadOWLOntology(targetOnt.getAbsolutePath());
+			final Ontology sourceOntology = OntoTreeBuilder.loadOWLOntology(sourceOnt.getAbsolutePath());
+			final Ontology targetOntology = OntoTreeBuilder.loadOWLOntology(targetOnt.getAbsolutePath());
 						
 			//Core.getInstance().setSourceOntology(sourceOntology);
 			//Core.getInstance().setTargetOntology(targetOntology);
@@ -128,7 +130,11 @@ public class SimpleBatchModeRunner {
 			try {
 				File alignmentFile = new File(ontType.outputAlignmentFile);
 				log.info("Saving alignment " + alignmentFile.getName() + "." );
-				OutputController.printDocumentOAEI(alignmentFile, matcher.getAlignment(), matcher.getName());
+				AlignmentOutput output = 
+						new AlignmentOutput(matcher.getAlignment(), alignmentFile.getCanonicalFile());
+				String sourceUri = sourceOntology.getURI();
+				String targetUri = targetOntology.getURI();
+				output.write(sourceUri, targetUri, sourceUri, targetUri, matcher.getName());
 			}
 			catch (IOException e) {
 				e.printStackTrace();

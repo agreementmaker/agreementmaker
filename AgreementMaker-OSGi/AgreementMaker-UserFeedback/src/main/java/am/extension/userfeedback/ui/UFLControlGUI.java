@@ -18,6 +18,7 @@ import am.extension.userfeedback.UFLRegistry.ExperimentRegistry;
 import am.extension.userfeedback.UFLRegistry.FeedbackPropagationRegistry;
 import am.extension.userfeedback.UFLRegistry.InitialMatcherRegistry;
 import am.extension.userfeedback.UFLRegistry.PropagationEvaluationRegistry;
+import am.extension.userfeedback.UFLRegistry.SaveFeedbackRegistry;
 import am.extension.userfeedback.UFLRegistry.UserValidationRegistry;
 import am.extension.userfeedback.experiments.UFLControlLogic;
 import am.ui.MatchingProgressDisplay;
@@ -106,7 +107,7 @@ public class UFLControlGUI extends AMTabSupportPanel implements ActionListener, 
 				newExperiment.setup.uv = (UserValidationRegistry) panel.cmbUserFeedback.getSelectedItem();
 				newExperiment.setup.fp = (FeedbackPropagationRegistry) panel.cmbPropagation.getSelectedItem();
 				newExperiment.setup.pe = (PropagationEvaluationRegistry) panel.cmbPropagationEvaluation.getSelectedItem();
-				
+				newExperiment.setup.sf= SaveFeedbackRegistry.MultiUserSaveFeedback; 
 				// the experiment is starting, or we have just completed an iteration of the loop (assuming the propagation evaluation is done last)
 
 				// Step 1.  experiment is starting.  Initialize the experiment setup.
