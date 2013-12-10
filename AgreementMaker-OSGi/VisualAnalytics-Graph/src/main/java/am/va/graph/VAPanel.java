@@ -8,8 +8,6 @@ import javax.swing.JFrame;
 import am.va.graph.VAVariables.ontologyType;
 
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.embed.swing.JFXPanel;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -152,7 +150,6 @@ public class VAPanel {
 		// update pie data
 		updatePreviousGroup(rootGroupLeft);
 		updateCurrentGroup(rootGroupLeft);
-		setLocation(chartLeft);
 		// TEST(currentGroup);
 		chartLeft.updatePieChart(ontologyType.Source);
 
@@ -160,32 +157,7 @@ public class VAPanel {
 		// myScene.getStylesheets().add(VAPanel.class.getResource("VA.css").toExternalForm());
 	}
 
-	/**
-	 * Set radius and center point for Pie chart
-	 * 
-	 * @param chart
-	 */
-	private static void setLocation(VAPieChart chart) {
-		// TODO Auto-generated method stub
-		double minX = Double.MAX_VALUE;
-		double maxX = Double.MAX_VALUE * -1;
-		double minY = Double.MAX_VALUE;
-		double maxY = Double.MAX_VALUE * -1;
-
-		for (PieChart.Data d : chart.getPieChart().getData()) {
-			minX = Math.min(minX, d.getNode().getBoundsInParent().getMinX());
-			maxX = Math.max(maxX, d.getNode().getBoundsInParent().getMaxX());
-			minY = Math.min(minY, d.getNode().getBoundsInParent().getMinY());
-			maxY = Math.max(maxY, d.getNode().getBoundsInParent().getMaxY());
-		}
-
-		double radius = (maxX - minX) / 2;
-		chart.setRadius(radius);
-		chart.setPieCenter(new Point2D(minX + radius, minY + radius));
-		// System.out.println("radius " + radius + " center "+
-		// chart.getPieCenter());
-	}
-
+	
 	/**
 	 * Generate new VAGroup according user's click
 	 * 

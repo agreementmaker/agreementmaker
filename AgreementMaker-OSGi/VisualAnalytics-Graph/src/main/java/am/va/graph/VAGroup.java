@@ -104,7 +104,7 @@ public class VAGroup {
 
 		// Print for testing, comment if you don't need it.
 		// printData();
-		printArcInterval();
+		// printArcInterval();
 	}
 
 	/**
@@ -191,6 +191,14 @@ public class VAGroup {
 			System.out.print(arcIntervalIndexArray.get(i) + " ");
 		}
 		System.out.print("\n");
+	}
+	
+	public void printSlots() {
+		System.out.println(slotCountMap.keySet().size() + " Slots");
+		for( String s: VAVariables.thresholdName ){
+			if( slotCountMap.containsKey(s) )
+				System.out.println(s + " " + slotCountMap.get(s));
+		}
 	}
 
 }
