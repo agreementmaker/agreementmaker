@@ -97,7 +97,7 @@ public class MaxInformationRanking extends CandidateSelection<MLFExperiment> {
 	
 	private void saveRankList(int iteration)
 	{
-		File file = new File("/home/frank/Documents/RankList/rankList_"+iteration+".txt");
+		File file = new File("C:/Users/GELI/WorkFolder/ML/rankList_"+iteration+".txt");
 		// if file doesnt exists, then create it
 		if (!file.exists()) {
 			try {

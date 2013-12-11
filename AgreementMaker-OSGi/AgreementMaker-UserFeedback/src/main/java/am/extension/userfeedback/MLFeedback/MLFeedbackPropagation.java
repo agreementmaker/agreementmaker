@@ -321,7 +321,7 @@ public class MLFeedbackPropagation extends FeedbackPropagation<MLFExperiment> {
 	
 	private void writeFinalAligment(int iteration, Alignment<Mapping> mappings)
 	{
-		File file = new File("/home/frank/Documents/FinalAligment/finalAligment_"+iteration+".txt");
+		File file = new File("C:/Users/GELI/WorkFolder/ML/finalAligment_"+iteration+".txt");
 		// if file doesnt exists, then create it
 		if (!file.exists()) {
 			try {
@@ -365,7 +365,7 @@ public class MLFeedbackPropagation extends FeedbackPropagation<MLFExperiment> {
 	
 	private void writeSimilarityMatrix(SimilarityMatrix sm, int iteration, String type) throws IOException
 	{
-		File file = new File("/home/frank/Documents/SimilarityMatrix"+type+"/similarityMatrix_"+iteration+".txt");
+		File file = new File("C:/Users/GELI/WorkFolder/ML"+type+"/similarityMatrix_"+iteration+".txt");
 		// if file doesnt exists, then create it
 		if (!file.exists()) 
 			file.createNewFile();

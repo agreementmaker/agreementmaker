@@ -165,7 +165,7 @@ public void setMLAlignment(Alignment<Mapping> mLAlignment) {
 	public MLFExperiment() {
 		// setup the log file
 		try {
-			FileWriter fr = new FileWriter("/home/frank/Desktop/ufllog.txt");
+			FileWriter fr = new FileWriter("C:/Users/GELI/WorkFolder/ufllog.txt");
 			logFile = new BufferedWriter(fr);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

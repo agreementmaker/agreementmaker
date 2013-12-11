@@ -22,7 +22,7 @@ public abstract class SaveFeedback<T extends UFLExperiment> {
 		listeners = new EventListenerList();
 	}
 	
-	protected String path="/home/frank/Documents/UFLExperiment/FeedbackResults/frank428/";
+	protected String path="C:/Users/GELI/WorkFolder/ML/";
 	protected File file = null;
 	protected FileWriter fw=null;
 	protected BufferedWriter bw=null;
