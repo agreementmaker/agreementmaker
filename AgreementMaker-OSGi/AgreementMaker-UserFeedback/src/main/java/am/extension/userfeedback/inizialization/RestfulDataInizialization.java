@@ -32,7 +32,6 @@ public class RestfulDataInizialization extends FeedbackLoopInizialization<MUExpe
 	public void inizialize(MUExperiment exp) {
 		// TODO Auto-generated method stub
 		this.experiment=exp;
-		connection();
 		
 		// TODO Auto-generated method stub
 		SimilarityMatrix smClass=exp.initialMatcher.getFinalMatcher().getClassesMatrix().clone();
@@ -50,69 +49,6 @@ public class RestfulDataInizialization extends FeedbackLoopInizialization<MUExpe
 		exp.setUflPropertyMatrix(smProperty);
 		
 		done();
-	}
-	
-	private void connection()
-	{
-		// connect to the server
-				// TODO: Make the server baseURL be configured by the user?
-				String baseURL = "http://127.0.0.1:9000";
-				experiment.server = new RESTfulCollaborationServer(baseURL);
-				experiment.clientID = experiment.server.register();
-				
-				LOG.info("Connected to " + baseURL + ", ClientID: " + experiment.clientID);
-				
-				List<CollaborationTask> taskList = experiment.server.getTaskList();
-				
-				LOG.info("Retrieved " + taskList.size() + " tasks.");
-				
-				TaskSelectionDialog tsd = new TaskSelectionDialog(taskList);
-				experiment.selectedTask = tsd.getTask();
-				
-				LOG.info("User selected task: " + experiment.selectedTask);
-				
-				
-				OntologyDefinition sourceOntDef = experiment.server.getOntologyDefinition(experiment.selectedTask.getSourceOntologyURL());
-				LOG.info("Loading source ontology: " + sourceOntDef);
-				Ontology sourceOnt = UICore.getUI().openFile(sourceOntDef);
-				Core.getInstance().setSourceOntology(sourceOnt);
-				
-				
-				OntologyDefinition targetOntDef = experiment.server.getOntologyDefinition(experiment.selectedTask.getTargetOntologyURL());
-				LOG.info("Loading target ontology: " + targetOntDef);
-				Ontology targetOnt = UICore.getUI().openFile(targetOntDef);
-				Core.getInstance().setTargetOntology(targetOnt);
-				
-				LOG.info("Loading the reference alignment from: " + experiment.selectedTask.getReferenceAlignmentURL());
-				experiment.referenceAlignment = experiment.server.getReferenceAlignment(experiment.selectedTask.getReferenceAlignmentURL());
-				
-				if( experiment.referenceAlignment == null ) {
-					LOG.info("Reference alignment was not loaded.");
-				}
-				else {
-					LOG.info("Reference alignment loaded: " + experiment.referenceAlignment.size() + " mappings");
-				}
-				
-				experiment.classesSparseMatrix = 
-						new SparseMatrix(
-								Core.getInstance().getSourceOntology(),
-								Core.getInstance().getTargetOntology(), 
-								alignType.aligningClasses);
-				
-				experiment.propertiesSparseMatrix = 
-						new SparseMatrix(
-								Core.getInstance().getSourceOntology(),
-								Core.getInstance().getTargetOntology(), 
-								alignType.aligningProperties);
-				
-				// setup the log file
-				try {
-					FileWriter fr = new FileWriter("/home/frank/Desktop/ufllog.txt");
-					experiment.logFile = new BufferedWriter(fr);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
 	}
 	
 	private SimilarityMatrix prepareSMforNB(SimilarityMatrix sm)
