@@ -100,6 +100,18 @@ public abstract class AbstractSimilarityMatrix implements SimilarityMatrix, Seri
 	
 	public abstract void initFromNodeList(List<Node> sourceList, List<Node> targetList);
 	
+	public int countNonNullCells ()
+	{
+		int count=0;
+		for (int i=0; i<getRows(); i++)
+			for(int j=0;j<getColumns();j++)
+			{
+				if (getSimilarity(i, j)!=0)
+					count++;
+			}
+		return count;
+	}
+	
 	@Override
 	public abstract Mapping[] getColMaxValues(int col, int numMaxValues);
 	

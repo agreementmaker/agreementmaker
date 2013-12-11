@@ -49,6 +49,15 @@ public class MUDataInizialization  extends FeedbackLoopInizialization<MUExperime
 						Core.getInstance().getTargetOntology(), 
 						alignType.aligningProperties);
 		
+		
+		exp.agreegatedClassFeedback=new SparseMatrix(
+				Core.getInstance().getSourceOntology(),
+				Core.getInstance().getTargetOntology(), 
+				alignType.aligningClasses);
+		exp.agreegatedPropertiesFeedback=new SparseMatrix(
+				Core.getInstance().getSourceOntology(),
+				Core.getInstance().getTargetOntology(), 
+				alignType.aligningProperties);
 		done();
 	}
 

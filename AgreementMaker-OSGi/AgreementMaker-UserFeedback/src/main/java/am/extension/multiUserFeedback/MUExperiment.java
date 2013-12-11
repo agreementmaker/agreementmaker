@@ -62,6 +62,9 @@ public List<Mapping> alreadyEvaluated=new ArrayList<Mapping>();
 public List<Mapping> conflictualClass;
 public List<Mapping> conflictualProp;
 
+public SparseMatrix agreegatedClassFeedback;
+public SparseMatrix agreegatedPropertiesFeedback;
+
 public HashMap<String, List<Mapping>> usersMappings=new HashMap<String, List<Mapping>>();
 public HashMap<String, Integer> usersGroup=new HashMap<String, Integer>();
 public HashMap<String, SimilarityMatrix> usersClass=new HashMap<String, SimilarityMatrix>();
