@@ -29,17 +29,22 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.TilePane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 
 //import ensemble.Ensemble2;
 
@@ -59,7 +64,7 @@ public class VAPanel {
 
 	private static Button btnRoot;
 	private static Button btnUp;
-	private static Button btnBubble;
+	private static Button btnUFB;
 
 	private static ChoiceBox<String> cbOntology;
 
@@ -75,7 +80,7 @@ public class VAPanel {
 	 * Init Frame
 	 */
 	public static void initAndShowGUI() {
-		frameMain = new JFrame("VA");
+		frameMain = new JFrame("VA - Ontology Matching");
 		frameMain.setSize(1300, 550);
 		frameMain.setLocation(100, 100);
 		fxPanel = new JFXPanel();
@@ -98,15 +103,16 @@ public class VAPanel {
 		myScene = new Scene(root);
 		setLayout();
 		fxPanel.setScene(myScene);
-
 		updatePreviousGroup(rootGroupLeft);
 		updateCurrentGroup(rootGroupLeft);
 		chartLeft.updatePieChart(ontologyType.Source);
 		generateParentGroup();
 	}
 
+	/**
+	 * Set the main panel layout, here we use BorderPane
+	 */
 	private static void setLayout() {
-		// Main layout: BorderPane
 		BorderPane borderPane = new BorderPane();
 		initLeftAddList(borderPane);
 		initTopToolbar(borderPane);
@@ -115,6 +121,11 @@ public class VAPanel {
 		root.getChildren().add(borderPane);
 	}
 
+	/**
+	 * Init left panel, including a Treeview and a Listview
+	 * 
+	 * @param borderPane
+	 */
 	private static void initLeftAddList(BorderPane borderPane) {
 		TilePane tilePane = new TilePane();
 		tilePane.setPrefColumns(2); // preferred columns
@@ -138,10 +149,16 @@ public class VAPanel {
 		tilePane.getChildren().add(listTreeLeft);
 	}
 
+	/**
+	 * Init Top panel, including a toolbar that consists of buttons, a choice
+	 * box and a search box.
+	 * 
+	 * @param borderPane
+	 */
 	private static void initTopToolbar(BorderPane borderPane) {
 		ToolBar toolbar = new ToolBar();
 		Region spacer1 = new Region();
-		spacer1.setStyle("-fx-padding: 0 15em 0 0;");
+		spacer1.setStyle("-fx-padding: 0 25em 0 0;");
 		Region spacer2 = new Region();
 		spacer2.setStyle("-fx-padding: 0 10em 0 0;");
 		Region spacer3 = new Region();
@@ -162,9 +179,9 @@ public class VAPanel {
 	private static void initButtons(HBox buttonBar) {
 		btnRoot = new Button("Top level");
 		btnUp = new Button("Go back");
-		btnBubble = new Button("Bubble");
+		btnUFB = new Button("User feedback");
 		setButtonActions();
-		buttonBar.getChildren().addAll(btnRoot, btnUp, btnBubble);
+		buttonBar.getChildren().addAll(btnRoot, btnUp, btnUFB);
 
 	}
 
@@ -180,6 +197,11 @@ public class VAPanel {
 		searchBox.getStyleClass().add("search-box");
 	}
 
+	/**
+	 * Init center panel, including two pie charts with their labels
+	 * 
+	 * @param borderPane
+	 */
 	private static void initCenterTwoPies(BorderPane borderPane) {
 		Group chartGroup = new Group();
 		TilePane tilePane = new TilePane();
@@ -201,6 +223,9 @@ public class VAPanel {
 		initTooltip();
 	}
 
+	/**
+	 * Add tooltip to the chart. (seems not very useful for now)
+	 */
 	private static void initTooltip() {
 		pieTooltip = new Tooltip("click to view more");
 		for (final PieChart.Data currentData : chartLeft.getPieChart()
@@ -241,10 +266,10 @@ public class VAPanel {
 	public static void generateParentGroup() {
 		VAGroup parentGroup = null;
 		if (currentGroup.getCurrentLevel() < 1) {
-			System.out.println("Generate Parent: parent=root");
+			// System.out.println("Generate Parent: parent=root");
 			parentGroup = rootGroupLeft;
 		} else {
-			System.out.println("Generate Parent: new parent");
+			// System.out.println("Generate Parent: new parent");
 			parentGroup = new VAGroup();
 			VAData parentData = VASyncData.getParentVAData(currentGroup
 					.getRootNode());
@@ -267,7 +292,7 @@ public class VAPanel {
 			label = "Source Root";
 		else
 			label = parentGroup.getRootNodeName();
-		System.out.println("Generate Parent: label=" + label);
+		// System.out.println("Generate Parent: label=" + label);
 		listTreeLeftRoot = new TreeItem<String>(label);
 		ArrayList<VAData> data = parentGroup.getVADataArray();
 		for (VAData d : data) {
@@ -281,6 +306,11 @@ public class VAPanel {
 		treeviewAction(data);
 	}
 
+	/**
+	 * Add tree view actions (refresh pie chart and related data)
+	 * 
+	 * @param data
+	 */
 	private static void treeviewAction(final ArrayList<VAData> data) {
 		listTreeLeft.getSelectionModel().selectedItemProperty()
 				.addListener(new ChangeListener<Object>() {
@@ -363,6 +393,11 @@ public class VAPanel {
 		return currentGroup;
 	}
 
+	/**
+	 * The stop is just a on and off variable
+	 * 
+	 * @param i
+	 */
 	public static void setStop(int i) {
 		stop = i;
 	}
@@ -492,6 +527,73 @@ public class VAPanel {
 				// System.out.println("Go to previous panel");
 				btnUp.setDisable(true);
 				generateParentGroup();
+			}
+
+		});
+
+		btnUFB.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent arg0) {
+				final JFrame frameSub = new JFrame("VA - User Feed Back");
+				JFXPanel fxPanelSub = new JFXPanel();
+				frameSub.setSize(500, 300);
+				frameSub.setLocation(500, 200);
+				frameSub.setVisible(true);
+				frameSub.add(fxPanelSub);
+
+				Group rootSub = new Group();
+				Scene mySubScene = new Scene(rootSub);
+				fxPanelSub.setScene(mySubScene);
+
+				AnchorPane anchorPane = new AnchorPane();
+
+				ToggleGroup tg = new ToggleGroup();
+				Label lblCompare = new Label();
+				lblCompare.setFont(Font.font(null, FontWeight.BOLD, 15));
+				lblCompare.setTextFill(Color.BLACK);
+				// Set labels here, for now just assign two strings
+				String source = "\"Reference\"";
+				String target = "\"Reference\"";
+				lblCompare.setText("How do you think " + source + " and "
+						+ target + " matches?");
+				ArrayList<RadioButton> rb = new ArrayList<RadioButton>();
+
+				for (int i = 0; i < 5; i++) {
+					RadioButton bt = new RadioButton(
+							VAVariables.selectionPer[i]);
+					bt.setToggleGroup(tg);
+					rb.add(bt);
+				}
+
+				anchorPane.getChildren().add(lblCompare);
+				AnchorPane.setTopAnchor(lblCompare, Double.valueOf(30));
+				AnchorPane.setLeftAnchor(lblCompare, Double.valueOf(30));
+				int x = 100, y = 200;
+				for (RadioButton r : rb) {
+					anchorPane.getChildren().add(r);
+					AnchorPane.setTopAnchor(r, Double.valueOf(x));
+					AnchorPane.setLeftAnchor(r, Double.valueOf(y));
+					x += 20;
+				}
+				x += 30;
+				y += 20;
+				Button btnSubmit = new Button("OK");
+				anchorPane.getChildren().add(btnSubmit);
+				AnchorPane.setTopAnchor(btnSubmit, Double.valueOf(x));
+				AnchorPane.setLeftAnchor(btnSubmit, Double.valueOf(y));
+
+				rootSub.getChildren().add(anchorPane);
+
+				btnSubmit.setOnAction(new EventHandler<ActionEvent>() {
+
+					@SuppressWarnings("deprecation")
+					@Override
+					public void handle(ActionEvent arg0) {
+						// Do things here, eg: save results...
+						frameSub.hide();
+					}
+				});
 			}
 
 		});
