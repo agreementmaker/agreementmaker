@@ -94,6 +94,12 @@ public class VAPieChart {
 		VAGroup currentGroup = VAPanel.getCurrentGroup();
 		VAGroup newRightGroup = new VAGroup();
 		HashMap<String, Integer> slotsMap = null;
+		if (currentGroup.getRootNodeName().equals("isPartOf")) {
+			VAData t = currentGroup.getRootNode();
+			if (t != null) {
+				String label = t.getNodeName();
+			}
+		}
 		if (currentGroup != null && currentGroup.hasMatching()) {
 			VAData newRightRootData = new VAData(currentGroup.getRootNode()
 					.getTargetNode(), null, 0);
@@ -174,7 +180,7 @@ public class VAPieChart {
 			listView.setItems(arcListData);
 			setListViewAction(listView, listMap, ontologyType);
 			// test
-			// printData(idxRange, dataArrayList);
+			printData(idxRange, dataArrayList);
 		} else {
 			System.out.println("- pie chart is empty, return empty list");
 		}
@@ -236,14 +242,12 @@ public class VAPieChart {
 		ObservableList<String> arcListData = FXCollections
 				.observableArrayList();
 
-		// System.out.println(dataArrayList.size() + " data");
 		int start = idxRange.getStartIdx(), end = idxRange.getEndIdx();
 		// Put data in list view
 		for (int i = start; i <= end; i++) {
 			String name = dataArrayList.get(i).getNodeName();
 			arcListData.add(name);
 			listMap.put(name, dataArrayList.get(i));
-			// System.out.println("data " + i + " = " + name);
 		}
 
 		return arcListData;
@@ -275,36 +279,27 @@ public class VAPieChart {
 	 */
 	private VARange getPieSliceDataIdxRange(PieChart.Data data,
 			HashMap<String, Integer> slotCountMap) {
-
-		// System.out.println(data.getName());
 		if (slotCountMap.containsKey(data.getName())) {
-
 			int start = 0, end = 1;
 			for (int i = 0;; i++) {
-				/*
-				 * System.out.println("thresholdName[" + i + "]=" +
-				 * VAVariables.thresholdName[i] + " " + (data.getName() ==
-				 * VAVariables.thresholdName[i]));
-				 */
 				if (data.getName() == VAVariables.thresholdName[i]
 						|| i == VAVariables.slotNum)
 					break;
 				if (slotCountMap.containsKey(VAVariables.thresholdName[i])) {
-					/*
-					 * System.out.println("start = " + start + "+" +
-					 * slotCountMap.get(VAVariables.thresholdName[i]));
-					 */
 					start += slotCountMap.get(VAVariables.thresholdName[i]);
 				}
 			}
 			end = start + slotCountMap.get(data.getName()) - 1;
-			// System.out.println("get range (" + start + " " + end + ")");
 			return new VARange(start, end);
 		} else
 			return new VARange();
 
 	}
 
+	/**
+	 * Clear current listview (this can be done in VAPanel.java also, just put
+	 * it here for now
+	 */
 	public void clearList() {
 		if (this.listView != null) {
 			int num = this.listView.getItems().size();

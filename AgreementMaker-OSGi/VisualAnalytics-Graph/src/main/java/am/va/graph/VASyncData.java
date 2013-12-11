@@ -14,6 +14,12 @@ import am.app.ontology.Ontology;
 
 public class VASyncData {
 
+	/**
+	 * Get a node's parent node
+	 * 
+	 * @param n
+	 * @return
+	 */
 	private static Node getParentNode(Node n) {
 		if (n.getParents().size() > 0)
 			return n.getParents().get(0);
@@ -21,6 +27,11 @@ public class VASyncData {
 			return null;
 	}
 
+	/**
+	 * Get a VAData's parent data
+	 * @param v
+	 * @return
+	 */
 	public static VAData getParentVAData(VAData v) {
 		Node sNode = null, tNode = null;
 		double Similarity = 0.0;
