@@ -232,6 +232,7 @@ public class Application extends Controller {
 		ServerCandidateMapping scm = new ServerCandidateMapping();
 		scm.sourceURI = m.getEntity1().getUri();
 		scm.targetURI = m.getEntity2().getUri();
+		scm.userId = id;
 		scm.timeSent = new java.util.Date();
 		scm.save();
 		

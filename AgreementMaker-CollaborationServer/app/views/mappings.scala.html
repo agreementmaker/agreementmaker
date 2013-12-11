@@ -6,6 +6,7 @@
 <table border="1" cellspacing="0" cellpadding="3">
 <tr>
 <th>ID</th>
+<th>User</th>
 <th>sourceURI</th>
 <th>targetURI</th>
 <th>timeSent</th>
@@ -17,6 +18,7 @@
 @for(mapping <- mappings) {
 	<tr>
 		<td>@mapping.id</td>
+		<td>@mapping.userId</td>
 		<td>@mapping.sourceURI</td>
 		<td>@mapping.targetURI</td>
 		<td>@mapping.timeSent</td>

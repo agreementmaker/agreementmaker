@@ -29,6 +29,9 @@ public class ServerCandidateMapping extends Model {
 	@Constraints.Required
 	public String targetURI;
 
+	@Constraints.Required
+	public String userId;
+	
 	@Temporal(TemporalType.TIMESTAMP)
 	public Date timeSent;
 	
