@@ -48,11 +48,9 @@ public class LocalByThresholdMethod extends ClusteringMethod {
 			setList.add(buildSet(m, t, row, col));
 		}
 
-		int numOfMatcher = setList.size();
-		
 		// find the intersection of the sets
 		TreeSet<Point> intersectionSet = null;
-		HashMap<Point, Integer> mappingTimes = null;
+		HashMap<Point, Double> pointWithSim = null;
 
 		if (setList.size() == 0) {
 			// no sets, leave intersectionSet == null
@@ -60,34 +58,38 @@ public class LocalByThresholdMethod extends ClusteringMethod {
 		if (setList.size() == 1) {
 			// one set
 			intersectionSet = setList.get(0);
-			mappingTimes = new HashMap<Point, Integer>();
 
+			pointWithSim = new HashMap<Point, Double>();
 			for (Point p : setList.get(0)) {
-				mappingTimes.put(p, 1);
+				pointWithSim.put(p, 1.0);
 			}
-
 		} else {
 			// more than one set, must compute intersection.
 			intersectionSet = computeIntersection(setList.get(0),
 					setList.get(1)); // the first two sets
-
 			// the rest of the sets
 			for (int i = 2; i < setList.size(); i++) {
 				intersectionSet = computeIntersection(intersectionSet,
 						setList.get(i));
 			}
-			mappingTimes = computeCooccurTimes(setList);
-
+			
+			pointWithSim = computeCooccurTimes(setList);
 		}
 
 		Cluster<Mapping> c = null;
 
 		if (intersectionSet != null) {
-			// create the cluster
-			// c = new Cluster<Mapping>(intersectionSet,
-			// matcherList.get(0).getSourceOntology(),
-			// matcherList.get(0).getTargetOntology(), t );
-			c = new Cluster<Mapping>(mappingTimes, matcherList.get(0)
+			
+			// compute similarity based on number of times a mapping appears as the a similarity one with the candidate
+			int total = 0;
+			for (Point p : pointWithSim.keySet()) {
+				total += pointWithSim.get(p);
+			}
+			for (Point p: pointWithSim.keySet()) {
+				pointWithSim.put(p, 1.0 * pointWithSim.get(p) / total);
+			}
+			
+			c = new Cluster<Mapping>(pointWithSim, matcherList.get(0)
 					.getSourceOntology(), matcherList.get(0)
 					.getTargetOntology(), t);
 		}
@@ -132,7 +134,6 @@ public class LocalByThresholdMethod extends ClusteringMethod {
 			}
 		}
 		
-		
 		return currentSet;
 	}
 
@@ -149,14 +150,14 @@ public class LocalByThresholdMethod extends ClusteringMethod {
 		return intersection;
 	}
 	
-	private HashMap<Point, Integer> computeCooccurTimes(ArrayList<TreeSet<Point>> list) {
-		HashMap<Point, Integer> map = new HashMap<Point, Integer>();
+	private HashMap<Point, Double> computeCooccurTimes(ArrayList<TreeSet<Point>> list) {
+		HashMap<Point, Double> map = new HashMap<Point, Double>();
 		for (TreeSet<Point> set : list) {
 			for (Point p : set) {
 				if (map.containsKey(p)) {
 					map.put(p, map.get(p) + 1);
 				} else {
-					map.put(p, 1);
+					map.put(p, 1.0);
 				}
 			}
 		}

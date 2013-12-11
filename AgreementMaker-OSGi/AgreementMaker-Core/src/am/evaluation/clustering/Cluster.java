@@ -19,6 +19,7 @@ public class Cluster<E extends Mapping> implements Iterable<E> {
 	private String name;
 	private ArrayList<E> clusterSet;
 	public HashMap<Point, Double> map;
+	
 
 	public Cluster() {
 		clusterSet = new ArrayList<E>();
@@ -52,15 +53,10 @@ public class Cluster<E extends Mapping> implements Iterable<E> {
 
 	}
 
-	public Cluster(HashMap<Point, Integer> map, Ontology sourceOntology,
+	public Cluster(HashMap<Point, Double> pointWithSim, Ontology sourceOntology,
 			Ontology targetOntology, alignType t) {
-		int total = 0;
-		for (Point p : map.keySet()) {
-			total += map.get(p);
-		}
 
 		clusterSet = new ArrayList<E>();
-		this.map = new HashMap<Point, Double>();
 
 		List<Node> sourceList = null;
 		List<Node> targetList = null;
@@ -76,14 +72,17 @@ public class Cluster<E extends Mapping> implements Iterable<E> {
 			aType = alignType.aligningProperties;
 		}
 
-		for (Point p : map.keySet()) {
+		this.map = new HashMap<Point, Double>();
+		for (Point p : pointWithSim.keySet()) {
 			clusterSet.add((E) new Mapping(sourceList.get(p.x), targetList
 					.get(p.y), 1.0, MappingRelation.EQUIVALENCE, aType)); // unchecked
 																			// conversion
-			this.map.put(p, 1.0 * map.get(p) / total);
+			this.map.put(p, pointWithSim.get(p));
 		}
 
 	}
+	
+	
 
 	public void addMapping(E m) {
 		clusterSet.add(m);

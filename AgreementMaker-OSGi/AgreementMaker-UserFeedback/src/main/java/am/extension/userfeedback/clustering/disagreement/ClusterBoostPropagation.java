@@ -14,6 +14,7 @@ import am.app.ontology.Ontology;
 import am.evaluation.clustering.Cluster;
 import am.evaluation.clustering.localByThreshold.LocalByThresholdMethod;
 import am.evaluation.clustering.localByThreshold.LocalByThresholdParameters;
+import am.evaluation.clustering.localByThreshold.LocalByTrendMethod;
 import am.extension.userfeedback.FeedbackPropagation;
 import am.extension.userfeedback.UFLExperiment;
 import am.extension.userfeedback.UserFeedback.Validation;
@@ -36,7 +37,10 @@ public class ClusterBoostPropagation extends FeedbackPropagation<UFLExperiment> 
 		// setup the clustering method
 		List<AbstractMatcher> availableMatchers = experiment.initialMatcher
 				.getComponentMatchers();
-		LocalByThresholdMethod clusteringMethod = new LocalByThresholdMethod(
+		
+//		LocalByThresholdMethod clusteringMethod = new LocalByThresholdMethod(
+//				availableMatchers);
+		LocalByThresholdMethod clusteringMethod = new LocalByTrendMethod(
 				availableMatchers);
 
 		LocalByThresholdParameters clusteringParameters = new LocalByThresholdParameters();
