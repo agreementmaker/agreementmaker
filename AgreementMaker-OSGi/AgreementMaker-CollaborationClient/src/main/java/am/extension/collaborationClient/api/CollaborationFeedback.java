@@ -6,7 +6,10 @@ public interface CollaborationFeedback {
 		CORRECT,
 		INCORRECT,
 		SKIP,
-		STOP;
+		END_EXPERIMENT;
 	}
 	
+	public String getId();
+	
+	public FeedbackValue getValue();
 }

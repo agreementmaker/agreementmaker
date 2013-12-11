@@ -1,39 +1,33 @@
 package am.extension.userfeedback.inizialization;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.app.ontology.Node;
-import am.app.ontology.Ontology;
-import am.app.ontology.ontologyParser.OntologyDefinition;
-import am.extension.collaborationClient.api.CollaborationTask;
-import am.extension.collaborationClient.restful.RESTfulCollaborationServer;
-import am.extension.multiUserFeedback.MUExperiment;
-import am.extension.multiUserFeedback.ui.TaskSelectionDialog;
 import am.extension.userfeedback.FeedbackLoopInizialization;
-import am.ui.UICore;
+import am.extension.userfeedback.MLFeedback.MLFExperiment;
 
-public class RestfulDataInizialization extends FeedbackLoopInizialization<MUExperiment>{
-	List<AbstractMatcher> inputMatchers = new ArrayList<AbstractMatcher>();
-	MUExperiment experiment;
+public class RestfulDataInizialization extends FeedbackLoopInizialization<MLFExperiment>{
+	
+	private List<AbstractMatcher> inputMatchers;
+	
+	//private MUExperiment experiment;
+	
 	private static Logger LOG = Logger.getLogger(RestfulDataInizialization.class);
+	
 	@Override
-	public void inizialize(MUExperiment exp) {
-		// TODO Auto-generated method stub
-		this.experiment=exp;
+	public void inizialize(MLFExperiment exp) {
+		//this.experiment=exp;
 		
-		// TODO Auto-generated method stub
+		inputMatchers = exp.initialMatcher.getComponentMatchers();
+		
 		SimilarityMatrix smClass=exp.initialMatcher.getFinalMatcher().getClassesMatrix().clone();
 		SimilarityMatrix smProperty=exp.initialMatcher.getFinalMatcher().getPropertiesMatrix().clone();
 		for(int i=0;i<smClass.getRows();i++)
@@ -47,6 +41,18 @@ public class RestfulDataInizialization extends FeedbackLoopInizialization<MUExpe
 		
 		exp.setUflClassMatrix(smClass);
 		exp.setUflPropertyMatrix(smProperty);
+		
+		exp.classesSparseMatrix = 
+				new SparseMatrix(
+						Core.getInstance().getSourceOntology(),
+						Core.getInstance().getTargetOntology(), 
+						alignType.aligningClasses);
+		
+		exp.propertiesSparseMatrix = 
+				new SparseMatrix(
+						Core.getInstance().getSourceOntology(),
+						Core.getInstance().getTargetOntology(), 
+						alignType.aligningProperties);
 		
 		done();
 	}

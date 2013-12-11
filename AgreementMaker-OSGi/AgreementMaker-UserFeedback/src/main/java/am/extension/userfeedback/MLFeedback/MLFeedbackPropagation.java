@@ -288,17 +288,18 @@ public class MLFeedbackPropagation extends FeedbackPropagation<MLFExperiment> {
 	
 		experiment.setUflClassMatrix(feedbackClassMatrix);
 		experiment.setUflPropertyMatrix(feedbackPropertyMatrix);
-		try {
+		
+		/*try {
 			writeSimilarityMatrix(feedbackClassMatrix, experiment.getIterationNumber(), "Classes");
 			writeSimilarityMatrix(feedbackPropertyMatrix, experiment.getIterationNumber(), "Properties");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 		
 		
-		if(experiment.getIterationNumber()>0)
-			writeFinalAligment(experiment.getIterationNumber(),experiment.getMLAlignment());
+		/*if(experiment.getIterationNumber()>0)
+			writeFinalAligment(experiment.getIterationNumber(),experiment.getMLAlignment());*/
 		done();
 	}
 	

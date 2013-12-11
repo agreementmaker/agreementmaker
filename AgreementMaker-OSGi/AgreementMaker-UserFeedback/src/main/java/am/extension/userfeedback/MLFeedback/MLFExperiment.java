@@ -10,24 +10,38 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 
 import am.app.Core;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatchingTask;
-import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.app.ontology.Ontology;
+import am.app.ontology.ontologyParser.OntologyDefinition;
+import am.extension.collaborationClient.api.CollaborationAPI;
+import am.extension.collaborationClient.api.CollaborationCandidateMapping;
+import am.extension.collaborationClient.api.CollaborationTask;
+import am.extension.collaborationClient.api.CollaborationUser;
+import am.extension.collaborationClient.restful.RESTfulCollaborationServer;
+import am.extension.multiUserFeedback.ui.TaskSelectionDialog;
 import am.extension.userfeedback.UFLExperiment;
 import am.extension.userfeedback.UserFeedback.Validation;
-import am.extension.userfeedback.experiments.IndependentSequentialLogicML;
 import am.extension.userfeedback.experiments.IndependentSequentialLogicMultiUser;
 import am.extension.userfeedback.experiments.UFLControlLogic;
+import am.ui.UICore;
 
 public class MLFExperiment extends UFLExperiment {
 
+	private static Logger LOG = Logger.getLogger(MLFExperiment.class);
+	
+	public CollaborationAPI server;
+	public CollaborationUser clientID;
+	public CollaborationTask selectedTask;
+	public CollaborationCandidateMapping candidateMapping;
+	
 private BufferedWriter logFile;
 private Alignment<Mapping> MLAlignment;
 private Object[][] trainingSet_classes;
@@ -45,6 +59,9 @@ public List<Mapping> conflictualClass;
 public List<Mapping> conflictualProp;
 
 private alignCardinality alignCardinalityType=alignCardinality.cn_m;
+
+	
+
 public alignCardinality getAlignCardinalityType() {
 	return alignCardinalityType;
 }
@@ -55,8 +72,8 @@ public void setAlignCardinalityType(alignCardinality alignCardinalityType) {
 }
 
 
-public SparseMatrix classesSparseMatrix=new SparseMatrix(Core.getInstance().getSourceOntology(),Core.getInstance().getTargetOntology(), alignType.aligningClasses);
-public SparseMatrix propertiesSparseMatrix=new SparseMatrix(Core.getInstance().getSourceOntology(),Core.getInstance().getTargetOntology(), alignType.aligningProperties);
+public SparseMatrix classesSparseMatrix;
+public SparseMatrix propertiesSparseMatrix;
 
 
 public SparseMatrix getClassesSparseMatrix() {
@@ -148,20 +165,50 @@ public void setMLAlignment(Alignment<Mapping> mLAlignment) {
 	MLAlignment = mLAlignment;
 }
 
-
-
-
 	public MLFExperiment() {
+		super();
+		connection();
+	}
+	
+	
+	private void connection()
+	{
+		// connect to the server
+		// TODO: Make the server baseURL be configured by the user?
+		String baseURL = "http://127.0.0.1:9000";
+		server = new RESTfulCollaborationServer(baseURL);
+		clientID = server.register();
+		
+		LOG.info("Connected to " + baseURL + ", ClientID: " + clientID);
+		
+		List<CollaborationTask> taskList = server.getTaskList();
+		
+		LOG.info("Retrieved " + taskList.size() + " tasks.");
+		
+		TaskSelectionDialog tsd = new TaskSelectionDialog(taskList);
+		selectedTask = tsd.getTask();
+		
+		LOG.info("User selected task: " + selectedTask);
+		
+		
+		OntologyDefinition sourceOntDef = server.getOntologyDefinition(selectedTask.getSourceOntologyURL());
+		LOG.info("Loading source ontology: " + sourceOntDef);
+		Ontology sourceOnt = UICore.getUI().openFile(sourceOntDef);
+		Core.getInstance().setSourceOntology(sourceOnt);
+		
+		
+		OntologyDefinition targetOntDef = server.getOntologyDefinition(selectedTask.getTargetOntologyURL());
+		LOG.info("Loading target ontology: " + targetOntDef);
+		Ontology targetOnt = UICore.getUI().openFile(targetOntDef);
+		Core.getInstance().setTargetOntology(targetOnt);
+		
 		// setup the log file
 		try {
-			FileWriter fr = new FileWriter("/home/frank/Desktop/ufllog.txt");
+			FileWriter fr = new FileWriter("ufllog.txt");
 			logFile = new BufferedWriter(fr);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
 	}
 	
 	
@@ -219,7 +266,7 @@ public void setMLAlignment(Alignment<Mapping> mLAlignment) {
 
 	@Override
 	public UFLControlLogic getControlLogic() {
-		return new IndependentSequentialLogicML();
+		return new IndependentSequentialLogicMultiUser();
 		//return new IndependentSequentialLogic();
 	}
 
