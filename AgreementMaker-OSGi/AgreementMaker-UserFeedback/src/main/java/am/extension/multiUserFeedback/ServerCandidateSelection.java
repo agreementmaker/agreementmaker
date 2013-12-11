@@ -27,24 +27,17 @@ public class ServerCandidateSelection extends MUCandidateSelection<MUExperiment>
 	}
 	
 	@Override
-	public void rank(MUExperiment exp) {
+	public void rank(MUExperiment exp, String id) {
 		this.experiment=exp;
 		inizialization();
 		
-		if(exp.getIterationNumber()==2)
+		if(experiment.usersMappings.get(id).size()>2)
 		{
 			uncertainMappingRetrieval();
-		}
-		
-		if (experiment.getIterationNumber()<3)
-		{
-			disagreementRanking();
-		}
-		else
-		{
-			disagreementRanking();
 			almostCertainMappingRetrieval();
 		}
+		disagreementRanking();
+		
 		done();
 	}
 
@@ -354,6 +347,12 @@ public class ServerCandidateSelection extends MUCandidateSelection<MUExperiment>
 	public Mapping getSelectedMapping() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void rank(MUExperiment exp) {
+		// TODO Auto-generated method stub
+		
 	}
 
 
