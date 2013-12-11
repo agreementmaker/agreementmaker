@@ -117,7 +117,6 @@ public class VAPanel {
 		initLeftAddList(borderPane);
 		initTopToolbar(borderPane);
 		initCenterTwoPies(borderPane);
-
 		root.getChildren().add(borderPane);
 	}
 
