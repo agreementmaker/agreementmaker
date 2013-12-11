@@ -94,22 +94,15 @@ public class VAPieChart {
 		VAGroup currentGroup = VAPanel.getCurrentGroup();
 		VAGroup newRightGroup = new VAGroup();
 		HashMap<String, Integer> slotsMap = null;
-		if (currentGroup.getRootNodeName().equals("isPartOf")) {
-			VAData t = currentGroup.getRootNode();
-			if (t != null) {
-				String label = t.getNodeName();
-			}
-		}
 		if (currentGroup != null && currentGroup.hasMatching()) {
 			VAData newRightRootData = new VAData(currentGroup.getRootNode()
 					.getTargetNode(), null, 0);
-			// VAPanel.setTargetLabel(newRightRootData.getNodeName());
+			newLabel = newRightRootData.getNodeName();
 			if (newRightRootData.hasChildren()) {
 				newRightGroup.setListVAData(VASyncData.getChildrenData(
 						newRightRootData, VAVariables.ontologyType.Target));
 				slotsMap = newRightGroup.getslotCountMap();
 			}
-			newLabel = currentGroup.getRootNodeName();
 		} else if (currentGroup != null && currentGroup.getParent() == 0) {
 			slotsMap = VAPanel.getRightRootGroup().getslotCountMap();
 			newLabel = "Target ontology";
