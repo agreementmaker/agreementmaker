@@ -29,6 +29,7 @@ public class VASyncData {
 
 	/**
 	 * Get a VAData's parent data
+	 * 
 	 * @param v
 	 * @return
 	 */
@@ -135,6 +136,7 @@ public class VASyncData {
 		} else {
 			System.out.println("mapping data is null ???");
 		}
+		sim = Math.round(sim * 100.0) / 100.0;
 		return new VAData(n, matchingNode, sim);
 	}
 
