@@ -9,6 +9,7 @@ import models.Client;
 import models.MatchingTask;
 import models.Ontology;
 import models.ServerCandidateMapping;
+import models.ServerCandidateMapping.FeedbackType;
 
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
@@ -231,6 +232,7 @@ public class Application extends Controller {
 		ServerCandidateMapping scm = new ServerCandidateMapping();
 		scm.sourceURI = m.getEntity1().getUri();
 		scm.targetURI = m.getEntity2().getUri();
+		scm.timeSent = new java.util.Date();
 		scm.save();
 		
 		RESTfulCandidateMapping restfulMapping = new RESTfulCandidateMapping();
@@ -285,8 +287,24 @@ public class Application extends Controller {
 	
 	public static Result setFeedback(String id, String feedback)
 	{
-		ServerCandidateMapping m= ServerCandidateMapping.find.byId(Long.parseLong(id));
-		m.feedback=feedback;
+		ServerCandidateMapping m = ServerCandidateMapping.find.byId(Long.parseLong(id));
+
+		switch(feedback) {
+		case "CORRECT":
+			m.feedback = FeedbackType.CORRECT;
+			break;
+		case "INCORRECT":
+			m.feedback = FeedbackType.INCORRECT;
+			break;
+		case "SKIP":
+			m.feedback = FeedbackType.SKIP;
+			break;
+		case "END_EXPERIMENT":
+			m.feedback = FeedbackType.END_EXPERIMENT;
+			break;
+		}
+
+		m.timeReceived = new java.util.Date();
 		m.save();
 		
 		synchronized (syncronizeFeedbackPropagation) {
@@ -306,9 +324,13 @@ public class Application extends Controller {
 		}
 
 		
-		return null;
+		return ok("Feedback received.");
 	}
 	
+	public static Result showMappings() {
+		List<ServerCandidateMapping> mappings = ServerCandidateMapping.find.all();
+		return ok(views.html.mappings.render(mappings));
+	}
 	
 	
 }

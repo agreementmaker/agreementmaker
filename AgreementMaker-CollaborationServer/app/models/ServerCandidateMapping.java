@@ -40,6 +40,11 @@ public class ServerCandidateMapping extends Model {
 	@Enumerated(EnumType.STRING)
 	public FeedbackType feedback;
 	
+	public String getTimeInterval() {
+		if( timeReceived == null || timeSent == null ) return "";
+		return am.Utility.getFormattedTime(timeReceived.getTime() - timeSent.getTime());
+	}
+	
 	public static Model.Finder<Long,ServerCandidateMapping> find = 
     		new Model.Finder<Long,ServerCandidateMapping>(Long.class, ServerCandidateMapping.class);
 }
