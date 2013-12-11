@@ -174,7 +174,7 @@ public class VAPieChart {
 			listView.setItems(arcListData);
 			setListViewAction(listView, listMap, ontologyType);
 			// test
-			//printData(idxRange, dataArrayList);
+			// printData(idxRange, dataArrayList);
 		} else {
 			System.out.println("- pie chart is empty, return empty list");
 		}
@@ -210,15 +210,10 @@ public class VAPieChart {
 					System.out.println("clicked on " + selectedLocalName);
 					selectedVAData = listMap.get(selectedLocalName);
 					// Still need to figure the color
-					if (selectedVAData.hasChildren()) {
-						// listView.setStyle("-fx-selection-bar-text: Yellow;");
-						VAPanel.generateNewGroup(ontologyType);
-						updatePieChart(ontologyType);
-					} else {
-						// listView.setStyle("-fx-selection-bar-text: White;");
-					}
+
 					VAPanel.generateNewGroup(ontologyType);
 					updatePieChart(ontologyType);
+					listView.getSelectionModel().clearSelection();
 				} else {
 					System.out.println("- select empty!");
 				}
@@ -241,7 +236,7 @@ public class VAPieChart {
 		ObservableList<String> arcListData = FXCollections
 				.observableArrayList();
 
-		//System.out.println(dataArrayList.size() + " data");
+		// System.out.println(dataArrayList.size() + " data");
 		int start = idxRange.getStartIdx(), end = idxRange.getEndIdx();
 		// Put data in list view
 		for (int i = start; i <= end; i++) {
@@ -281,7 +276,7 @@ public class VAPieChart {
 	private VARange getPieSliceDataIdxRange(PieChart.Data data,
 			HashMap<String, Integer> slotCountMap) {
 
-		//System.out.println(data.getName());
+		// System.out.println(data.getName());
 		if (slotCountMap.containsKey(data.getName())) {
 
 			int start = 0, end = 1;
@@ -303,10 +298,19 @@ public class VAPieChart {
 				}
 			}
 			end = start + slotCountMap.get(data.getName()) - 1;
-			//System.out.println("get range (" + start + " " + end + ")");
+			// System.out.println("get range (" + start + " " + end + ")");
 			return new VARange(start, end);
 		} else
 			return new VARange();
 
+	}
+
+	public void clearList() {
+		if (this.listView != null) {
+			int num = this.listView.getItems().size();
+			for (int i = 0; i < num; i++) {
+				this.listView.getItems().remove(0);
+			}
+		}
 	}
 }

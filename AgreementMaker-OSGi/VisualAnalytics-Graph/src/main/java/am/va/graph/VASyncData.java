@@ -116,8 +116,11 @@ public class VASyncData {
 				matchingNode = map[0].getEntity2();
 			else
 				matchingNode = map[0].getEntity1();
-			// sim = map[0].getSimilarity();
-			sim = Math.random(); // only for testing
+			if (VAVariables.DEBUG == 1)
+				sim = Math.random(); // only for testing
+			else
+				sim = map[0].getSimilarity();
+
 		} else {
 			System.out.println("mapping data is null ???");
 		}
@@ -139,8 +142,8 @@ public class VASyncData {
 			VAData newChildData = VASyncData.getMatchingVAData(n, ontologyType);
 			res.add(newChildData);
 		}
-		if (ontologyType == VAVariables.ontologyType.Source)
-			Collections.sort(res);
+		// if (ontologyType == VAVariables.ontologyType.Source)
+		// Collections.sort(res);
 		return res;
 	}
 }

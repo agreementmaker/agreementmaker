@@ -76,7 +76,7 @@ public class VAPanel {
 	 */
 	public static void initAndShowGUI() {
 		frameMain = new JFrame("VA");
-		frameMain.setSize(1250, 550);
+		frameMain.setSize(1300, 550);
 		frameMain.setLocation(100, 100);
 		fxPanel = new JFXPanel();
 		frameMain.add(fxPanel);
@@ -102,6 +102,7 @@ public class VAPanel {
 		updatePreviousGroup(rootGroupLeft);
 		updateCurrentGroup(rootGroupLeft);
 		chartLeft.updatePieChart(ontologyType.Source);
+		generateParentGroup();
 	}
 
 	private static void setLayout() {
@@ -131,7 +132,7 @@ public class VAPanel {
 	}
 
 	private static void initTreeView(TilePane tilePane) {
-		listTreeLeft = new TreeView();
+		listTreeLeft = new TreeView<String>();
 		listTreeLeft.setPrefHeight(500);
 		listTreeLeft.setPrefWidth(150);
 		tilePane.getChildren().add(listTreeLeft);
@@ -256,6 +257,7 @@ public class VAPanel {
 
 	/**
 	 * Generate new Tree view
+	 * 
 	 * @param parentGroup
 	 */
 	private static void generateNewTree(VAGroup parentGroup) {
@@ -276,10 +278,39 @@ public class VAPanel {
 		listTreeLeft.setShowRoot(true);
 		listTreeLeft.setRoot(listTreeLeftRoot);
 		listTreeLeftRoot.setExpanded(true);
+		treeviewAction(data);
 	}
-	
-	private static void treeviewAction(){
-		
+
+	private static void treeviewAction(final ArrayList<VAData> data) {
+		listTreeLeft.getSelectionModel().selectedItemProperty()
+				.addListener(new ChangeListener<Object>() {
+
+					@Override
+					public void changed(ObservableValue<?> observable,
+							Object oldValue, Object newValue) {
+
+						TreeItem<String> selectedItem = (TreeItem<String>) newValue;
+						if (selectedItem != null) {
+							String selected = selectedItem.getValue();
+							for (VAData da : data) {
+								if (da.getNodeName().equals(selected)) {
+									VAGroup newGroup = new VAGroup();
+									newGroup.setRootNode(da);
+									newGroup.setParent(currentGroup
+											.getGroupID());
+									newGroup.setListVAData(VASyncData
+											.getChildrenData(da,
+													ontologyType.Source));
+									updateCurrentGroup(newGroup);
+									generateParentGroup();
+									chartLeft
+											.updatePieChart(ontologyType.Source);
+								}
+							}
+						}
+					}
+
+				});
 	}
 
 	/**
@@ -424,6 +455,8 @@ public class VAPanel {
 						VASyncListener.InitData();
 						updateCurrentGroup(rootGroupLeft);
 						chartLeft.updatePieChart(ontologyType.Source);
+						chartLeft.clearList();
+						generateParentGroup();
 					}
 				});
 	}
