@@ -21,7 +21,7 @@ public abstract class MUCandidateSelection<T extends MUExperiment> extends Candi
 		listeners = new EventListenerList();
 	}
 	
-	public abstract void rank( T exp );
+	public abstract void rank( T exp, String id );
 	
 	public abstract List<Mapping> getRankedMappings(alignType typeOfRanking, String id);
 	public abstract List<Mapping> getRankedMappings(String id);
