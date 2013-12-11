@@ -15,7 +15,6 @@ import java.util.List;
 import weka.core.matrix.Matrix;
 
 
-import org.apache.commons.math.stat.regression.OLSMultipleLinearRegression;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
@@ -202,12 +201,6 @@ public class MLFeedbackPropagationByLearningLinearWeights extends FeedbackPropag
 		trainingSet=optimizeTrainingSet(trainingSet);
 		experiment.getFinalAlignment();
 		
-//		for (int i=0; i<trainingSet.length; i++) {
-//			for (int j=0; j<trainingSet[i].length; j++) {
-//				System.out.print(trainingSet[i][j]  +" ");
-//			}
-//			System.out.println();
-//		}
 
 		SimilarityMatrix feedbackClassMatrix=experiment.getUflClassMatrix();
 		SimilarityMatrix feedbackPropertyMatrix=experiment.getUflPropertyMatrix();
@@ -222,9 +215,6 @@ public class MLFeedbackPropagationByLearningLinearWeights extends FeedbackPropag
 			{ 
 
 				feedbackClassMatrix.setSimilarity(m.getSourceKey(), m.getTargetKey(), 1.0);
-				//feedbackClassMatrix=(zeroSim(experiment.getUflClassMatrix(), candidateMapping.getSourceKey(), candidateMapping.getTargetKey(),experiment.getSourceCardinality(),experiment.getTargetCardinality()));
-				//experiment.forbidden_row_classes.add(candidateMapping.getSourceKey());
-				//experiment.forbidden_column_classes.add(candidateMapping.getTargetKey());
 				experiment.classesSparseMatrix.setSimilarity(m.getSourceKey(), m.getTargetKey(), 1);
 				
 			}
@@ -244,9 +234,6 @@ public class MLFeedbackPropagationByLearningLinearWeights extends FeedbackPropag
 			if( userFeedback == Validation.CORRECT ) 
 			{ 
 				feedbackPropertyMatrix.setSimilarity(m.getSourceKey(), m.getTargetKey(), 1.0);
-				//feedbackPropertyMatrix=zeroSim(experiment.getUflPropertyMatrix(), candidateMapping.getSourceKey(), candidateMapping.getTargetKey(),experiment.getSourceCardinality(),experiment.getTargetCardinality());
-				//experiment.forbidden_row_properties.add(candidateMapping.getSourceKey());
-				//experiment.forbidden_column_properties.add(candidateMapping.getTargetKey());
 				experiment.propertiesSparseMatrix.setSimilarity(m.getSourceKey(), m.getTargetKey(), 1);
 			}
 			else if( userFeedback == Validation.INCORRECT ) 
@@ -261,21 +248,6 @@ public class MLFeedbackPropagationByLearningLinearWeights extends FeedbackPropag
 			feedbackClassMatrix=prepareSMforNB(feedbackClassMatrix);
 			feedbackPropertyMatrix=prepareSMforNB(feedbackPropertyMatrix);
 		}
-		
-//		if (iteration>-10)
-//		{
-//			if( candidateMapping.getAlignmentType() == alignType.aligningClasses )
-//			{
-//				//feedbackClassMatrix=runNBayes(experiment.classesSparseMatrix ,experiment.forbidden_row_classes, experiment.forbidden_column_classes, feedbackClassMatrix, trainingSet);
-//				feedbackClassMatrix=runNBayes(experiment.classesSparseMatrix , feedbackClassMatrix, trainingSet);
-//			}
-//			else
-//				if( candidateMapping.getAlignmentType() == alignType.aligningProperties ) 
-//				{
-//					//feedbackPropertyMatrix=runNBayes(experiment.propertiesSparseMatrix,experiment.forbidden_row_properties, experiment.forbidden_column_properties, feedbackPropertyMatrix, trainingSet);
-//					feedbackPropertyMatrix=runNBayes(experiment.propertiesSparseMatrix, feedbackPropertyMatrix, trainingSet);
-//				}
-//		}
 		
 		if (trainingSet.length >= 8) {
 			
@@ -313,10 +285,14 @@ public class MLFeedbackPropagationByLearningLinearWeights extends FeedbackPropag
 		    }
 		    System.out.println();
 		   
-		    // Least Square Estimate
+		    double[] weights = new double[numberOfEqu];
+		    
+		    /* 
+		     * Least Square Estimate
+		     */
 			OLSMultipleLinearRegression regression = new OLSMultipleLinearRegression();
 			regression.newSampleData(response, numeric);
-			double[] weights = regression.estimateRegressionParameters();
+			weights = regression.estimateRegressionParameters();
 			
 			for (Mapping mapping : cluster) {
 				int r = mapping.getSourceKey();
