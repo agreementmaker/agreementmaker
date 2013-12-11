@@ -33,6 +33,7 @@ import am.extension.userfeedback.UFLExperiment;
 import am.extension.userfeedback.UserFeedback.Validation;
 import am.extension.userfeedback.experiments.IndependentSequentialLogicMultiUser;
 import am.extension.userfeedback.experiments.UFLControlLogic;
+import am.extension.userfeedback.inizialization.RestfulDataInizialization;
 import am.ui.UICore;
 
 public class MUExperiment extends UFLExperiment {
@@ -72,6 +73,73 @@ public HashMap<String, SimilarityMatrix> usersProp=new HashMap<String, Similarit
 
 private alignCardinality alignCardinalityType=alignCardinality.cn_m;
 
+	public MUExperiment() {
+		super();
+		connection();
+	}
+
+	private void connection()
+	{
+		// connect to the server
+		// TODO: Make the server baseURL be configured by the user?
+		String baseURL = "http://127.0.0.1:9000";
+		server = new RESTfulCollaborationServer(baseURL);
+		clientID = server.register();
+		
+		LOG.info("Connected to " + baseURL + ", ClientID: " + clientID);
+		
+		List<CollaborationTask> taskList = server.getTaskList();
+		
+		LOG.info("Retrieved " + taskList.size() + " tasks.");
+		
+		TaskSelectionDialog tsd = new TaskSelectionDialog(taskList);
+		selectedTask = tsd.getTask();
+		
+		LOG.info("User selected task: " + selectedTask);
+		
+		
+		OntologyDefinition sourceOntDef = server.getOntologyDefinition(selectedTask.getSourceOntologyURL());
+		LOG.info("Loading source ontology: " + sourceOntDef);
+		Ontology sourceOnt = UICore.getUI().openFile(sourceOntDef);
+		Core.getInstance().setSourceOntology(sourceOnt);
+		
+		
+		OntologyDefinition targetOntDef = server.getOntologyDefinition(selectedTask.getTargetOntologyURL());
+		LOG.info("Loading target ontology: " + targetOntDef);
+		Ontology targetOnt = UICore.getUI().openFile(targetOntDef);
+		Core.getInstance().setTargetOntology(targetOnt);
+		
+		LOG.info("Loading the reference alignment from: " + selectedTask.getReferenceAlignmentURL());
+		referenceAlignment = server.getReferenceAlignment(selectedTask.getReferenceAlignmentURL());
+		
+		if( referenceAlignment == null ) {
+			LOG.info("Reference alignment was not loaded.");
+		}
+		else {
+			LOG.info("Reference alignment loaded: " + referenceAlignment.size() + " mappings");
+		}
+		
+		classesSparseMatrix = 
+				new SparseMatrix(
+						Core.getInstance().getSourceOntology(),
+						Core.getInstance().getTargetOntology(), 
+						alignType.aligningClasses);
+		
+		propertiesSparseMUse getCandidateMapping(String id)atrix = 
+				new SparseMatrix(
+						Core.getInstance().getSourceOntology(),
+						Core.getInstance().getTargetOntology(), 
+						alignType.aligningProperties);
+		
+		// setup the log file
+		try {
+			FileWriter fr = new FileWriter("ufllog.txt");
+			logFile = new BufferedWriter(fr);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 public alignCardinality getAlignCardinalityType() {
 	return alignCardinalityType;
 }
@@ -86,7 +154,7 @@ public SparseMatrix classesSparseMatrix;
 public SparseMatrix propertiesSparseMatrix;
 
 
-public SparseMatrix getClassesSparseMatrix() {
+public SparseMatrix getClUse getCandidateMapping(String id)assesSparseMatrix() {
 	return classesSparseMatrix;
 }
 
