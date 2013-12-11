@@ -1,24 +1,16 @@
 package am.extension.multiUserFeedback;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.app.ontology.Node;
-import am.extension.userfeedback.MLFeedback.NaiveBayes;
-import am.extension.multiUserFeedback.MUExperiment;
 import am.extension.userfeedback.FeedbackPropagation;
-import am.extension.userfeedback.UserFeedback.Validation;
 import am.matcher.Combination.CombinationMatcher;
 
 public class MUFeedbackPropagation  extends FeedbackPropagation<MUExperiment> {
@@ -83,62 +75,6 @@ public class MUFeedbackPropagation  extends FeedbackPropagation<MUExperiment> {
 				}
 		}
 		
-		private SimilarityMatrix zeroSim(SimilarityMatrix sm,int source_index,int target_index, int sourceCardinality, int targetCardinality)
-		{
-			ArrayList<Integer> sourceToKeep=new ArrayList<Integer>();
-			ArrayList<Integer> targetToKeep=new ArrayList<Integer>();
-			if (sourceCardinality!=1)
-			{
-				sourceToKeep=topN(sm,-1,target_index,sourceCardinality);
-			}
-			
-			if (targetCardinality!=1)
-			{
-				targetToKeep=topN(sm,source_index,-1,sourceCardinality);
-			}
-			sourceToKeep.add(source_index);
-			targetToKeep.add(target_index);
-
-			
-			for(int i=0;i<sm.getRows();i++)
-			{
-				if (sourceToKeep.contains(i)) 
-					continue;
-				sm.setSimilarity(i, target_index, 0.0);		
-			}
-			for(int j=0;j<sm.getColumns();j++)
-			{
-				if (targetToKeep.contains(j)) 
-					continue;
-				sm.setSimilarity(source_index, j, 0.0);	
-			}
-			return sm;
-		}
-		
-		private ArrayList<Integer> topN (SimilarityMatrix sm, int sourceIndex, int targetIndex, int topNumber)
-		{
-			ArrayList<Integer> top=new ArrayList<Integer>();
-			Mapping[] tmp;
-			if (targetIndex==-1)
-			{
-				tmp=sm.getRowMaxValues(sourceIndex, topNumber);	
-				for (Mapping m : tmp)
-				{
-					top.add(m.getTargetKey());
-				}
-			}
-			else
-			{
-				tmp=sm.getColMaxValues(targetIndex, topNumber);
-				for (Mapping m : tmp)
-				{
-					top.add(m.getSourceKey());
-				}
-			}
-
-			return top;
-		}
-		
 		//check if the signature vector is valid. A valid signature vector must have at least one non zero element.
 		private boolean validSsv(Object[] ssv)
 		{
@@ -155,7 +91,7 @@ public class MUFeedbackPropagation  extends FeedbackPropagation<MUExperiment> {
 		public void propagate( MUExperiment exp ) 
 		{
 			this.experiment=exp;
-			int iteration=experiment.getIterationNumber();
+			
 			inputMatchers=experiment.initialMatcher.getComponentMatchers();
 			Mapping candidateMapping = experiment.selectedMapping;
 			List<AbstractMatcher> availableMatchers = experiment.initialMatcher.getComponentMatchers();
@@ -181,7 +117,7 @@ public class MUFeedbackPropagation  extends FeedbackPropagation<MUExperiment> {
 				}
 			}
 			String userFeedback = experiment.feedback;
-			if( userFeedback == "CORRECT" )
+			if( userFeedback.equals("CORRECT") )
 			{
 				trainingSet[trainset_index]=addToSV(candidateMapping, true);
 			}
@@ -201,7 +137,7 @@ public class MUFeedbackPropagation  extends FeedbackPropagation<MUExperiment> {
 				if( m == null ) 
 					m = new Mapping(candidateMapping);
 				
-				if( userFeedback == "CORRECT" ) 
+				if( userFeedback.equals("CORRECT") ) 
 				{ 
 
 					feedbackClassMatrix.setSimilarity(m.getSourceKey(), m.getTargetKey(), 1.0);
@@ -210,7 +146,7 @@ public class MUFeedbackPropagation  extends FeedbackPropagation<MUExperiment> {
 					experiment.classesSparseMatrix.setSimilarity(m.getSourceKey(), m.getTargetKey(), 1);
 					
 				}
-				else if( userFeedback == "INCORRECT" ) 
+				else if( userFeedback.equals("INCORRECT") ) 
 				{ 
 					feedbackClassMatrix.setSimilarity(m.getSourceKey(), m.getTargetKey(), 0.0);
 					experiment.classesSparseMatrix.setSimilarity(m.getSourceKey(), m.getTargetKey(), 1);
@@ -223,24 +159,18 @@ public class MUFeedbackPropagation  extends FeedbackPropagation<MUExperiment> {
 				if( m == null ) 
 					m = new Mapping(candidateMapping);
 				
-				if( userFeedback == "CORRECT" ) 
+				if( userFeedback.equals("CORRECT") ) 
 				{ 
 					feedbackPropertyMatrix.setSimilarity(m.getSourceKey(), m.getTargetKey(), 1.0);
 //					if (experiment.getAlignCardinalityType()==alignCardinality.c1_1)
 //						feedbackPropertyMatrix=zeroSim(experiment.getUflPropertyMatrix(), candidateMapping.getSourceKey(), candidateMapping.getTargetKey(),1,1);
 					experiment.propertiesSparseMatrix.setSimilarity(m.getSourceKey(), m.getTargetKey(), 1);
 				}
-				else if( userFeedback == "INCORRECT" ) 
+				else if( userFeedback.equals("INCORRECT") ) 
 				{
 					feedbackPropertyMatrix.setSimilarity(m.getSourceKey(), m.getTargetKey(), 0.0);
 					experiment.propertiesSparseMatrix.setSimilarity(m.getSourceKey(), m.getTargetKey(), 1);
 				}
-			}
-			
-			if (iteration==0)
-			{
-				feedbackClassMatrix=prepareSMforNB(feedbackClassMatrix);
-				feedbackPropertyMatrix=prepareSMforNB(feedbackPropertyMatrix);
 			}
 			
 		//	if(experiment.getIterationNumber()<10)
@@ -286,17 +216,7 @@ public class MUFeedbackPropagation  extends FeedbackPropagation<MUExperiment> {
 		
 			experiment.setUflClassMatrix(feedbackClassMatrix);
 			experiment.setUflPropertyMatrix(feedbackPropertyMatrix);
-			try {
-				writeSimilarityMatrix(feedbackClassMatrix, experiment.getIterationNumber(), "Classes");
-				writeSimilarityMatrix(feedbackPropertyMatrix, experiment.getIterationNumber(), "Properties");
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 			
-			
-			if(experiment.getIterationNumber()>0)
-				writeFinalAligment(experiment.getIterationNumber(),experiment.getMLAlignment());
 			done();
 		}
 		
@@ -337,92 +257,7 @@ public class MUFeedbackPropagation  extends FeedbackPropagation<MUExperiment> {
 			return set;
 		}
 		
-		private void writeFinalAligment(int iteration, Alignment<Mapping> mappings)
-		{
-			File file = new File("/home/frank/Documents/FinalAligment/finalAligment_"+iteration+".txt");
-			// if file doesnt exists, then create it
-			if (!file.exists()) {
-				try {
-					file.createNewFile();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-			FileWriter fw=null;
-			try {
-				fw = new FileWriter(file.getAbsoluteFile());
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			BufferedWriter bw = new BufferedWriter(fw);
-			try {
-				bw.write("Numbers of mappings: "+mappings.size()+"\n");
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			for(Mapping mp : mappings)
-			{
-				try {
-					bw.write(mp.toString());
-					bw.write("\n");
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-			try {
-				bw.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		
-		private void writeSimilarityMatrix(SimilarityMatrix sm, int iteration, String type) throws IOException
-		{
-			File file = new File("/home/frank/Documents/SimilarityMatrix"+type+"/similarityMatrix_"+iteration+".txt");
-			// if file doesnt exists, then create it
-			if (!file.exists()) 
-				file.createNewFile();
-			FileWriter fw=null;
-
-			fw = new FileWriter(file.getAbsoluteFile());
-
-			BufferedWriter bw = new BufferedWriter(fw);
-
-			for(int i=-1;i<sm.getRows();i++)
-			{
-
-				bw.write(i+"\t");
-				for (int j=0;j<sm.getColumns();j++)
-				{
-					if (i==-1)
-					{
-						bw.write(j+"\t");
-					}
-					else
-					{
-						bw.write(round(sm.getSimilarity(i, j),2)+"\t");
-					}
-					
-				}
-				bw.write("\n");
-			}
-
-			bw.close();
-		}
-		
-		private double round(double value, int places) {
-		    if (places < 0) throw new IllegalArgumentException();
-
-		    BigDecimal bd = new BigDecimal(value);
-		    bd = bd.setScale(places, BigDecimal.ROUND_HALF_UP);
-		    return bd.doubleValue();
-		}
-		
+				
 		private Alignment<Mapping> combineResults(AbstractMatcher am)
 		{
 			Alignment<Mapping> alg=new Alignment<Mapping>(0,0);
@@ -456,78 +291,6 @@ public class MUFeedbackPropagation  extends FeedbackPropagation<MUExperiment> {
 		
 		
 
-		private SimilarityMatrix prepareSMforNB(SimilarityMatrix sm)
-		{
-			Mapping mp;
-			Object[] ssv;
-			for(int i=0;i<sm.getRows();i++)
-				for(int j=0;j<sm.getColumns();j++)
-				{
-					mp = sm.get(i, j);
-					ssv=getSignatureVector(mp);
-					if (!validSsv(ssv))
-					{ 
-						sm.setSimilarity(i, j, 0.0);
-					}
-				}
-			
-			return sm;
-		}
-		
-		private SimilarityMatrix runNBayes(SparseMatrix forbidden_pos, SimilarityMatrix sm,Object[][] trainingSet)
-		{
-
-			
-			int max_row=-1;
-			int max_col=-1;
-			double max_nBayes=treshold_up;
-			double tmp; 
-			Mapping mp;
-
-			Object[] ssv;
-			NaiveBayes nBayes=new NaiveBayes(trainingSet);
-			for(int i=0;i<sm.getRows();i++)
-			{
-//				if (forbidden_row.contains(i)) 
-//					continue;
-				max_nBayes=treshold_up;
-				for(int j=0;j<sm.getColumns();j++)
-				{
-//					if(forbidden_column.contains(j)) 
-//						continue;
-					if(forbidden_pos.getSimilarity(i, j)==1)
-						continue;
-					mp = sm.get(i, j);
-					ssv=getSignatureVector(mp);
-					if (!validSsv(ssv))
-						continue;
-					
-					tmp=nBayes.interfaceComputeElement(ssv);
-					if (tmp>max_nBayes)
-					{
-						max_nBayes=tmp;
-						max_row=i;
-						max_col=j;
-					}
-					if ((tmp<treshold_down) && (experiment.getIterationNumber()<10))
-					{
-//						System.out.println(experiment.getIterationNumber());
-//						mp=sm.get(i,j);
-//						mp.setSimilarity(mp.getSimilarity()*penalize_ratio);
-//						sm.setSimilarity(i, j, sm.getSimilarity(i, j)*0.0);
-//						sm.set(i, j, mp);
-						sm.setSimilarity(i, j, 0.0);
-					}
-				}
-				if (max_nBayes>treshold_up)
-				{
-					sm.setSimilarity(max_row, max_col, 1);
-				}
-			}
-			return sm;
-		}
-		
-		
 		private SimilarityMatrix com(SparseMatrix forbidden_pos, SimilarityMatrix sm,Object[][] trainingSet, String type)
 		{
 			Mapping mp;
