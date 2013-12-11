@@ -32,7 +32,7 @@ public class NaiveBayes {
 	*/
 	
 	private Object[][] dataSet;			//contains all the data without labels
-	private Object[][] unlabeledTrainingSet;
+	public Object[][] unlabeledTrainingSet;
 	/*
 	 example of unlabeledTrainingSet compute by the algorithm
 	 f1	f2	f3	f4	f5	label

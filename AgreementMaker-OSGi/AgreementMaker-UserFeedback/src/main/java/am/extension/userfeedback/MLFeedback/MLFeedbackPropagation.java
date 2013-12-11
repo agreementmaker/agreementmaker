@@ -203,6 +203,13 @@ public class MLFeedbackPropagation extends FeedbackPropagation<MLFExperiment> {
 		}
 		trainingSet=optimizeTrainingSet(trainingSet);
 		experiment.getFinalAlignment();
+		
+		for (int i=0; i<trainingSet.length; i++) {
+			for (int j=0; j<trainingSet[i].length; j++) {
+				System.out.print(trainingSet[i][j]  +" ");
+			}
+			System.out.println();
+		}
 
 		SimilarityMatrix feedbackClassMatrix=experiment.getUflClassMatrix();
 		SimilarityMatrix feedbackPropertyMatrix=experiment.getUflPropertyMatrix();
@@ -365,7 +372,7 @@ public class MLFeedbackPropagation extends FeedbackPropagation<MLFExperiment> {
 	
 	private void writeSimilarityMatrix(SimilarityMatrix sm, int iteration, String type) throws IOException
 	{
-		File file = new File("C:/Users/GELI/WorkFolder/ML"+type+"/similarityMatrix_"+iteration+".txt");
+		File file = new File("C:/Users/GELI/WorkFolder/ML/"+type+"_similarityMatrix_"+iteration+".txt");
 		// if file doesnt exists, then create it
 		if (!file.exists()) 
 			file.createNewFile();
