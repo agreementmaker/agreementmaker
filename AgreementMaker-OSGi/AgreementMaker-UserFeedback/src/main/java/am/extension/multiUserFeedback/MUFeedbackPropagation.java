@@ -86,7 +86,75 @@ public class MUFeedbackPropagation  extends FeedbackPropagation<MUExperiment> {
 			}
 			return false;
 		}
-
+		
+		
+		private void agregateFeedback(Mapping candidateMapping, String userFeedback)
+		{
+			int row=candidateMapping.getSourceKey();
+			int col=candidateMapping.getTargetKey();
+			double sim=0.0;
+			if(candidateMapping.getAlignmentType()==alignType.aligningClasses)
+			{
+				sim=experiment.agreegatedClassFeedback.getSimilarity(row, col);
+				if (userFeedback.equals("CORRECT"))
+					sim++;
+				if (userFeedback.equals("UNCORRECT"))
+					sim--;
+				experiment.agreegatedClassFeedback.setSimilarity(row, col, sim);
+			}
+			else if(candidateMapping.getAlignmentType()==alignType.aligningProperties)
+			{
+				sim=experiment.agreegatedPropertiesFeedback.getSimilarity(row, col);
+				if (userFeedback.equals("CORRECT"))
+					sim++;
+				if (userFeedback.equals("UNCORRECT"))
+					sim--;
+				experiment.agreegatedPropertiesFeedback.setSimilarity(row, col, sim);
+			}
+		}
+		
+		private Object[][] generateTrainingSet(int numOfMatchers)
+		{
+			int dimClass=experiment.agreegatedClassFeedback.countNonNullCells();
+			int dimProp=experiment.agreegatedPropertiesFeedback.countNonNullCells();
+			int count=0;
+			Mapping m=null;
+			Object[][] obj=new Object[dimClass+dimProp][numOfMatchers+1];
+			if (dimClass>0)
+				for(int i=0;i<experiment.agreegatedClassFeedback.getRows();i++)
+				{
+					for(int j=0; j<experiment.agreegatedClassFeedback.getColumns();j++)
+					{
+						m=experiment.agreegatedClassFeedback.get(i, j);
+						if (m==null) continue;
+						if (m.getSimilarity()>0)
+							obj[count++]=addToSV(m, true);
+						else
+							if(m.getSimilarity()<0)
+								obj[count++]=addToSV(m, false);
+					}
+				}
+			if(dimProp>0)
+				for(int i=0;i<experiment.agreegatedPropertiesFeedback.getRows();i++)
+				{
+					for(int j=0; j<experiment.agreegatedPropertiesFeedback.getColumns();j++)
+					{
+						m=experiment.agreegatedPropertiesFeedback.get(i, j);
+						if (m==null) continue;
+						if (m.getSimilarity()>0)
+							obj[count++]=addToSV(m, true);
+						else
+							if(m.getSimilarity()<0)
+								obj[count++]=addToSV(m, false);
+					}
+				}
+			
+			return obj;
+		}
+		
+		
+		
+		
 		@Override
 		public void propagate( MUExperiment exp ) 
 		{
@@ -96,37 +164,15 @@ public class MUFeedbackPropagation  extends FeedbackPropagation<MUExperiment> {
 			Mapping candidateMapping = experiment.selectedMapping;
 			List<AbstractMatcher> availableMatchers = experiment.initialMatcher.getComponentMatchers();
 			Object[][] trainingSet=new Object[1][availableMatchers.size()];
-			int trainset_index=0;
 			
-			if( candidateMapping.getAlignmentType() == alignType.aligningClasses) 
-			{
-				if (experiment.getTrainingSet_classes() !=null)
-				{
-					trainingSet=new Object[experiment.getTrainingSet_classes().length+1][availableMatchers.size()+1];
-					cloneTrainingSet(trainingSet, experiment.getTrainingSet_classes());
-					trainset_index=experiment.getTrainingSet_classes().length;
-				}
-			}
-			else
-			{
-				if (experiment.getTrainingSet_property() !=null)
-				{
-					trainingSet=new Object[experiment.getTrainingSet_property().length+1][availableMatchers.size()+1];
-					cloneTrainingSet(trainingSet, experiment.getTrainingSet_property());
-					trainset_index=experiment.getTrainingSet_property().length;
-				}
-			}
+			agregateFeedback(candidateMapping, experiment.feedback);
+			
+			trainingSet=generateTrainingSet(availableMatchers.size());
+			
 			String userFeedback = experiment.feedback;
-			if( userFeedback.equals("CORRECT") )
-			{
-				trainingSet[trainset_index]=addToSV(candidateMapping, true);
-			}
-			else
-			{
-				trainingSet[trainset_index]=addToSV(candidateMapping, false);
-			}
+			
 			trainingSet=optimizeTrainingSet(trainingSet);
-			experiment.getFinalAlignment();
+
 
 			SimilarityMatrix feedbackClassMatrix=experiment.getUflClassMatrix();
 			SimilarityMatrix feedbackPropertyMatrix=experiment.getUflPropertyMatrix();
@@ -141,8 +187,6 @@ public class MUFeedbackPropagation  extends FeedbackPropagation<MUExperiment> {
 				{ 
 
 					feedbackClassMatrix.setSimilarity(m.getSourceKey(), m.getTargetKey(), 1.0);
-//					if (experiment.getAlignCardinalityType()==alignCardinality.c1_1)
-//						feedbackClassMatrix=(zeroSim(experiment.getUflClassMatrix(), candidateMapping.getSourceKey(), candidateMapping.getTargetKey(),1,1));
 					experiment.classesSparseMatrix.setSimilarity(m.getSourceKey(), m.getTargetKey(), 1);
 					
 				}
@@ -162,8 +206,6 @@ public class MUFeedbackPropagation  extends FeedbackPropagation<MUExperiment> {
 				if( userFeedback.equals("CORRECT") ) 
 				{ 
 					feedbackPropertyMatrix.setSimilarity(m.getSourceKey(), m.getTargetKey(), 1.0);
-//					if (experiment.getAlignCardinalityType()==alignCardinality.c1_1)
-//						feedbackPropertyMatrix=zeroSim(experiment.getUflPropertyMatrix(), candidateMapping.getSourceKey(), candidateMapping.getTargetKey(),1,1);
 					experiment.propertiesSparseMatrix.setSimilarity(m.getSourceKey(), m.getTargetKey(), 1);
 				}
 				else if( userFeedback.equals("INCORRECT") ) 
@@ -173,18 +215,6 @@ public class MUFeedbackPropagation  extends FeedbackPropagation<MUExperiment> {
 				}
 			}
 			
-		//	if(experiment.getIterationNumber()<10)
-//				if( candidateMapping.getAlignmentType() == alignType.aligningClasses )
-//				{
-//					feedbackClassMatrix=runNBayes(experiment.classesSparseMatrix , feedbackClassMatrix, trainingSet);
-//				}
-//				else
-//				{
-//					if( candidateMapping.getAlignmentType() == alignType.aligningProperties ) 
-//					{
-//						feedbackPropertyMatrix=runNBayes(experiment.propertiesSparseMatrix, feedbackPropertyMatrix, trainingSet);
-//					}
-//				}
 			
 			if( candidateMapping.getAlignmentType() == alignType.aligningClasses )
 			{
@@ -201,18 +231,8 @@ public class MUFeedbackPropagation  extends FeedbackPropagation<MUExperiment> {
 			AbstractMatcher ufl=new CombinationMatcher();
 			ufl.setClassesMatrix(feedbackClassMatrix);
 			ufl.setPropertiesMatrix(feedbackPropertyMatrix);
-			//ufl.select();
 
 			experiment.setMLAlignment(combineResults(ufl));
-			if( candidateMapping.getAlignmentType() == alignType.aligningClasses ) 
-			{
-				experiment.setTrainingSet_classes(trainingSet);
-			}
-			else
-			{
-				experiment.setTrainingSet_property(trainingSet);
-			}
-			
 		
 			experiment.setUflClassMatrix(feedbackClassMatrix);
 			experiment.setUflPropertyMatrix(feedbackPropertyMatrix);
