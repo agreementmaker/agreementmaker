@@ -198,7 +198,7 @@ public class Application extends Controller {
 				}
 				
 				out.write("Running the data initialization...");
-				System.out.println("Running the initial matchers...");
+				System.out.println("Running inizialization...");
 				try {
 					experiments[0].dataInizialization = experiments[0].setup.fli.getEntryClass().newInstance();
 					experiments[0].dataInizialization.inizialize(experiments[0]);
@@ -224,7 +224,7 @@ public class Application extends Controller {
 				experiments[0].candidateSelection = (CandidateSelection) cs[0];
 			}
 			
-			cs[0].rank(experiments[0]);
+			cs[0].rank(experiments[0],id);
 		}
 		
 		Mapping m = cs[0].getCandidateMapping(id);
