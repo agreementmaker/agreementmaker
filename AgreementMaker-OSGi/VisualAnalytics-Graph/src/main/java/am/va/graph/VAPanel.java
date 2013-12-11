@@ -32,6 +32,8 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
@@ -44,9 +46,9 @@ import javafx.scene.text.Font;
 public class VAPanel {
 
 	private static JFrame frameMain;
-	private static JFrame frameBubble;
 	private static JFXPanel fxPanel;
 	private static ListView<String> listViewLeft;
+	private static TreeView<String> listTreeLeft;
 	private static Group root;
 	private static Scene myScene;
 	private static VAGroup rootGroupLeft;
@@ -74,7 +76,7 @@ public class VAPanel {
 	 */
 	public static void initAndShowGUI() {
 		frameMain = new JFrame("VA");
-		frameMain.setSize(1200, 550);
+		frameMain.setSize(1250, 550);
 		frameMain.setLocation(100, 100);
 		fxPanel = new JFXPanel();
 		frameMain.add(fxPanel);
@@ -113,21 +115,36 @@ public class VAPanel {
 	}
 
 	private static void initLeftAddList(BorderPane borderPane) {
+		TilePane tilePane = new TilePane();
+		tilePane.setPrefColumns(2); // preferred columns
+		initTreeView(tilePane);
+		initListView(tilePane);
+		borderPane.setLeft(tilePane);
+	}
+
+	private static void initListView(TilePane tilePane) {
 		listViewLeft = new ListView<String>();
 		listViewLeft.setPrefHeight(500);
 		listViewLeft.setPrefWidth(100);
 		listViewLeft.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-		borderPane.setLeft(listViewLeft);
+		tilePane.getChildren().add(listViewLeft);
+	}
+
+	private static void initTreeView(TilePane tilePane) {
+		listTreeLeft = new TreeView();
+		listTreeLeft.setPrefHeight(500);
+		listTreeLeft.setPrefWidth(150);
+		tilePane.getChildren().add(listTreeLeft);
 	}
 
 	private static void initTopToolbar(BorderPane borderPane) {
 		ToolBar toolbar = new ToolBar();
 		Region spacer1 = new Region();
-		spacer1.setStyle("-fx-padding: 0 8em 0 0;");
+		spacer1.setStyle("-fx-padding: 0 15em 0 0;");
 		Region spacer2 = new Region();
-		spacer2.setStyle("-fx-padding: 0 8em 0 0;");
+		spacer2.setStyle("-fx-padding: 0 10em 0 0;");
 		Region spacer3 = new Region();
-		spacer3.setStyle("-fx-padding: 0 20em 0 0;");
+		spacer3.setStyle("-fx-padding: 0 10em 0 0;");
 		HBox buttonBar = new HBox();
 		initButtons(buttonBar);
 		initChoiceBox();
@@ -175,6 +192,7 @@ public class VAPanel {
 		lblSource.setContentDisplay(ContentDisplay.CENTER);
 		lblTarget = new Label("Target ontology", chartRight.getPieChart());
 		lblTarget.setContentDisplay(ContentDisplay.CENTER);
+
 		tilePane.getChildren().add(lblSource);
 		tilePane.getChildren().add(lblTarget);
 		chartGroup.getChildren().add(tilePane);
@@ -191,15 +209,14 @@ public class VAPanel {
 	}
 
 	/**
-	 * Generate new VAGroup according user's click
+	 * Generate new VAGroup according to user's click
 	 * 
 	 * @param currentGroup
 	 * @return
 	 */
-	public static void getNewGroup(VAVariables.ontologyType ontologyType) {
+	public static void generateNewGroup(VAVariables.ontologyType ontologyType) {
 		// Need a function here, return value:VAData
 		VAData newRootData = VAPieChart.getSelectedVAData();
-		System.out.println("New data " + newRootData.getNodeName());
 		VAGroup newGroup = new VAGroup();
 		newGroup.setRootNode(newRootData);
 		if (newRootData != null && newRootData.hasChildren()) {
@@ -210,8 +227,66 @@ public class VAPanel {
 			newGroup.setParent(previousGroup.getGroupID());
 		}
 		updateCurrentGroup(newGroup);
+		/**
+		 * Update list, being called twice ?!
+		 */
+		if (ontologyType == VAVariables.ontologyType.Source)
+			generateParentGroup();
 	}
 
+	/**
+	 * Generate parent group and update tree view
+	 */
+	public static void generateParentGroup() {
+		VAGroup parentGroup = null;
+		if (currentGroup.getCurrentLevel() < 1) {
+			System.out.println("Generate Parent: parent=root");
+			parentGroup = rootGroupLeft;
+		} else {
+			System.out.println("Generate Parent: new parent");
+			parentGroup = new VAGroup();
+			VAData parentData = VASyncData.getParentVAData(currentGroup
+					.getRootNode());
+			parentGroup.setRootNode(parentData);
+			parentGroup.setListVAData(VASyncData.getChildrenData(parentData,
+					VAVariables.ontologyType.Source));
+		}
+		generateNewTree(parentGroup);
+	}
+
+	/**
+	 * Generate new Tree view
+	 * @param parentGroup
+	 */
+	private static void generateNewTree(VAGroup parentGroup) {
+		TreeItem<String> listTreeLeftRoot = null;
+		String label = "";
+		if (parentGroup.getParent() == 0)
+			label = "Source Root";
+		else
+			label = parentGroup.getRootNodeName();
+		System.out.println("Generate Parent: label=" + label);
+		listTreeLeftRoot = new TreeItem<String>(label);
+		ArrayList<VAData> data = parentGroup.getVADataArray();
+		for (VAData d : data) {
+			listTreeLeftRoot.getChildren().add(
+					new TreeItem<String>(d.getNodeName()));
+		}
+
+		listTreeLeft.setShowRoot(true);
+		listTreeLeft.setRoot(listTreeLeftRoot);
+		listTreeLeftRoot.setExpanded(true);
+	}
+	
+	private static void treeviewAction(){
+		
+	}
+
+	/**
+	 * Update previous group
+	 * 
+	 * @param group
+	 */
 	private static void updatePreviousGroup(VAGroup group) {
 		if (group != null) {
 			if (btnUp.isDisable()) {
@@ -248,16 +323,21 @@ public class VAPanel {
 		rootGroupRight = group;
 	}
 
+	/**
+	 * Get current group
+	 * 
+	 * @return
+	 */
 	public static VAGroup getCurrentGroup() {
 		return currentGroup;
 	}
 
-	public static int getStop() {
-		return stop;
+	public static void setStop(int i) {
+		stop = i;
 	}
 
-	public static Group getFXGroup() {
-		return root;
+	public static int getStop() {
+		return stop;
 	}
 
 	public static Tooltip getPieTooltip() {
@@ -268,10 +348,6 @@ public class VAPanel {
 		VAPanel.pieTooltip = pieTooltip;
 	}
 
-	public static void setStop(int i) {
-		stop = i;
-	}
-
 	public static ListView<String> getlistView() {
 		return listViewLeft;
 	}
@@ -280,6 +356,12 @@ public class VAPanel {
 		listViewLeft = list;
 	}
 
+	/**
+	 * Set source pie chart's label
+	 * 
+	 * @param label
+	 * @param empty
+	 */
 	public static void setSourceLabel(String label, int empty) {
 		lblSource.setText(label);
 		if (empty == 1) {
@@ -291,16 +373,31 @@ public class VAPanel {
 		}
 	}
 
+	/**
+	 * Set target pie chart's label
+	 * 
+	 * @param label
+	 */
 	public static void setTargetLabel(String label) {
 		lblTarget.setText(label);
 		lblTarget.setFont(Font.font("Verdana", 20));
 		lblTarget.setTextFill(Color.RED);
 	}
 
+	/**
+	 * Get the right pie chart (display only)
+	 * 
+	 * @return
+	 */
 	public static VAPieChart getRightPie() {
 		return chartRight;
 	}
 
+	/**
+	 * Get the right pie chart's root group (display only)
+	 * 
+	 * @return
+	 */
 	public static VAGroup getRightRootGroup() {
 		return rootGroupRight;
 	}
@@ -344,7 +441,8 @@ public class VAPanel {
 			public void handle(ActionEvent arg0) {
 				updateCurrentGroup(rootGroupLeft);
 				chartLeft.updatePieChart(ontologyType.Source);
-				System.out.println("Go to root panel");
+				generateParentGroup();
+				// System.out.println("Go to root panel");
 			}
 
 		});
@@ -358,48 +456,11 @@ public class VAPanel {
 			public void handle(ActionEvent arg0) {
 				updateCurrentGroup(previousGroup);
 				chartLeft.updatePieChart(ontologyType.Source);
-				System.out.println("Go to previous panel");
+				// System.out.println("Go to previous panel");
 				btnUp.setDisable(true);
+				generateParentGroup();
 			}
 
-		});
-
-		btnBubble.setOnAction(new EventHandler<ActionEvent>() {
-
-			@Override
-			public void handle(ActionEvent arg0) {
-				// TODO Auto-generated method stub
-				frameBubble = new JFrame("Bubble");
-				frameBubble.setSize(500, 550);
-				frameBubble.setLocation(150, 150);
-				JFXPanel fxPanel = new JFXPanel();
-				frameBubble.add(fxPanel);
-				frameBubble.setVisible(true);
-				Group root = new Group();
-				Scene scene = new Scene(root);
-
-				NumberAxis xAxis = new NumberAxis("X", 0d, 150d, 20d);
-
-				NumberAxis yAxis = new NumberAxis("Y", 0d, 150d, 20d);
-
-				@SuppressWarnings({ "rawtypes", "unchecked" })
-				ObservableList<BubbleChart.Series> bubbleChartData = FXCollections.observableArrayList(
-						new BubbleChart.Series("Series 1", FXCollections
-								.observableArrayList(new XYChart.Data(30d, 40d,
-										10d), new XYChart.Data(60d, 20d, 13d),
-										new XYChart.Data(10d, 90d, 7d),
-										new XYChart.Data(100d, 40d, 10d),
-										new XYChart.Data(50d, 23d, 5d))),
-						new BubbleChart.Series("Series 2", FXCollections
-								.observableArrayList(new XYChart.Data(20d,
-										100d, 5d))));
-
-				BubbleChart chart = new BubbleChart(xAxis, yAxis,
-						bubbleChartData);
-				xAxis.setVisible(false);
-				fxPanel.setScene(scene);
-				root.getChildren().add(chart);
-			}
 		});
 	}
 }

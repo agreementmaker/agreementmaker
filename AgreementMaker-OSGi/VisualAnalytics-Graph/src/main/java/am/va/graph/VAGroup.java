@@ -168,6 +168,10 @@ public class VAGroup {
 		return rootNode.getTargetNode() != null;
 	}
 
+	public int getCurrentLevel() {
+		return this.rootNode.getCurrentLevel();
+	}
+
 	/**
 	 * Print out the name and similarity of all the data
 	 */

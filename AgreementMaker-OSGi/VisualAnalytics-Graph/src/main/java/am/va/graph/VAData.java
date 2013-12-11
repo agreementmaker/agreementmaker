@@ -38,6 +38,10 @@ public class VAData implements Comparable<VAData> {
 		Similarity = similarity;
 	}
 
+	public int getCurrentLevel() {
+		return this.sourceNode.getLevel();
+	}
+
 	/**
 	 * Return source node's local name
 	 * 
