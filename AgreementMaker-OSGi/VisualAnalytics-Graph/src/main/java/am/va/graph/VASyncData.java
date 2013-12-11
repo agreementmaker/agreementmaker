@@ -13,6 +13,26 @@ import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 
 public class VASyncData {
+
+	private static Node getParentNode(Node n) {
+		if (n.getParents().size() > 0)
+			return n.getParents().get(0);
+		else
+			return null;
+	}
+
+	public static VAData getParentVAData(VAData v) {
+		Node sNode = null, tNode = null;
+		double Similarity = 0.0;
+		sNode = getParentNode(v.getSourceNode());
+		if (sNode != null) {
+			// for now we don't care about the target node and sim value
+		} else {
+			System.out.println("- Parent node empty ?!!");
+		}
+		return new VAData(sNode, tNode, Similarity);
+	}
+
 	/**
 	 * Get the root Node, called by getRootVAData
 	 * 
