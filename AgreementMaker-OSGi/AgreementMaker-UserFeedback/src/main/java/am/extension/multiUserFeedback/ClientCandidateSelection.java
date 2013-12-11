@@ -3,24 +3,25 @@ package am.extension.multiUserFeedback;
 import java.util.List;
 
 import am.app.mappingEngine.AbstractMatcher.alignType;
-import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.ontology.Node;
 import am.extension.collaborationClient.api.CollaborationCandidateMapping;
 import am.extension.userfeedback.CandidateSelection;
+import am.extension.userfeedback.MLFeedback.MLFExperiment;
 
-public class ClientCandidateSelection extends CandidateSelection<MUExperiment>{
+public class ClientCandidateSelection extends CandidateSelection<MLFExperiment>{
 	
-	MUExperiment experiment;
+	MLFExperiment experiment;
 	
 	public ClientCandidateSelection(){
 		super();
 	}
 	
 	@Override
-	public void rank(MUExperiment exp) {
-		// TODO Auto-generated method stub
+	public void rank(MLFExperiment exp) {
 		this.experiment=exp;
+		done();
 	}
 
 	@Override
@@ -38,6 +39,7 @@ public class ClientCandidateSelection extends CandidateSelection<MUExperiment>{
 	@Override
 	public Mapping getCandidateMapping() {
 		CollaborationCandidateMapping a=experiment.server.getCandidateMapping(experiment.clientID);
+		experiment.candidateMapping = a;
 		Node source=experiment.getSourceOntology().getNodeByURI(a.getSourceURI());
 		Node target=experiment.getTargetOntology().getNodeByURI(a.getTargetURI());
 		selectedMapping=new Mapping(source,target,0.0,MappingRelation.EQUIVALENCE);

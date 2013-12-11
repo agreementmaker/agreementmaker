@@ -35,6 +35,10 @@ public class RESTfulCollaborationServer implements CollaborationAPI {
 	
 	private static final String LISTTASKS = "listTasks";
 	
+	private static final String GETCANDIDATEMAPPING = "getCandidateMapping";
+	
+	private static final String SETFEEDBACK = "setFeedback";
+	
 	private String baseURI;
 	
 	public static final ObjectMapper mapper = new ObjectMapper();
@@ -119,15 +123,63 @@ public class RESTfulCollaborationServer implements CollaborationAPI {
 	@Override
 	public CollaborationCandidateMapping getCandidateMapping(
 			CollaborationUser client) {
-		// TODO Auto-generated method stub
-		return null;
+		String queryURI = baseURI + SEP + GETCANDIDATEMAPPING + SEP + client.getId();
+		
+		URL uri;
+		try {
+			uri = new URL(queryURI);
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		
+		URLConnection connection;
+		try {
+			connection = uri.openConnection();
+			connection.setRequestProperty("Accept", "application/json");
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
+		
+		try {
+			InputStream s = connection.getInputStream();
+			return mapper.readValue(s, RESTfulCandidateMapping.class);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	@Override
 	public void putFeedback(CollaborationUser client,
 			CollaborationFeedback feedback) {
-		// TODO Auto-generated method stub
+		String queryURI = baseURI + SEP + SETFEEDBACK + SEP + feedback.getId() + SEP + feedback.getValue().name();
 		
+		URL uri;
+		try {
+			uri = new URL(queryURI);
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+			return;
+		}
+		
+		URLConnection connection;
+		try {
+			connection = uri.openConnection();
+			//connection.setRequestProperty("Accept", "application/json");
+		} catch (IOException e) {
+			e.printStackTrace();
+			return;
+		}
+		
+		try {
+			InputStream s = connection.getInputStream();
+			while( s.read() != -1 );
+		} catch (IOException e) {
+			e.printStackTrace();
+			return;
+		}
 	}
 
 	

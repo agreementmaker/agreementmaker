@@ -31,11 +31,15 @@ public class ManualUserValidationPanel extends JPanel implements ActionListener 
 		
 		lblMapping = new JLabel(candidateMapping.toString());
 		
-		if( experiment.getReferenceAlignment().contains(candidateMapping.getEntity1(), candidateMapping.getEntity2()) 
-				!= null ) {
-			lblInRef = new JLabel("(InRef)");
-		} else {
-			lblInRef = new JLabel("()");
+		if( experiment.getReferenceAlignment() != null )
+			if( experiment.getReferenceAlignment().contains(candidateMapping.getEntity1(), candidateMapping.getEntity2()) 
+					!= null ) {
+				lblInRef = new JLabel("(InRef)");
+			} else {
+				lblInRef = new JLabel("()");
+			}
+		else {
+			lblInRef = new JLabel("");
 		}
 		
 		btnCorrect = new JButton("Correct");
