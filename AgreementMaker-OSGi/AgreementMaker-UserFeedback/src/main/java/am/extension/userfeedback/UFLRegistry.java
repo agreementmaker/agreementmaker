@@ -12,8 +12,8 @@ public class UFLRegistry {
 
 	/* Different experimental setups (Ontologies + Reference alignment) */
 	public enum ExperimentRegistry {
-		MultiUser ( am.extension.multiUserFeedback.MUExperiment.class ),
-		MachineLearning ( am.extension.userfeedback.MLFeedback.MLFExperiment.class),
+		ClientExperiment ( am.extension.userfeedback.MLFeedback.MLFExperiment.class),
+		ServerExperiment ( am.extension.multiUserFeedback.MUExperiment.class ),
 		Manual ( am.extension.userfeedback.common.ManualExperimentSetup.class );
 		/* *********************** DO NOT EDIT BELOW THIS LINE **************************** */
 		Class<? extends UFLExperiment> clazz;
@@ -33,8 +33,8 @@ public class UFLRegistry {
 	}
 	
 	public enum LoopInizializationRegistry {
-		RestFulDataInizialization (am.extension.userfeedback.inizialization.RestfulDataInizialization.class),
-		MUDataInizialization (am.extension.multiUserFeedback.MUDataInizialization.class),
+		ClientDataInizialization (am.extension.userfeedback.inizialization.RestfulDataInizialization.class),
+		ServerDataInizialization (am.extension.multiUserFeedback.MUDataInizialization.class),
 		DataInizialization ( am.extension.userfeedback.inizialization.DataInizialization.class);
 			
 		/* *********************** DO NOT EDIT BELOW THIS LINE **************************** */
@@ -55,8 +55,8 @@ public class UFLRegistry {
 	
 	
 	public enum CandidateSelectionRegistry {
-		ServerCandidateSelection (am.extension.multiUserFeedback.ServerCandidateSelection.class),
 		ClientCandidateSelection (am.extension.multiUserFeedback.ClientCandidateSelection.class),
+		ServerCandidateSelection (am.extension.multiUserFeedback.ServerCandidateSelection.class),
 		MultiStrategyRanking (am.extension.userfeedback.clustering.disagreement.MultiStrategyRanking.class),
 		MaxInformationRanking (am.extension.userfeedback.clustering.disagreement.MaxInformationRanking.class   ),
 		DisagreementRank ( am.extension.userfeedback.clustering.disagreement.DisagreementRanking.class );
@@ -91,8 +91,8 @@ public class UFLRegistry {
 	
 	
 	public enum FeedbackPropagationRegistry {
-		MUFeedbackPropagation (am.extension.multiUserFeedback.MUFeedbackPropagation.class),
-		MLFeedbackPropagation (am.extension.userfeedback.MLFeedback.MLFeedbackPropagation.class),
+		ClientFeedbackPropagation (am.extension.userfeedback.MLFeedback.MLFeedbackPropagation.class),
+		ServerFeedbackPropagation (am.extension.multiUserFeedback.MUFeedbackPropagation.class),
 		ClusterBoost ( am.extension.userfeedback.clustering.disagreement.ClusterBoostPropagation.class );
 		
 		/* *********************** DO NOT EDIT BELOW THIS LINE **************************** */
