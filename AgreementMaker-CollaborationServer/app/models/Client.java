@@ -14,6 +14,8 @@ public class Client extends Model {
 	
 	@Id
 	public Long clientID;
+	
+	public Integer taskID;
 
 	public static Model.Finder<Long,Client> find = 
     		new Model.Finder<Long,Client>(Long.class, Client.class);

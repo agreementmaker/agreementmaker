@@ -73,15 +73,17 @@ public class Application extends Controller {
 						"ontologies/confious.owl",
 						"ontologies/confOf.owl",
 						"ontologies/crs_dr.owl",
-						"ontologies/edas.owl",
+						"ontologies/edas.owl", //6
 						"ontologies/ekaw.owl",
 						"ontologies/iasted.owl",
 						"ontologies/MICRO.owl",
-						"ontologies/MyReview.owl",
+						"ontologies/MyReview.owl", //10
 						"ontologies/OpenConf.owl",
 						"ontologies/paperdyne.owl",
 						"ontologies/PCS.owl",
-						"ontologies/sigkdd.owl"
+						"ontologies/sigkdd.owl",
+						"ontologies/101.rdf",
+						"ontologies/304.rdf"
 				};
 				
 				String[] references={
@@ -102,10 +104,11 @@ public class Application extends Controller {
 						"references/edas-ekaw.rdf",
 						"references/cmt-iasted.rdf",
 						"references/conference-sigkdd.rdf",
-						"references/edas-iasted.rdf",
+						"references/edas-iasted.rdf",  // 17
 						"references/cmt-sigkdd.rdf",
 						"references/confOf-edas.rdf",
-						"references/edas-sigkdd.rdf"
+						"references/edas-sigkdd.rdf", //20
+						"references/101-304.rdf"
 				};
 				
 				Ontology[] onts = new Ontology[ontologies.length];
@@ -122,94 +125,58 @@ public class Application extends Controller {
 				}
 				
 				MatchingTask m1 = new MatchingTask();
-				m1.name = "conference-ekaw";
+				m1.index = 0;
+				m1.name = "Task 1";  // conference-ekaw
 				m1.sourceOntologyURL = onts[2].ontologyURL;
 				m1.targetOntologyURL = onts[7].ontologyURL;
 				m1.referenceURL = controllers.routes.Assets.at(references[9]).absoluteURL(r);
 				
+				MatchingTask m2 = new MatchingTask();
+				m2.index = 1;
+				m2.name = "Task 2";  // 101-304
+				m2.sourceOntologyURL = onts[15].ontologyURL;
+				m2.targetOntologyURL = onts[16].ontologyURL;
+				m2.referenceURL = controllers.routes.Assets.at(references[21]).absoluteURL(r);
+				
+				MatchingTask m3 = new MatchingTask();
+				m3.index = 2;
+				m3.name = "Task 3";  // edas-iasted
+				m3.sourceOntologyURL = onts[6].ontologyURL;
+				m3.targetOntologyURL = onts[8].ontologyURL;
+				m3.referenceURL = controllers.routes.Assets.at(references[17]).absoluteURL(r);
+				
 				m1.save();
-				out.write(i++ + " Created matching task " + m1.id + ": " + m1.name + "\n");
-				System.out.println(i + " Created matching task " + m1.id + ": " + m1.name + "\n");
+				m2.save();
+				m3.save();
+				out.write(i++ + " Created matching task " + m1.id + "[" + m1.index + "]: " + m1.name + "\n");
+				System.out.println("Created matching task " + m1.id + "[" + m1.index + "]: " + m1.name + "\n");
 				
-				Experiments.experiments = new MUExperiment[1];
-				Experiments.cs = new ServerCandidateSelection[1];
+				Experiments.experiments = new MUExperiment[3];
+				Experiments.cs = new ServerCandidateSelection[3];
 				
-				Experiments.experiments[0] = new MUExperiment();
+				Experiments.experiments[0] = new MUExperiment("conference-ekaw");
+				Experiments.experiments[1] = new MUExperiment("101-304");
+				Experiments.experiments[2] = new MUExperiment("edas-iasted");
 				
-				Experiments.experiments[0].setup = new UFLExperimentSetup();
-				UFLExperimentSetup setup = Experiments.experiments[0].setup;
-				
-				setup.im  = InitialMatcherRegistry.OrthoCombination;
-				setup.fli = LoopInizializationRegistry.ServerDataInizialization;
-				setup.cs  = CandidateSelectionRegistry.ServerCandidateSelection;
-				setup.cse = null;
-				setup.uv  = null;
-				setup.fp  = FeedbackPropagationRegistry.ServerFeedbackPropagation;
-				setup.pe  = PropagationEvaluationRegistry.ServerPropagationEvaluation;
-				setup.sf  = SaveFeedbackRegistry.MultiUserSaveFeedback; 
-				
-				{
-					out.write("Loading the source ontology...");
-					System.out.println("Loading the source ontology...");
-					File sourceOntFile = RESTfulCollaborationServer.downloadFile(m1.sourceOntologyURL, "ont", ".owl");
-					OntologyDefinition sourceOntDef = new OntologyDefinition(true, sourceOntFile.getAbsolutePath(), OntologyLanguage.OWL, OntologySyntax.RDFXML);
-					try {
-						OntoTreeBuilder t = new OntoTreeBuilder(sourceOntDef);
-						t.build();
-						am.app.ontology.Ontology sourceOnt = t.getOntology();
-						Core.getInstance().setSourceOntology(sourceOnt);
-					} catch (Exception e1) {
-						e1.printStackTrace();
-						out.write("Exception while loading the source ontology.");
-						System.out.println("Exception while loading the source ontology.");
-					}
+				for( int j = 0; j < 3; j++ ) {
+					Experiments.experiments[j].setup = new UFLExperimentSetup();
+					UFLExperimentSetup setup = Experiments.experiments[j].setup;
+					
+					setup.im  = InitialMatcherRegistry.OrthoCombination;
+					setup.fli = LoopInizializationRegistry.ServerDataInizialization;
+					setup.cs  = CandidateSelectionRegistry.ServerCandidateSelection;
+					setup.cse = null;
+					setup.uv  = null;
+					setup.fp  = FeedbackPropagationRegistry.ServerFeedbackPropagation;
+					setup.pe  = PropagationEvaluationRegistry.ServerPropagationEvaluation;
+					setup.sf  = SaveFeedbackRegistry.MultiUserSaveFeedback; 
 				}
 				
-				{
-					out.write("Loading the target ontology...");
-					System.out.println("Loading the target ontology...");
-					File targetOntFile = RESTfulCollaborationServer.downloadFile(m1.targetOntologyURL, "ont", ".owl");
-					OntologyDefinition targetOntDef = new OntologyDefinition(true, targetOntFile.getAbsolutePath(), OntologyLanguage.OWL, OntologySyntax.RDFXML);
-					TreeBuilder t = TreeBuilder.buildTreeBuilder(targetOntDef);
-					try {
-						t.build();
-					} catch (Exception e1) {
-						e1.printStackTrace();
-						out.write("Exception while loading the target ontology.");
-						System.out.println("Exception while loading the target ontology.");
-					}
-					am.app.ontology.Ontology targetOnt = t.getOntology();
-					Core.getInstance().setTargetOntology(targetOnt);
-				}
 				
-				{
-					out.write("Loading the reference alignment...");
-					System.out.println("Loading the reference alignment...");
-					Experiments.experiments[0].setReferenceAlignment(RESTfulCollaborationServer.getReferenceAlignmentFromURL(m1.referenceURL));
-				}
-							
-				out.write("Running the initial matchers...");
-				System.out.println("Running the initial matchers...");
-				try {
-					Experiments.experiments[0].initialMatcher = Experiments.experiments[0].setup.im.getEntryClass().newInstance();
-					Experiments.experiments[0].initialMatcher.run(Experiments.experiments[0]);
-				} catch (InstantiationException | IllegalAccessException e) {
-					e.printStackTrace();
-					out.write("Exception while running initial matchers.");
-				}
+				doMatching(out, m1);
+				doMatching(out, m2);
+				doMatching(out, m3);
 				
-				out.write("Running the data initialization...");
-				System.out.println("Running inizialization...");
-				try {
-					Experiments.experiments[0].dataInizialization = Experiments.experiments[0].setup.fli.getEntryClass().newInstance();
-					Experiments.experiments[0].dataInizialization.inizialize(Experiments.experiments[0]);
-				} catch (InstantiationException | IllegalAccessException e) {
-					e.printStackTrace();
-					out.write("Exception while running data initialization.");
-					System.out.println("Exception while running data initialization.");
-				}
-				
-				System.out.print("Initialization done!");
 				out.close();
 			}
 		};
@@ -217,23 +184,92 @@ public class Application extends Controller {
 		return ok(chunks);
 	}
 	
-	public static Result getCandidateMapping(String id) {
+	private static void doMatching(final play.mvc.Results.Chunks.Out<String> out, MatchingTask m1) {
 		
-		synchronized(syncronizeCandidateSelection) {
-			if( Experiments.experiments[0].candidateSelection == null ) {
-				Experiments.cs[0] = new ServerCandidateSelection();
-				Experiments.experiments[0].candidateSelection = (CandidateSelection) Experiments.cs[0];
+		{
+			out.write("Loading the source ontology...");
+			System.out.println("Loading the source ontology...");
+			File sourceOntFile = RESTfulCollaborationServer.downloadFile(m1.sourceOntologyURL, "ont", ".owl");
+			OntologyDefinition sourceOntDef = new OntologyDefinition(true, sourceOntFile.getAbsolutePath(), OntologyLanguage.OWL, OntologySyntax.RDFXML);
+			try {
+				OntoTreeBuilder t = new OntoTreeBuilder(sourceOntDef);
+				t.build();
+				am.app.ontology.Ontology sourceOnt = t.getOntology();
+				Core.getInstance().setSourceOntology(sourceOnt);
+			} catch (Exception e1) {
+				e1.printStackTrace();
+				out.write("Exception while loading the source ontology.");
+				System.out.println("Exception while loading the source ontology.");
 			}
-			
-			Experiments.cs[0].rank(Experiments.experiments[0],id);
 		}
 		
-		Mapping m = Experiments.cs[0].getCandidateMapping(id);
+		{
+			out.write("Loading the target ontology...");
+			System.out.println("Loading the target ontology...");
+			File targetOntFile = RESTfulCollaborationServer.downloadFile(m1.targetOntologyURL, "ont", ".owl");
+			OntologyDefinition targetOntDef = new OntologyDefinition(true, targetOntFile.getAbsolutePath(), OntologyLanguage.OWL, OntologySyntax.RDFXML);
+			TreeBuilder t = TreeBuilder.buildTreeBuilder(targetOntDef);
+			try {
+				t.build();
+			} catch (Exception e1) {
+				e1.printStackTrace();
+				out.write("Exception while loading the target ontology.");
+				System.out.println("Exception while loading the target ontology.");
+			}
+			am.app.ontology.Ontology targetOnt = t.getOntology();
+			Core.getInstance().setTargetOntology(targetOnt);
+		}
+		
+		{
+			out.write("Loading the reference alignment...");
+			System.out.println("Loading the reference alignment...");
+			Experiments.experiments[m1.index].setReferenceAlignment(RESTfulCollaborationServer.getReferenceAlignmentFromURL(m1.referenceURL));
+		}
+					
+		out.write("Running the initial matchers...");
+		System.out.println("Running the initial matchers...");
+		try {
+			Experiments.experiments[m1.index].initialMatcher = Experiments.experiments[m1.index].setup.im.getEntryClass().newInstance();
+			Experiments.experiments[m1.index].initialMatcher.run(Experiments.experiments[m1.index]);
+		} catch (InstantiationException | IllegalAccessException e) {
+			e.printStackTrace();
+			out.write("Exception while running initial matchers.");
+		}
+		
+		out.write("Running the data initialization...");
+		System.out.println("Running inizialization...");
+		try {
+			Experiments.experiments[m1.index].dataInizialization = Experiments.experiments[m1.index].setup.fli.getEntryClass().newInstance();
+			Experiments.experiments[m1.index].dataInizialization.inizialize(Experiments.experiments[m1.index]);
+		} catch (InstantiationException | IllegalAccessException e) {
+			e.printStackTrace();
+			out.write("Exception while running data initialization.");
+			System.out.println("Exception while running data initialization.");
+		}
+		
+		System.out.print("Initialization done!");
+	}
+	
+	public static Result getCandidateMapping(String userid) {
+		
+		final Client currentUser1 = Client.find.byId(Long.parseLong(userid));
+		final MatchingTask currentTask = MatchingTask.find.byId((long)currentUser1.taskID);
+		
+		synchronized(syncronizeCandidateSelection) {
+			if( Experiments.experiments[currentTask.index].candidateSelection == null ) {
+				Experiments.cs[0] = new ServerCandidateSelection();
+				Experiments.experiments[currentTask.index].candidateSelection = (CandidateSelection) Experiments.cs[currentTask.index];
+			}
+			
+			Experiments.cs[currentTask.index].rank(Experiments.experiments[currentTask.index],userid);
+		}
+		
+		Mapping m = Experiments.cs[currentTask.index].getCandidateMapping(userid);
 		
 		ServerCandidateMapping scm = new ServerCandidateMapping();
 		scm.sourceURI = m.getEntity1().getUri();
 		scm.targetURI = m.getEntity2().getUri();
-		scm.userId = id;
+		scm.userId = userid;
 		scm.timeSent = new java.util.Date();
 		scm.save();
 		
@@ -252,14 +288,15 @@ public class Application extends Controller {
     /**
      * A user registers themselves.
      */
-	public static Result register() throws JsonGenerationException, JsonMappingException, IOException {
+	public static Result register(String taskid) throws JsonGenerationException, JsonMappingException, IOException {
 		Client newClient = new Client();
+		newClient.taskID = Integer.parseInt(taskid);
 		newClient.save();
 		
 		RESTfulUser newUser = new RESTfulUser();
 		newUser.setId(Long.toString(newClient.clientID));
 		
-		Experiments.experiments[0].login(newUser.getId());
+		Experiments.experiments[newClient.taskID].login(newUser.getId());
 		
 		return ok(Json.toJson(newUser));
 	}
@@ -287,9 +324,11 @@ public class Application extends Controller {
 		return ok(taskJson);
 	}
 	
-	public static Result setFeedback(String id, String feedback)
+	public static Result setFeedback(String mappingid, String feedback)
 	{
-		ServerCandidateMapping m = ServerCandidateMapping.find.byId(Long.parseLong(id));
+		ServerCandidateMapping m = ServerCandidateMapping.find.byId(Long.parseLong(mappingid));
+		final Client currentUser1 = Client.find.byId(Long.parseLong(m.userId));
+		final MatchingTask currentTask = MatchingTask.find.byId((long)currentUser1.taskID);
 
 		switch(feedback) {
 		case "CORRECT":
@@ -310,25 +349,25 @@ public class Application extends Controller {
 		m.save();
 		
 		synchronized (syncronizeFeedbackPropagation) {
-			if( Experiments.experiments[0].feedbackPropagation == null ) {
+			if( Experiments.experiments[currentTask.index].feedbackPropagation == null ) {
 				try {
-					Experiments.experiments[0].feedbackPropagation = Experiments.experiments[0].setup.fp.getEntryClass().newInstance();
+					Experiments.experiments[currentTask.index].feedbackPropagation = Experiments.experiments[currentTask.index].setup.fp.getEntryClass().newInstance();
 				} catch (InstantiationException | IllegalAccessException e) {
 					e.printStackTrace();
 				}
 			}
-			Experiments.experiments[0].feedback=feedback;
-			Node source=Experiments.experiments[0].getSourceOntology().getNodeByURI(m.sourceURI);
-			Node target=Experiments.experiments[0].getTargetOntology().getNodeByURI(m.targetURI);
+			Experiments.experiments[currentTask.index].feedback=feedback;
+			Node source=Experiments.experiments[currentTask.index].getSourceOntology().getNodeByURI(m.sourceURI);
+			Node target=Experiments.experiments[currentTask.index].getTargetOntology().getNodeByURI(m.targetURI);
 			Mapping selectedMapping=new Mapping(source,target,0.0,MappingRelation.EQUIVALENCE);
-			Experiments.experiments[0].selectedMapping=selectedMapping;
-			Experiments.experiments[0].feedbackPropagation.propagate(Experiments.experiments[0]);
+			Experiments.experiments[currentTask.index].selectedMapping=selectedMapping;
+			Experiments.experiments[currentTask.index].feedbackPropagation.propagate(Experiments.experiments[currentTask.index]);
 			try {
-				Experiments.experiments[0].propagationEvaluation = Experiments.experiments[0].setup.pe.getEntryClass().newInstance();
+				Experiments.experiments[currentTask.index].propagationEvaluation = Experiments.experiments[currentTask.index].setup.pe.getEntryClass().newInstance();
 			} catch (InstantiationException | IllegalAccessException e) {
 				e.printStackTrace();
 			}
-			Experiments.experiments[0].propagationEvaluation.evaluate(Experiments.experiments[0]);
+			Experiments.experiments[currentTask.index].propagationEvaluation.evaluate(Experiments.experiments[currentTask.index]);
 		}
 
 		
