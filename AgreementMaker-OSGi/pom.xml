@@ -27,6 +27,7 @@
 		<!-- <module>AgreementMaker-Tests</module> -->
 		<module>Matcher-IMEI2013</module>
 		<!-- <module>AM_ROOT</module> -->
+		<module>AgreementMaker-Distribution</module>
 	</modules>
 
 	<name>AgreementMaker OSGi</name>
@@ -119,6 +120,16 @@
                     <artifactId>drombler-fx-maven-plugin</artifactId>
                     <version>${drombler-fx.version}</version>
                 </plugin> -->
+	<!-- Used for the AgreementMaker-Distribution module -->
+        <plugin>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <version>2.4</version>
+          <configuration>
+            <descriptors>
+              <descriptor>src/assemble/bin.xml</descriptor>
+            </descriptors>
+          </configuration>
+        </plugin>
 			</plugins>
 		</pluginManagement>
 	</build>
