@@ -145,11 +145,11 @@ public class Application extends Controller {
 				UFLExperimentSetup setup = experiments[0].setup;
 				
 				setup.im  = InitialMatcherRegistry.OrthoCombination;
-				setup.fli = LoopInizializationRegistry.MUDataInizialization;
+				setup.fli = LoopInizializationRegistry.ServerDataInizialization;
 				setup.cs  = CandidateSelectionRegistry.ServerCandidateSelection;
 				setup.cse = null;
 				setup.uv  = null;
-				setup.fp  = FeedbackPropagationRegistry.MUFeedbackPropagation;
+				setup.fp  = FeedbackPropagationRegistry.ServerFeedbackPropagation;
 				setup.pe  = null;
 				setup.sf  = SaveFeedbackRegistry.MultiUserSaveFeedback; 
 				
