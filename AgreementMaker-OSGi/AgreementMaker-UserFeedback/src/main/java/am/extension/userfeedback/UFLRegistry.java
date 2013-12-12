@@ -102,8 +102,8 @@ public class UFLRegistry {
 	}
 	
 	public enum PropagationEvaluationRegistry {
-		ServerPropagationEvaluation (am.extension.multiUserFeedback.ServerFeedbackEvaluation.class),
 		SMatrixDeltaEvaluetion (am.extension.userfeedback.clustering.disagreement.SMatrixDeltaEvaluetion.class),
+		ServerPropagationEvaluation (am.extension.multiUserFeedback.ServerFeedbackEvaluation.class),
 		DeltaFromRef ( am.extension.userfeedback.clustering.disagreement.DeltaFromReferenceEvaluation.class ),
 		ClusterBoost ( am.extension.userfeedback.clustering.disagreement.ClusterBoostEvaluation.class );
 		

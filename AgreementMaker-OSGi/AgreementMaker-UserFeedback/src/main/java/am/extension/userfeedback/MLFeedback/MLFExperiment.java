@@ -4,6 +4,7 @@
 package am.extension.userfeedback.MLFeedback;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Serializable;
@@ -44,7 +45,7 @@ public class MLFExperiment extends UFLExperiment {
 	
 	public int feedbackCount = 0;
 	
-private BufferedWriter logFile;
+public BufferedWriter logFile;
 private Alignment<Mapping> MLAlignment;
 private Object[][] trainingSet_classes;
 private Object[][] trainingSet_property;
@@ -76,6 +77,8 @@ public void setAlignCardinalityType(alignCardinality alignCardinalityType) {
 
 public SparseMatrix classesSparseMatrix;
 public SparseMatrix propertiesSparseMatrix;
+
+public File logFileFile;
 
 
 public SparseMatrix getClassesSparseMatrix() {
@@ -169,6 +172,18 @@ public void setMLAlignment(Alignment<Mapping> mLAlignment) {
 
 	public MLFExperiment() {
 		super();
+		
+		FileWriter file;
+		try {
+			logFileFile = new File("UFLlog.txt");
+			file = new FileWriter(logFileFile, true);
+			logFile=new BufferedWriter(file);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			am.Utility.displayErrorPane("<html><p>Permission error:</p><p>Log file can not be created!</p><p>Please make the AgreementMaker directory writable or the UFLlog.txt will not be created.</p></html>", "Error");
+		}
+		
 		connection();
 	}
 	
@@ -203,14 +218,6 @@ public void setMLAlignment(Alignment<Mapping> mLAlignment) {
 		LOG.info("Loading target ontology: " + targetOntDef);
 		Ontology targetOnt = UICore.getUI().openFile(targetOntDef);
 		Core.getInstance().setTargetOntology(targetOnt);
-		
-		// setup the log file
-		try {
-			FileWriter fr = new FileWriter("ufllog.txt");
-			logFile = new BufferedWriter(fr);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 	
 	

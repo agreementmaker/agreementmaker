@@ -1,6 +1,7 @@
 package am.extension.userfeedback.experiments;
 
 import java.awt.event.ActionEvent;
+import java.io.IOException;
 
 import org.apache.log4j.Logger;
 
@@ -35,6 +36,14 @@ public class IndependentSequentialLogicMultiUser extends UFLControlLogic<MLFExpe
 		if( experiment != null && experiment.experimentHasCompleted() ) { // check stop condition
 			//runSaveFeedback();
 			System.out.println("Experiment has completed.  Ignoring further actions.");
+			
+			try {				
+				experiment.logFile.close();
+				am.Utility.displayMessagePane("<html><p>Your logfile has been saved to:</p><p>"+ experiment.logFileFile.getAbsolutePath() + "</p></html>", "LOG File Location");
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			
 			// close the UFL tab
 			//UICore.getUI().removeTab(UICore.getUI().getCurrentTab());
