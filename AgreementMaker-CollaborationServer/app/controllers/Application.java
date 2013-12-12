@@ -26,9 +26,9 @@ import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.ontology.Node;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.app.ontology.ontologyParser.OntologyDefinition;
-import am.app.ontology.ontologyParser.TreeBuilder;
 import am.app.ontology.ontologyParser.OntologyDefinition.OntologyLanguage;
 import am.app.ontology.ontologyParser.OntologyDefinition.OntologySyntax;
+import am.app.ontology.ontologyParser.TreeBuilder;
 import am.extension.collaborationClient.restful.RESTfulCandidateMapping;
 import am.extension.collaborationClient.restful.RESTfulCollaborationServer;
 import am.extension.collaborationClient.restful.RESTfulTask;
@@ -36,9 +36,7 @@ import am.extension.collaborationClient.restful.RESTfulUser;
 import am.extension.multiUserFeedback.MUExperiment;
 import am.extension.multiUserFeedback.ServerCandidateSelection;
 import am.extension.userfeedback.CandidateSelection;
-import am.extension.userfeedback.UFLExperiment;
 import am.extension.userfeedback.UFLExperimentSetup;
-import am.extension.userfeedback.MLFeedback.MLFeedbackPropagation;
 import am.extension.userfeedback.UFLRegistry.CandidateSelectionRegistry;
 import am.extension.userfeedback.UFLRegistry.FeedbackPropagationRegistry;
 import am.extension.userfeedback.UFLRegistry.InitialMatcherRegistry;
@@ -49,10 +47,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 
 public class Application extends Controller {
-
-	private static MUExperiment[] experiments;
-	
-	private static ServerCandidateSelection[] cs;
 	
 	private final static Object syncronizeCandidateSelection = new Object();
 	private final static Object syncronizeFeedbackPropagation = new Object();
@@ -136,13 +130,13 @@ public class Application extends Controller {
 				out.write(i++ + " Created matching task " + m1.id + ": " + m1.name + "\n");
 				System.out.println(i + " Created matching task " + m1.id + ": " + m1.name + "\n");
 				
-				experiments = new MUExperiment[1];
-				cs = new ServerCandidateSelection[1];
+				Experiments.experiments = new MUExperiment[1];
+				Experiments.cs = new ServerCandidateSelection[1];
 				
-				experiments[0] = new MUExperiment();
+				Experiments.experiments[0] = new MUExperiment();
 				
-				experiments[0].setup = new UFLExperimentSetup();
-				UFLExperimentSetup setup = experiments[0].setup;
+				Experiments.experiments[0].setup = new UFLExperimentSetup();
+				UFLExperimentSetup setup = Experiments.experiments[0].setup;
 				
 				setup.im  = InitialMatcherRegistry.OrthoCombination;
 				setup.fli = LoopInizializationRegistry.ServerDataInizialization;
@@ -190,8 +184,8 @@ public class Application extends Controller {
 				out.write("Running the initial matchers...");
 				System.out.println("Running the initial matchers...");
 				try {
-					experiments[0].initialMatcher = experiments[0].setup.im.getEntryClass().newInstance();
-					experiments[0].initialMatcher.run(experiments[0]);
+					Experiments.experiments[0].initialMatcher = Experiments.experiments[0].setup.im.getEntryClass().newInstance();
+					Experiments.experiments[0].initialMatcher.run(Experiments.experiments[0]);
 				} catch (InstantiationException | IllegalAccessException e) {
 					e.printStackTrace();
 					out.write("Exception while running initial matchers.");
@@ -200,8 +194,8 @@ public class Application extends Controller {
 				out.write("Running the data initialization...");
 				System.out.println("Running inizialization...");
 				try {
-					experiments[0].dataInizialization = experiments[0].setup.fli.getEntryClass().newInstance();
-					experiments[0].dataInizialization.inizialize(experiments[0]);
+					Experiments.experiments[0].dataInizialization = Experiments.experiments[0].setup.fli.getEntryClass().newInstance();
+					Experiments.experiments[0].dataInizialization.inizialize(Experiments.experiments[0]);
 				} catch (InstantiationException | IllegalAccessException e) {
 					e.printStackTrace();
 					out.write("Exception while running data initialization.");
@@ -219,15 +213,15 @@ public class Application extends Controller {
 	public static Result getCandidateMapping(String id) {
 		
 		synchronized(syncronizeCandidateSelection) {
-			if( experiments[0].candidateSelection == null ) {
-				cs[0] = new ServerCandidateSelection();
-				experiments[0].candidateSelection = (CandidateSelection) cs[0];
+			if( Experiments.experiments[0].candidateSelection == null ) {
+				Experiments.cs[0] = new ServerCandidateSelection();
+				Experiments.experiments[0].candidateSelection = (CandidateSelection) Experiments.cs[0];
 			}
 			
-			cs[0].rank(experiments[0],id);
+			Experiments.cs[0].rank(Experiments.experiments[0],id);
 		}
 		
-		Mapping m = cs[0].getCandidateMapping(id);
+		Mapping m = Experiments.cs[0].getCandidateMapping(id);
 		
 		ServerCandidateMapping scm = new ServerCandidateMapping();
 		scm.sourceURI = m.getEntity1().getUri();
@@ -258,7 +252,7 @@ public class Application extends Controller {
 		RESTfulUser newUser = new RESTfulUser();
 		newUser.setId(Long.toString(newClient.clientID));
 		
-		experiments[0].login(newUser.getId());
+		Experiments.experiments[0].login(newUser.getId());
 		
 		return ok(Json.toJson(newUser));
 	}
@@ -309,19 +303,19 @@ public class Application extends Controller {
 		m.save();
 		
 		synchronized (syncronizeFeedbackPropagation) {
-			if( experiments[0].feedbackPropagation == null ) {
+			if( Experiments.experiments[0].feedbackPropagation == null ) {
 				try {
-					experiments[0].feedbackPropagation = experiments[0].setup.fp.getEntryClass().newInstance();
+					Experiments.experiments[0].feedbackPropagation = Experiments.experiments[0].setup.fp.getEntryClass().newInstance();
 				} catch (InstantiationException | IllegalAccessException e) {
 					e.printStackTrace();
 				}
 			}
-			experiments[0].feedback=feedback;
-			Node source=experiments[0].getSourceOntology().getNodeByURI(m.sourceURI);
-			Node target=experiments[0].getTargetOntology().getNodeByURI(m.targetURI);
+			Experiments.experiments[0].feedback=feedback;
+			Node source=Experiments.experiments[0].getSourceOntology().getNodeByURI(m.sourceURI);
+			Node target=Experiments.experiments[0].getTargetOntology().getNodeByURI(m.targetURI);
 			Mapping selectedMapping=new Mapping(source,target,0.0,MappingRelation.EQUIVALENCE);
-			experiments[0].selectedMapping=selectedMapping;
-			experiments[0].feedbackPropagation.propagate(experiments[0]);
+			Experiments.experiments[0].selectedMapping=selectedMapping;
+			Experiments.experiments[0].feedbackPropagation.propagate(Experiments.experiments[0]);
 		}
 
 		
