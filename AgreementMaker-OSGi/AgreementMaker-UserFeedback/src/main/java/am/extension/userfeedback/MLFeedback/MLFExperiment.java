@@ -42,6 +42,8 @@ public class MLFExperiment extends UFLExperiment {
 	public CollaborationTask selectedTask;
 	public CollaborationCandidateMapping candidateMapping;
 	
+	public int feedbackCount = 0;
+	
 private BufferedWriter logFile;
 private Alignment<Mapping> MLAlignment;
 private Object[][] trainingSet_classes;
@@ -232,6 +234,12 @@ public void setMLAlignment(Alignment<Mapping> mLAlignment) {
 				return m.selectionResult.getAlignment();
 			}
 		}
+		
+		// if we are connected to a server, get the reference alignment from the server
+		if( server != null && selectedTask != null && selectedTask.getReferenceAlignmentURL() != null ) {
+			return server.getReferenceAlignment(selectedTask.getReferenceAlignmentURL());
+		}
+		
 		return null;
 	}
 

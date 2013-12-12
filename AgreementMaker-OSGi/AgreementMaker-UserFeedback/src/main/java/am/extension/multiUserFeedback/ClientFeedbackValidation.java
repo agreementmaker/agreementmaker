@@ -45,10 +45,18 @@ public class ClientFeedbackValidation extends UserFeedback{
 	}
 	
 	
+	/**
+	 * Send the feedback back to the server.
+	 * @param userFeedback
+	 */
 	private void sendToServer(Validation userFeedback)
 	{
 		if( experiment instanceof MLFExperiment ) {
 			MLFExperiment e = (MLFExperiment) experiment;
+			
+			if( e.server == null && e.clientID == null ) {
+				return; // no connection to server
+			}
 			
 			RESTfulFeedback feedback = new RESTfulFeedback();
 			feedback.setId(Long.toString(e.candidateMapping.getId()));
