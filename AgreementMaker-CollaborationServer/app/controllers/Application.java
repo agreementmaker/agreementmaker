@@ -41,6 +41,7 @@ import am.extension.userfeedback.UFLRegistry.CandidateSelectionRegistry;
 import am.extension.userfeedback.UFLRegistry.FeedbackPropagationRegistry;
 import am.extension.userfeedback.UFLRegistry.InitialMatcherRegistry;
 import am.extension.userfeedback.UFLRegistry.LoopInizializationRegistry;
+import am.extension.userfeedback.UFLRegistry.PropagationEvaluationRegistry;
 import am.extension.userfeedback.UFLRegistry.SaveFeedbackRegistry;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -144,7 +145,7 @@ public class Application extends Controller {
 				setup.cse = null;
 				setup.uv  = null;
 				setup.fp  = FeedbackPropagationRegistry.ServerFeedbackPropagation;
-				setup.pe  = null;
+				setup.pe  = PropagationEvaluationRegistry.ServerPropagationEvaluation;
 				setup.sf  = SaveFeedbackRegistry.MultiUserSaveFeedback; 
 				
 				{
@@ -166,7 +167,7 @@ public class Application extends Controller {
 				
 				{
 					out.write("Loading the target ontology...");
-					System.out.println("Loading the source ontology...");
+					System.out.println("Loading the target ontology...");
 					File targetOntFile = RESTfulCollaborationServer.downloadFile(m1.targetOntologyURL, "ont", ".owl");
 					OntologyDefinition targetOntDef = new OntologyDefinition(true, targetOntFile.getAbsolutePath(), OntologyLanguage.OWL, OntologySyntax.RDFXML);
 					TreeBuilder t = TreeBuilder.buildTreeBuilder(targetOntDef);
@@ -174,11 +175,17 @@ public class Application extends Controller {
 						t.build();
 					} catch (Exception e1) {
 						e1.printStackTrace();
-						out.write("Exception while loading the source ontology.");
+						out.write("Exception while loading the target ontology.");
 						System.out.println("Exception while loading the target ontology.");
 					}
 					am.app.ontology.Ontology targetOnt = t.getOntology();
 					Core.getInstance().setTargetOntology(targetOnt);
+				}
+				
+				{
+					out.write("Loading the reference alignment...");
+					System.out.println("Loading the reference alignment...");
+					Experiments.experiments[0].setReferenceAlignment(RESTfulCollaborationServer.getReferenceAlignmentFromURL(m1.referenceURL));
 				}
 							
 				out.write("Running the initial matchers...");
@@ -316,6 +323,12 @@ public class Application extends Controller {
 			Mapping selectedMapping=new Mapping(source,target,0.0,MappingRelation.EQUIVALENCE);
 			Experiments.experiments[0].selectedMapping=selectedMapping;
 			Experiments.experiments[0].feedbackPropagation.propagate(Experiments.experiments[0]);
+			try {
+				Experiments.experiments[0].propagationEvaluation = Experiments.experiments[0].setup.pe.getEntryClass().newInstance();
+			} catch (InstantiationException | IllegalAccessException e) {
+				e.printStackTrace();
+			}
+			Experiments.experiments[0].propagationEvaluation.evaluate(Experiments.experiments[0]);
 		}
 
 		
