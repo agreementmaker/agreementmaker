@@ -71,7 +71,6 @@ public MUExperiment ()
 		// TODO Auto-generated catch block
 		e.printStackTrace();
 		am.Utility.displayErrorPane("Permission error: Log file can not be created", "Error");
-		Core.getInstance().shutdown();
 	}
 }
 

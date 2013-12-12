@@ -113,12 +113,24 @@ public class ManualUserValidationPanel extends JPanel implements ActionListener 
 	public void actionPerformed(ActionEvent e) {
 		if( e.getSource() == btnCorrect ) {
 			experiment.userFeedback.setUserFeedback(Validation.CORRECT);
+			experiment.info("Iteration number: " + experiment.getIterationNumber());
+			experiment.info("Canidate Mapping: " + this.candidateMapping);
+			experiment.info("Feedback " + Validation.CORRECT);
 		} else if( e.getSource() == btnIncorrect ) {
 			experiment.userFeedback.setUserFeedback(Validation.INCORRECT);
+			experiment.info("Iteration number: " + experiment.getIterationNumber());
+			experiment.info("Canidate Mapping: " + this.candidateMapping);
+			experiment.info("Feedback " + Validation.INCORRECT);
 		} else if( e.getSource() == btnSkip ) {
 			experiment.userFeedback.setUserFeedback(Validation.SKIP);
+			experiment.info("Iteration number: " + experiment.getIterationNumber());
+			experiment.info("Canidate Mapping: " + this.candidateMapping);
+			experiment.info("Feedback " + Validation.SKIP);
 		} else if( e.getSource() == btnEndExperiment ) {
 			experiment.userFeedback.setUserFeedback(Validation.END_EXPERIMENT);
+			experiment.info("Iteration number: " + experiment.getIterationNumber());
+			experiment.info("Canidate Mapping: " + this.candidateMapping);
+			experiment.info("Feedback " + Validation.END_EXPERIMENT);
 		}
 	}
 	
