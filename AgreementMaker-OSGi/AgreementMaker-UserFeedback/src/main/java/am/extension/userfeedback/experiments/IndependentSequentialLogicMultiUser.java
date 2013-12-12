@@ -4,8 +4,18 @@ import java.awt.event.ActionEvent;
 
 import org.apache.log4j.Logger;
 
+import am.app.Core;
+import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.DefaultSelectionParameters;
+import am.app.mappingEngine.MatchingTask;
+import am.app.mappingEngine.SelectionAlgorithm;
+import am.app.mappingEngine.SelectionResult;
+import am.app.mappingEngine.oneToOneSelection.MwbmSelection;
+import am.extension.userfeedback.UserFeedback.Validation;
 import am.extension.userfeedback.MLFeedback.MLFExperiment;
 import am.extension.userfeedback.ui.UFLControlGUI.ActionCommands;
+import am.ui.MatcherProgressDialog;
+import am.ui.UICore;
 
 public class IndependentSequentialLogicMultiUser extends UFLControlLogic<MLFExperiment> {
 	
@@ -23,8 +33,13 @@ public class IndependentSequentialLogicMultiUser extends UFLControlLogic<MLFExpe
 		System.out.println(e.getActionCommand());  // TODO: Remove this.
 		
 		if( experiment != null && experiment.experimentHasCompleted() ) { // check stop condition
-			runSaveFeedback();
+			//runSaveFeedback();
 			System.out.println("Experiment has completed.  Ignoring further actions.");
+			
+			// close the UFL tab
+			//UICore.getUI().removeTab(UICore.getUI().getCurrentTab());
+			Core.getInstance().shutdown();
+			
 			return;
 		}
 		
@@ -41,12 +56,45 @@ public class IndependentSequentialLogicMultiUser extends UFLControlLogic<MLFExpe
 		}
 
 		if( e.getActionCommand() == ActionCommands.USER_FEEDBACK_DONE.name() ) {
+			if( experiment.userFeedback.getUserFeedback() == Validation.CORRECT || 
+				experiment.userFeedback.getUserFeedback() == Validation.INCORRECT ) {
+				experiment.feedbackCount++;
+			}
+			
 			runFeedbackPropagation();
 		}
 		
 		if( e.getActionCommand() == ActionCommands.PROPAGATION_DONE.name() ) {
 			experiment.newIteration();
 			runCandidateSelection(); // back to top /\
+		}
+	}
+	
+	@Override
+	protected void runInitialMatchers() {
+		// Run the initial matchers in a separate thread.
+		try {
+			experiment.initialMatcher = experiment.setup.im.getEntryClass().newInstance();
+			experiment.initialMatcher.addActionListener(this);
+			startThread(new Runnable(){
+				@Override public void run() {
+					experiment.initialMatcher.run(experiment);
+					final AbstractMatcher finalMatcher = experiment.initialMatcher.getFinalMatcher();
+					MatchingTask task = new MatchingTask(finalMatcher, finalMatcher.getParam(), new MwbmSelection(), new DefaultSelectionParameters());
+					
+					SelectionResult selResult = new SelectionResult(task);
+					selResult.sourceOntologyID = finalMatcher.getSourceOntology().getID();
+					selResult.targetOntologyID = finalMatcher.getTargetOntology().getID();
+					selResult.classesAlignment = finalMatcher.getClassAlignmentSet();
+					selResult.propertiesAlignment = finalMatcher.getPropertyAlignmentSet();
+					
+					task.matcherResult = finalMatcher.getResult();
+					task.selectionResult = selResult;
+					Core.getInstance().addMatchingTask(task);
+				}
+			});
+		} catch (InstantiationException | IllegalAccessException e) {
+			e.printStackTrace();
 		}
 	}
 }

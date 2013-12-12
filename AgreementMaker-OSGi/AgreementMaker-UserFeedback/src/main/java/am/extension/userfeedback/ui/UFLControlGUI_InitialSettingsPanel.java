@@ -4,8 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
@@ -190,6 +188,15 @@ public class UFLControlGUI_InitialSettingsPanel extends JPanel implements Action
 		
 		this.setLayout(new FlowLayout(FlowLayout.CENTER));
 		this.add(centralContainer);
+		
+		cmbExperiment				.setEnabled(false);
+		cmbMatcher					.setEnabled(false);
+		cmbInizialization			.setEnabled(false);
+		cmbCandidate				.setEnabled(false);
+		cmbCSEvaluation				.setEnabled(false);
+		cmbUserFeedback				.setEnabled(false);
+		cmbPropagation				.setEnabled(false);
+		cmbPropagationEvaluation	.setEnabled(false);
 	}
 	
 	

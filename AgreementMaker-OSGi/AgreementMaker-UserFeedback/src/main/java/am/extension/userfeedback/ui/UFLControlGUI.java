@@ -5,12 +5,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import am.Utility;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.Matcher;
-import am.extension.userfeedback.FeedbackLoopInizialization;
 import am.extension.userfeedback.UFLExperiment;
 import am.extension.userfeedback.UFLExperimentSetup;
 import am.extension.userfeedback.UFLRegistry.CSEvaluationRegistry;
@@ -62,6 +64,8 @@ public class UFLControlGUI extends AMTabSupportPanel implements ActionListener, 
     
     
 	private UFLControlGUI_InitialSettingsPanel panel;
+	
+	private JLabel lblStatus = new JLabel();
 
 	UI ui;
 	
@@ -81,16 +85,33 @@ public class UFLControlGUI extends AMTabSupportPanel implements ActionListener, 
 		panel = new UFLControlGUI_InitialSettingsPanel();
 		panel.addActionListener(this);
 		
-		this.setLayout(new FlowLayout(FlowLayout.CENTER));
+		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		lblStatus.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+		panel.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+		
 		this.add(panel);
+		this.add(Box.createHorizontalStrut(5));
+		this.add(lblStatus);
+		this.add(Box.createHorizontalStrut(5));
+		
+		//this.setLayout(new FlowLayout(FlowLayout.CENTER));
+		//this.add(panel);
 		
 		repaint();
 	}
 	
 	public void displayPanel( JPanel panel ) {
-		removeAll();		
-		this.setLayout(new FlowLayout(FlowLayout.CENTER));
+		removeAll();
+		
+		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		lblStatus.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+		panel.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+		
 		this.add(panel);
+		this.add(Box.createHorizontalStrut(5));
+		this.add(lblStatus);
+		this.add(Box.createHorizontalStrut(5));
+		
 		repaint();
 	}
 	
@@ -144,25 +165,25 @@ public class UFLControlGUI extends AMTabSupportPanel implements ActionListener, 
 
 	@Override
 	public void matchingStarted(AbstractMatcher matcher) {
-		System.out.println("Matching Started: " + matcher.getName());
+		lblStatus.setText("Matching the loaded ontologies...");
 	}
 
 	@Override
 	public void matchingComplete() {
-		System.out.println("Matching Complete");
+		lblStatus.setText("Initial Matchers Complete.");
 	}
 
 	@Override public void clearReport() {}
 
 	@Override
 	public void appendToReport(String report) {
-		//System.out.println(report);
+		lblStatus.setText(report);
 	}
 
 	@Override public void scrollToEndOfReport() { }
 
 	@Override public void setProgressLabel(String label) {
-		System.out.println("Progress Label: " + label);
+		lblStatus.setText("Progress: " + label);
 	}
 
 	@Override public void setIndeterminate(boolean indeterminate) { }
@@ -170,6 +191,6 @@ public class UFLControlGUI extends AMTabSupportPanel implements ActionListener, 
 	@Override public void ignoreComplete(boolean ignore) { }
 
 	@Override public void propertyChange(PropertyChangeEvent evt) {
-		System.out.println("Property Change: " + evt.getPropertyName() + " = " + evt.getNewValue());
+		lblStatus.setText(evt.getPropertyName() + " = " + evt.getNewValue());
 	}
 }
