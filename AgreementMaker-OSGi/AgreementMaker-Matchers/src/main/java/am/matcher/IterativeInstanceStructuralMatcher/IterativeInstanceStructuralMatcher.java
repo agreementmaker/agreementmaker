@@ -166,7 +166,8 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 			findNewAlignments();
 
 			double totAlign2 = getNumberOfClassAlignments() + getNumberOfPropAlignments();
-			if(totAlign2==totAlign){
+			
+			if( Math.abs(totAlign2 - totAlign) < 0.01d ){
 				if( Core.DEBUG_FCM ) System.out.println("CONVERGED IN "+(i+1)+" ITERATIONS");
 				break;
 			}

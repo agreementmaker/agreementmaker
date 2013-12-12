@@ -21,7 +21,7 @@ public interface CollaborationAPI {
 	 * 
 	 * @return The CollaborationClient (which contains a unique id) will be used for all client API calls. 
 	 */
-	public CollaborationUser register();
+	public CollaborationUser register(long taskid);
 	
 	//public void unregister(CollaborationClient clientID);
 	

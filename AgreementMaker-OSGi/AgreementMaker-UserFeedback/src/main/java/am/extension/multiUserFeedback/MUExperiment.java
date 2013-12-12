@@ -60,12 +60,12 @@ public HashMap<String, SimilarityMatrix> usersProp=new HashMap<String, Similarit
 
 private alignCardinality alignCardinalityType=alignCardinality.cn_m;
 
-public MUExperiment ()
+public MUExperiment (String taskName)
 {
 	super();
 	FileWriter file;
 	try {
-		file = new FileWriter("uflLog.txt");
+		file = new FileWriter("uflLog-" + taskName + ".txt", true);
 		logFile=new BufferedWriter(file);
 	} catch (IOException e) {
 		// TODO Auto-generated catch block
