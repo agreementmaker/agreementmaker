@@ -40,6 +40,11 @@ public class ClientCandidateSelection extends CandidateSelection<MLFExperiment>{
 	public Mapping getCandidateMapping() {
 		CollaborationCandidateMapping a=experiment.server.getCandidateMapping(experiment.clientID);
 		experiment.candidateMapping = a;
+		if (a==null)
+		{
+			selectedMapping=null;
+			return null;
+		}
 		Node source=experiment.getSourceOntology().getNodeByURI(a.getSourceURI());
 		Node target=experiment.getTargetOntology().getNodeByURI(a.getTargetURI());
 		selectedMapping=new Mapping(source,target,0.0,MappingRelation.EQUIVALENCE);

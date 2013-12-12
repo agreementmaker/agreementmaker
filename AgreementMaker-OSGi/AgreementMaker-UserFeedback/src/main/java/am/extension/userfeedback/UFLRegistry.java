@@ -1,6 +1,5 @@
 package am.extension.userfeedback;
 
-import am.extension.multiUserFeedback.MUCandidateSelection;
 
 /**
  * This class is just a wrapper class for several registry enums.
@@ -103,6 +102,7 @@ public class UFLRegistry {
 	}
 	
 	public enum PropagationEvaluationRegistry {
+		ServerPropagationEvaluation (am.extension.multiUserFeedback.ServerFeedbackEvaluation.class),
 		SMatrixDeltaEvaluetion (am.extension.userfeedback.clustering.disagreement.SMatrixDeltaEvaluetion.class),
 		DeltaFromRef ( am.extension.userfeedback.clustering.disagreement.DeltaFromReferenceEvaluation.class ),
 		ClusterBoost ( am.extension.userfeedback.clustering.disagreement.ClusterBoostEvaluation.class );

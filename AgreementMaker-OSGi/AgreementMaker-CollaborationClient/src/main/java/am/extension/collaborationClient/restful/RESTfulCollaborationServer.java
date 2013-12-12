@@ -240,8 +240,7 @@ public class RESTfulCollaborationServer implements CollaborationAPI {
 		}
 	}
 	
-	@Override
-	public Alignment<Mapping> getReferenceAlignment(String referenceAlignmentURL) {
+	public static Alignment<Mapping> getReferenceAlignmentFromURL(String referenceAlignmentURL) {
 		File refFile = downloadFile(referenceAlignmentURL, "ref", ".rdf");
 		ReferenceAlignmentMatcher matcher = new ReferenceAlignmentMatcher();
 		ReferenceAlignmentParameters p = new ReferenceAlignmentParameters();
@@ -268,6 +267,11 @@ public class RESTfulCollaborationServer implements CollaborationAPI {
 		File ontFile = downloadFile(ontologyURL,"ont",".owl");
 		OntologyDefinition o = new OntologyDefinition(true, ontFile.getAbsolutePath(), OntologyLanguage.OWL, OntologySyntax.RDFXML);
 		return o;
+	}
+
+	@Override
+	public Alignment<Mapping> getReferenceAlignment(String referenceURL) {
+		return getReferenceAlignmentFromURL(referenceURL);
 	}
 	
 }

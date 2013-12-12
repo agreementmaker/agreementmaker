@@ -4,6 +4,7 @@
 package am.extension.multiUserFeedback;
 
 import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -43,6 +44,11 @@ public String feedback;
 public List<Mapping> alreadyEvaluated=new ArrayList<Mapping>();
 public List<Mapping> conflictualClass;
 public List<Mapping> conflictualProp;
+private Alignment<Mapping> referenceAlignment;
+public void setReferenceAlignment(Alignment<Mapping> referenceAlignment) {
+	this.referenceAlignment = referenceAlignment;
+}
+
 
 public SparseMatrix agreegatedClassFeedback;
 public SparseMatrix agreegatedPropertiesFeedback;
@@ -53,6 +59,21 @@ public HashMap<String, SimilarityMatrix> usersClass=new HashMap<String, Similari
 public HashMap<String, SimilarityMatrix> usersProp=new HashMap<String, SimilarityMatrix>();
 
 private alignCardinality alignCardinalityType=alignCardinality.cn_m;
+
+public MUExperiment ()
+{
+	super();
+	FileWriter file;
+	try {
+		file = new FileWriter("uflLog.txt");
+		logFile=new BufferedWriter(file);
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+		am.Utility.displayErrorPane("Permission error: Log file can not be created", "Error");
+		Core.getInstance().shutdown();
+	}
+}
 
 public alignCardinality getAlignCardinalityType() {
 	return alignCardinalityType;
@@ -203,7 +224,7 @@ public void setMLAlignment(Alignment<Mapping> mLAlignment) {
 
 	@Override
 	public Alignment<Mapping> getReferenceAlignment() {
-		return null;
+		return referenceAlignment;
 	}
 	
 	@Override

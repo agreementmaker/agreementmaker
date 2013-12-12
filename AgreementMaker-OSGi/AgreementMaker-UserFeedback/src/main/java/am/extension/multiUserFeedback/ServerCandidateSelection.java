@@ -55,6 +55,7 @@ public class ServerCandidateSelection extends MUCandidateSelection<MUExperiment>
 
 	@Override
 	public Mapping getCandidateMapping(String id) {
+		Mapping m;
 		if (experiment.usersMappings.get(id).size()<3)
 		{
 			return getCandidateMappingDisagreementBegining(id);
@@ -63,9 +64,15 @@ public class ServerCandidateSelection extends MUCandidateSelection<MUExperiment>
 		{
 			 switch (experiment.usersGroup.get(id)) 
 			 {
-	            case 0:  return getCandidateMapping(id, allRanked);
-	            case 1:  return getCandidateMapping(id, experiment.uncertainRanking);
-	            case 2:  return getCandidateMapping(id, experiment.almostRanking);
+	            case 0:  
+	            	m=getCandidateMapping(id, allRanked);
+	            	if (m!=null) return m;
+	            case 1:  
+	            	m=getCandidateMapping(id, experiment.uncertainRanking);
+	            	if (m!=null) return m;
+	            case 2:  
+	            	m=getCandidateMapping(id, experiment.almostRanking);
+	            	if (m!=null) return m;
 	        }
 		}
 		return null;
@@ -144,7 +151,6 @@ public class ServerCandidateSelection extends MUCandidateSelection<MUExperiment>
 			return;
 		}
 		classDisagreement = null;  // release the memory used by this
-		//relatedMappingRetrival(classDisagreement);
 		
 		SimilarityMatrix propertyDisagreement = disagreementMetric.getDisagreementMatrix(alignType.aligningProperties);
 		
@@ -277,15 +283,12 @@ public class ServerCandidateSelection extends MUCandidateSelection<MUExperiment>
 			e.printStackTrace();
 		}
 		
-		
 		experiment.almostRanking = new ArrayList<Mapping>();
 		
 		experiment.almostRanking.addAll(unClasses);
 		experiment.almostRanking.addAll(unProperties);
 		Collections.sort(experiment.almostRanking, new MappingSimilarityComparator() );
 		Collections.reverse(experiment.almostRanking);
-		
-		
 		
 	}
 	
