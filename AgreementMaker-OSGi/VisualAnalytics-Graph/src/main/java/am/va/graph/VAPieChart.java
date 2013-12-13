@@ -11,7 +11,6 @@ import javafx.scene.chart.PieChart;
 import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
 
-@SuppressWarnings("restriction")
 public class VAPieChart {
 	private PieChart pieChart;
 	private ListView<String> listView;

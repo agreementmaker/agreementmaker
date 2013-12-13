@@ -1,7 +1,5 @@
 package am.va.graph;
 
-import java.util.HashMap;
-
 import javax.swing.SwingUtilities;
 
 import am.app.Core;
