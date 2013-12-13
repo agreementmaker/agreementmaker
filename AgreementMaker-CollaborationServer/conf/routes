@@ -5,16 +5,16 @@
 # Home page
 GET     /                           controllers.Application.index()
 
-GET		/initServer							controllers.Application.initServer()
-
 # A user registers a session.
-GET		/listTasks							controllers.Application.listTasks()
-GET		/register/*taskid					controllers.Application.register(taskid)
-GET		/getCandidateMapping/*userid		controllers.Application.getCandidateMapping(userid)
-GET		/setFeedback/*mappingid/*feedback	controllers.Application.setFeedback(mappingid,feedback)
+GET		/register					controllers.Application.register()
+GET		/listTasks					controllers.Application.listTasks()
+GET		/listOntologies				controllers.Application.listOntologies()
 
-GET		/listOntologies						controllers.Application.listOntologies()
-GET		/showMappings						controllers.Application.showMappings()
+GET		/initServer					controllers.Application.initServer()
+GET		/getCandidateMapping/*id		controllers.Application.getCandidateMapping(id)
+GET		/setFeedback/*id/*feedback	controllers.Application.setFeedback(id,feedback)
+
+GET		/showMappings				controllers.Application.showMappings()
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
