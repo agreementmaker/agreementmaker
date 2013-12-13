@@ -3,19 +3,22 @@ package am.va.graph;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.Control;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Region;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 
 public class VASearchBox extends Region {
 	private TextField textBox;
     private Button clearButton;
+    private static VASearcher searcher = new VASearcher();
 
     public VASearchBox() {
         setId("SearchBox");
-        getStyleClass().add("search-box");
         setMinHeight(24);
         setPrefSize(200, 24);
         setMaxSize(Control.USE_PREF_SIZE, Control.USE_PREF_SIZE);
@@ -30,10 +33,29 @@ public class VASearchBox extends Region {
                 textBox.requestFocus();
             }
         });
+        
         textBox.textProperty().addListener(new ChangeListener<String>() {
             @Override public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                clearButton.setVisible(textBox.getText().length() != 0);
+            	clearButton.setVisible(textBox.getText().length()!=0); 
             }
+        });
+        
+        textBox.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            public void handle(KeyEvent ke) {
+				System.out.println("Key Pressed: " + ke.getText());
+				if (ke.getCode().equals(KeyCode.ENTER)) {
+					String inputString = textBox.getText();
+					if (inputString.length() != 0) {
+						VAData result = searcher.search(inputString);
+						if (result != null)
+							System.out.println("result is "
+									+ result.getNodeName());
+						else {
+							System.out.println("No result");
+						}
+					}
+				}
+			}
         });
     }
 

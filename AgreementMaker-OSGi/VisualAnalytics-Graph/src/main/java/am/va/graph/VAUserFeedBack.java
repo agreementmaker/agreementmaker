@@ -2,6 +2,7 @@ package am.va.graph;
 
 import java.util.ArrayList;
 
+import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -19,18 +20,31 @@ import javafx.scene.text.FontWeight;
 import javax.swing.JFrame;
 
 public class VAUserFeedBack {
+	private JFrame frameSub;
+	private JFXPanel fxPanelSub;
 	public VAUserFeedBack() {
-		final JFrame frameSub = new JFrame("VA - User Feed Back");
-		JFXPanel fxPanelSub = new JFXPanel();
-		frameSub.setSize(500, 300);
+		frameSub = new JFrame("VA - User Feed Back");
+		fxPanelSub = new JFXPanel();
+		frameSub.setSize(500, 320);
 		frameSub.setLocation(500, 200);
 		frameSub.setVisible(true);
 		frameSub.add(fxPanelSub);
 
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				InitFX();
+			}
+		});
+	}
+	
+	public void InitFX() {
 		Group rootSub = new Group();
 		Scene mySubScene = new Scene(rootSub);
 		fxPanelSub.setScene(mySubScene);
-
+		
+		String subSceneCss = VAUserFeedBack.class.getResource("VA.css").toExternalForm();
+		mySubScene.getStylesheets().add(subSceneCss);
 		AnchorPane anchorPane = new AnchorPane();
 
 		ToggleGroup tg = new ToggleGroup();
@@ -39,7 +53,7 @@ public class VAUserFeedBack {
 		lblCompare.setTextFill(Color.BLACK);
 		// Set labels here, for now just assign two strings
 		String source = "\"Reference\"";
-		String target = "\"Reference\"";
+		String target = "\"Paper\"";
 		lblCompare.setText("How do you think " + source + " and " + target
 				+ " matches?");
 		ArrayList<RadioButton> rb = new ArrayList<RadioButton>();
@@ -47,22 +61,25 @@ public class VAUserFeedBack {
 		for (int i = 0; i < 5; i++) {
 			RadioButton bt = new RadioButton(VAVariables.selectionPer[i]);
 			bt.setToggleGroup(tg);
+			bt.setStyle("-fx-background-color:"+VAVariables.selectionStyle[i]);
 			rb.add(bt);
 		}
 
 		anchorPane.getChildren().add(lblCompare);
 		AnchorPane.setTopAnchor(lblCompare, Double.valueOf(30));
 		AnchorPane.setLeftAnchor(lblCompare, Double.valueOf(30));
-		int x = 100, y = 200;
+		int x = 70, y = 180;
 		for (RadioButton r : rb) {
 			anchorPane.getChildren().add(r);
 			AnchorPane.setTopAnchor(r, Double.valueOf(x));
 			AnchorPane.setLeftAnchor(r, Double.valueOf(y));
-			x += 20;
+			x += 30;
 		}
-		x += 30;
-		y += 20;
+		x += 15;
+		y += 40;
 		Button btnSubmit = new Button("OK");
+		btnSubmit.setId("submit-button");
+		
 		anchorPane.getChildren().add(btnSubmit);
 		AnchorPane.setTopAnchor(btnSubmit, Double.valueOf(x));
 		AnchorPane.setLeftAnchor(btnSubmit, Double.valueOf(y));
@@ -78,5 +95,7 @@ public class VAUserFeedBack {
 				frameSub.hide();
 			}
 		});
+		
+
 	}
 }
