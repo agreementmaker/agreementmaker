@@ -47,9 +47,12 @@ public class VASearchBox extends Region {
 					String inputString = textBox.getText();
 					if (inputString.length() != 0) {
 						VAData result = searcher.search(inputString);
-						if (result != null)
+						if (result != null){
+							VAPanel.generateNewGroup(VAVariables.ontologyType.Source, result);
 							System.out.println("result is "
 									+ result.getNodeName());
+							
+						}
 						else {
 							System.out.println("No result");
 						}
