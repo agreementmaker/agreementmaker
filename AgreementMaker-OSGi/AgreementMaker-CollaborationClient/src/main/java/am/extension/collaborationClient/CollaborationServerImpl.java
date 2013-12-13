@@ -170,7 +170,7 @@ public class CollaborationServerImpl implements CollaborationAPI {
 
 
 	/* These are the calls of the new API. They have not been implemented. */
-	@Override public CollaborationUser register(long id) { return null; }
+	@Override public CollaborationUser register() { return null; }
 
 
 	@Override
