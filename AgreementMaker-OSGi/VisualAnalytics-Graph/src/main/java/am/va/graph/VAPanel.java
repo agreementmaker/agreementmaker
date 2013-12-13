@@ -204,7 +204,7 @@ public class VAPanel {
 		lblSource.setContentDisplay(ContentDisplay.CENTER);
 		lblTarget = new Label("Target ontology", chartRight.getPieChart());
 		lblTarget.setContentDisplay(ContentDisplay.CENTER);
-		//chartLeft.getPieChart().getStyleClass().add("left-pie-chart");
+		// chartLeft.getPieChart().getStyleClass().add("left-pie-chart");
 
 		tilePane.getChildren().add(lblSource);
 		tilePane.getChildren().add(lblTarget);
@@ -230,9 +230,8 @@ public class VAPanel {
 	 * @param currentGroup
 	 * @return
 	 */
-	public static void generateNewGroup(VAVariables.ontologyType ontologyType) {
+	public static void generateNewGroup(VAVariables.ontologyType ontologyType, VAData newRootData) {
 		// Need a function here, return value:VAData
-		VAData newRootData = VAPieChart.getSelectedVAData();
 		VAGroup newGroup = new VAGroup();
 		newGroup.setRootNode(newRootData);
 		if (newRootData != null && newRootData.hasChildren()) {
@@ -248,6 +247,7 @@ public class VAPanel {
 		 */
 		if (ontologyType == VAVariables.ontologyType.Source)
 			generateParentGroup();
+		chartLeft.updatePieChart(ontologyType);
 	}
 
 	/**
@@ -321,10 +321,7 @@ public class VAPanel {
 									newGroup.setListVAData(VASyncData
 											.getChildrenData(da,
 													ontologyType.Source));
-									updateCurrentGroup(newGroup);
-									generateParentGroup();
-									chartLeft
-											.updatePieChart(ontologyType.Source);
+									updateAllWithNewGroup(newGroup);
 								}
 							}
 						}
@@ -459,6 +456,17 @@ public class VAPanel {
 	}
 
 	/**
+	 * Update the pie chart panel with a new group
+	 * @param newGroup
+	 */
+	public static void updateAllWithNewGroup(VAGroup newGroup) {
+		updateCurrentGroup(newGroup);
+		chartLeft.updatePieChart(ontologyType.Source);
+		generateParentGroup();
+		chartLeft.clearList();
+	}
+
+	/**
 	 * Add event for choice box
 	 */
 	private static void setChoiceBoxActions() {
@@ -478,10 +486,7 @@ public class VAPanel {
 									.setNodeType(VAVariables.nodeType.Property);
 						}
 						VASyncListener.InitData();
-						updateCurrentGroup(rootGroupLeft);
-						chartLeft.updatePieChart(ontologyType.Source);
-						chartLeft.clearList();
-						generateParentGroup();
+						updateAllWithNewGroup(rootGroupLeft);
 					}
 				});
 	}
@@ -497,10 +502,7 @@ public class VAPanel {
 
 			@Override
 			public void handle(ActionEvent arg0) {
-				updateCurrentGroup(rootGroupLeft);
-				chartLeft.updatePieChart(ontologyType.Source);
-				generateParentGroup();
-				// System.out.println("Go to root panel");
+				updateAllWithNewGroup(rootGroupLeft);
 			}
 
 		});
@@ -512,11 +514,8 @@ public class VAPanel {
 
 			@Override
 			public void handle(ActionEvent arg0) {
-				updateCurrentGroup(previousGroup);
-				chartLeft.updatePieChart(ontologyType.Source);
-				// System.out.println("Go to previous panel");
+				updateAllWithNewGroup(rootGroupLeft);
 				btnUp.setDisable(true);
-				generateParentGroup();
 			}
 
 		});
@@ -525,7 +524,7 @@ public class VAPanel {
 
 			@Override
 			public void handle(ActionEvent arg0) {
-				//VAUserFeedBack ufbFrame = new VAUserFeedBack();
+				// VAUserFeedBack ufbFrame = new VAUserFeedBack();
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {

@@ -209,8 +209,8 @@ public class VAPieChart {
 					selectedVAData = listMap.get(selectedLocalName);
 					// Still need to figure the color
 
-					VAPanel.generateNewGroup(ontologyType);
-					updatePieChart(ontologyType);
+					VAPanel.generateNewGroup(ontologyType, getSelectedVAData());
+					//updatePieChart(ontologyType);
 					listView.getSelectionModel().clearSelection();
 				} else {
 					System.out.println("- select empty!");
