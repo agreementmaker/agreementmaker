@@ -1,50 +1,38 @@
 package am.va.graph;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 
 import am.va.graph.VAVariables.ontologyType;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.embed.swing.JFXPanel;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
-import javafx.geometry.Orientation;
-import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.chart.BubbleChart;
-import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.PieChart;
-import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.control.RadioButton;
 import javafx.scene.control.SelectionMode;
-import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.TilePane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 
 //import ensemble.Ensemble2;
 
@@ -101,6 +89,8 @@ public class VAPanel {
 	public static void InitFX() {
 		root = new Group();
 		myScene = new Scene(root);
+		String sceneCss = VAPanel.class.getResource("VA.css").toExternalForm();
+		myScene.getStylesheets().add(sceneCss);
 		setLayout();
 		fxPanel.setScene(myScene);
 		updatePreviousGroup(rootGroupLeft);
@@ -193,7 +183,7 @@ public class VAPanel {
 
 	private static void initSearchBox() {
 		searchBox = new VASearchBox();
-		searchBox.getStyleClass().add("search-box");
+		searchBox.setId("SearchBox");
 	}
 
 	/**
@@ -214,6 +204,7 @@ public class VAPanel {
 		lblSource.setContentDisplay(ContentDisplay.CENTER);
 		lblTarget = new Label("Target ontology", chartRight.getPieChart());
 		lblTarget.setContentDisplay(ContentDisplay.CENTER);
+		//chartLeft.getPieChart().getStyleClass().add("left-pie-chart");
 
 		tilePane.getChildren().add(lblSource);
 		tilePane.getChildren().add(lblTarget);
@@ -534,7 +525,13 @@ public class VAPanel {
 
 			@Override
 			public void handle(ActionEvent arg0) {
-				VAUserFeedBack ufbFrame = new VAUserFeedBack();
+				//VAUserFeedBack ufbFrame = new VAUserFeedBack();
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						new VAUserFeedBack();
+					}
+				});
 			}
 
 		});
