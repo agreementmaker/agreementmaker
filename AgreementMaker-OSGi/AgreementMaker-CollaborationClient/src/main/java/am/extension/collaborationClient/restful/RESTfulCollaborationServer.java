@@ -51,8 +51,8 @@ public class RESTfulCollaborationServer implements CollaborationAPI {
 	}
 	
 	@Override
-	public CollaborationUser register(long id) {
-		String queryURI = baseURI + SEP + REGISTER + SEP + Long.toString(id);
+	public CollaborationUser register() {
+		String queryURI = baseURI + SEP + REGISTER;
 		
 		URL uri;
 		try {
