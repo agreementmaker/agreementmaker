@@ -15,8 +15,6 @@ public class MatchingTask extends Model {
 	@Id
 	public Long id;
 	
-	public Integer index;
-	
 	@Constraints.Required
 	public String name;
 	
