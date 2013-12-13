@@ -192,18 +192,19 @@ public void setMLAlignment(Alignment<Mapping> mLAlignment) {
 	{
 		// connect to the server
 		// TODO: Make the server baseURL be configured by the user?
-		String baseURL = "http://127.0.0.1:9000";
+		//String baseURL = "http://127.0.0.1:9000";
+		String baseURL = "http://advis.cs.uic.edu:9000";
 		server = new RESTfulCollaborationServer(baseURL);
-		
-		List<CollaborationTask> taskList = server.getTaskList();
-		LOG.info("Retrieved " + taskList.size() + " tasks.");
-
-		TaskSelectionDialog tsd = new TaskSelectionDialog(taskList);
-		selectedTask = tsd.getTask();
-
-		clientID = server.register(selectedTask.getId());
+		clientID = server.register();
 		
 		LOG.info("Connected to " + baseURL + ", ClientID: " + clientID);
+		
+		List<CollaborationTask> taskList = server.getTaskList();
+		
+		LOG.info("Retrieved " + taskList.size() + " tasks.");
+		
+		TaskSelectionDialog tsd = new TaskSelectionDialog(taskList);
+		selectedTask = tsd.getTask();
 		
 		LOG.info("User selected task: " + selectedTask);
 		
