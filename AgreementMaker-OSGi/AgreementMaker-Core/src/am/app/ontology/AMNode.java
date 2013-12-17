@@ -845,10 +845,14 @@ public class AMNode extends AbstractNode implements Serializable {
 	  public int compareTo(Node n) {
 		  if( this.getResource() == null ) {
 			  if( n.getResource() == null )
+				 
 				  return uri.compareTo(n.getUri());
 			  else
 				  return uri.compareTo(n.getResource().getURI());
 		  }
 		  return this.getResource().getURI().compareTo(n.getResource().getURI());
 	  }
+
+	
+
 }
