@@ -25,12 +25,25 @@ public class AutomaticUserValidation extends UserFeedback {
 		}
 		
 		if( experiment.getReferenceAlignment().contains(candidateMapping.getEntity1(),candidateMapping.getEntity2(),candidateMapping.getRelation())) {
-			userValidation = Validation.CORRECT;
-			log.info("Automatic Evaluation: Correct mapping, " + candidateMapping.toString() );
+			if(experiment.getIterationNumber() == 5 || experiment.getIterationNumber() == 10 || experiment.getIterationNumber() == 15 || experiment.getIterationNumber() == 20) {
+				userValidation = Validation.INCORRECT;
+				log.info("Automatic Evaluation: Incorrect mapping, " + candidateMapping.toString());
+			}
+			else {
+				userValidation = Validation.CORRECT;
+				log.info("Automatic Evaluation: Correct mapping, " + candidateMapping.toString() );
+
+			}
 		}
 		else {
-			userValidation = Validation.INCORRECT;
-			log.info("Automatic Evaluation: Incorrect mapping, " + candidateMapping.toString() );
+			if(experiment.getIterationNumber() == 5 || experiment.getIterationNumber() == 10 || experiment.getIterationNumber() == 15 || experiment.getIterationNumber() == 20) {
+				userValidation = Validation.CORRECT;
+				log.info("Automatic Evaluation: Correct mapping, " + candidateMapping.toString());
+			}
+			else {
+				userValidation = Validation.INCORRECT;
+				log.info("Automatic Evaluation: Incorrect mapping, " + candidateMapping.toString() );
+			}
 		}
 		
 		log.info("");

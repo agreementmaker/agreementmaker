@@ -33,7 +33,7 @@ public class ManualExperimentSetup extends UFLExperiment {
 	public ManualExperimentSetup() {
 		// setup the log file
 		try {
-			FileWriter fr = new FileWriter("/home/frank/Desktop/ufllog.txt",false);
+			FileWriter fr = new FileWriter("C:/Users/xulin/Desktop/ufllog.txt",false);
 			logFile = new BufferedWriter(fr);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

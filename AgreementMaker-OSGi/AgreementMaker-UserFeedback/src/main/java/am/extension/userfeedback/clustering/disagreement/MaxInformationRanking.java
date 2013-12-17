@@ -119,7 +119,7 @@ public class MaxInformationRanking extends CandidateSelection<MLFExperiment> {
 	
 	private void writeFinalAligment(int iteration, Alignment<Mapping> mappings)
 	{
-		File file = new File("/home/frank/Documents/FinalAligment/finalAligment_"+iteration+".txt");
+		File file = new File("C:/Users/xulin/Desktop/FinalAligment/finalAligment_"+iteration+".txt");
 		// if file doesnt exists, then create it
 		if (!file.exists()) {
 			try {

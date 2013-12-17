@@ -63,7 +63,7 @@ public class ClusterBoostEvaluation extends PropagationEvaluation {
 	}
 
 	private PrintStream prepareFile(String fileName) {
-		String prefix = "/home/cosmin/clustering_evaluation/";
+		String prefix = "C:/Users/xulin/desktop/clustering_evaluation/";
 		String suffix = ".data";
 		
 		try {

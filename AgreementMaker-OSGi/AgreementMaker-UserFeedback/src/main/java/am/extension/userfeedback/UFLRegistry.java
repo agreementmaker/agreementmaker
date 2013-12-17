@@ -64,7 +64,10 @@ public class UFLRegistry {
 	public enum FeedbackPropagationRegistry {
 		
 		MLFeedbackPropagation (am.extension.userfeedback.MLFeedback.MLFeedbackPropagation.class),
-		ClusterBoost ( am.extension.userfeedback.clustering.disagreement.ClusterBoostPropagation.class );
+		ClusterBoost ( am.extension.userfeedback.clustering.disagreement.ClusterBoostPropagation.class ),				
+		ReclusterPropagation ( am.extension.userfeedback.WrongFBExperiment.ReclusterPropagation.class );
+		
+		// project-to-to
 		
 		/* *********************** DO NOT EDIT BELOW THIS LINE **************************** */
 		Class<? extends FeedbackPropagation> clazz;

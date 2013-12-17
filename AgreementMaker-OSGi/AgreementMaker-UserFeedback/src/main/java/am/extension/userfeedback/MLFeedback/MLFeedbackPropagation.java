@@ -283,6 +283,7 @@ public class MLFeedbackPropagation extends FeedbackPropagation<MLFExperiment> {
 		}
 
 		experiment.getFinalAlignment();
+		System.out.println("size:"+experiment.getFinalAlignment().size());
 		//SimilarityMatrix feedbackClassMatrix = experiment.initialMatcher.getFinalMatcher().getClassesMatrix();
 		//SimilarityMatrix feedbackPropertyMatrix = experiment.initialMatcher.getFinalMatcher().getPropertiesMatrix();
 		
@@ -403,7 +404,7 @@ public class MLFeedbackPropagation extends FeedbackPropagation<MLFExperiment> {
 	
 	private void writeSimilarityMatrix(SimilarityMatrix sm, int iteration, String type) throws IOException
 	{
-		File file = new File("/home/frank/Documents/SimilarityMatrix"+type+"/similarityMatrix_"+iteration+".txt");
+		File file = new File("C:/Users/xulin/Desktop/SimilarityMatrix"+type+"/similarityMatrix_"+iteration+".txt");
 		// if file doesnt exists, then create it
 		if (!file.exists()) 
 			file.createNewFile();

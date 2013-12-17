@@ -1,9 +1,12 @@
 package am.extension.userfeedback;
 
+import java.util.ArrayList;
+
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.ontology.Ontology;
 import am.extension.userfeedback.UserFeedback.Validation;
+import am.extension.userfeedback.WrongFBExperiment.Tuple;
 import am.extension.userfeedback.experiments.UFLControlLogic;
 import am.extension.userfeedback.ui.UFLControlGUI;
 
@@ -18,6 +21,8 @@ public abstract class UFLExperiment {
 	public FeedbackPropagation<UFLExperiment>						feedbackPropagation;
 	public PropagationEvaluation									propagationEvaluation;
 	public UFLControlGUI											gui;
+	public ArrayList<Tuple> tupleList = new ArrayList<Tuple>();
+	
 	
 	/**
 	 * These mappings were validated by the user as being CORRECT.

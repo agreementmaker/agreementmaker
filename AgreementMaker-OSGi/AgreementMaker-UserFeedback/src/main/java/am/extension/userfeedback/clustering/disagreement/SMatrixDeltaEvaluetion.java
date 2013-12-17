@@ -18,7 +18,7 @@ public class SMatrixDeltaEvaluetion extends PropagationEvaluation<MLFExperiment>
 	
 	public SMatrixDeltaEvaluetion() {
 		try {
-			FileWriter fstream = new FileWriter("/home/frank/Desktop/deltaPlot.dat", true);
+			FileWriter fstream = new FileWriter("C:/Users/xulin/Desktop/deltaPlot.dat", true);
 			BufferedWriter bfr = new BufferedWriter(fstream);
 			fileWriter = bfr;
 		} catch (IOException e) {
