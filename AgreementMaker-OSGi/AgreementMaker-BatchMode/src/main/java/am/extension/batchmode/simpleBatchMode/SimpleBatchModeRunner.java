@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.List;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -11,15 +12,24 @@ import javax.xml.bind.Unmarshaller;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
+
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.ReferenceEvaluationData;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
 import am.app.mappingEngine.referenceAlignment.ReferenceEvaluator;
+import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
+
+import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.ReferenceEvaluationData;
+import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
+import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
+import am.app.mappingEngine.referenceAlignment.ReferenceEvaluator;
+
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.matcher.oaei.oaei2011.OAEI2011Matcher;
@@ -117,6 +127,7 @@ public class SimpleBatchModeRunner {
 			log.info("Matching: " + sourceOntology.getTitle() + " with " + targetOntology.getTitle() + ".");
 			try {
 				matcher.match();
+				
 			} catch( Exception e ) {
 				try {
 					File alignmentFile = new File(ontType.outputAlignmentFile + ".error");
@@ -141,16 +152,24 @@ public class SimpleBatchModeRunner {
 				String sourceUri = sourceOntology.getURI();
 				String targetUri = targetOntology.getURI();
 				output.write(sourceUri, targetUri, sourceUri, targetUri, matcher.getName());
-				
-				referenceEvaluation("/Users/Aseel/Downloads/reference-alignment/cmt-iasted"
-						+ ".rdf",sourceOntology,targetOntology,matcher);
+			
+				referenceEvaluation("C:/workspaceFinalProject/reference_alignments/cmt-conference.rdf",sourceOntology,targetOntology,matcher);
 				}
+
+				
+			//	referenceEvaluation("/Users/Aseel/Downloads/reference-alignment/cmt-iasted"
+			//			+ ".rdf",sourceOntology,targetOntology,matcher);
+			//	}
+
 			catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
 	}
 	
+
+	
+
 	private void referenceEvaluation(String pathToReferenceAlignment, Ontology sourceOntology,  Ontology targetOntology,AbstractMatcher matcher)
 			throws Exception {
 		// Run the reference alignment matcher to get the list of mappings in
@@ -227,8 +246,7 @@ public class SimpleBatchModeRunner {
 
 	}
 
-	
-	
+
 	/**
 	 * Check to make sure the ontology files exist and are readable.
 	 */
@@ -282,8 +300,11 @@ public class SimpleBatchModeRunner {
 			// create the matching algorithm
 			AbstractMatcher matcher = new OAEI2011Matcher();
 			
+			
 			// create the matching algorithm parameters
 			OAEI2011MatcherParameters params = new OAEI2011MatcherParameters();
+			
+		
 			
 			params.maxSourceAlign = 1;
 			params.maxTargetAlign = 1;

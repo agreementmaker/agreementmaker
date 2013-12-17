@@ -3,10 +3,10 @@
 <simpleBatchMode xmlns='http://www.example.org/SimpleBatchMode'>
 	<ontologies>
 		<ontology>
-			<sourceOntology>/Users/Aseel/Downloads/conference/cmt.owl</sourceOntology>
-			<targetOntology>/Users/Aseel/Downloads/conference/iasted.owl</targetOntology>
+			<sourceOntology>C:/dws_workspace/conference/cmt/cmt.owl</sourceOntology>
+			<targetOntology>C:/dws_workspace/conference/Conference/Conference.owl</targetOntology>
 			<matcherRegistryEntry>NOT USED YET</matcherRegistryEntry>
-			<outputAlignmentFile>/Users/Aseel/Documents/output.rdf</outputAlignmentFile>
+			<outputAlignmentFile>C:/dws_workspace/outputalign/align_cmt_conf.rdf</outputAlignmentFile>
 		</ontology>
 	</ontologies>
 </simpleBatchMode>

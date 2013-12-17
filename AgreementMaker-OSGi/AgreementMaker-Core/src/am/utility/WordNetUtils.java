@@ -24,9 +24,10 @@ public class WordNetUtils {
 		// Initialize the WordNet interface.
 		String cwd = System.getProperty("user.dir");
 		System.out.println(cwd);
-		String wordnetdir = null;
-		String wordnetdir1 = "/Users/Aseel/Documents/workspace2/AgreementMaker-OSGi/wordnet-3.0";
-		String wordnetdir2 = cwd + "/../AgreementMaker/wordnet-3.0";
+	//	String wordnetdir = null;
+		String wordnetdir = "C:/eclipse/wordnet-3.0";
+	
+/*		String wordnetdir2 = cwd + "/../AgreementMaker/wordnet-3.0";
 		String wordnetdir3 = cwd + "/../InformationMatching/wordnet-3.0";
 		String[] dirs = { wordnetdir1, wordnetdir2, wordnetdir3 };
 		
@@ -37,7 +38,7 @@ public class WordNetUtils {
 				wordnetdir = currentDir;
 				break;
 			}
-		}
+		}*/
 
 		if( wordnetdir == null ) {
 			Logger log = Logger.getLogger(WordNetUtils.class);
