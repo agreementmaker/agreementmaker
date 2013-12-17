@@ -1,5 +1,6 @@
 package am.extension.userfeedback;
 
+
 /**
  * This class is just a wrapper class for several registry enums.
  * 
@@ -10,7 +11,8 @@ public class UFLRegistry {
 
 	/* Different experimental setups (Ontologies + Reference alignment) */
 	public enum ExperimentRegistry {
-		MachineLearning ( am.extension.userfeedback.MLFeedback.MLFExperiment.class),
+		ClientExperiment ( am.extension.userfeedback.MLFeedback.MLFExperiment.class),
+		ServerExperiment ( am.extension.multiUserFeedback.MUExperiment.class ),
 		Manual ( am.extension.userfeedback.common.ManualExperimentSetup.class );
 		/* *********************** DO NOT EDIT BELOW THIS LINE **************************** */
 		Class<? extends UFLExperiment> clazz;
@@ -29,8 +31,32 @@ public class UFLRegistry {
 		public Class<? extends ExecutionSemantics> getEntryClass() { return clazz; }
 	}
 	
-	public enum CandidateSelectionRegistry {
+	public enum LoopInizializationRegistry {
+		ClientDataInizialization (am.extension.userfeedback.inizialization.RestfulDataInizialization.class),
+		ServerDataInizialization (am.extension.multiUserFeedback.MUDataInizialization.class),
+		DataInizialization ( am.extension.userfeedback.inizialization.DataInizialization.class);
+			
+		/* *********************** DO NOT EDIT BELOW THIS LINE **************************** */
+		Class<? extends FeedbackLoopInizialization> clazz;
 		
+		LoopInizializationRegistry( Class<? extends FeedbackLoopInizialization> fli ) { clazz = fli; }
+		public Class<? extends FeedbackLoopInizialization> getEntryClass() { return clazz; }
+	}
+	
+//	public enum MultiUserCandidateSelectionRegistry {
+//		ServerCandidateSelection (am.extension.multiUserFeedback.ServerCandidateSelection.class);
+//		/* *********************** DO NOT EDIT BELOW THIS LINE **************************** */
+//		Class<? extends MUCandidateSelection> clazz;
+//		
+//		void MUCandidateSelectionRegistry( Class<? extends MUCandidateSelection> mucs ) { clazz = mucs; }
+//		public Class<? extends MUCandidateSelection> getEntryClass() { return clazz; }
+//	}
+	
+	
+	public enum CandidateSelectionRegistry {
+		ClientCandidateSelection (am.extension.multiUserFeedback.ClientCandidateSelection.class),
+		ServerCandidateSelection (am.extension.multiUserFeedback.ServerCandidateSelection.class),
+		MultiStrategyRanking (am.extension.userfeedback.clustering.disagreement.MultiStrategyRanking.class),
 		MaxInformationRanking (am.extension.userfeedback.clustering.disagreement.MaxInformationRanking.class   ),
 		DisagreementRank ( am.extension.userfeedback.clustering.disagreement.DisagreementRanking.class );
 		/* *********************** DO NOT EDIT BELOW THIS LINE **************************** */
@@ -51,6 +77,7 @@ public class UFLRegistry {
 	}
 	
 	public enum UserValidationRegistry {
+		ClientFeedbackValidation (am.extension.multiUserFeedback.ClientFeedbackValidation.class),
 		AutomaticReference ( am.extension.userfeedback.common.AutomaticUserValidation.class ),
 		Manual ( am.extension.userfeedback.common.ManualUserValidation.class );
 		
@@ -61,9 +88,10 @@ public class UFLRegistry {
 		public Class<? extends UserFeedback> getEntryClass() { return clazz; }
 	}
 	
+	
 	public enum FeedbackPropagationRegistry {
-		
-		MLFeedbackPropagation (am.extension.userfeedback.MLFeedback.MLFeedbackPropagation.class),
+		ClientFeedbackPropagation (am.extension.userfeedback.MLFeedback.MLFeedbackPropagation.class),
+		ServerFeedbackPropagation (am.extension.multiUserFeedback.MUFeedbackPropagation.class),
 		ClusterBoost ( am.extension.userfeedback.clustering.disagreement.ClusterBoostPropagation.class );
 		
 		/* *********************** DO NOT EDIT BELOW THIS LINE **************************** */
@@ -75,6 +103,7 @@ public class UFLRegistry {
 	
 	public enum PropagationEvaluationRegistry {
 		SMatrixDeltaEvaluetion (am.extension.userfeedback.clustering.disagreement.SMatrixDeltaEvaluetion.class),
+		ServerPropagationEvaluation (am.extension.multiUserFeedback.ServerFeedbackEvaluation.class),
 		DeltaFromRef ( am.extension.userfeedback.clustering.disagreement.DeltaFromReferenceEvaluation.class ),
 		ClusterBoost ( am.extension.userfeedback.clustering.disagreement.ClusterBoostEvaluation.class );
 		

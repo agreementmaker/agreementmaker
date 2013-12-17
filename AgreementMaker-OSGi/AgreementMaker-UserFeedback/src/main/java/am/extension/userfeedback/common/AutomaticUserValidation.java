@@ -17,15 +17,18 @@ public class AutomaticUserValidation extends UserFeedback {
 	private boolean considerRelationType = false;
 		
 	@Override public Validation getUserFeedback() { return userValidation; }
-	@Override public Mapping getCandidateMapping() { return candidateMapping; }
+	@Override public Mapping getCandidateMapping() 
+	{ 
+		return candidateMapping; 
+	}
 
 	@Override
 	public void validate(UFLExperiment experiment) {
 		
 		//Logger log = Logger.getLogger(this.getClass());
 		UFLExperiment log = experiment;
-		candidateMapping = experiment.candidateSelection.getCandidateMapping();
-		
+		candidateMapping = experiment.candidateSelection.getSelectedMapping();
+
 		if( candidateMapping == null || experiment.getIterationNumber() > 100 ) {
 			userValidation = Validation.END_EXPERIMENT;
 			done();

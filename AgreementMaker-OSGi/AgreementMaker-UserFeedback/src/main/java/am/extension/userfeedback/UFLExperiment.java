@@ -12,7 +12,8 @@ public abstract class UFLExperiment {
 	public UFLExperimentSetup								setup;  
 	
 	public ExecutionSemantics 								initialMatcher;
-	public CandidateSelection< UFLExperiment> 				candidateSelection;
+	public FeedbackLoopInizialization<UFLExperiment>        dataInizialization;
+	public CandidateSelection<UFLExperiment> 				candidateSelection;
 	public CandidateSelectionEvaluation 					csEvaluation;
 	public UserFeedback										userFeedback;
 	public FeedbackPropagation< UFLExperiment>				feedbackPropagation;
@@ -20,6 +21,7 @@ public abstract class UFLExperiment {
 	public UFLControlGUI									gui;
 	public SaveFeedback< UFLExperiment>						saveFeedback;
 	
+
 	
 	/**
 	 * These mappings were validated by the user as being CORRECT.
@@ -40,7 +42,7 @@ public abstract class UFLExperiment {
 	public abstract Alignment<Mapping>  getFinalAlignment();
 	public abstract void				info(String line);   // FIXME: Change this, or get rid of it. Or learn how to use log4j.
 	
-	public abstract UFLControlLogic		getControlLogic();
+	public abstract UFLControlLogic<? extends UFLExperiment>	getControlLogic();
 	
 	public abstract boolean 			experimentHasCompleted();  // return true if the experiment is done, false otherwise.
 	
@@ -72,4 +74,6 @@ public abstract class UFLExperiment {
 	 *         to the user.
 	 */
 	public abstract String getDescription(); 
+	
+
 }

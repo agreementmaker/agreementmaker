@@ -14,7 +14,7 @@ import am.extension.userfeedback.ui.UFLControlGUI;
 public abstract class CandidateSelection<T extends UFLExperiment> {
 
 	EventListenerList listeners;  // list of listeners for this class
-	
+	public Mapping selectedMapping;
 	public CandidateSelection() {
 		listeners = new EventListenerList();
 	}
@@ -25,7 +25,7 @@ public abstract class CandidateSelection<T extends UFLExperiment> {
 	public abstract List<Mapping> getRankedMappings();
 	
 	public abstract Mapping getCandidateMapping();
-	
+	public abstract Mapping getSelectedMapping();
 	
 	public void addActionListener( ActionListener l ) {
 		listeners.add(ActionListener.class, l);

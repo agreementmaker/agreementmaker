@@ -128,6 +128,10 @@ public class OntologyDefinition {
 		return false;
 	}
 	
+	@Override
+	public String toString() {
+		return ontologyURI + ":" + ontologyLanguage.name + ":" + ontologySyntax.name();
+	}
 	
 	public final static int SOURCE_ONTOLOGY = 0;
 	public final static int TARGET_ONTOLOGY = 1;
@@ -141,7 +145,7 @@ public class OntologyDefinition {
 		XML("XML", 2),
 		TABBEDTEXT("Tabbed Text", 3);
 		
-		String name;
+		public final String name;
 		int ID;
 		
 		private OntologyLanguage(String name, int ID) {
@@ -178,7 +182,7 @@ public class OntologyDefinition {
 		N3("N3", 3),
 		TURTLE("TURTLE", 4);
 		
-		private String name;
+		public final String name;
 		private int ID;
 		
 		private OntologySyntax(String name, int ID) {

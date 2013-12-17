@@ -16,7 +16,7 @@ public abstract class UserFeedback {
 	public UserFeedback() {
 		listeners = new EventListenerList();
 	}
-	public enum Validation { CORRECT, INCORRECT, END_EXPERIMENT; }
+	public enum Validation { CORRECT, INCORRECT, SKIP, END_EXPERIMENT; }
 
 	public abstract void validate( UFLExperiment experiment );
 	public abstract Validation getUserFeedback();

@@ -14,19 +14,34 @@ import javax.xml.ws.Endpoint;
 import org.apache.log4j.Logger;
 
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
+import am.app.ontology.ontologyParser.OntologyDefinition;
 import am.evaluation.disagreement.variance.VarianceDisagreementComparator;
 import am.extension.batchmode.simpleBatchMode.SimpleBatchModeRunner;
+import am.extension.collaborationClient.api.CollaborationCandidateMapping;
+import am.extension.collaborationClient.api.CollaborationFeedback;
+import am.extension.collaborationClient.api.CollaborationTask;
+import am.extension.collaborationClient.api.CollaborationUser;
+import am.extension.collaborationClient.api.CollaborationAPI;
 import am.matcher.oaei.oaei2011.OAEI2011Matcher;
 import am.matcher.oaei.oaei2011.OAEI2011Matcher.SubMatcherID;
 
 // If you get errors because unresolved imports go here:
 // http://tech.amikelive.com/node-269/eclipse-quick-tip-resolving-error-the-import-javaxservlet-cannot-be-resolved/
 
-
+/**
+ * This class is only here for HISTORICAL purposes. It may be removed at a later
+ * time. It should not be considered working code for any function.
+ * 
+ * @author cosmin
+ * 
+ * @deprecated This class is here only for historical documentation.  It will be removed in the future.
+ */
+@Deprecated
 @Path("/collaborationServer")
-public class CollaborationServerImpl implements CollaborationServer {
+public class CollaborationServerImpl implements CollaborationAPI {
 	
 	private static final Logger sLog = Logger.getLogger(CollaborationServerImpl.class);
 
@@ -38,14 +53,14 @@ public class CollaborationServerImpl implements CollaborationServer {
 	
 	Queue<Mapping> candidateRanking;
 	
-	@Override
+//	@Override
 	public String sayHi(String text) {
 		System.out.println("sayHi called");
         return "Hello " + text;
 	}
 
 	
-	@Override
+//	@Override
 	public String sayHello(String text, String name) {
 		System.out.println("sayHello called");
 		return "Hi, " + text + " " + name;
@@ -53,7 +68,7 @@ public class CollaborationServerImpl implements CollaborationServer {
 
 	
 	
-	@Override
+//	@Override
 	public int addOntologyPair( String sourceOntology, String targetOntology ) {
 		CollaborationOntologyPair cop = new CollaborationOntologyPair(sourceOntology, targetOntology);
 		ontologyPairs.add(cop);
@@ -79,13 +94,13 @@ public class CollaborationServerImpl implements CollaborationServer {
 	}
 	
 	
-	@Override
+//	@Override
 	public int addUser(String username) {
 		users.add(username);
 		return users.size() - 1;
 	}
 	
-	@Override
+//	@Override
 	public void recordFeedback(int ontoPair, int userID, UserFeedback fb) {
 		
 		CollaborationOntologyPair cop = ontologyPairs.get(ontoPair);
@@ -101,10 +116,11 @@ public class CollaborationServerImpl implements CollaborationServer {
 		
 	}
 	
-	@Override
+//	@Override
 	public Queue<Mapping> getRankingQueue(int ontoPair) {
 		
 		OAEI2011Matcher matcher = matchers.get(ontoPair);
+
 		List<AbstractMatcher> matchersToConsider = new ArrayList<AbstractMatcher>();
 		
 		matchersToConsider.add(matcher.getSubMatcherByID(SubMatcherID.PSM));
@@ -131,14 +147,14 @@ public class CollaborationServerImpl implements CollaborationServer {
 		return candidateRanking;
 	}
 	
-	@Override
+//	@Override
 	public UserFeedback getCandidate( int ontoPair, int userID ) {
 		
 		return null;
 	}
 	
 	
-	@Override
+//	@Override
 	public CollaborationOntologyPair getPair( int ontoPair ) {
 		return ontologyPairs.get(ontoPair);
 	}
@@ -146,10 +162,51 @@ public class CollaborationServerImpl implements CollaborationServer {
 	
 	public static void main(String[] args) {		
 		System.out.println("Starting Server");
-		CollaborationServer implementor = new CollaborationServerImpl();
+		CollaborationAPI implementor = new CollaborationServerImpl();
 		String address = "http://localhost:9000/helloWorld";
 		Endpoint.publish(address, implementor);
 		
+	}
+
+
+	/* These are the calls of the new API. They have not been implemented. */
+	@Override public CollaborationUser register() { return null; }
+
+
+	@Override
+	public List<CollaborationTask> getTaskList() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public CollaborationCandidateMapping getCandidateMapping(
+			CollaborationUser client) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public void putFeedback(CollaborationUser client,
+			CollaborationFeedback feedback) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public OntologyDefinition getOntologyDefinition(String ontologyURL) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public Alignment<Mapping> getReferenceAlignment(String referenceURL) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }

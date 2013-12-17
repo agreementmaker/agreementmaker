@@ -46,7 +46,47 @@
 						<!-- <Export-Package>${bundle.namespace}.*</Export-Package> -->
 						<!-- <Export-Package>*</Export-Package>
 						<_exportcontents>!org.osgi.*,!org.apache.felix.*,*</_exportcontents>  -->
-						<Import-Package>org.osgi.*,com.hp.hpl.*,org.apache.log4j.*</Import-Package>
+						<Import-Package>
+							!cern.colt.matrix.*,
+							!ch.toe.famix.*,
+							!ch.unibern.graphmatching2.*,
+							!com.sun.jdmk.comm.*,
+							!com.sun.msv.*,
+							!com.tomgibara.cluster.*,
+							!fr.inrialpes.exmo.align.impl.method.*,
+							!javax.jms.*,
+							!javax.mail.*,
+							!javax.servlet.*,
+							!junit.framework.*,
+							!junit.textui.*,
+							!net.sf.snowball.*,
+							!org._3pq.jgrapht.*,
+							!org.apache.avalon.framework.logger.*,
+							!org.apache.log.*,
+							!org.apache.lucene.analysis.snowball.*,
+							!org.apache.tools.ant.*,
+							!org.apache.xml.resolver.*,
+							!org.eclipse.core.runtime.*,
+							!org.eclipse.jdt.core.dom.*,
+							!org.embl.ebi.escience.scufl.*,
+							!org.gjt.xpp.*,
+							!org.jaxen.*,
+							!org.junit.*,
+							!org.protege.editor.owl.model.*,
+							!org.xmlpull.v1.*,
+							!owlsmx.exceptions.*,
+							!owlsmx.similaritymeasures.*,
+							!simmetrics.api.*,
+							!simmetrics.similaritymetrics.*,
+							!simmetrics.tokenisers.*,
+							!simmetrics.wordhandlers.*,
+							!sun.io.*,
+							org.osgi.*,
+							com.hp.hpl.*,
+							org.apache.log4j.*,
+							*
+						</Import-Package>
+						
 						<_exportcontents>*</_exportcontents>
 						<Bundle-Activator>${bundle.namespace}.app.osgi.AMActivator</Bundle-Activator>
 						<Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
