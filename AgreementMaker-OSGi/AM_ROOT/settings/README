@@ -1,0 +1,5 @@
+The "settings" directory is meant to be used to store 
+settings for various AgreementMaker bundles.
+This way, settings can be shared between users.
+
+An example of a setting would be the UFL Presets.
