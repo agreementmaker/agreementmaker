@@ -10,11 +10,11 @@ import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.app.ontology.Node;
-import am.extension.multiUserFeedback.MUExperiment;
-import am.extension.userfeedback.FeedbackLoopInizialization;
-import am.extension.userfeedback.MLFeedback.MLFExperiment;
+import am.extension.multiUserFeedback.experiment.MUExperiment;
+import am.extension.userfeedback.experiments.MLFExperiment;
+import am.extension.userfeedback.experiments.SUExperiment;
 
-public class DataInizialization extends FeedbackLoopInizialization<MLFExperiment> {
+public class DataInizialization extends FeedbackLoopInizialization<SUExperiment> {
 	List<AbstractMatcher> inputMatchers = new ArrayList<AbstractMatcher>();
 	public DataInizialization()
 	{
@@ -22,7 +22,7 @@ public class DataInizialization extends FeedbackLoopInizialization<MLFExperiment
 	}
 	
 	@Override
-	public void inizialize(MLFExperiment exp) {
+	public void inizialize(SUExperiment exp) {
 		// TODO Auto-generated method stub
 		inputMatchers=exp.initialMatcher.getComponentMatchers();
 		SimilarityMatrix smClass=exp.initialMatcher.getFinalMatcher().getClassesMatrix().clone();

@@ -1,5 +1,12 @@
 package am.extension.userfeedback;
 
+import am.extension.userfeedback.evaluation.CandidateSelectionEvaluation;
+import am.extension.userfeedback.evaluation.PropagationEvaluation;
+import am.extension.userfeedback.experiments.UFLExperiment;
+import am.extension.userfeedback.inizialization.FeedbackLoopInizialization;
+import am.extension.userfeedback.propagation.FeedbackPropagation;
+import am.extension.userfeedback.selection.CandidateSelection;
+
 
 /**
  * This class is just a wrapper class for several registry enums.
@@ -11,8 +18,9 @@ public class UFLRegistry {
 
 	/* Different experimental setups (Ontologies + Reference alignment) */
 	public enum ExperimentRegistry {
-		ClientExperiment ( am.extension.userfeedback.MLFeedback.MLFExperiment.class),
-		ServerExperiment ( am.extension.multiUserFeedback.MUExperiment.class ),
+		SingleUser( am.extension.userfeedback.experiments.SUExperiment.class),
+		ClientExperiment ( am.extension.userfeedback.experiments.MLFExperiment.class),
+		ServerExperiment ( am.extension.multiUserFeedback.experiment.MUExperiment.class ),
 		Manual ( am.extension.userfeedback.common.ManualExperimentSetup.class );
 		/* *********************** DO NOT EDIT BELOW THIS LINE **************************** */
 		Class<? extends UFLExperiment> clazz;
@@ -33,7 +41,7 @@ public class UFLRegistry {
 	
 	public enum LoopInizializationRegistry {
 		ClientDataInizialization (am.extension.userfeedback.inizialization.RestfulDataInizialization.class),
-		ServerDataInizialization (am.extension.multiUserFeedback.MUDataInizialization.class),
+		ServerDataInizialization (am.extension.multiUserFeedback.initialization.MUDataInizialization.class),
 		DataInizialization ( am.extension.userfeedback.inizialization.DataInizialization.class);
 			
 		/* *********************** DO NOT EDIT BELOW THIS LINE **************************** */
@@ -54,8 +62,8 @@ public class UFLRegistry {
 	
 	
 	public enum CandidateSelectionRegistry {
-		ClientCandidateSelection (am.extension.multiUserFeedback.ClientCandidateSelection.class),
-		ServerCandidateSelection (am.extension.multiUserFeedback.ServerCandidateSelection.class),
+		ClientCandidateSelection (am.extension.multiUserFeedback.selection.ClientCandidateSelection.class),
+		ServerCandidateSelection (am.extension.multiUserFeedback.selection.ServerCandidateSelection.class),
 		MultiStrategyRanking (am.extension.userfeedback.clustering.disagreement.MultiStrategyRanking.class),
 		MaxInformationRanking (am.extension.userfeedback.clustering.disagreement.MaxInformationRanking.class   ),
 		DisagreementRank ( am.extension.userfeedback.clustering.disagreement.DisagreementRanking.class );
@@ -77,7 +85,7 @@ public class UFLRegistry {
 	}
 	
 	public enum UserValidationRegistry {
-		ClientFeedbackValidation (am.extension.multiUserFeedback.ClientFeedbackValidation.class),
+		ClientFeedbackValidation (am.extension.multiUserFeedback.validation.ClientFeedbackValidation.class),
 		AutomaticReference ( am.extension.userfeedback.common.AutomaticUserValidation.class ),
 		Manual ( am.extension.userfeedback.common.ManualUserValidation.class );
 		
@@ -90,8 +98,9 @@ public class UFLRegistry {
 	
 	
 	public enum FeedbackPropagationRegistry {
-		ClientFeedbackPropagation (am.extension.userfeedback.MLFeedback.MLFeedbackPropagation.class),
-		ServerFeedbackPropagation (am.extension.multiUserFeedback.MUFeedbackPropagation.class),
+		SUFeedbackPropagation (am.extension.userfeedback.propagation.SUFeedbcackPropagation.class),
+		ClientFeedbackPropagation (am.extension.userfeedback.propagation.MLFeedbackPropagation.class),
+		ServerFeedbackPropagation (am.extension.multiUserFeedback.propagation.MUFeedbackPropagation.class),
 		ClusterBoost ( am.extension.userfeedback.clustering.disagreement.ClusterBoostPropagation.class );
 		
 		/* *********************** DO NOT EDIT BELOW THIS LINE **************************** */
@@ -103,7 +112,7 @@ public class UFLRegistry {
 	
 	public enum PropagationEvaluationRegistry {
 		SMatrixDeltaEvaluetion (am.extension.userfeedback.clustering.disagreement.SMatrixDeltaEvaluetion.class),
-		ServerPropagationEvaluation (am.extension.multiUserFeedback.ServerFeedbackEvaluation.class),
+		ServerPropagationEvaluation (am.extension.multiUserFeedback.evaluation.ServerFeedbackEvaluation.class),
 		DeltaFromRef ( am.extension.userfeedback.clustering.disagreement.DeltaFromReferenceEvaluation.class ),
 		ClusterBoost ( am.extension.userfeedback.clustering.disagreement.ClusterBoostEvaluation.class );
 		
@@ -115,7 +124,7 @@ public class UFLRegistry {
 	}
 	
 	public enum SaveFeedbackRegistry {
-		MultiUserSaveFeedback (am.extension.userfeedback.MultiUserSaveFeedback.class);
+		MultiUserSaveFeedback (am.extension.userfeedback.MLutility.MultiUserSaveFeedback.class);
 		
 		/* *********************** DO NOT EDIT BELOW THIS LINE **************************** */
 		Class<? extends SaveFeedback> clazz;

@@ -12,8 +12,8 @@ import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.ontology.Ontology;
 import am.evaluation.disagreement.variance.VarianceDisagreement;
 import am.evaluation.disagreement.variance.VarianceDisagreementParameters;
-import am.extension.userfeedback.CandidateSelection;
-import am.extension.userfeedback.UFLExperiment;
+import am.extension.userfeedback.experiments.UFLExperiment;
+import am.extension.userfeedback.selection.CandidateSelection;
 
 public class DisagreementRanking extends CandidateSelection {
 

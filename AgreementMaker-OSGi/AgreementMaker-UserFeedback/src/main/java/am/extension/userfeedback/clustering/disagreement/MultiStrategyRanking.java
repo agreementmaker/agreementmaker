@@ -14,9 +14,9 @@ import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MappingSimilarityComparator;
 import am.evaluation.disagreement.variance.VarianceDisagreement;
 import am.evaluation.disagreement.variance.VarianceDisagreementParameters;
-import am.extension.multiUserFeedback.MUExperiment;
-import am.extension.userfeedback.CandidateSelection;
-import am.extension.userfeedback.MLFeedback.MLFExperiment;
+import am.extension.multiUserFeedback.experiment.MUExperiment;
+import am.extension.userfeedback.experiments.MLFExperiment;
+import am.extension.userfeedback.selection.CandidateSelection;
 
 public class MultiStrategyRanking extends CandidateSelection<MUExperiment>{
 

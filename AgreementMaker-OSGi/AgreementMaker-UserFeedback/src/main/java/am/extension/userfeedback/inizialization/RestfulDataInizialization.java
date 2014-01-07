@@ -11,8 +11,7 @@ import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.app.ontology.Node;
-import am.extension.userfeedback.FeedbackLoopInizialization;
-import am.extension.userfeedback.MLFeedback.MLFExperiment;
+import am.extension.userfeedback.experiments.MLFExperiment;
 
 public class RestfulDataInizialization extends FeedbackLoopInizialization<MLFExperiment>{
 	

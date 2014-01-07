@@ -12,9 +12,9 @@ import am.app.ontology.Ontology;
 import am.evaluation.clustering.Cluster;
 import am.evaluation.clustering.localByThreshold.LocalByThresholdMethod;
 import am.evaluation.clustering.localByThreshold.LocalByThresholdParameters;
-import am.extension.userfeedback.FeedbackPropagation;
-import am.extension.userfeedback.UFLExperiment;
 import am.extension.userfeedback.UserFeedback.Validation;
+import am.extension.userfeedback.experiments.UFLExperiment;
+import am.extension.userfeedback.propagation.FeedbackPropagation;
 
 public class ClusterBoostPropagation extends FeedbackPropagation<UFLExperiment> {
 

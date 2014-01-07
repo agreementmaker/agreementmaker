@@ -11,8 +11,8 @@ import java.util.List;
 
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
-import am.extension.userfeedback.CandidateSelectionEvaluation;
-import am.extension.userfeedback.UFLExperiment;
+import am.extension.userfeedback.evaluation.CandidateSelectionEvaluation;
+import am.extension.userfeedback.experiments.UFLExperiment;
 
 import com.panayotis.gnuplot.JavaPlot;
 
