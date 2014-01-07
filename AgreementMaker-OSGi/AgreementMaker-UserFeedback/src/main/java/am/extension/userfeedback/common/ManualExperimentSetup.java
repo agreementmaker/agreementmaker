@@ -12,10 +12,10 @@ import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.app.ontology.Ontology;
-import am.extension.userfeedback.UFLExperiment;
 import am.extension.userfeedback.UserFeedback.Validation;
-import am.extension.userfeedback.experiments.IndependentSequentialLogic;
-import am.extension.userfeedback.experiments.UFLControlLogic;
+import am.extension.userfeedback.experiments.UFLExperiment;
+import am.extension.userfeedback.logic.IndependentSequentialLogic;
+import am.extension.userfeedback.logic.UFLControlLogic;
 
 /**
  * This is a manual experiment setup.

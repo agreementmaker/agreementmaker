@@ -15,7 +15,7 @@ import am.app.mappingEngine.utility.OAEI_Track;
 import am.app.ontology.Ontology;
 import am.app.ontology.profiling.manual.ManualOntologyProfiler;
 import am.extension.userfeedback.ExecutionSemantics;
-import am.extension.userfeedback.UFLExperiment;
+import am.extension.userfeedback.experiments.UFLExperiment;
 import am.matcher.Combination.CombinationMatcher;
 import am.matcher.Combination.CombinationParameters;
 import am.matcher.IterativeInstanceStructuralMatcher.IterativeInstanceStructuralMatcher;
@@ -130,7 +130,7 @@ public class OrthoCombinationMatcher extends ExecutionSemantics {
 				m_bsm.match();
 				m_asm.match();
 				m_psm.match();
-				m_vmm.match();
+				//m_vmm.match();
 				m_lsm.match();
 				
 				m_lwc.addInputMatcher(m_bsm);

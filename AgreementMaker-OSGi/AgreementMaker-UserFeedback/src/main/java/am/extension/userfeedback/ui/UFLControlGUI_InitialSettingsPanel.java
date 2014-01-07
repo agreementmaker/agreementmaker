@@ -189,14 +189,14 @@ public class UFLControlGUI_InitialSettingsPanel extends JPanel implements Action
 		this.setLayout(new FlowLayout(FlowLayout.CENTER));
 		this.add(centralContainer);
 		
-		cmbExperiment				.setEnabled(false);
-		cmbMatcher					.setEnabled(false);
-		cmbInizialization			.setEnabled(false);
-		cmbCandidate				.setEnabled(false);
-		cmbCSEvaluation				.setEnabled(false);
-		cmbUserFeedback				.setEnabled(false);
-		cmbPropagation				.setEnabled(false);
-		cmbPropagationEvaluation	.setEnabled(false);
+//		cmbExperiment				.setEnabled(false);
+//		cmbMatcher					.setEnabled(false);
+//		cmbInizialization			.setEnabled(false);
+//		cmbCandidate				.setEnabled(false);
+//		cmbCSEvaluation				.setEnabled(false);
+//		cmbUserFeedback				.setEnabled(false);
+//		cmbPropagation				.setEnabled(false);
+//		cmbPropagationEvaluation	.setEnabled(false);
 	}
 	
 	

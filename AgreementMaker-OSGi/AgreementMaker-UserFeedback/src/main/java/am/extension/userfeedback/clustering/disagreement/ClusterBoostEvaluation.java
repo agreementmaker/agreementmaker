@@ -12,8 +12,8 @@ import am.app.mappingEngine.Mapping;
 import am.evaluation.clustering.Cluster;
 import am.evaluation.clustering.localByThreshold.LocalByThresholdMethod;
 import am.evaluation.clustering.localByThreshold.LocalByThresholdParameters;
-import am.extension.userfeedback.PropagationEvaluation;
-import am.extension.userfeedback.UFLExperiment;
+import am.extension.userfeedback.evaluation.PropagationEvaluation;
+import am.extension.userfeedback.experiments.UFLExperiment;
 
 public class ClusterBoostEvaluation extends PropagationEvaluation {
 
