@@ -11,7 +11,6 @@ import am.extension.userfeedback.UFLRegistry.LoopInizializationRegistry;
 import am.extension.userfeedback.UFLRegistry.PropagationEvaluationRegistry;
 import am.extension.userfeedback.UFLRegistry.SaveFeedbackRegistry;
 import am.extension.userfeedback.UFLRegistry.UserValidationRegistry;
-import am.extension.userfeedback.preset.MatchingTaskPreset;
 
 public class UFLExperimentSetup implements Serializable {
 
