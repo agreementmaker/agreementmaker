@@ -4,10 +4,11 @@ import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.extension.userfeedback.UserFeedback;
 import am.extension.userfeedback.experiments.UFLExperiment;
+import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
 
 public class BMAutomaticValidation extends UserFeedback {
 	
-	double errorThreshold=0.3;
+	//double errorThreshold=0.3;
 	Validation userValidation;
 	Mapping candidateMapping;
 
@@ -49,7 +50,7 @@ public class BMAutomaticValidation extends UserFeedback {
 		}
 		
 		double errorProb=Math.random();
-		if (errorProb<errorThreshold)
+		if (errorProb<experiment.setup.parameters.getDoubleParameter(Parameter.ERROR_RATE))
 		{
 			if (userValidation==Validation.CORRECT)
 				userValidation=Validation.INCORRECT;

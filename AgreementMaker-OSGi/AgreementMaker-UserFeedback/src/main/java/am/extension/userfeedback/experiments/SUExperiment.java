@@ -45,6 +45,7 @@ public Mapping selectedMapping;
 public List<Mapping> alreadyEvaluated=new ArrayList<Mapping>();
 public List<Mapping> conflictualClass;
 public List<Mapping> conflictualProp;
+public double avg_dist=0.8;
 
 private alignCardinality alignCardinalityType=alignCardinality.cn_m;
 
