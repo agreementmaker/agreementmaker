@@ -11,6 +11,14 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import weka.classifiers.Classifier;
+import weka.classifiers.bayes.NaiveBayes;
+import weka.core.Instance;
+import weka.core.Instances;
+import weka.core.Attribute;
+import weka.core.FastVector;
+
+
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
@@ -19,7 +27,7 @@ import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.app.ontology.Node;
 import am.extension.multiUserFeedback.experiment.MUExperiment;
-import am.extension.userfeedback.MLutility.NaiveBayes;
+//import am.extension.userfeedback.MLutility.NaiveBayes;
 import am.extension.userfeedback.UserFeedback.Validation;
 import am.extension.userfeedback.experiments.SUExperiment;
 import am.matcher.Combination.CombinationMatcher;
@@ -284,6 +292,7 @@ public class SUFeedbcackPropagation extends FeedbackPropagation<SUExperiment> {
 		//ufl.select();
 
 		experiment.setMLAlignment(combineResults(ufl));
+		
 		if( candidateMapping.getAlignmentType() == alignType.aligningClasses ) 
 		{
 			experiment.setTrainingSet_classes(trainingSet);
@@ -441,7 +450,7 @@ public class SUFeedbcackPropagation extends FeedbackPropagation<SUExperiment> {
 			for(int j=0;j<col;j++)
 			{
 				ufl_sim=am.getClassesMatrix().getSimilarity(i, j);
-				if (ufl_sim!=0.0)
+				if (ufl_sim>0.6)
 					alg.add(experiment.initialMatcher.getFinalMatcher().getClassesMatrix().get(i, j));
 			}
 		}
@@ -453,7 +462,7 @@ public class SUFeedbcackPropagation extends FeedbackPropagation<SUExperiment> {
 			for(int j=0;j<col;j++)
 			{
 				ufl_sim=am.getPropertiesMatrix().getSimilarity(i, j);
-				if (ufl_sim!=0.0)
+				if (ufl_sim>0.6)
 					alg.add(experiment.initialMatcher.getFinalMatcher().getPropertiesMatrix().get(i, j));
 			}
 		}
@@ -481,58 +490,57 @@ public class SUFeedbcackPropagation extends FeedbackPropagation<SUExperiment> {
 //		return sm;
 //	}
 //	
-	private SimilarityMatrix runNBayes(SparseMatrix forbidden_pos, SimilarityMatrix sm,Object[][] trainingSet)
-	{
-
-		
-		int max_row=-1;
-		int max_col=-1;
-		double max_nBayes=treshold_up;
-		double tmp; 
-		Mapping mp;
-
-		Object[] ssv;
-		NaiveBayes nBayes=new NaiveBayes(trainingSet);
-		for(int i=0;i<sm.getRows();i++)
-		{
-//			if (forbidden_row.contains(i)) 
-//				continue;
-			max_nBayes=treshold_up;
-			for(int j=0;j<sm.getColumns();j++)
-			{
-//				if(forbidden_column.contains(j)) 
+//	private SimilarityMatrix runNBayes(SparseMatrix forbidden_pos, SimilarityMatrix sm,Object[][] trainingSet)
+//	{
+//	
+//		int max_row=-1;
+//		int max_col=-1;
+//		double max_nBayes=treshold_up;
+//		double tmp; 
+//		Mapping mp;
+//
+//		Object[] ssv;
+//		NaiveBayes nBayes=new NaiveBayes(trainingSet);
+//		for(int i=0;i<sm.getRows();i++)
+//		{
+////			if (forbidden_row.contains(i)) 
+////				continue;
+//			max_nBayes=treshold_up;
+//			for(int j=0;j<sm.getColumns();j++)
+//			{
+////				if(forbidden_column.contains(j)) 
+////					continue;
+//				if(forbidden_pos.getSimilarity(i, j)==1)
 //					continue;
-				if(forbidden_pos.getSimilarity(i, j)==1)
-					continue;
-				mp = sm.get(i, j);
-				ssv=getSignatureVector(mp);
-				if (!validSsv(ssv))
-					continue;
-				
-				tmp=nBayes.interfaceComputeElement(ssv);
-				if (tmp>max_nBayes)
-				{
-					max_nBayes=tmp;
-					max_row=i;
-					max_col=j;
-				}
-				if ((tmp<0.2) && (experiment.getIterationNumber()<10))
-				{
-//					System.out.println(experiment.getIterationNumber());
-//					mp=sm.get(i,j);
-//					mp.setSimilarity(mp.getSimilarity()*penalize_ratio);
-//					sm.setSimilarity(i, j, sm.getSimilarity(i, j)*0.0);
-//					sm.set(i, j, mp);
-					sm.setSimilarity(i, j, 0.0);
-				}
-			}
-			if (max_nBayes>treshold_up)
-			{
-				sm.setSimilarity(max_row, max_col, 1);
-			}
-		}
-		return sm;
-	}
+//				mp = sm.get(i, j);
+//				ssv=getSignatureVector(mp);
+//				if (!validSsv(ssv))
+//					continue;
+//				
+//				tmp=nBayes.interfaceComputeElement(ssv);
+//				if (tmp>max_nBayes)
+//				{
+//					max_nBayes=tmp;
+//					max_row=i;
+//					max_col=j;
+//				}
+//				if ((tmp<0.2) && (experiment.getIterationNumber()<10))
+//				{
+////					System.out.println(experiment.getIterationNumber());
+////					mp=sm.get(i,j);
+////					mp.setSimilarity(mp.getSimilarity()*penalize_ratio);
+////					sm.setSimilarity(i, j, sm.getSimilarity(i, j)*0.0);
+////					sm.set(i, j, mp);
+//					sm.setSimilarity(i, j, 0.0);
+//				}
+//			}
+//			if (max_nBayes>treshold_up)
+//			{
+//				sm.setSimilarity(max_row, max_col, 1);
+//			}
+//		}
+//		return sm;
+//	}
 	
 	
 	private SimilarityMatrix com(SparseMatrix forbidden_pos, SimilarityMatrix sm,Object[][] trainingSet, String type)
@@ -540,9 +548,11 @@ public class SUFeedbcackPropagation extends FeedbackPropagation<SUExperiment> {
 		Mapping mp;
 		Object[] ssv;
 		double tmp=0;
+		double sim;
 		double distance=0;
 		double min=Double.MAX_VALUE;
 		int index=0;
+		double avg_dist=0;
 		for(int k=0;k<sm.getRows();k++)
 		{
 			for(int h=0;h<sm.getColumns();h++)
@@ -562,6 +572,7 @@ public class SUFeedbcackPropagation extends FeedbackPropagation<SUExperiment> {
 						distance+=Math.pow((double)ssv[j]-(double)trainingSet[i][j],2);
 					}
 					distance=Math.sqrt(distance);
+					avg_dist+=distance;
 					if (distance<min)
 					{
 						min=distance;
@@ -569,7 +580,7 @@ public class SUFeedbcackPropagation extends FeedbackPropagation<SUExperiment> {
 					}
 				}
 				//tmp=(double)trainingSet[index][trainingSet[0].length-1];
-				if ((min<=0.5))// & (tmp==1.0))
+				if ((min==0.0))// & (tmp==1.0))
 				{
 					sm.setSimilarity(k, h, (double)trainingSet[index][trainingSet[0].length-1]);
 					if (type=="classes")
@@ -578,10 +589,76 @@ public class SUFeedbcackPropagation extends FeedbackPropagation<SUExperiment> {
 						experiment.propertiesSparseMatrix.setSimilarity(k, h, 1);
 					
 				}
+//				if ((min>0) &(min<experiment.avg_dist))// & (tmp==1.0))
+//				{
+//					sim=sm.getSimilarity(k, h);
+//					if ((double)trainingSet[index][trainingSet[0].length-1]==1.0)
+//					{
+//						if (sim<0.9)
+//							sim+=0.1;
+//					}
+//					else
+//					{
+//						if (sim>0.1)
+//							sim-=0.1;
+//					}
+//					sm.setSimilarity(k, h, sim);
+//					
+//					
+//				}
 			}
 		}
+		experiment.avg_dist=avg_dist/(sm.getColumns()*sm.getRows());
 		return sm;
 	}
 	
+//	private SimilarityMatrix wekaNB()
+//	{
+//		Attribute Attribute1 = new Attribute("firstNumeric");
+//		Attribute Attribute2 = new Attribute("secondNumeric");
+//		Attribute Attribute3 = new Attribute("secondNumeric");
+//		Attribute Attribute4 = new Attribute("secondNumeric");
+//		Attribute Attribute5 = new Attribute("secondNumeric");
+//		Attribute Attribute6 = new Attribute("secondNumeric");
+//
+//		 
+//		// Declare the class attribute along with its values
+//		FastVector fvClassVal = new FastVector(2);
+//		 fvClassVal.addElement("positive");
+//		 fvClassVal.addElement("negative");
+//		 Attribute ClassAttribute = new Attribute("theClass", fvClassVal);
+//		 
+//		 // Declare the feature vector
+//		 FastVector fvWekaAttributes = new FastVector(4);
+//		 fvWekaAttributes.addElement(Attribute1);    
+//		 fvWekaAttributes.addElement(Attribute2);    
+//		 fvWekaAttributes.addElement(Attribute3);  
+//		 fvWekaAttributes.addElement(Attribute4);    
+//		 fvWekaAttributes.addElement(Attribute5);    
+//		 fvWekaAttributes.addElement(Attribute6); 
+//		 fvWekaAttributes.addElement(ClassAttribute);
+//		 
+//		 Instances isTrainingSet = new Instances("Rel", fvWekaAttributes, 10);           
+//		 // Set class index
+//		 isTrainingSet.setClassIndex(6);
+//		 
+//		 Instance iExample = new Instance(4);
+//		 iExample.setValue((Attribute)fvWekaAttributes.elementAt(0), 1.0);      
+//		 iExample.setValue((Attribute)fvWekaAttributes.elementAt(1), 0.5);      
+//		 iExample.setValue((Attribute)fvWekaAttributes.elementAt(2), "gray");
+//		 iExample.setValue((Attribute)fvWekaAttributes.elementAt(3), "positive");
+//		 
+//		 // add the instance
+//		 isTrainingSet.add(iExample);
+//		
+//		Classifier cModel = (Classifier)new NaiveBayes();
+//		try {
+//			cModel.buildClassifier(isTrainingSet);
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
+//	
 
 }

@@ -27,15 +27,20 @@ public class DataInizialization extends FeedbackLoopInizialization<SUExperiment>
 		inputMatchers=exp.initialMatcher.getComponentMatchers();
 		SimilarityMatrix smClass=exp.initialMatcher.getFinalMatcher().getClassesMatrix().clone();
 		SimilarityMatrix smProperty=exp.initialMatcher.getFinalMatcher().getPropertiesMatrix().clone();
-		for(int i=0;i<smClass.getRows();i++)
-			for(int j=0;j<smClass.getColumns();j++)
-				smClass.setSimilarity(i, j, 0.5);
-		for(int i=0;i<smProperty.getRows();i++)
-			for(int j=0;j<smProperty.getColumns();j++)
-				smProperty.setSimilarity(i, j, 0.5);
-		smClass=prepareSMforNB(smClass);
-		smProperty=prepareSMforNB(smProperty);
 		
+		
+//		for(int i=0;i<smClass.getRows();i++)
+//			for(int j=0;j<smClass.getColumns();j++)
+//				smClass.setSimilarity(i, j, 0.5);
+//		for(int i=0;i<smProperty.getRows();i++)
+//			for(int j=0;j<smProperty.getColumns();j++)
+//				smProperty.setSimilarity(i, j, 0.5);
+		
+		SimilarityMatrix am=exp.initialMatcher.getFinalMatcher().getClassesMatrix();
+		smClass=prepareSMforNB(smClass, am);
+		am=exp.initialMatcher.getFinalMatcher().getPropertiesMatrix();
+		smProperty=prepareSMforNB(smProperty, am);
+		am=null;
 		exp.setUflClassMatrix(smClass);
 		exp.setUflPropertyMatrix(smProperty);
 		
@@ -55,7 +60,7 @@ public class DataInizialization extends FeedbackLoopInizialization<SUExperiment>
 		done();
 	}
 
-	private SimilarityMatrix prepareSMforNB(SimilarityMatrix sm)
+	private SimilarityMatrix prepareSMforNB(SimilarityMatrix sm, SimilarityMatrix am)
 	{
 		Mapping mp;
 		Object[] ssv;
@@ -67,6 +72,13 @@ public class DataInizialization extends FeedbackLoopInizialization<SUExperiment>
 				if (!validSsv(ssv))
 				{ 
 					sm.setSimilarity(i, j, 0.0);
+				}
+				else
+				{
+					if (am.get(i, j).getSimilarity()>0.6)
+						sm.setSimilarity(i, j, 1.0);
+					else
+						sm.setSimilarity(i, j, 0.5);
 				}
 			}
 		
