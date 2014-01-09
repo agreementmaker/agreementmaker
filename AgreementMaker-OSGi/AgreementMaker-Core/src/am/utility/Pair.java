@@ -1,7 +1,11 @@
 package am.utility;
 
-public class Pair<E,V> {
+import java.io.Serializable;
 
+public class Pair<E,V> implements Serializable{
+
+	private static final long serialVersionUID = -2069249434335717697L;
+	
 	private E left;
 	private V right;
 	
