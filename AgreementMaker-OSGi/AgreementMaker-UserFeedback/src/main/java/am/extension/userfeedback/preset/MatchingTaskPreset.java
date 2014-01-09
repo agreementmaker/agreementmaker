@@ -113,6 +113,10 @@ public class MatchingTaskPreset implements Serializable {
 	 * @return The path to the reference alignment for this matching task.
 	 */
 	public String getReference() {
+		if( reference.startsWith(AM_ROOT) ) {
+			String root = Core.getInstance().getRoot();
+			return reference.replaceFirst(AM_ROOT, root);
+		}
 		return reference;
 	}
 	

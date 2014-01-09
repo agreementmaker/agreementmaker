@@ -61,6 +61,11 @@ public class PresetStorage {
 	 * Add a matching task preset to the presets list, and save it to the disk.
 	 */
 	public static void addMatchingTaskPreset(MatchingTaskPreset p) {
+		
+		if( !isValid(p) ) {
+			LOG.error("The matching task '" + p + "' is incorrectly specified.");
+			return;
+		}
 		List<MatchingTaskPreset> loadedTaskList = loadMatchingTaskPresets();
 		
 		if( loadedTaskList == null ) loadedTaskList = new LinkedList<>();
@@ -75,6 +80,19 @@ public class PresetStorage {
 		loadedTaskList.remove(p);
 		
 		saveMatchingTaskPresets(loadedTaskList);
+	}
+	
+	/**
+	 * @param name
+	 * @return The MatchingTaskPreset with the given name. null if there is no
+	 *         MatchingTaskPreset with that name.
+	 */
+	public static MatchingTaskPreset getMatchingTaskPreset(String name) {
+		List<MatchingTaskPreset> loadedTaskList = loadMatchingTaskPresets();
+		for( MatchingTaskPreset p : loadedTaskList ) {
+			if( p.getName().equals(name) ) return p;
+		}
+		return null;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -163,6 +181,19 @@ public class PresetStorage {
 		}
 		
 		return loadedTaskList.toArray(new ExperimentPreset[0]);
+	}
+	
+	/**
+	 * @param name
+	 * @return The ExperimentPreset with the given name. null if there is no
+	 *         ExperimentPreset with that name.
+	 */
+	public static ExperimentPreset getExperimentPreset(String name) {
+		List<ExperimentPreset> loadedExperimentList = loadExperimentPresets();
+		for( ExperimentPreset e : loadedExperimentList ) {
+			if( e.getName().equals(name) ) return e;
+		}
+		return null;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -280,5 +311,55 @@ public class PresetStorage {
 		}
 		
 		return presetList;
+	}
+	
+	/**
+	 * Verify that a MatchingTaskPreset is correctly specified.
+	 * @return true if the MatchingTaskPreset is valid, false otherwise.
+	 */
+	public static boolean isValid(MatchingTaskPreset p) {
+		if( p == null ) {
+			LOG.trace("MatchingTaskPreset is null.");
+			return false;
+		}
+		
+		if( p.getName() == null || p.getName().isEmpty() ) {
+			LOG.trace("MatchingTaskPreset name is missing.");
+			return false;
+		}
+
+		if( p.getSourceOntology() == null ) {
+			LOG.trace("MatchingTaskPreset sourceOntology cannot be null");
+			return false;
+		}
+		File sourceFile = new File(p.getSourceOntology());
+		if( !sourceFile.exists() || sourceFile.isDirectory() ) {
+			LOG.trace("MatchingTaskPreset sourceOntology file not found.");
+			return false;
+		}
+		
+		if( p.getTargetOntology() == null ) {
+			LOG.trace("MatchingTaskPreset targetOntology cannot be null");
+			return false;
+		}
+		File targetFile = new File(p.getTargetOntology());
+		if( !targetFile.exists() || targetFile.isDirectory() ) {
+			LOG.trace("MatchingTaskPreset targetOntology file not found.");
+			return false;
+		}
+		
+		if( p.hasReference() ) {
+			if( p.getReference() == null ) {
+				LOG.trace("MatchingTaskPreset reference cannot be null when hasReference() is true.");
+				return false;
+			}
+			File refFile = new File(p.getReference());
+			if( !refFile.exists() || refFile.isDirectory() ) {
+				LOG.trace("MatchingTaskPreset reference file not found.");
+				return false;
+			}
+		}
+		
+		return true;
 	}
 }
