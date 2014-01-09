@@ -4,10 +4,10 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import am.app.Core;
 import am.evaluation.alignment.AlignmentMetrics;
 import am.evaluation.alignment.DeltaFromReference;
 import am.extension.userfeedback.evaluation.PropagationEvaluation;
-import am.extension.userfeedback.experiments.MLFExperiment;
 import am.extension.userfeedback.experiments.UFLExperiment;
 
 public class DeltaFromReferenceEvaluation extends PropagationEvaluation <UFLExperiment>{
@@ -18,7 +18,7 @@ public class DeltaFromReferenceEvaluation extends PropagationEvaluation <UFLExpe
 	
 	public DeltaFromReferenceEvaluation() {
 		try {
-			FileWriter fstream = new FileWriter("/home/frank/Desktop/deltaPlot.dat", true);
+			FileWriter fstream = new FileWriter(Core.getInstance().getRoot() + "/settings/tmp/deltaPlot.dat", true);
 			BufferedWriter bfr = new BufferedWriter(fstream);
 			fileWriter = bfr;
 		} catch (IOException e) {
@@ -56,13 +56,11 @@ public class DeltaFromReferenceEvaluation extends PropagationEvaluation <UFLExpe
 		done();
 	}
 	
-
-
 	@Override
 	protected void done() {
 		try {
 			fileWriter.close();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

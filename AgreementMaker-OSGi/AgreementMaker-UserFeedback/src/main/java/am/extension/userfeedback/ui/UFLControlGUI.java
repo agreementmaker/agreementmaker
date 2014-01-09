@@ -1,6 +1,5 @@
 package am.extension.userfeedback.ui;
 
-import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -25,11 +24,10 @@ import am.extension.userfeedback.UFLRegistry.UserValidationRegistry;
 import am.extension.userfeedback.experiments.UFLExperiment;
 import am.extension.userfeedback.experiments.UFLExperimentSetup;
 import am.extension.userfeedback.logic.UFLControlLogic;
-import am.ui.MatchingProgressDisplay;
 import am.ui.UI;
 import am.ui.api.impl.AMTabSupportPanel;
 
-public class UFLControlGUI extends AMTabSupportPanel implements ActionListener, MatchingProgressDisplay {
+public class UFLControlGUI extends AMTabSupportPanel implements ActionListener, UFLProgressDisplay {
 
 	private static final long serialVersionUID = -967696425990716259L;
 	
@@ -100,6 +98,7 @@ public class UFLControlGUI extends AMTabSupportPanel implements ActionListener, 
 		repaint();
 	}
 	
+	@Override
 	public void displayPanel( JPanel panel ) {
 		removeAll();
 		

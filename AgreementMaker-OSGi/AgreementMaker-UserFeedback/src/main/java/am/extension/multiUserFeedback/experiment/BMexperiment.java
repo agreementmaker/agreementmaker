@@ -11,19 +11,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-
-import am.app.Core;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
-import am.app.ontology.Ontology;
 import am.extension.multiUserFeedback.logic.BMlogic;
 import am.extension.multiUserFeedback.storage.MUFeedbackStorage;
 import am.extension.userfeedback.UserFeedback.Validation;
 import am.extension.userfeedback.experiments.UFLExperiment;
-import am.extension.userfeedback.logic.IndependentSequentialLogicMultiUser;
 import am.extension.userfeedback.logic.UFLControlLogic;
 
 public class BMexperiment extends UFLExperiment {
@@ -46,25 +41,9 @@ public String feedback;
 public List<Mapping> alreadyEvaluated=new ArrayList<Mapping>();
 public List<Mapping> conflictualClass;
 public List<Mapping> conflictualProp;
-private Alignment<Mapping> referenceAlignment;
 public int currentUser=0;
 public int usersNumber=10;
 public int realIteration=0;
-private Ontology sourceOntology;
-public void setSourceOntology(Ontology sourceOntology) {
-	this.sourceOntology = sourceOntology;
-}
-
-public void setTargetOntology(Ontology targetOntology) {
-	this.targetOntology = targetOntology;
-}
-
-
-private Ontology targetOntology;
-public void setReferenceAlignment(Alignment<Mapping> referenceAlignment) {
-	this.referenceAlignment = referenceAlignment;
-}
-
 
 public SparseMatrix agreegatedClassFeedback;
 public SparseMatrix agreegatedPropertiesFeedback;
@@ -191,16 +170,6 @@ public Alignment<Mapping> getMLAlignment() {
 public void setMLAlignment(Alignment<Mapping> mLAlignment) {
 	MLAlignment = mLAlignment;
 }
-	
-	@Override
-	public Ontology getSourceOntology() {
-		return sourceOntology;
-	}
-
-	@Override
-	public Ontology getTargetOntology() {
-		return targetOntology;
-	}
 
 	@Override
 	public boolean experimentHasCompleted() {
@@ -248,11 +217,6 @@ public void setMLAlignment(Alignment<Mapping> mLAlignment) {
 	public UFLControlLogic getControlLogic() {
 		return new BMlogic();
 		//return new IndependentSequentialLogic();
-	}
-
-	@Override
-	public Alignment<Mapping> getReferenceAlignment() {
-		return referenceAlignment;
 	}
 	
 	@Override
