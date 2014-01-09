@@ -123,6 +123,30 @@ public class AlignmentUtilities {
 	}
 	
 	/**
+	 * Helper function to read an alignment from a file.
+	 * You must pass in the ontologies. If you do not have the ontologies, consider using {@link #getMatchingPairsOAEI(String)} instead.
+	 */
+	public static Alignment<Mapping> getOAEIAlignment(String fileName, Ontology sourceOntology, Ontology targetOntology) {
+		ReferenceAlignmentMatcher m = new ReferenceAlignmentMatcher();
+		ReferenceAlignmentParameters p = new ReferenceAlignmentParameters();
+		p.fileName = fileName;
+		p.format = ReferenceAlignmentMatcher.OAEI;
+		
+		m.setParameters(p);
+		m.setSourceOntology(sourceOntology);
+		m.setTargetOntology(targetOntology);
+		
+		try {
+			m.match();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+		
+		return m.getAlignment();
+	}
+	
+	/**
 	 * Given a filename, opens the file and parses it expecting an alignment in the OAEI format
 	 * It returns the alignments in the form of List of MatchingPairs.
 	 */
