@@ -1,17 +1,25 @@
 package am.extension.userfeedback.experiments;
 
-import am.extension.userfeedback.UFLRegistry;
+import java.io.Serializable;
+
 import am.extension.userfeedback.UFLRegistry.CSEvaluationRegistry;
 import am.extension.userfeedback.UFLRegistry.CandidateSelectionRegistry;
+import am.extension.userfeedback.UFLRegistry.ExperimentRegistry;
 import am.extension.userfeedback.UFLRegistry.FeedbackPropagationRegistry;
 import am.extension.userfeedback.UFLRegistry.InitialMatcherRegistry;
 import am.extension.userfeedback.UFLRegistry.LoopInizializationRegistry;
 import am.extension.userfeedback.UFLRegistry.PropagationEvaluationRegistry;
-import am.extension.userfeedback.UFLRegistry.UserValidationRegistry;
 import am.extension.userfeedback.UFLRegistry.SaveFeedbackRegistry;
+import am.extension.userfeedback.UFLRegistry.UserValidationRegistry;
+import am.extension.userfeedback.preset.MatchingTaskPreset;
 
-public class UFLExperimentSetup {
+public class UFLExperimentSetup implements Serializable {
 
+	private static final long serialVersionUID = 2006678734079546244L;
+
+	/** The experiment class that we are using. */
+	public ExperimentRegistry				exp;
+	
 	public InitialMatcherRegistry			im;
 	public LoopInizializationRegistry		fli;
 	public CandidateSelectionRegistry		cs;
@@ -21,4 +29,8 @@ public class UFLExperimentSetup {
 	public PropagationEvaluationRegistry	pe;
 	public SaveFeedbackRegistry				sf;
 	
+	/**
+	 * Experiment-wide parameters.
+	 */
+	public UFLExperimentParameters			parameters;
 }

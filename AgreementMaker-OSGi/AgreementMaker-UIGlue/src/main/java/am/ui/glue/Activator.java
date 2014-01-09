@@ -12,6 +12,7 @@ public class Activator implements BundleActivator {
 
 	private ServiceRegistration<AMVisualizationComponent> regBatchModeMenuItem;
 	private ServiceRegistration<AMVisualizationComponent> regLODMenuItem;
+	private ServiceRegistration<AMVisualizationComponent> regUFLBMMenuItem;
 	
 	static BundleContext getContext() {
 		return context;
@@ -27,11 +28,16 @@ public class Activator implements BundleActivator {
 		regLODMenuItem =
 				bundleContext.registerService(
 						AMVisualizationComponent.class, new LODMenuItem(), null);
+		
+		regUFLBMMenuItem =
+				bundleContext.registerService(
+						AMVisualizationComponent.class, new UFLMenuItem(), null);
 	}
 
 	public void stop(BundleContext bundleContext) throws Exception {
 		regBatchModeMenuItem.unregister();
 		regLODMenuItem.unregister();
+		regUFLBMMenuItem.unregister();
 		
 		Activator.context = null;
 	}

@@ -13,7 +13,7 @@ import am.extension.userfeedback.inizialization.FeedbackLoopInizialization;
 import am.extension.userfeedback.logic.UFLControlLogic;
 import am.extension.userfeedback.propagation.FeedbackPropagation;
 import am.extension.userfeedback.selection.CandidateSelection;
-import am.extension.userfeedback.ui.UFLControlGUI;
+import am.extension.userfeedback.ui.UFLProgressDisplay;
 
 public abstract class UFLExperiment {
 
@@ -26,10 +26,12 @@ public abstract class UFLExperiment {
 	public UserFeedback										userFeedback;
 	public FeedbackPropagation< UFLExperiment>				feedbackPropagation;
 	public PropagationEvaluation< UFLExperiment>			propagationEvaluation;
-	public UFLControlGUI									gui;
+	public UFLProgressDisplay								gui;
 	public SaveFeedback< UFLExperiment>						saveFeedback;
-	
 
+	protected Ontology sourceOntology;	
+	protected Ontology targetOntology;
+	protected Alignment<Mapping> referenceAlignment = null;
 	
 	/**
 	 * These mappings were validated by the user as being CORRECT.
@@ -43,10 +45,15 @@ public abstract class UFLExperiment {
     
     private int iterationNumber = 0;
 
-
-	public abstract Ontology 			getSourceOntology();
-	public abstract Ontology 			getTargetOntology();
-	public abstract Alignment<Mapping> 	getReferenceAlignment();
+	public Ontology getSourceOntology()             { return sourceOntology; }
+	public void     setSourceOntology(Ontology ont) { this.sourceOntology = ont; }
+	public Ontology getTargetOntology()             { return targetOntology; }
+	public void     setTargetOntology(Ontology ont) { this.targetOntology = ont; }
+	
+	public Alignment<Mapping> getReferenceAlignment() { return referenceAlignment; }
+	public void setReferenceAlignment(Alignment<Mapping> ref) { this.referenceAlignment = ref; }
+	
+	
 	public abstract Alignment<Mapping>  getFinalAlignment();
 	public abstract void				info(String line);   // FIXME: Change this, or get rid of it. Or learn how to use log4j.
 	
@@ -72,7 +79,7 @@ public abstract class UFLExperiment {
 		setIterationNumber(getIterationNumber() + 1); 
 	}
 	
-	public void setGUI(UFLControlGUI gui) { this.gui = gui; }
+	public void setGUI(UFLProgressDisplay gui) { this.gui = gui; }
 	public void setIterationNumber(int iterationNumber) {
 		this.iterationNumber = iterationNumber;
 	}

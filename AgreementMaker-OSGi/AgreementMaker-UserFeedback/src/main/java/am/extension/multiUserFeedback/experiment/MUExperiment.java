@@ -45,10 +45,6 @@ public String feedback;
 public List<Mapping> alreadyEvaluated=new ArrayList<Mapping>();
 public List<Mapping> conflictualClass;
 public List<Mapping> conflictualProp;
-private Alignment<Mapping> referenceAlignment;
-public void setReferenceAlignment(Alignment<Mapping> referenceAlignment) {
-	this.referenceAlignment = referenceAlignment;
-}
 
 public HashMap<String, List<Mapping>> usersMappings=new HashMap<String, List<Mapping>>();
 public HashMap<String, Integer> usersGroup=new HashMap<String, Integer>();
@@ -167,16 +163,6 @@ public Alignment<Mapping> getMLAlignment() {
 public void setMLAlignment(Alignment<Mapping> mLAlignment) {
 	MLAlignment = mLAlignment;
 }
-	
-	@Override
-	public Ontology getSourceOntology() {
-		return Core.getInstance().getSourceOntology();
-	}
-
-	@Override
-	public Ontology getTargetOntology() {
-		return Core.getInstance().getTargetOntology();
-	}
 
 	@Override
 	public boolean experimentHasCompleted() {
@@ -211,11 +197,6 @@ public void setMLAlignment(Alignment<Mapping> mLAlignment) {
 	public UFLControlLogic getControlLogic() {
 		return new IndependentSequentialLogicMultiUser();
 		//return new IndependentSequentialLogic();
-	}
-
-	@Override
-	public Alignment<Mapping> getReferenceAlignment() {
-		return referenceAlignment;
 	}
 	
 	@Override

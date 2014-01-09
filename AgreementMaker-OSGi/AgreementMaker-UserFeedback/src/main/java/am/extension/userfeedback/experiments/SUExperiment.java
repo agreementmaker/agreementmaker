@@ -173,31 +173,6 @@ public void setMLAlignment(Alignment<Mapping> mLAlignment) {
 		
 
 	}
-	
-	
-	
-	@Override
-	public Ontology getSourceOntology() {
-		return Core.getInstance().getSourceOntology();
-	}
-
-	@Override
-	public Ontology getTargetOntology() {
-		return Core.getInstance().getTargetOntology();
-	}
-
-	@Override
-	public Alignment<Mapping> getReferenceAlignment() {
-		List<MatchingTask> tasks = Core.getInstance().getMatchingTasks();
-		for( MatchingTask m : tasks ) {
-			if( m.matchingAlgorithm instanceof ReferenceAlignmentMatcher ) {
-				// return the alignment of the first reference alignment matcher
-				return m.selectionResult.getAlignment();
-			}
-		}
-		
-		return null;
-	}
 
 	@Override
 	public boolean experimentHasCompleted() {

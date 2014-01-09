@@ -32,7 +32,10 @@
 						<Bundle-Version>${project.version}</Bundle-Version>
 						<Export-Package>${bundle.namespace}.*,am.extension.feedback.*</Export-Package>
 						<Bundle-Activator>${bundle.namespace}.Activator</Bundle-Activator>
-						<Import-Package>*</Import-Package>
+						<Import-Package>
+							!org.joda.time.*,
+							*
+						</Import-Package>
 						<Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
 						<Embed-Directory>target/dependency</Embed-Directory>
 						<Embed-StripGroup>true</Embed-StripGroup>
@@ -86,6 +89,18 @@
 			<artifactId>javaplot</artifactId>
 			<version>0.4.0</version>
 		</dependency>
+		
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-mapper-lgpl</artifactId>
+			<version>1.9.13</version>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-core-lgpl</artifactId>
+			<version>1.9.13</version>
+		</dependency>
+		
 	</dependencies>
 
 </project>
