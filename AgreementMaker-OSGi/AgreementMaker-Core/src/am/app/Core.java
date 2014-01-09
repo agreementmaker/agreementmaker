@@ -226,10 +226,16 @@ public class Core {
 	/**
 	 * @return The root directory for AgreementMaker data files. All code should
 	 *         reference this root when accessing configuration files, training
-	 *         models, etc...
+	 *         models, etc. The string is guaranteed to have a trailing file
+	 *         separator.
 	 */
 	public String getRoot() {
-		return amRoot;
+		if( amRoot.endsWith(File.separator) ) {
+			return amRoot;
+		}
+		else {
+			return amRoot + File.separator;
+		}
 	}
 
 	// deprecated by multiple-ontology interface (TODO: Finish implementing
