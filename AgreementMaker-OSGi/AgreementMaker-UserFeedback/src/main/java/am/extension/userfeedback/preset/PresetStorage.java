@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -141,6 +142,7 @@ public class PresetStorage {
 			BZip2CompressorOutputStream bzOut = new BZip2CompressorOutputStream(fileOut); // bzip the serialized object to save space
 			ObjectOutputStream out = new ObjectOutputStream(bzOut);
 			
+			Collections.sort(presets);
 			out.writeObject(presets);
 			
 			out.close();

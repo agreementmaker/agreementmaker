@@ -10,7 +10,7 @@ import am.app.Core;
  * @author <a href="http://cstroe.com">Cosmin Stroe</a>
  *
  */
-public class MatchingTaskPreset implements Serializable {
+public class MatchingTaskPreset implements Comparable<MatchingTaskPreset>, Serializable {
 
 	private static final long serialVersionUID = -8532157957978948285L;
 	
@@ -131,5 +131,10 @@ public class MatchingTaskPreset implements Serializable {
 			return ((MatchingTaskPreset) obj).getName().equals(name);
 		}
 		return false;
+	}
+
+	@Override
+	public int compareTo(MatchingTaskPreset o) {
+		return getName().compareTo(o.getName());
 	}
 }
