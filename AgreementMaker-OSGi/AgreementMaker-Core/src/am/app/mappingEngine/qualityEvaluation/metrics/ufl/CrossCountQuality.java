@@ -14,22 +14,16 @@ import static am.Utility.IntArray.getMaxValue;
  * @author Cosmin Stroe
  */
 public class CrossCountQuality extends AbstractQualityMetric {
-	
-	// weight for the Uncertain Mappings discovered in the system
-	private final double weight_um = 0.5d;
-
-	private SimilarityMatrix matrix;
-	
+		
 	private int[] rowCounts;
 	private int[] colCounts;
 	
 	private int normalizationFactor;
 	
-	public CrossCountQuality(SimilarityMatrix matrix) {
+	public CrossCountQuality(SimilarityMatrix matrix)
+	{
 		super();
-		this.matrix = matrix;
-
-		
+			
 		// row counts
 		rowCounts = new int[matrix.getColumns()];
 		for( int i = 0; i < matrix.getRows(); i++ ) {
