@@ -24,9 +24,9 @@ import am.app.mappingEngine.AbstractMatcher;
 
 public class QualityEvaluator {
 	
-	public static QualityMetric getQM( QualityMetricRegistry regEntry ) {
+	public static MappingQualityMetric getQM( QualityMetricRegistry regEntry ) {
 		try {
-			return (QualityMetric) regEntry.getQMClass().newInstance();
+			return (MappingQualityMetric) regEntry.getQMClass().newInstance();
 		} catch (InstantiationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -38,11 +38,11 @@ public class QualityEvaluator {
 		}
 	}
 
-	public static QualityEvaluationData evaluate(AbstractMatcher matcher, QualityMetric qm) throws Exception {
+	public static QualityEvaluationData evaluate(AbstractMatcher matcher, MappingQualityMetric qm) throws Exception {
 		return qm.getQuality(matcher);		
 	}
 	
-	public static QualityEvaluationData evaluate(AbstractMatcher matcher, AbstractMatcher[] matcherList, QualityMetric qm) throws Exception {
+	public static QualityEvaluationData evaluate(AbstractMatcher matcher, AbstractMatcher[] matcherList, MappingQualityMetric qm) throws Exception {
 		if(qm instanceof InterMatcherQualityEvaluation)
 		{
 			return ((InterMatcherQualityEvaluation)qm).getQuality(matcher,matcherList);
