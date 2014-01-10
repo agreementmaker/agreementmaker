@@ -75,10 +75,11 @@ public class DataInizialization extends FeedbackLoopInizialization<SUExperiment>
 				}
 				else
 				{
-					if (am.get(i, j).getSimilarity()>0.6)
-						sm.setSimilarity(i, j, 1.0);
-					else
-						sm.setSimilarity(i, j, 0.5);
+//					if (am.get(i, j).getSimilarity()>0.6)
+//						sm.setSimilarity(i, j, 1.0);
+//					else
+//						sm.setSimilarity(i, j, 0.5);
+					sm.setSimilarity(i, j, am.getSimilarity(i, j));
 				}
 			}
 		

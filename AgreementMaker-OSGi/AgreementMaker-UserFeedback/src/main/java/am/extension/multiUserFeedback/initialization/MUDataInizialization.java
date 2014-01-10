@@ -31,8 +31,10 @@ public class MUDataInizialization  extends FeedbackLoopInizialization<MUExperime
 		for(int i=0;i<smProperty.getRows();i++)
 			for(int j=0;j<smProperty.getColumns();j++)
 				smProperty.setSimilarity(i, j, 0.5);
-		smClass=prepareSMforNB(smClass);
-		smProperty=prepareSMforNB(smProperty);
+		SimilarityMatrix am=exp.initialMatcher.getFinalMatcher().getClassesMatrix();
+		smClass=prepareSMforNB(smClass, am);
+		am=exp.initialMatcher.getFinalMatcher().getPropertiesMatrix();
+		smProperty=prepareSMforNB(smProperty, am);
 		
 		exp.setUflClassMatrix(smClass);
 		exp.setUflPropertyMatrix(smProperty);
@@ -54,16 +56,36 @@ public class MUDataInizialization  extends FeedbackLoopInizialization<MUExperime
 				Core.getInstance().getSourceOntology(),
 				Core.getInstance().getTargetOntology(), 
 				alignType.aligningClasses);
-		exp.setUflStorageClass(sparseClass);
+		exp.setUflStorageClassPos(sparseClass);
+		exp.setUflStorageClass_neg(sparseClass);
 		SparseMatrix sparseProp=new SparseMatrix(
 				Core.getInstance().getSourceOntology(),
 				Core.getInstance().getTargetOntology(), 
 				alignType.aligningProperties);
-		exp.setUflStorageProperty(sparseProp);
+		exp.setUflStoragePropertyPos(sparseProp);
+		exp.setUflStorageProperty_neg(sparseProp);
 		done();
 	}
 
-	private SimilarityMatrix prepareSMforNB(SimilarityMatrix sm)
+//	private SimilarityMatrix prepareSMforNB(SimilarityMatrix sm)
+//	{
+//		Mapping mp;
+//		Object[] ssv;
+//		for(int i=0;i<sm.getRows();i++)
+//			for(int j=0;j<sm.getColumns();j++)
+//			{
+//				mp = sm.get(i, j);
+//				ssv=getSignatureVector(mp);
+//				if (!validSsv(ssv))
+//				{ 
+//					sm.setSimilarity(i, j, 0.0);
+//				}
+//			}
+//		
+//		return sm;
+//	}
+	
+	private SimilarityMatrix prepareSMforNB(SimilarityMatrix sm, SimilarityMatrix am)
 	{
 		Mapping mp;
 		Object[] ssv;
@@ -75,6 +97,10 @@ public class MUDataInizialization  extends FeedbackLoopInizialization<MUExperime
 				if (!validSsv(ssv))
 				{ 
 					sm.setSimilarity(i, j, 0.0);
+				}
+				else
+				{
+					sm.setSimilarity(i, j, am.getSimilarity(i, j));
 				}
 			}
 		
