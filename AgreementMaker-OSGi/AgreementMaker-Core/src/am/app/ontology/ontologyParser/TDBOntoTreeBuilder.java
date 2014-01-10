@@ -10,7 +10,6 @@ import java.util.Set;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.AMNode;
 import am.app.ontology.Node;
-import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntologyDefinition.OntologyLanguage;
 import am.utility.RunTimer;
 

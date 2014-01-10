@@ -14,8 +14,6 @@ import am.app.ontology.Ontology;
 import am.parsing.OutputController;
 import am.utility.BitVector;
 
-import com.hp.hpl.jena.rdf.model.Resource;
-
 /**
  * This class represents a mapping between two concepts from separate ontologies.
  */

@@ -9,7 +9,6 @@ import java.util.List;
 import javax.management.InstanceAlreadyExistsException;
 
 import org.apache.log4j.Logger;
-import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 

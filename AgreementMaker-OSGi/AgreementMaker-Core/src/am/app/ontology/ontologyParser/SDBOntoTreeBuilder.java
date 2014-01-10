@@ -15,8 +15,6 @@ import am.Utility;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.AMNode;
 import am.app.ontology.Node;
-import am.app.ontology.Ontology;
-import am.app.ontology.ontologyParser.TreeBuilder.ProgressEvent;
 import am.utility.RunTimer;
 
 import com.hp.hpl.jena.ontology.ConversionException;
