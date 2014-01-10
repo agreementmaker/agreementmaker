@@ -15,6 +15,7 @@ import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.evaluation.disagreement.variance.VarianceDisagreement;
 import am.evaluation.disagreement.variance.VarianceDisagreementParameters;
 import am.extension.multiUserFeedback.experiment.MUExperiment;
+import am.utility.parameters.AMParameter.Type;
 
 public class ServerCandidateSelection extends MUCandidateSelection<MUExperiment> {
 	
@@ -67,71 +68,71 @@ public class ServerCandidateSelection extends MUCandidateSelection<MUExperiment>
 		
 		
 		
-		if (mpCheck.contains(id))
-		{
-			mList=getWeakMapping();
-			return mList.get((int)Math.random()*mList.size());
-		}
-		else
-		{
-			 switch (experiment.usersGroup.get(id)) 
-			 {
-	            case 0:  
-	            	m=getCandidateMapping(id, allRanked);
-	            	if (m!=null) return m;
-	            case 1:  
-	            	m=getCandidateMapping(id, experiment.uncertainRanking);
-	            	if (m!=null) return m;
-	            case 2:  
-	            	m=getCandidateMapping(id, experiment.almostRanking);
-	            	if (m!=null) return m;
-	        }
-		}
+//		if (mpCheck.contains(id))
+//		{
+//			mList=getWeakMapping();
+//			return mList.get((int)Math.random()*mList.size());
+//		}
+//		else
+//		{
+//			 switch (experiment.usersGroup.get(id)) 
+//			 {
+//	            case 0:  
+//	            	m=getCandidateMapping(id, allRanked);
+//	            	if (m!=null) return m;
+//	            case 1:  
+//	            	m=getCandidateMapping(id, experiment.uncertainRanking);
+//	            	if (m!=null) return m;
+//	            case 2:  
+//	            	m=getCandidateMapping(id, experiment.almostRanking);
+//	            	if (m!=null) return m;
+//	        }
+//		}
 		return null;
 	}
 	
-	private List<Mapping> getWeakMapping()
-	{
-		List<Mapping> mList=new ArrayList<Mapping>();
-
-		
-		int count=1;
-		while (mList.size()==0)
-		{
-			mList=getValuedMapping(count);
-			count++;
-		}
-		
-		return mList;
-	}
+//	private List<Mapping> getWeakMapping()
+//	{
+//		List<Mapping> mList=new ArrayList<Mapping>();
+//
+//		
+//		int count=1;
+//		while (mList.size()==0)
+//		{
+//			mList=getValuedMapping(count);
+//			count++;
+//		}
+//		
+//		return mList;
+//	}
 	
-	private List<Mapping> getValuedMapping(int c)
-	{
-		List<Mapping> mList=new ArrayList<Mapping>();
-		SparseMatrix sparse=experiment.getUflStorageClass();
-		try {
-			for(Mapping mp : sparse.toList())
-			{
-				if (Math.abs(mp.getSimilarity())==c)
-					mList.add(mp);
-			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		sparse=experiment.getUflStorageProperty();
-		try {
-			for(Mapping mp : sparse.toList())
-			{
-				if (Math.abs(mp.getSimilarity())==c)
-					mList.add(mp);
-			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return mList;
-	}
+//	private List<Mapping> getValuedMapping(int c)
+//	{
+//		List<Mapping> mList=new ArrayList<Mapping>();
+//		SparseMatrix sparse=experiment.getUflStorageClass();
+//		try {
+//			for(Mapping mp : sparse.toList())
+//			{
+//				if (Math.abs(mp.getSimilarity())==c)
+//					mList.add(mp);
+//			}
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		sparse=experiment.getUflStorageProperty();
+//		try {
+//			for(Mapping mp : sparse.toList())
+//			{
+//				if (Math.abs(mp.getSimilarity())==c)
+//					mList.add(mp);
+//			}
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		return mList;
+//	}
 	
 	private Mapping getCandidateMappingDisagreementBegining(String id) 
 	{
@@ -179,6 +180,43 @@ public class ServerCandidateSelection extends MUCandidateSelection<MUExperiment>
 		propertiesMatrix=experiment.getUflPropertyMatrix();
 	}
 	
+	private SimilarityMatrix userDisagrement(alignType atp)
+	{
+		double sim=0;
+		int numPos=0;
+		int numNeg=0;
+		SimilarityMatrix ud=experiment.getUflClassMatrix();
+		SparseMatrix sparsePos=experiment.getUflStorageClassPos();
+		SparseMatrix sparseNeg=experiment.getUflStorageClass_neg();
+		if (atp.equals(alignType.aligningProperties))
+		{
+			ud=experiment.getUflPropertyMatrix();
+			sparsePos=experiment.getUflStoragePropertyPos();
+			sparseNeg=experiment.getUflStorageProperty_neg();
+		}
+		for (int i=0;i<ud.getRows();i++)
+		{
+			for(int j=0;j<ud.getColumns();j++)
+			{
+				numPos=(int)sparsePos.getSimilarity(i, j);
+				numNeg=(int)sparseNeg.getSimilarity(i, j);
+				sim=0-5-(Math.abs(numPos-numNeg)*(0.5/(Math.min(numPos, numNeg)+1)));
+				ud.setSimilarity(i, j, sim);
+			}
+		}
+		return ud;
+	}
+	
+	private SimilarityMatrix mergeSM(SimilarityMatrix sm1, SimilarityMatrix sm2)
+	{
+		SimilarityMatrix merged=sm1;
+		for(int i=0; i<merged.getRows();i++)
+			for(int j=0;j<merged.getColumns();j++)
+				merged.setSimilarity(i, j, (sm1.getSimilarity(i, j)+sm2.getSimilarity(i, j))/2);
+		
+		return merged;
+	}
+	
 	
 	private void disagreementRanking()
 	{
@@ -196,8 +234,8 @@ public class ServerCandidateSelection extends MUCandidateSelection<MUExperiment>
 		
 		// run the disagreement calculations
 		SimilarityMatrix classDisagreement = disagreementMetric.getDisagreementMatrix(alignType.aligningClasses);
-		
-
+		SimilarityMatrix classDisagreementUsers=userDisagrement(alignType.aligningClasses);
+		classDisagreement=mergeSM(classDisagreement,classDisagreementUsers);
 		try {
 			rankedClassMappings = classDisagreement.toList();
 			Collections.sort(rankedClassMappings, new MappingSimilarityComparator() );
@@ -208,8 +246,8 @@ public class ServerCandidateSelection extends MUCandidateSelection<MUExperiment>
 		classDisagreement = null;  // release the memory used by this
 		
 		SimilarityMatrix propertyDisagreement = disagreementMetric.getDisagreementMatrix(alignType.aligningProperties);
-		
-		
+		SimilarityMatrix propertyDisagreementUsers=userDisagrement(alignType.aligningProperties);
+		propertyDisagreement=mergeSM(propertyDisagreement, propertyDisagreementUsers);
 		try {
 			rankedPropertyMappings = propertyDisagreement.toList();
 			Collections.sort(rankedPropertyMappings, new MappingSimilarityComparator() );

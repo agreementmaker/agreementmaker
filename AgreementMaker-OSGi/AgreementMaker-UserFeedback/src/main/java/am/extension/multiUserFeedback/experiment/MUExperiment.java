@@ -35,8 +35,10 @@ private Object[][] trainingSet_classes;
 private Object[][] trainingSet_property;
 private SimilarityMatrix uflClassMatrix;
 private SimilarityMatrix uflPropertyMatrix;
-private SparseMatrix uflStorageClass;
-private SparseMatrix uflStorageProperty;
+private SparseMatrix uflStorageClass_pos;
+private SparseMatrix uflStorageClass_neg;
+private SparseMatrix uflStorageProperty_pos;
+private SparseMatrix uflStorageProperty_neg;
 public List<Mapping> disRanked;
 public List<Mapping> uncertainRanking;
 public List<Mapping> almostRanking;
@@ -85,6 +87,21 @@ public SparseMatrix getClassesSparseMatrix() {
 	return classesSparseMatrix;
 }
 
+public SparseMatrix getUflStorageClass_neg() {
+	return uflStorageClass_neg;
+}
+
+public void setUflStorageClass_neg(SparseMatrix uflStorageClass_neg) {
+	this.uflStorageClass_neg = uflStorageClass_neg;
+}
+
+public SparseMatrix getUflStorageProperty_neg() {
+	return uflStorageProperty_neg;
+}
+
+public void setUflStorageProperty_neg(SparseMatrix uflStorageProperty_neg) {
+	this.uflStorageProperty_neg = uflStorageProperty_neg;
+}
 
 public void setClassesSparseMatrix(SparseMatrix classesSparseMatrix) {
 	this.classesSparseMatrix = classesSparseMatrix;
@@ -95,20 +112,20 @@ public SparseMatrix getPropertiesSparseMatrix() {
 	return propertiesSparseMatrix;
 }
 
-public SparseMatrix getUflStorageClass() {
-	return uflStorageClass;
+public SparseMatrix getUflStorageClassPos() {
+	return uflStorageClass_pos;
 }
 
-public void setUflStorageClass(SparseMatrix uflStorageClass) {
-	this.uflStorageClass = uflStorageClass;
+public void setUflStorageClassPos(SparseMatrix uflStorageClass) {
+	this.uflStorageClass_pos = uflStorageClass;
 }
 
-public SparseMatrix getUflStorageProperty() {
-	return uflStorageProperty;
+public SparseMatrix getUflStoragePropertyPos() {
+	return uflStorageProperty_pos;
 }
 
-public void setUflStorageProperty(SparseMatrix uflStorageProperty) {
-	this.uflStorageProperty = uflStorageProperty;
+public void setUflStoragePropertyPos(SparseMatrix uflStorageProperty) {
+	this.uflStorageProperty_pos = uflStorageProperty;
 }
 
 

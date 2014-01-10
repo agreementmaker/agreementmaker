@@ -18,31 +18,51 @@ public class ServerFeedbackStorage extends MUFeedbackStorage<MUExperiment>{
 			String id) {
 		this.experiment=exp;
 		// TODO Auto-generated method stub
-		SparseMatrix sparse;//=exp.getUflStorageClass();
+		SparseMatrix sparse=exp.getUflStorageClassPos();
 		int row=candidateMapping.getSourceKey();
 		int col=candidateMapping.getTargetKey();
 		double sim=0.0;
 		if(candidateMapping.getAlignmentType()==alignType.aligningClasses)
 		{
-			sparse=exp.getUflStorageClass();
-			sim=sparse.getSimilarity(row, col);
+			
 			if (exp.feedback.equals("CORRECT"))
+			{
+				sparse=exp.getUflStorageClassPos();
+				sim=sparse.getSimilarity(row, col);
 				sim++;
+				sparse.setSimilarity(row, col, sim);
+				exp.setUflStorageClassPos(sparse);
+			}
 			if (exp.feedback.equals("UNCORRECT"))
-				sim--;
-			sparse.setSimilarity(row, col, sim);
-			exp.setUflStorageClass(sparse);
+			{
+				sparse=exp.getUflStorageClass_neg();
+				sim=sparse.getSimilarity(row, col);
+				sim++;
+				sparse.setSimilarity(row, col, sim);
+				exp.setUflStorageClass_neg(sparse);
+			}
+			
 		}
 		else if(candidateMapping.getAlignmentType()==alignType.aligningProperties)
 		{
-			sparse=exp.getUflStorageProperty();
-			sim=sparse.getSimilarity(row, col);
+			
 			if (exp.feedback.equals("CORRECT"))
+			{
+				sparse=exp.getUflStoragePropertyPos();
+				sim=sparse.getSimilarity(row, col);
 				sim++;
+				sparse.setSimilarity(row, col, sim);
+				exp.setUflStoragePropertyPos(sparse);
+			}
 			if (exp.feedback.equals("UNCORRECT"))
-				sim--;
-			sparse.setSimilarity(row, col, sim);
-			exp.setUflStorageProperty(sparse);
+			{
+				sparse=exp.getUflStorageProperty_neg();
+				sim=sparse.getSimilarity(row, col);
+				sim++;
+				sparse.setSimilarity(row, col, sim);
+				exp.setUflStorageProperty_neg(sparse);
+			}
+			
 		}
 		
 		getTrainingSet();
@@ -52,37 +72,35 @@ public class ServerFeedbackStorage extends MUFeedbackStorage<MUExperiment>{
 
 	@Override
 	public void getTrainingSet() {
+		double sum=0;
 		List<Object[]> class_trn=new ArrayList<Object[]>();
 		List<Object[]> prop_trn=new ArrayList<Object[]>();
-		SparseMatrix sparse=experiment.getUflStorageClass();
-		try {
-			for(Mapping mp : sparse.toList())
+		SparseMatrix sparsePos=experiment.getUflStorageClassPos();
+		SparseMatrix sparseNeg=experiment.getUflStorageClass_neg();
+		for(int i=0;i<sparsePos.getRows();i++)
+		{
+			for(int j=0;j<sparsePos.getColumns();j++)
 			{
-				if (mp.getSimilarity()!=0.0)
-				{
-					class_trn.add(getLabeledMapping(mp,mp.getSimilarity()));
-				}
+				sum=sparsePos.getSimilarity(i, j)-sparseNeg.getSimilarity(i, j);
+				if (sum!=0)
+					class_trn.add(getLabeledMapping(sparsePos.get(i, j),sum));
 			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
+
 		Object[][] cl_training=new Object[class_trn.size()][experiment.initialMatcher.getComponentMatchers().size()+1];
 		class_trn.toArray(cl_training);
 		experiment.setTrainingSet_classes(cl_training);
 		
-		sparse=experiment.getUflStorageProperty();
-		try {
-			for(Mapping mp : sparse.toList())
+		sparsePos=experiment.getUflStoragePropertyPos();
+		sparseNeg=experiment.getUflStorageProperty_neg();
+		for(int i=0;i<sparsePos.getRows();i++)
+		{
+			for(int j=0;j<sparsePos.getColumns();j++)
 			{
-				if (mp.getSimilarity()!=0.0)
-				{
-					prop_trn.add(getLabeledMapping(mp,mp.getSimilarity()));
-				}
+				sum=sparsePos.getSimilarity(i, j)-sparseNeg.getSimilarity(i, j);
+				if (sum!=0)
+					class_trn.add(getLabeledMapping(sparsePos.get(i, j),sum));
 			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 		
 		Object[][] pr_training=new Object[prop_trn.size()][experiment.initialMatcher.getComponentMatchers().size()+1];
