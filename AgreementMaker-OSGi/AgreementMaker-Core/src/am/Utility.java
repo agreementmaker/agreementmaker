@@ -604,4 +604,14 @@ public class Utility {
 		reader.close();
 		return fileData.toString();
 	}
+	
+	public static class IntArray {
+		public static int getMaxValue(int[] array) {
+			int value = Integer.MIN_VALUE;
+			for( int i : array) {
+				if( value < i ) value = i;
+			}
+			return value;
+		}
+	}
 }
