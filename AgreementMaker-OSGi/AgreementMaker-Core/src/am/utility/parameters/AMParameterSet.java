@@ -1,14 +1,17 @@
 package am.utility.parameters;
 
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import am.app.mappingEngine.Mapping;
 import am.utility.parameters.AMParameter.Type;
 
 /**
  * Part of the generic parameters framework.
  * 
- * This class manages a set of AMParameters.
+ * This class manages a collection of AMParameters.
  * 
  * @author Cosmin Stroe
  *
@@ -21,7 +24,7 @@ public class AMParameterSet extends HashMap<String,AMParameter> {
 		super();
 	}
 	
-	public AMParameterSet( List<AMParameter> paramList ) {
+	public AMParameterSet( Collection<AMParameter> paramList ) {
 		super();
 		
 		for( AMParameter p : paramList ) {
@@ -31,6 +34,12 @@ public class AMParameterSet extends HashMap<String,AMParameter> {
 	
 	public void put( AMParameter p ) {
 		put( p.getKey() , p );
+	}
+	
+	public void putAll( AMParameterSet ps ) {
+		for( Map.Entry<String, AMParameter> entry : ps.entrySet() ) {
+			put(entry.getKey(), entry.getValue());
+		}
 	}
 	
 	public int 	   getInt( String key ) throws Exception { return get(key).getInt(); }
