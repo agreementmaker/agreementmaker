@@ -10,6 +10,7 @@ import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MappingSimilarityComparator;
+import am.app.mappingEngine.qualityEvaluation.metrics.ufl.CrossCountQuality;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.evaluation.disagreement.variance.VarianceDisagreement;
@@ -413,24 +414,26 @@ public class ServerCandidateSelection extends MUCandidateSelection<MUExperiment>
 		double maxValue=0.0;
 		int row=sm.getRows();
 		int col=sm.getColumns();
-		double weight=0;
+		CrossCountQuality qm = new CrossCountQuality(sm);
 		for(int i=0;i<row;i++)
 		{
 			for(int j=0;j<col;j++)
 			{
-				weight=0.0;
 				if (sm.getSimilarity(i, j)!=0.0)
 				{
-					weight+=weight_um*(numOfMapping(sm.getColMaxValues(j, row)));
-					weight+=weight_um*(numOfMapping(sm.getRowMaxValues(i, col)));
+					double weight = qm.getQuality(null, i, j);
+					
 					m=sm.get(i, j);
 					m.setSimilarity(weight);
 					mpng.add(m);
+					
+					// keep track of the max value in order to normalize (below)
+					if(weight > maxValue) maxValue = weight;
 				}
-				if (weight>maxValue)
-					maxValue=weight;
 			}
 		}
+		
+		// normalize values.
 		for(Mapping map :mpng)
 		{
 			map.setSimilarity(map.getSimilarity()/maxValue);

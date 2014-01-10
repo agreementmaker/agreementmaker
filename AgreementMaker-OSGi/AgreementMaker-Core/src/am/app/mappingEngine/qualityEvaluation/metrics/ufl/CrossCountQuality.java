@@ -4,6 +4,7 @@ import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.qualityEvaluation.AbstractQualityMetric;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
+import static am.Utility.IntArray.getMaxValue;
 
 /**
  * A mapping quality metric that counts how many non-zero values are in the row
@@ -19,9 +20,29 @@ public class CrossCountQuality extends AbstractQualityMetric {
 
 	private SimilarityMatrix matrix;
 	
+	private int[] rowCounts;
+	private int[] colCounts;
+	
+	private int normalizationFactor;
+	
 	public CrossCountQuality(SimilarityMatrix matrix) {
 		super();
 		this.matrix = matrix;
+
+		
+		// row counts
+		rowCounts = new int[matrix.getColumns()];
+		for( int i = 0; i < matrix.getRows(); i++ ) {
+			rowCounts[i] = countNonzeroMappings(matrix.getRowMaxValues(i, matrix.getColumns()));
+		}
+		
+		// column counts
+		colCounts = new int[matrix.getRows()];
+		for( int j = 0; j < matrix.getColumns(); j++ ) {
+			colCounts[j] = countNonzeroMappings(matrix.getColMaxValues(j, matrix.getRows()));
+		}
+		
+		normalizationFactor = getMaxValue(rowCounts) + getMaxValue(colCounts);
 	}
 	
 	/**
@@ -31,12 +52,7 @@ public class CrossCountQuality extends AbstractQualityMetric {
 	@Override
 	public double getQuality(alignType type, int i, int j) 
 	{		
-		double weight = 0.0d;
-		
-		weight += weight_um * countNonzeroMappings( matrix.getColMaxValues(j, matrix.getRows()) );
-		weight += weight_um * countNonzeroMappings( matrix.getRowMaxValues(i, matrix.getColumns()) );
-		
-		return weight;
+		return (rowCounts[i] + colCounts[j]) / (double)normalizationFactor;
 	}
 
 	private int countNonzeroMappings(Mapping[] map) 
