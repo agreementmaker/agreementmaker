@@ -8,20 +8,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MappingSimilarityComparator;
+import am.app.mappingEngine.qualityEvaluation.metrics.ufl.CrossCountQuality;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.evaluation.disagreement.variance.VarianceDisagreement;
 import am.evaluation.disagreement.variance.VarianceDisagreementParameters;
-import am.extension.userfeedback.experiments.MLFExperiment;
 import am.extension.userfeedback.experiments.SUExperiment;
-import am.extension.userfeedback.experiments.MLFExperiment.alignCardinality;
 import am.extension.userfeedback.selection.CandidateSelection;
 
 public class MaxInformationRanking extends CandidateSelection<SUExperiment> {
@@ -275,6 +273,7 @@ public class MaxInformationRanking extends CandidateSelection<SUExperiment> {
 		int row=sm.getRows();
 		int col=sm.getColumns();
 		double weight=0;
+		CrossCountQuality qm = new CrossCountQuality(sm);
 		for(int i=0;i<row;i++)
 		{
 			for(int j=0;j<col;j++)
@@ -301,12 +300,8 @@ public class MaxInformationRanking extends CandidateSelection<SUExperiment> {
 				}
 				else
 				{
-					//if (sm.getSimilarity(i, j)!=0.0)
-					//	continue;
-					weight+=weight_um*(numOfMapping(sm.getColMaxValues(j, row)))*1.5;
-					weight+=weight_um*(numOfMapping(sm.getRowMaxValues(i, col)));
 					m=sm.get(i, j);
-					m.setSimilarity(weight);
+					m.setSimilarity( qm.getQuality(null, i, j) );
 					mpng.add(m);
 				}
 			}

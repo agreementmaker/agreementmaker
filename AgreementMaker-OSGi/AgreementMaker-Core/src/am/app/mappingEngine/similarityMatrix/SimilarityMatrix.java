@@ -33,6 +33,20 @@ public interface SimilarityMatrix {
 	
 	public abstract alignType getAlignType();
 
+	/**
+	 * @param i
+	 *            The index of the row to be retrieved.
+	 * @return the i-th row of the matrix as an array.
+	 *//*
+	public Mapping[] getRow(int i);
+	
+	*//**
+	 * @param j
+	 *            The index of the column to be retrieved.
+	 * @return the j-th column of the matrix as an array.
+	 *//*
+	public Mapping[] getCol(int j);*/
+	
 	public Mapping[] getColMaxValues(int col, int numMaxValues);
 
 	public Mapping[] getRowMaxValues(int i, int numMaxValues);

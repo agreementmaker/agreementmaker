@@ -48,5 +48,11 @@ public class AMParameterSet extends HashMap<String,AMParameter> {
 	public boolean getBit( String key ) throws Exception { return get(key).getBit(); }
 	public Type getType( String key ) throws Exception { return get(key).getType(); }
 	
+/*	TODO: Make this work? - Cosmin.
+  
+    public <T> T getObject(T value) {
+		return (T) null;
+	}
+*/
 	
 }
