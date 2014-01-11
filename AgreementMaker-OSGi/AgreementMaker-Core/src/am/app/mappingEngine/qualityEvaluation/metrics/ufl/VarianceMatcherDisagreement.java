@@ -9,7 +9,9 @@ import static am.evaluation.disagreement.variance.VarianceComputation.computeVar
 
 /**
  * Compute the disagreement between matching algorithms given their individual
- * similarity matrices.
+ * similarity matrices. The constructor takes only one kind of matrix, either
+ * the classes matrices or the properties matrices. You must instantiate a
+ * separate object for each type of matrices.
  * 
  * @author <a href="http://cstroe.com">Cosmin Stroe</a>
  * 
