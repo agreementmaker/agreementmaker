@@ -722,8 +722,8 @@ public class SUFeedbcackPropagation extends FeedbackPropagation<SUExperiment> {
 					}
 				}
 				avgDistance=avgDistance/count;
-				System.out.println(mp.toString());
-				System.out.println("AVG DISTANCE: "+avgDistance);
+//				System.out.println(mp.toString());
+//				System.out.println("AVG DISTANCE: "+avgDistance);
 				if ((minDistance<avgDistance))
 				{
 					sim=Math.log(2-minDistance) / Math.log(2);
