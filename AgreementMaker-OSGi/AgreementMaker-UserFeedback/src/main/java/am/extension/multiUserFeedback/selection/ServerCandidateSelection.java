@@ -57,8 +57,8 @@ public class ServerCandidateSelection extends MUCandidateSelection<MUExperiment>
 
 	@Override
 	public Mapping getCandidateMapping(String id) {
-		Mapping m;
-		List<Mapping> mList=new ArrayList<Mapping>();
+//		Mapping m;
+//		List<Mapping> mList=new ArrayList<Mapping>();
 		int users=experiment.usersGroup.size();
 		
 		HashSet<Integer> mpCheck=new HashSet<Integer>();
@@ -68,88 +68,9 @@ public class ServerCandidateSelection extends MUCandidateSelection<MUExperiment>
 		
 		
 		
-//		if (mpCheck.contains(id))
-//		{
-//			mList=getWeakMapping();
-//			return mList.get((int)Math.random()*mList.size());
-//		}
-//		else
-//		{
-//			 switch (experiment.usersGroup.get(id)) 
-//			 {
-//	            case 0:  
-//	            	m=getCandidateMapping(id, allRanked);
-//	            	if (m!=null) return m;
-//	            case 1:  
-//	            	m=getCandidateMapping(id, experiment.uncertainRanking);
-//	            	if (m!=null) return m;
-//	            case 2:  
-//	            	m=getCandidateMapping(id, experiment.almostRanking);
-//	            	if (m!=null) return m;
-//	        }
-//		}
 		return null;
 	}
 	
-//	private List<Mapping> getWeakMapping()
-//	{
-//		List<Mapping> mList=new ArrayList<Mapping>();
-//
-//		
-//		int count=1;
-//		while (mList.size()==0)
-//		{
-//			mList=getValuedMapping(count);
-//			count++;
-//		}
-//		
-//		return mList;
-//	}
-	
-//	private List<Mapping> getValuedMapping(int c)
-//	{
-//		List<Mapping> mList=new ArrayList<Mapping>();
-//		SparseMatrix sparse=experiment.getUflStorageClass();
-//		try {
-//			for(Mapping mp : sparse.toList())
-//			{
-//				if (Math.abs(mp.getSimilarity())==c)
-//					mList.add(mp);
-//			}
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		sparse=experiment.getUflStorageProperty();
-//		try {
-//			for(Mapping mp : sparse.toList())
-//			{
-//				if (Math.abs(mp.getSimilarity())==c)
-//					mList.add(mp);
-//			}
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		return mList;
-//	}
-	
-	private Mapping getCandidateMappingDisagreementBegining(String id) 
-	{
-		Mapping m=null;
-		for( int i = 0; i < allRanked.size(); i++ ){
-			if((experiment.usersMappings.get(id).isEmpty()) || (!experiment.usersMappings.get(id).contains(allRanked.get(i))))
-			{
-				m= allRanked.get(i);
-				experiment.usersMappings.get(id).add(m);
-				if(!experiment.alreadyEvaluated.contains(m))
-					experiment.alreadyEvaluated.add(m);
-				return m;
-			}			
-		}
-		
-		return null;
-	}
 	
 	private Mapping getCandidateMapping(String id, List<Mapping> lst) 
 	{
@@ -217,7 +138,7 @@ public class ServerCandidateSelection extends MUCandidateSelection<MUExperiment>
 		return merged;
 	}
 	
-	
+	//Automatic Matcher Disagreement
 	private void disagreementRanking()
 	{
 		List<AbstractMatcher> matchers = experiment.initialMatcher.getComponentMatchers();
