@@ -38,8 +38,8 @@ public class VarianceMatcherDisagreement extends AbstractQualityMetric {
 		}
 		
 		// return the computed variance
-		// because variance of similarity values can be a maximum of 0.5, we
-		// multiply by 2 to get a metric from 0 to 1.0
-		return 2 * computeVariance(signatureVector);
+		// because variance of similarity values can be a maximum of 0.25, we
+		// multiply by 4 to get a metric from 0 to 1.0
+		return 4 * computeVariance(signatureVector);
 	}
 }

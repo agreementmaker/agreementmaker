@@ -3,6 +3,7 @@ package am.app.mappingEngine.qualityEvaluation.metrics.ufl;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.qualityEvaluation.AbstractQualityMetric;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
+import static am.evaluation.disagreement.variance.VarianceComputation.computeVariance;
 
 /**
  * A mapping quality metric that counts how many non-zero values are in the row
@@ -14,26 +15,17 @@ import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 
 public class UserDisagrement extends AbstractQualityMetric {
 		
-	SparseMatrix metricResults;
+	/** The matrix of positive user validations */
+	private SparseMatrix positiveMatrix;
+	
+	/** The matrix of negative user validations */
+	private SparseMatrix negativeMatrix;
 	
 	public UserDisagrement(SparseMatrix matrixPos, SparseMatrix matrixNeg)
 	{
-		metricResults=new SparseMatrix(matrixPos);
-		double sim=0;
-		int numPos=0;
-		int numNeg=0;
-		int row=matrixPos.getRows();
-		int col=matrixPos.getColumns();
-		for (int i=0;i<row;i++)
-		{
-			for(int j=0;j<col;j++)
-			{
-				numPos=(int)matrixPos.getSimilarity(i, j);
-				numNeg=(int)matrixNeg.getSimilarity(i, j);
-				sim=0-5-(Math.abs(numPos-numNeg)*(0.5/(Math.min(numPos, numNeg)+1)));
-				metricResults.setSimilarity(i, j, sim);
-			}
-		}
+		super();
+		this.positiveMatrix = matrixPos;
+		this.negativeMatrix = matrixNeg;
 	}
 	
 	/**
@@ -43,6 +35,22 @@ public class UserDisagrement extends AbstractQualityMetric {
 	@Override
 	public double getQuality(alignType type, int i, int j) 
 	{		
-		return metricResults.getSimilarity(i, j);
+		int numPos = (int)positiveMatrix.getSimilarity(i, j);
+		int numNeg = (int)negativeMatrix.getSimilarity(i, j);
+		
+		int numValidations = numPos + numNeg;
+		
+		// create the validation vector
+		double[] validationVector = new double[numValidations];
+		for( int k = 0; k < numValidations; k++ ) {
+			if( k < numPos ) 
+				validationVector[k] = 1.0d;
+			else
+				validationVector[k] = 0.0d;
+		}
+		
+		// The variance ranges from 0 to 0.25 because our maximum values range from 0 to 1.
+		// We must multiply the variance by 4 to make the quality to be from 0 to 1.0.
+		return 4 * computeVariance(validationVector);
 	}
 }
