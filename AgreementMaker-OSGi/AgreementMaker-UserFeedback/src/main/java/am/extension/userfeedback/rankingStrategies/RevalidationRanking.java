@@ -10,6 +10,7 @@ import am.app.mappingEngine.qualityEvaluation.metrics.ufl.CrossCountQuality;
 import am.app.mappingEngine.qualityEvaluation.metrics.ufl.RevalidationRate;
 import am.app.mappingEngine.qualityEvaluation.metrics.ufl.SimilarityScoreHardness;
 import am.app.mappingEngine.qualityEvaluation.metrics.ufl.UserDisagrement;
+import am.app.mappingEngine.qualityEvaluation.metrics.ufl.VarianceMatcherDisagreement;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 
@@ -17,6 +18,7 @@ public class RevalidationRanking implements StrategyInterface{
 
 	private List<SimilarityMatrix> classMatrices=new ArrayList<SimilarityMatrix>();
 	private List<SimilarityMatrix> propMatrices=new ArrayList<SimilarityMatrix>();
+	private List<Mapping> toRank=new ArrayList<Mapping>();
 	private SparseMatrix classPos;
 	private SparseMatrix classNeg;
 	private SparseMatrix propPos;
@@ -30,7 +32,7 @@ public class RevalidationRanking implements StrategyInterface{
 	private double zeta=1.0;
 	
 	
-	public RevalidationRanking(List<SimilarityMatrix> clMatrix, List<SimilarityMatrix> prMatrix, SparseMatrix cp, SparseMatrix cn, SparseMatrix pp,SparseMatrix pn, SimilarityMatrix uClass, SimilarityMatrix uProp)
+	public RevalidationRanking(List<SimilarityMatrix> clMatrix, List<SimilarityMatrix> prMatrix, SparseMatrix cp, SparseMatrix cn, SparseMatrix pp,SparseMatrix pn, SimilarityMatrix uClass, SimilarityMatrix uProp, List<Mapping> torank)
 	{
 		this.classMatrices=clMatrix;
 		this.propMatrices=prMatrix;
@@ -40,6 +42,7 @@ public class RevalidationRanking implements StrategyInterface{
 		this.propNeg=pn;
 		this.uflClass=uClass;
 		this.uflProp=uProp;
+		this.toRank=torank;
 	}
 	
 	@Override
@@ -63,14 +66,20 @@ public class RevalidationRanking implements StrategyInterface{
 		CrossCountQuality ccq=new CrossCountQuality(mtrx);
 		SimilarityScoreHardness ssh=new SimilarityScoreHardness(mtrx);
 		RevalidationRate rr=new RevalidationRate(mPos, mNeg);
+		VarianceMatcherDisagreement vmd=new VarianceMatcherDisagreement(lMtrx);
 		for (int i=0;i<mPos.getRows();i++)
 		{
 			for (int j=0;j<mPos.getColumns();j++)
 			{
-				mp=mPos.get(i, j);
-				sim=alpha*ud.getQuality(null, i, j)+beta*ccq.getQuality(null, i, j)+gamma*(1-ssh.getQuality(null, i, j))+tetha*rr.getQuality(null, i, j);//+beta*(1-ssh.getQuality(null, i, j));
-				mp.setSimilarity(sim);
-				lst.add(mp);
+				if (toRank.contains(mp))
+				{
+					mp=mPos.get(i, j);
+					sim=alpha*ud.getQuality(null, i, j)+beta*ccq.getQuality(null, i, j)+gamma*(1-ssh.getQuality(null, i, j))+tetha*rr.getQuality(null, i, j)+zeta*vmd.getQuality(null, i, j);;
+					mp.setSimilarity(sim);
+					lst.add(mp);
+				}
+				else
+					continue;
 			}
 		}
 		return lst;

@@ -19,7 +19,8 @@ public class UFLExperimentParameters extends Properties {
 		VALIDATION_OVERLAP,
 		NUM_ITERATIONS,  // how many iterations are we doing
 		ERROR_RATE,
-		NUM_USERS;
+		NUM_USERS,
+		REVALIDATION_RATE;
 	}
 	
 	public void setParameter(Parameter p, String value) {

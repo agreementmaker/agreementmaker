@@ -85,6 +85,7 @@ public class UFLRegistry {
 	}
 	
 	public enum UserValidationRegistry {
+		FakeClient (am.extension.multiUserFeedback.validation.BMAutomaticValidation.class),
 		ClientFeedbackValidation (am.extension.multiUserFeedback.validation.ClientFeedbackValidation.class),
 		AutomaticReference ( am.extension.userfeedback.common.AutomaticUserValidation.class ),
 		Manual ( am.extension.userfeedback.common.ManualUserValidation.class );

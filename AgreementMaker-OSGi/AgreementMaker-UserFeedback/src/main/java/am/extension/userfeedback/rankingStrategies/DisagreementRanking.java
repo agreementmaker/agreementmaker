@@ -7,6 +7,7 @@ import java.util.List;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MappingSimilarityComparator;
 import am.app.mappingEngine.qualityEvaluation.metrics.ufl.UserDisagrement;
+import am.app.mappingEngine.qualityEvaluation.metrics.ufl.VarianceMatcherDisagreement;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 
@@ -50,12 +51,13 @@ public class DisagreementRanking implements StrategyInterface{
 		double sim=0;
 		List<Mapping> lst=new ArrayList<Mapping>();
 		UserDisagrement ud=new UserDisagrement(mPos, mNeg);
+		VarianceMatcherDisagreement vmd=new VarianceMatcherDisagreement(lMtrx);
 		for (int i=0;i<mPos.getRows();i++)
 		{
 			for (int j=0;j<mPos.getColumns();j++)
 			{
 				mp=mPos.get(i, j);
-				sim=alpha*ud.getQuality(null, i, j);//+beta*(1-ssh.getQuality(null, i, j));
+				sim=alpha*ud.getQuality(null, i, j)+beta*vmd.getQuality(null, i, j);
 				mp.setSimilarity(sim);
 				lst.add(mp);
 			}
