@@ -1,37 +1,37 @@
 package am.evaluation.disagreement.variance;
 
+import static am.evaluation.disagreement.variance.VarianceComputation.computeVariance;
+
 import java.util.Comparator;
 import java.util.List;
-import java.util.Vector;
 
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping;
 
 public class VarianceDisagreementComparator implements Comparator<Mapping> {
 
-	private final List<AbstractMatcher> matchersToConsider;
+	private final AbstractMatcher[] matchersToConsider;
 	
 	public VarianceDisagreementComparator(List<AbstractMatcher> matchers) {
-		this.matchersToConsider = matchers;
+		this.matchersToConsider = matchers.toArray(new AbstractMatcher[0]);
 	}
-	
 	
 	@Override
 	public int compare(Mapping o1, Mapping o2) {
 		
-		Vector<Double> o1SimilarityValues = new Vector<Double>();
-		for( int k = 0; k < matchersToConsider.size(); k++ ) {
-			o1SimilarityValues.add(matchersToConsider.get(k).getClassesMatrix().getSimilarity(o1.getSourceKey(), o1.getTargetKey()));
+		double[] o1SimilarityValues = new double[matchersToConsider.length];
+		for( int k = 0; k < matchersToConsider.length; k++ ) {
+			o1SimilarityValues[k] = matchersToConsider[k].getClassesMatrix().getSimilarity(o1.getSourceKey(), o1.getTargetKey());
 		}
 		
-		double o1Disagreement = VarianceDisagreement.computeVariance(o1SimilarityValues);
+		double o1Disagreement = computeVariance(o1SimilarityValues);
 		
-		Vector<Double> o2SimilarityValues = new Vector<Double>();
-		for( int k = 0; k < matchersToConsider.size(); k++ ) {
-			o2SimilarityValues.add(matchersToConsider.get(k).getClassesMatrix().getSimilarity(o2.getSourceKey(), o2.getTargetKey()));
+		double[] o2SimilarityValues = new double[matchersToConsider.length];
+		for( int k = 0; k < matchersToConsider.length; k++ ) {
+			o2SimilarityValues[k] = matchersToConsider[k].getClassesMatrix().getSimilarity(o2.getSourceKey(), o2.getTargetKey());
 		}
 		
-		double o2Disagreement = VarianceDisagreement.computeVariance(o2SimilarityValues);
+		double o2Disagreement = computeVariance(o2SimilarityValues);
 		
 		double diff = o1Disagreement - o2Disagreement;
 		

@@ -4,18 +4,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.panayotis.gnuplot.terminal.ExpandableTerminal;
-
-import am.app.mappingEngine.AbstractMatcher.alignType;
-import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MappingSimilarityComparator;
+import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.evaluation.disagreement.variance.VarianceDisagreement;
 import am.evaluation.disagreement.variance.VarianceDisagreementParameters;
 import am.extension.multiUserFeedback.experiment.MUExperiment;
-import am.extension.userfeedback.experiments.MLFExperiment;
 import am.extension.userfeedback.selection.CandidateSelection;
 
 public class MultiStrategyRanking extends CandidateSelection<MUExperiment>{
@@ -288,7 +285,6 @@ public class MultiStrategyRanking extends CandidateSelection<MUExperiment>{
 	private void disagreementRanking()
 	{
 		List<AbstractMatcher> matchers = experiment.initialMatcher.getComponentMatchers();
-		Alignment<Mapping> mappings= experiment.getFinalAlignment();
 		List<Mapping> rankedClassMappings=null;
 		List<Mapping> rankedPropertyMappings=null;
 		
@@ -297,7 +293,7 @@ public class MultiStrategyRanking extends CandidateSelection<MUExperiment>{
 		disagreementParams.setMatchers(matchers);
 		
 		VarianceDisagreement disagreementMetric = new VarianceDisagreement();
-		disagreementMetric.setParameters(disagreementParams, mappings);
+		disagreementMetric.setParameters(disagreementParams);
 		
 		// run the disagreement calculations
 		SimilarityMatrix classDisagreement = disagreementMetric.getDisagreementMatrix(alignType.aligningClasses);

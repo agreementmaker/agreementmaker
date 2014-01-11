@@ -121,13 +121,12 @@ public class MaxInformationRanking extends CandidateSelection<SUExperiment> {
 //		if (ex.getIterationNumber()==0)
 //			initializeRankedMatrix();
 		// get the matchers from the execution semantics
-		Alignment<Mapping> mappings= ex.getFinalAlignment();
 		List<AbstractMatcher> matchers = ex.initialMatcher.getComponentMatchers();
 		
 
 		//if (ex.getIterationNumber()<=1)
 		//{
-		rank(matchers, mappings);
+		rank(matchers);
 		ex.disRanked=allRanked;
 		//}
 		//else
@@ -472,7 +471,7 @@ public class MaxInformationRanking extends CandidateSelection<SUExperiment> {
 	}
 	
 	
-	public void rank(List<AbstractMatcher> matchers, Alignment<Mapping> mappings)
+	public void rank(List<AbstractMatcher> matchers)
 	{
 		
 
@@ -481,7 +480,7 @@ public class MaxInformationRanking extends CandidateSelection<SUExperiment> {
 		disagreementParams.setMatchers(matchers);
 		
 		VarianceDisagreement disagreementMetric = new VarianceDisagreement();
-		disagreementMetric.setParameters(disagreementParams, mappings);
+		disagreementMetric.setParameters(disagreementParams);
 		
 		// run the disagreement calculations
 		SimilarityMatrix classDisagreement = disagreementMetric.getDisagreementMatrix(alignType.aligningClasses);
