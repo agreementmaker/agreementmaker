@@ -16,21 +16,22 @@ public class RevalidationRate extends AbstractQualityMetric {
 		
 	SparseMatrix metricResults;
 	
+	/** The matrix of positive user validations */
+	private SparseMatrix positiveMatrix;
+	
+	/** The matrix of negative user validations */
+	private SparseMatrix negativeMatrix;
+	
+	/** The number of validations for the most validated mapping */
+	private final int maxRepetition;
+	
 	public RevalidationRate(SparseMatrix matrixPos, SparseMatrix matrixNeg)
 	{
 		super();
-		int sum=0;
-		metricResults=new SparseMatrix(matrixPos);
-			
-		int maxRepetition=(int)(matrixPos.getMaxValue()+matrixNeg.getMaxValue());
-		for(int i=0;i<matrixPos.getRows();i++)
-		{
-			for(int j=0;j<matrixPos.getColumns();j++)
-			{
-				sum=(int)(matrixPos.getSimilarity(i, j)+matrixNeg.getSimilarity(i, j));
-				metricResults.setSimilarity(i, j, sum/maxRepetition);
-			}
-		}
+		this.positiveMatrix = matrixPos;
+		this.negativeMatrix = matrixNeg;
+		
+		maxRepetition = (int) (matrixPos.getMaxValue() + matrixNeg.getMaxValue());
 	}
 	
 	/**
@@ -39,7 +40,8 @@ public class RevalidationRate extends AbstractQualityMetric {
 	 */
 	@Override
 	public double getQuality(alignType type, int i, int j) 
-	{		
-		return metricResults.getSimilarity(i, j);
+	{
+		int validationCount = (int)(positiveMatrix.getSimilarity(i, j) + negativeMatrix.getSimilarity(i, j));
+		return validationCount / (double)maxRepetition;
 	}
 }
