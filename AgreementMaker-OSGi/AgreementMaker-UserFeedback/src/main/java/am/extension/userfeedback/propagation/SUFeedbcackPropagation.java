@@ -277,15 +277,19 @@ public class SUFeedbcackPropagation extends FeedbackPropagation<SUExperiment> {
 		
 		if( candidateMapping.getAlignmentType() == alignType.aligningClasses )
 		{
-			//feedbackClassMatrix=com(experiment.classesSparseMatrix , feedbackClassMatrix, trainingSet, "classes");
-			feedbackClassMatrix=wekaSVM(experiment.classesSparseMatrix ,feedbackClassMatrix,trainingSet);
+			//feedbackClassMatrix=euclideanDistance(experiment.classesSparseMatrix , feedbackClassMatrix, trainingSet, "classes");
+			//feedbackClassMatrix=wekaRegression(experiment.classesSparseMatrix ,feedbackClassMatrix,trainingSet);
+			feedbackClassMatrix=logDistance(experiment.classesSparseMatrix , feedbackClassMatrix, trainingSet, "classes");
+			
 		}
 		else
 		{
 			if( candidateMapping.getAlignmentType() == alignType.aligningProperties ) 
 			{
-				//feedbackPropertyMatrix=com(experiment.propertiesSparseMatrix, feedbackPropertyMatrix, trainingSet, "properties");
-				feedbackPropertyMatrix=wekaSVM(experiment.propertiesSparseMatrix,feedbackPropertyMatrix,trainingSet);
+				//feedbackPropertyMatrix=euclideanDistance(experiment.propertiesSparseMatrix, feedbackPropertyMatrix, trainingSet, "properties");
+				//feedbackPropertyMatrix=wekaRegression(experiment.propertiesSparseMatrix,feedbackPropertyMatrix,trainingSet);
+				feedbackPropertyMatrix=logDistance(experiment.propertiesSparseMatrix, feedbackPropertyMatrix, trainingSet, "properties");
+				
 			}
 		}
 		
@@ -546,7 +550,7 @@ public class SUFeedbcackPropagation extends FeedbackPropagation<SUExperiment> {
 //	}
 	
 	
-	private SimilarityMatrix com(SparseMatrix forbidden_pos, SimilarityMatrix sm,Object[][] trainingSet, String type)
+	private SimilarityMatrix euclideanDistance(SparseMatrix forbidden_pos, SimilarityMatrix sm,Object[][] trainingSet, String type)
 	{
 		Mapping mp;
 		Object[] ssv;
@@ -672,6 +676,71 @@ public class SUFeedbcackPropagation extends FeedbackPropagation<SUExperiment> {
 				{
 					sm.setSimilarity(k, h, sim);
 					
+				}
+			}
+		}
+		
+		return sm;
+	}
+	
+	private SimilarityMatrix logDistance(SparseMatrix forbidden_pos, SimilarityMatrix sm,Object[][] trainingSet, String type)
+	{
+		Mapping mp;
+		Object[] ssv;
+		double sim=0;
+		double distance=0;
+		int count=0;
+		double minDistance=Double.MAX_VALUE;
+		double avgDistance=0;
+		int index=0;;
+		for(int k=0;k<sm.getRows();k++)
+		{
+			for(int h=0;h<sm.getColumns();h++)
+			{
+				minDistance=Double.MAX_VALUE;
+				if(forbidden_pos.getSimilarity(k, h)==1)
+					continue;
+				mp = sm.get(k, h);
+				ssv=getSignatureVector(mp);
+				if (!validSsv(ssv))
+					continue;
+				minDistance=Double.MAX_VALUE;
+				for(int i=0;i<trainingSet.length;i++)
+				{
+					distance=0;
+					for(int j=0;j<ssv.length;j++)
+					{
+						count++;
+						distance+=Math.pow((double)ssv[j]-(double)trainingSet[i][j],2);
+					}
+					distance=Math.sqrt(distance);
+					avgDistance+=distance;
+					if (distance<minDistance)
+					{
+						minDistance=distance;
+						index=i;
+					}
+				}
+				avgDistance=avgDistance/count;
+				System.out.println(mp.toString());
+				System.out.println("AVG DISTANCE: "+avgDistance);
+				if ((minDistance<avgDistance))
+				{
+					sim=Math.log(2-minDistance) / Math.log(2);
+					if ((double)trainingSet[index][trainingSet[0].length-1]==1.0)
+						sim=sm.getSimilarity(k, h)+sim;
+					else
+						sim=sm.getSimilarity(k, h)-sim;
+					
+					if (sim>1.0) sim=1.0;
+					if (sim<0.0) sim=0.0;
+					
+					sm.setSimilarity(k, h, sim);
+					
+					if (type=="classes")
+						experiment.classesSparseMatrix.setSimilarity(k, h, 1);
+					else
+						experiment.propertiesSparseMatrix.setSimilarity(k, h, 1);
 				}
 			}
 		}
