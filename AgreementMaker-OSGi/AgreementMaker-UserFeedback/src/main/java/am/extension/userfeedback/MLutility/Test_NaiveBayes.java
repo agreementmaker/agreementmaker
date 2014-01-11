@@ -21,7 +21,7 @@ public class Test_NaiveBayes extends NaiveBayes{
 		{0.21244,0.547747,0.84566}};
 	static Object[][] dataTest2={{"sunny", "cool", "high", "TRUE"}};
 	static Object[][] dataTest3={{"linux","on","website"},{"hollywood","fashion","website"}};
-	
+	static Object[] svmdataTest1={0.23535,0.13644,0.82213};
 	static Object[][] regressionTraining={
 		{1076,2801,6,0,0,324500},{990,3067,5,1,1,466000},{1229,3094,5,0,1,425900},{731,4315,4,1,0,387120},
 		{671,2926,4,0,1,312100},{1078,6094,6,1,1,603000},{909,2854,5,0,1,383400}
@@ -34,29 +34,31 @@ public class Test_NaiveBayes extends NaiveBayes{
 	
 	public static void main(String[] args) throws Exception 
 	{
-		WekaNaiveBayes wk=new  WekaNaiveBayes();
-		wk.runNBayes(regressionTraining, regressionData);
-	    Test_NaiveBayes tNB01=new Test_NaiveBayes(trainingTest1, dataTest1);
-	    Test_NaiveBayes tNB02=new Test_NaiveBayes(trainingTest2, dataTest2);
-	    Test_NaiveBayes tNB03=new Test_NaiveBayes(trainingTest3, dataTest3);
-	    testPrecision(tNB01,1);
-	    testPrecision(tNB02,1);
-	    System.out.println(tNB02.interfaceComputeElement(dataTest2[0]));
-	    tNB01.run();
-	    tNB02.run();
-	    
-	    testLabel(tNB01, true, 0);
-	    testLabel(tNB01, false, 1);
-	    try{
-	    	testLabel(tNB01, true, 2); //should fail
-	    }
-	    catch (Exception e)
-	    {
-	    	System.out.println("Test Fail");
-	    	System.out.println("Correct label: "+tNB01.getLabel(2));
-	    }
-	    testLabel(tNB02, false, 0);
-	    testExpectationMaximization(tNB01,trainingTest1[0].length);
+		WekaUtility wk=new  WekaUtility();
+		wk.setTrainingSet(trainingTest1);
+		wk.runKNN(svmdataTest1);
+		//wk.runRegression(svmdataTest1);
+//	    Test_NaiveBayes tNB01=new Test_NaiveBayes(trainingTest1, dataTest1);
+//	    Test_NaiveBayes tNB02=new Test_NaiveBayes(trainingTest2, dataTest2);
+//	    Test_NaiveBayes tNB03=new Test_NaiveBayes(trainingTest3, dataTest3);
+//	    testPrecision(tNB01,1);
+//	    testPrecision(tNB02,1);
+//	    System.out.println(tNB02.interfaceComputeElement(dataTest2[0]));
+//	    tNB01.run();
+//	    tNB02.run();
+//	    
+//	    testLabel(tNB01, true, 0);
+//	    testLabel(tNB01, false, 1);
+//	    try{
+//	    	testLabel(tNB01, true, 2); //should fail
+//	    }
+//	    catch (Exception e)
+//	    {
+//	    	System.out.println("Test Fail");
+//	    	System.out.println("Correct label: "+tNB01.getLabel(2));
+//	    }
+//	    testLabel(tNB02, false, 0);
+//	    testExpectationMaximization(tNB01,trainingTest1[0].length);
 	}
 	/* test the precision used for the training set. The precision range [1,infinite]
 	* The precision is the log10 of the number of elements in the trainingSet

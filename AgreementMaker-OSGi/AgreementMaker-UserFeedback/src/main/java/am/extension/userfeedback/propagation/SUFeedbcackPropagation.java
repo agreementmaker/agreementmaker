@@ -27,6 +27,7 @@ import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.app.ontology.Node;
 import am.extension.multiUserFeedback.experiment.MUExperiment;
+import am.extension.userfeedback.MLutility.WekaUtility;
 //import am.extension.userfeedback.MLutility.NaiveBayes;
 import am.extension.userfeedback.UserFeedback.Validation;
 import am.extension.userfeedback.experiments.SUExperiment;
@@ -276,13 +277,15 @@ public class SUFeedbcackPropagation extends FeedbackPropagation<SUExperiment> {
 		
 		if( candidateMapping.getAlignmentType() == alignType.aligningClasses )
 		{
-			feedbackClassMatrix=com(experiment.classesSparseMatrix , feedbackClassMatrix, trainingSet, "classes");
+			//feedbackClassMatrix=com(experiment.classesSparseMatrix , feedbackClassMatrix, trainingSet, "classes");
+			feedbackClassMatrix=wekaSVM(experiment.classesSparseMatrix ,feedbackClassMatrix,trainingSet);
 		}
 		else
 		{
 			if( candidateMapping.getAlignmentType() == alignType.aligningProperties ) 
 			{
-				feedbackPropertyMatrix=com(experiment.propertiesSparseMatrix, feedbackPropertyMatrix, trainingSet, "properties");
+				//feedbackPropertyMatrix=com(experiment.propertiesSparseMatrix, feedbackPropertyMatrix, trainingSet, "properties");
+				feedbackPropertyMatrix=wekaSVM(experiment.propertiesSparseMatrix,feedbackPropertyMatrix,trainingSet);
 			}
 		}
 		
@@ -612,53 +615,68 @@ public class SUFeedbcackPropagation extends FeedbackPropagation<SUExperiment> {
 		return sm;
 	}
 	
-//	private SimilarityMatrix wekaNB()
-//	{
-//		Attribute Attribute1 = new Attribute("firstNumeric");
-//		Attribute Attribute2 = new Attribute("secondNumeric");
-//		Attribute Attribute3 = new Attribute("secondNumeric");
-//		Attribute Attribute4 = new Attribute("secondNumeric");
-//		Attribute Attribute5 = new Attribute("secondNumeric");
-//		Attribute Attribute6 = new Attribute("secondNumeric");
-//
-//		 
-//		// Declare the class attribute along with its values
-//		FastVector fvClassVal = new FastVector(2);
-//		 fvClassVal.addElement("positive");
-//		 fvClassVal.addElement("negative");
-//		 Attribute ClassAttribute = new Attribute("theClass", fvClassVal);
-//		 
-//		 // Declare the feature vector
-//		 FastVector fvWekaAttributes = new FastVector(4);
-//		 fvWekaAttributes.addElement(Attribute1);    
-//		 fvWekaAttributes.addElement(Attribute2);    
-//		 fvWekaAttributes.addElement(Attribute3);  
-//		 fvWekaAttributes.addElement(Attribute4);    
-//		 fvWekaAttributes.addElement(Attribute5);    
-//		 fvWekaAttributes.addElement(Attribute6); 
-//		 fvWekaAttributes.addElement(ClassAttribute);
-//		 
-//		 Instances isTrainingSet = new Instances("Rel", fvWekaAttributes, 10);           
-//		 // Set class index
-//		 isTrainingSet.setClassIndex(6);
-//		 
-//		 Instance iExample = new Instance(4);
-//		 iExample.setValue((Attribute)fvWekaAttributes.elementAt(0), 1.0);      
-//		 iExample.setValue((Attribute)fvWekaAttributes.elementAt(1), 0.5);      
-//		 iExample.setValue((Attribute)fvWekaAttributes.elementAt(2), "gray");
-//		 iExample.setValue((Attribute)fvWekaAttributes.elementAt(3), "positive");
-//		 
-//		 // add the instance
-//		 isTrainingSet.add(iExample);
-//		
-//		Classifier cModel = (Classifier)new NaiveBayes();
-//		try {
-//			cModel.buildClassifier(isTrainingSet);
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//	}
-//	
+	private SimilarityMatrix wekaRegression(SparseMatrix sparse,SimilarityMatrix sm,Object[][] trainingSet)
+	{
+		WekaUtility wk=new WekaUtility();
+		wk.setTrainingSet(trainingSet);
+		
+		Mapping mp;
+		Object[] ssv;
+		double sim;
+
+		for(int k=0;k<sm.getRows();k++)
+		{
+			for(int h=0;h<sm.getColumns();h++)
+			{
+				if(sparse.getSimilarity(k, h)==1)
+					continue;
+				mp = sm.get(k, h);
+				ssv=getSignatureVector(mp);
+				if (!validSsv(ssv))
+					continue;
+				sim=wk.runRegression(ssv);
+				
+				if ((sim>0.0))
+				{
+					sm.setSimilarity(k, h, sim);
+					
+				}
+			}
+		}
+		
+		return sm;
+	}
+	
+	private SimilarityMatrix wekaSVM(SparseMatrix sparse,SimilarityMatrix sm,Object[][] trainingSet)
+	{
+		WekaUtility wk=new WekaUtility();
+		wk.setTrainingSet(trainingSet);
+		
+		Mapping mp;
+		Object[] ssv;
+		double sim;
+
+		for(int k=0;k<sm.getRows();k++)
+		{
+			for(int h=0;h<sm.getColumns();h++)
+			{
+				if(sparse.getSimilarity(k, h)==1)
+					continue;
+				mp = sm.get(k, h);
+				ssv=getSignatureVector(mp);
+				if (!validSsv(ssv))
+					continue;
+				sim=wk.runKNN(ssv);
+				
+				if ((sim>0.0))
+				{
+					sm.setSimilarity(k, h, sim);
+					
+				}
+			}
+		}
+		
+		return sm;
+	}
 
 }
