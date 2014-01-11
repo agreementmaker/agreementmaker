@@ -14,23 +14,12 @@ import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 
 public class SimilarityScoreHardness extends AbstractQualityMetric {
 		
-	SimilarityMatrix metricResults;
+	private SimilarityMatrix matrix;
 	
 	public SimilarityScoreHardness(SimilarityMatrix matrix)
 	{
 		super();
-		double sim=0;
-		metricResults=matrix.clone();
-			
-		for(int i=0;i<matrix.getRows();i++)
-		{
-			for(int j=0;j<matrix.getColumns();j++)
-			{
-				sim=Math.abs(matrix.getSimilarity(i, j)-0.5);
-				sim=sim*2;
-				metricResults.setSimilarity(i, j, sim);
-			}
-		}
+		this.matrix = matrix;
 	}
 	
 	/**
@@ -39,7 +28,9 @@ public class SimilarityScoreHardness extends AbstractQualityMetric {
 	 */
 	@Override
 	public double getQuality(alignType type, int i, int j) 
-	{		
-		return metricResults.getSimilarity(i, j);
+	{	
+		double sim = Math.abs(matrix.getSimilarity(i, j) - 0.5);
+		sim = sim * 2;
+		return sim;
 	}
 }
