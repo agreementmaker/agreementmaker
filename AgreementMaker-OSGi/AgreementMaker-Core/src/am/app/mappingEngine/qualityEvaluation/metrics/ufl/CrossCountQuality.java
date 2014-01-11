@@ -25,13 +25,13 @@ public class CrossCountQuality extends AbstractQualityMetric {
 		super();
 			
 		// row counts
-		rowCounts = new int[matrix.getColumns()];
+		rowCounts = new int[matrix.getRows()];
 		for( int i = 0; i < matrix.getRows(); i++ ) {
 			rowCounts[i] = countNonzeroMappings(matrix.getRowMaxValues(i, matrix.getColumns()));
 		}
 		
 		// column counts
-		colCounts = new int[matrix.getRows()];
+		colCounts = new int[matrix.getColumns()];
 		for( int j = 0; j < matrix.getColumns(); j++ ) {
 			colCounts[j] = countNonzeroMappings(matrix.getColMaxValues(j, matrix.getRows()));
 		}
