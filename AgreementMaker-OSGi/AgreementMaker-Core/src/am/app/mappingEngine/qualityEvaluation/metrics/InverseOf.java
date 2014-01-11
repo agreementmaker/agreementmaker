@@ -8,7 +8,8 @@ import am.utility.parameters.AMParameter;
 import am.utility.parameters.AMParameterSet;
 
 /**
- * Returns the inverse of a quality metric.  This is the same as returning 1 - value.
+ * A metric that returns the inverse of another metric.
+ * This is done by returning 1 - metric value.
  * 
  * @author cosmin
  */
@@ -35,6 +36,10 @@ public class InverseOf implements MappingQualityMetric {
 		return 1d - metric.getQuality(type, i, j);
 	}
 
+	/**
+	 * FIXME: Figure out how to modify QualityEvaluationData to return the
+	 * inverse metric values.
+	 */
 	@Override
 	public QualityEvaluationData getQuality(AbstractMatcher matcher)
 			throws Exception {
