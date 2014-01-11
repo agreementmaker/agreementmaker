@@ -23,6 +23,7 @@ import am.extension.multiUserFeedback.storage.MUFeedbackStorage;
 import am.extension.userfeedback.UserFeedback.Validation;
 import am.extension.userfeedback.experiments.UFLExperiment;
 import am.extension.userfeedback.logic.IndependentSequentialLogicMultiUser;
+import am.extension.userfeedback.logic.IndependentSequentialLogicPaper;
 import am.extension.userfeedback.logic.UFLControlLogic;
 
 public class MUExperiment extends UFLExperiment {
@@ -213,7 +214,7 @@ public void setMLAlignment(Alignment<Mapping> mLAlignment) {
 
 	@Override
 	public UFLControlLogic getControlLogic() {
-		return new IndependentSequentialLogicMultiUser();
+		return new IndependentSequentialLogicPaper();
 		//return new IndependentSequentialLogic();
 	}
 	
