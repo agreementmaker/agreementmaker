@@ -16,7 +16,6 @@ import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.evaluation.disagreement.variance.VarianceDisagreement;
 import am.evaluation.disagreement.variance.VarianceDisagreementParameters;
 import am.extension.multiUserFeedback.experiment.MUExperiment;
-import am.utility.parameters.AMParameter.Type;
 
 public class ServerCandidateSelection extends MUCandidateSelection<MUExperiment> {
 	
@@ -222,7 +221,6 @@ public class ServerCandidateSelection extends MUCandidateSelection<MUExperiment>
 	private void disagreementRanking()
 	{
 		List<AbstractMatcher> matchers = experiment.initialMatcher.getComponentMatchers();
-		Alignment<Mapping> mappings= experiment.getFinalAlignment();
 		List<Mapping> rankedClassMappings=null;
 		List<Mapping> rankedPropertyMappings=null;
 		
@@ -231,7 +229,7 @@ public class ServerCandidateSelection extends MUCandidateSelection<MUExperiment>
 		disagreementParams.setMatchers(matchers);
 		
 		VarianceDisagreement disagreementMetric = new VarianceDisagreement();
-		disagreementMetric.setParameters(disagreementParams, mappings);
+		disagreementMetric.setParameters(disagreementParams);
 		
 		// run the disagreement calculations
 		SimilarityMatrix classDisagreement = disagreementMetric.getDisagreementMatrix(alignType.aligningClasses);
