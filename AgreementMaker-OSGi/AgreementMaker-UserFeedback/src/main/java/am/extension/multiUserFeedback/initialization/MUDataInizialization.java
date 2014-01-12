@@ -37,31 +37,47 @@ public class MUDataInizialization  extends FeedbackLoopInizialization<MUExperime
 		exp.setUflClassMatrix(smClass);
 		exp.setUflPropertyMatrix(smProperty);
 		
-		exp.classesSparseMatrix = 
+		exp.forbiddenPositionsClasses = 
 				new SparseMatrix(
 						Core.getInstance().getSourceOntology(),
 						Core.getInstance().getTargetOntology(), 
 						alignType.aligningClasses);
 		
-		exp.propertiesSparseMatrix = 
+		exp.forbiddenPositionsProperties = 
 				new SparseMatrix(
 						Core.getInstance().getSourceOntology(),
 						Core.getInstance().getTargetOntology(), 
 						alignType.aligningProperties);
 		
 		
-		SparseMatrix sparseClass=new SparseMatrix(
+		// set the UFL matrices for classes
+		SparseMatrix sparseClassPos = new SparseMatrix(
 				Core.getInstance().getSourceOntology(),
 				Core.getInstance().getTargetOntology(), 
 				alignType.aligningClasses);
-		exp.setUflStorageClassPos(sparseClass);
-		exp.setUflStorageClass_neg(sparseClass);
-		SparseMatrix sparseProp=new SparseMatrix(
+		
+		SparseMatrix sparseClassNeg = new SparseMatrix(
+				Core.getInstance().getSourceOntology(),
+				Core.getInstance().getTargetOntology(), 
+				alignType.aligningClasses);
+		
+		exp.setUflStorageClassPos(sparseClassPos);
+		exp.setUflStorageClass_neg(sparseClassNeg);
+		
+		// set the UFL matrices for properties
+		SparseMatrix sparsePropPos = new SparseMatrix(
 				Core.getInstance().getSourceOntology(),
 				Core.getInstance().getTargetOntology(), 
 				alignType.aligningProperties);
-		exp.setUflStoragePropertyPos(sparseProp);
-		exp.setUflStorageProperty_neg(sparseProp);
+		
+		SparseMatrix sparsePropNeg = new SparseMatrix(
+				Core.getInstance().getSourceOntology(),
+				Core.getInstance().getTargetOntology(), 
+				alignType.aligningProperties);
+		
+		exp.setUflStoragePropertyPos(sparsePropPos);
+		exp.setUflStorageProperty_neg(sparsePropNeg);
+		
 		done();
 	}
 

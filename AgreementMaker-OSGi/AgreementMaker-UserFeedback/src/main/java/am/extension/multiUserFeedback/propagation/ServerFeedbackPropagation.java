@@ -82,14 +82,14 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 		if( candidateMapping.getAlignmentType() == alignType.aligningClasses )
 		{
 			trainingSet=experiment.getTrainingSet_classes();
-			feedbackClassMatrix=logDistance(experiment.classesSparseMatrix , feedbackClassMatrix, trainingSet,alignType.aligningClasses);
+			feedbackClassMatrix=logDistance(experiment.forbiddenPositionsClasses , feedbackClassMatrix, trainingSet,alignType.aligningClasses);
 		}
 		else
 		{
 			if( candidateMapping.getAlignmentType() == alignType.aligningProperties ) 
 			{
 				trainingSet=experiment.getTrainingSet_property();
-				feedbackPropertyMatrix=logDistance(experiment.propertiesSparseMatrix, feedbackPropertyMatrix, trainingSet,alignType.aligningProperties);
+				feedbackPropertyMatrix=logDistance(experiment.forbiddenPositionsProperties, feedbackPropertyMatrix, trainingSet,alignType.aligningProperties);
 			}
 		}
 		
@@ -99,16 +99,6 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 		ufl.select();
 
 		experiment.setMLAlignment(combineResults(ufl, experiment));
-		if( candidateMapping.getAlignmentType() == alignType.aligningClasses ) 
-		{
-			experiment.setTrainingSet_classes(trainingSet);
-		}
-		else
-		{
-			experiment.setTrainingSet_property(trainingSet);
-		}
-		
-	
 		experiment.setUflClassMatrix(feedbackClassMatrix);
 		experiment.setUflPropertyMatrix(feedbackPropertyMatrix);
 		
@@ -188,9 +178,9 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 				{
 					sm.setSimilarity(k, h, (double)trainingSet[index][trainingSet[0].length-1]);
 					if (type.equals(alignType.aligningClasses))
-						experiment.classesSparseMatrix.setSimilarity(k, h, 1);
+						experiment.forbiddenPositionsClasses.setSimilarity(k, h, 1);
 					else
-						experiment.propertiesSparseMatrix.setSimilarity(k, h, 1);
+						experiment.forbiddenPositionsProperties.setSimilarity(k, h, 1);
 					
 				}
 
@@ -319,9 +309,9 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 					sm.setSimilarity(k, h, sim);
 					
 					if (type.equals(alignType.aligningClasses))
-						experiment.classesSparseMatrix.setSimilarity(k, h, 1);
+						experiment.forbiddenPositionsClasses.setSimilarity(k, h, 1);
 					else
-						experiment.propertiesSparseMatrix.setSimilarity(k, h, 1);
+						experiment.forbiddenPositionsProperties.setSimilarity(k, h, 1);
 				}
 			}
 		}

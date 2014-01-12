@@ -2,12 +2,12 @@ package am.extension.multiUserFeedback.storage;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.Alignment;
-import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.app.ontology.Node;
 import am.extension.multiUserFeedback.experiment.MUExperiment;
@@ -26,15 +26,13 @@ public class ServerFeedbackStorage extends FeedbackAgregation<MUExperiment>{
 	public void addFeedback(MUExperiment exp) {
 		this.experiment=exp;
 		Mapping candidateMapping=exp.selectedMapping;
-		// TODO Auto-generated method stub
-		SparseMatrix sparse=exp.getUflStorageClassPos();
-		int row=candidateMapping.getSourceKey();
-		int col=candidateMapping.getTargetKey();
-		double sim=0.0;
+		
+		int mappingRow = candidateMapping.getSourceKey();
+		int mappingCol = candidateMapping.getTargetKey();
+		
 		Validation userFeedback = experiment.userFeedback.getUserFeedback();
 		
-
-		if(candidateMapping.getAlignmentType()==alignType.aligningClasses)
+		if(candidateMapping.getAlignmentType() == alignType.aligningClasses)
 		{
 			if (flag)
 			{
@@ -43,23 +41,23 @@ public class ServerFeedbackStorage extends FeedbackAgregation<MUExperiment>{
 			
 			if (userFeedback.equals(Validation.CORRECT))
 			{
-				sparse=exp.getUflStorageClassPos();
-				sim=sparse.getSimilarity(row, col);
-				sim++;
-				sparse.setSimilarity(row, col, sim);
-				exp.setUflStorageClassPos(sparse);
+				SparseMatrix m = exp.getUflStorageClassPos();
+				int count = (int) m.getSimilarity(mappingRow, mappingCol);
+				count++;
+				m.setSimilarity(mappingRow, mappingCol, (double)count);
+				//exp.setUflStorageClassPos(m);
 			}
 			if (userFeedback.equals(Validation.INCORRECT))
 			{
-				sparse=exp.getUflStorageClass_neg();
-				sim=sparse.getSimilarity(row, col);
-				sim++;
-				sparse.setSimilarity(row, col, sim);
-				exp.setUflStorageClass_neg(sparse);
+				SparseMatrix m = exp.getUflStorageClass_neg();
+				int count = (int) m.getSimilarity(mappingRow, mappingCol);
+				count++;
+				m.setSimilarity(mappingRow, mappingCol, (double)count);
+				//exp.setUflStorageClass_neg(m);
 			}
 			
 		}
-		else if(candidateMapping.getAlignmentType()==alignType.aligningProperties)
+		else if(candidateMapping.getAlignmentType() == alignType.aligningProperties)
 		{
 			if (flag)
 			{
@@ -68,19 +66,19 @@ public class ServerFeedbackStorage extends FeedbackAgregation<MUExperiment>{
 			
 			if (userFeedback.equals(Validation.CORRECT))
 			{
-				sparse=exp.getUflStoragePropertyPos();
-				sim=sparse.getSimilarity(row, col);
-				sim++;
-				sparse.setSimilarity(row, col, sim);
-				exp.setUflStoragePropertyPos(sparse);
+				SparseMatrix m = exp.getUflStoragePropertyPos();
+				int count = (int) m.getSimilarity(mappingRow, mappingCol);
+				count++;
+				m.setSimilarity(mappingRow, mappingCol, (double)count);
+				//exp.setUflStoragePropertyPos(m);
 			}
 			if (userFeedback.equals(Validation.INCORRECT))
 			{
-				sparse=exp.getUflStorageProperty_neg();
-				sim=sparse.getSimilarity(row, col);
-				sim++;
-				sparse.setSimilarity(row, col, sim);
-				exp.setUflStorageProperty_neg(sparse);
+				SparseMatrix m = exp.getUflStorageProperty_neg();
+				int count = (int) m.getSimilarity(mappingRow, mappingCol);
+				count++;
+				m.setSimilarity(mappingRow, mappingCol, (double)count);
+				//exp.setUflStorageProperty_neg(m);
 			}
 			
 		}
@@ -112,20 +110,23 @@ public class ServerFeedbackStorage extends FeedbackAgregation<MUExperiment>{
 		
 	}
 
+	/**
+	 * FIXME: Move the duplicated code into its own private method.
+	 */
 	@Override
 	public void getTrainingSet() {
-		double sum=0;
-		List<Object[]> class_trn=new ArrayList<Object[]>();
-		List<Object[]> prop_trn=new ArrayList<Object[]>();
-		SparseMatrix sparsePos=experiment.getUflStorageClassPos();
-		SparseMatrix sparseNeg=experiment.getUflStorageClass_neg();
+		List<Object[]> class_trn = new ArrayList<Object[]>();
+		SparseMatrix sparsePos = experiment.getUflStorageClassPos();
+		SparseMatrix sparseNeg = experiment.getUflStorageClass_neg();
 		for(int i=0;i<sparsePos.getRows();i++)
 		{
 			for(int j=0;j<sparsePos.getColumns();j++)
 			{
-				sum=sparsePos.getSimilarity(i, j)-sparseNeg.getSimilarity(i, j);
-				if (sum!=0)
-					class_trn.add(getLabeledMapping(sparsePos.get(i, j),sum));
+				int sum = (int)sparsePos.getSimilarity(i, j) - (int)sparseNeg.getSimilarity(i, j);
+				if (sum != 0) {
+					Mapping m = sparsePos.get(i, j) == null ? sparseNeg.get(i, j) : sparsePos.get(i, j);
+					class_trn.add(getLabeledMapping(m,sum));
+				}
 			}
 		}
 
@@ -133,6 +134,7 @@ public class ServerFeedbackStorage extends FeedbackAgregation<MUExperiment>{
 		class_trn.toArray(cl_training);
 		experiment.setTrainingSet_classes(cl_training);
 		
+		List<Object[]> prop_trn = new ArrayList<Object[]>();
 		sparsePos=experiment.getUflStoragePropertyPos();
 		sparseNeg=experiment.getUflStorageProperty_neg();
 		for(int i=0;i<sparsePos.getRows();i++)
@@ -145,27 +147,40 @@ public class ServerFeedbackStorage extends FeedbackAgregation<MUExperiment>{
 					System.out.println(sparseNeg.getSimilarity(55, 41));
 				}
 				
-				sum=sparsePos.getSimilarity(i, j)-sparseNeg.getSimilarity(i, j);
-				if (sum!=0)
-					class_trn.add(getLabeledMapping(sparsePos.get(i, j),sum));
+				int sum = (int)sparsePos.getSimilarity(i, j) - (int)sparseNeg.getSimilarity(i, j);
+				if (sum!=0) {
+					Mapping m = sparsePos.get(i, j) == null ? sparseNeg.get(i, j) : sparsePos.get(i, j);
+					prop_trn.add(getLabeledMapping(m, sum));
+				}
 			}
 		}
 		
 		Object[][] pr_training=new Object[prop_trn.size()][experiment.initialMatcher.getComponentMatchers().size()+1];
-		class_trn.toArray(pr_training);
+		prop_trn.toArray(pr_training);
 		experiment.setTrainingSet_property(pr_training);
 
 	}
 	
-	private Object[] getLabeledMapping(Mapping mp, double sim)
+	/**
+	 * @param diff
+	 *            The difference between the number of positive and negative
+	 *            validations.
+	 */
+	private Object[] getLabeledMapping(Mapping mp, double diff)
 	{
-		Object[] sv=new Object[experiment.initialMatcher.getComponentMatchers().size()+1];
-		sv=getSignatureVector(mp);
-		if (sim>0)
-			sv[sv.length]=1.0;
-		if (sim<0)
-			sv[sv.length]=0.0;
-		return sv;
+		if( diff == 0d ) {
+			throw new RuntimeException("The difference cannot be zero.");
+		}
+		
+		Object[] sv = getSignatureVector(mp);
+		
+		Object[] trainingElement = Arrays.copyOf(sv, sv.length+1);
+		if (diff > 0)
+			trainingElement[trainingElement.length-1] = 1.0;
+		if (diff < 0)
+			trainingElement[trainingElement.length-1] = 0.0;
+		
+		return trainingElement;
 
 	}
 	
