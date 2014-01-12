@@ -42,11 +42,6 @@ public class IndependentSequentialLogicPaper extends UFLControlLogic<MUExperimen
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			
-			// close the UFL tab
-			//UICore.getUI().removeTab(UICore.getUI().getCurrentTab());
-			Core.getInstance().shutdown();
-			
 			return;
 		}
 		
