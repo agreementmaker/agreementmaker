@@ -103,10 +103,10 @@ public class ServerFeedbackStorage extends FeedbackAgregation<MUExperiment>{
 		int i = candidateMapping.getSourceKey();
 		int j = candidateMapping.getTargetKey();
 		
-		int sum = (int)positiveFeedback.getSimilarity(i, j) - (int)negativeFeedback.getSimilarity(i, j);
+		int diff = (int)positiveFeedback.getSimilarity(i, j) - (int)negativeFeedback.getSimilarity(i, j);
 		
 		SparseMatrix forbiddenPositionsMatrix = experiment.getForbiddenPositions(candidateMapping.getAlignmentType());
-		if( sum == 0 ) {
+		if( diff == 0 ) {
 			forbiddenPositionsMatrix.setSimilarity(i, j, 0.0);
 		}
 		else {
