@@ -50,7 +50,7 @@ public class RevalidationRanking implements StrategyInterface{
 		List<Mapping> rankList=linearCombination(classMatrices, classPos, classNeg, uflClass);
 		rankList.addAll(linearCombination(propMatrices, propPos, propNeg,uflProp));
 		Collections.sort(rankList, new MappingSimilarityComparator() );
-		//Collections.reverse(rankList);
+		Collections.reverse(rankList);
 		
 		return rankList;
 	}
