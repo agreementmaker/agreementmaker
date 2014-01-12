@@ -23,14 +23,12 @@ public class MUDataInizialization  extends FeedbackLoopInizialization<MUExperime
 	@Override
 	public void inizialize(MUExperiment exp) {
 		// TODO Auto-generated method stub
+		inputMatchers=exp.initialMatcher.getComponentMatchers();
 		SimilarityMatrix smClass=exp.initialMatcher.getFinalMatcher().getClassesMatrix().clone();
 		SimilarityMatrix smProperty=exp.initialMatcher.getFinalMatcher().getPropertiesMatrix().clone();
-		for(int i=0;i<smClass.getRows();i++)
-			for(int j=0;j<smClass.getColumns();j++)
-				smClass.setSimilarity(i, j, 0.5);
-		for(int i=0;i<smProperty.getRows();i++)
-			for(int j=0;j<smProperty.getColumns();j++)
-				smProperty.setSimilarity(i, j, 0.5);
+		
+		
+		
 		SimilarityMatrix am=exp.initialMatcher.getFinalMatcher().getClassesMatrix();
 		smClass=prepareSMforNB(smClass, am);
 		am=exp.initialMatcher.getFinalMatcher().getPropertiesMatrix();
@@ -67,23 +65,7 @@ public class MUDataInizialization  extends FeedbackLoopInizialization<MUExperime
 		done();
 	}
 
-//	private SimilarityMatrix prepareSMforNB(SimilarityMatrix sm)
-//	{
-//		Mapping mp;
-//		Object[] ssv;
-//		for(int i=0;i<sm.getRows();i++)
-//			for(int j=0;j<sm.getColumns();j++)
-//			{
-//				mp = sm.get(i, j);
-//				ssv=getSignatureVector(mp);
-//				if (!validSsv(ssv))
-//				{ 
-//					sm.setSimilarity(i, j, 0.0);
-//				}
-//			}
-//		
-//		return sm;
-//	}
+
 	
 	private SimilarityMatrix prepareSMforNB(SimilarityMatrix sm, SimilarityMatrix am)
 	{

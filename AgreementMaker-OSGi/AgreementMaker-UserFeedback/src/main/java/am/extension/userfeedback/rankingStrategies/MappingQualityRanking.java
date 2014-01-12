@@ -29,7 +29,7 @@ public class MappingQualityRanking implements StrategyInterface{
 		List<Mapping> rankList=linearCombination(classMatrix);
 		rankList.addAll(linearCombination(propMatrix));
 		Collections.sort(rankList, new MappingSimilarityComparator() );
-		//Collections.reverse(rankList);
+		Collections.reverse(rankList);
 		
 		return rankList;
 	}

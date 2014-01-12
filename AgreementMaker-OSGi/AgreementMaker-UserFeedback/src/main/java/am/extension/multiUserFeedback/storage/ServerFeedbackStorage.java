@@ -11,6 +11,7 @@ import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.app.ontology.Node;
 import am.extension.multiUserFeedback.experiment.MUExperiment;
+import am.extension.userfeedback.UserFeedback.Validation;
 
 public class ServerFeedbackStorage extends FeedbackAgregation<MUExperiment>{
 	MUExperiment experiment;
@@ -30,7 +31,7 @@ public class ServerFeedbackStorage extends FeedbackAgregation<MUExperiment>{
 		int row=candidateMapping.getSourceKey();
 		int col=candidateMapping.getTargetKey();
 		double sim=0.0;
-		
+		Validation userFeedback = experiment.userFeedback.getUserFeedback();
 		
 
 		if(candidateMapping.getAlignmentType()==alignType.aligningClasses)
@@ -40,7 +41,7 @@ public class ServerFeedbackStorage extends FeedbackAgregation<MUExperiment>{
 				correctionLabel=labelizeSingleTS(exp.getUflStorageClassPos().getSimilarity(candidateMapping.getSourceKey(), candidateMapping.getTargetKey()),exp.getUflStorageClass_neg().getSimilarity(candidateMapping.getSourceKey(), candidateMapping.getTargetKey()));
 			}
 			
-			if (exp.feedback.equals("CORRECT"))
+			if (userFeedback.equals(Validation.CORRECT))
 			{
 				sparse=exp.getUflStorageClassPos();
 				sim=sparse.getSimilarity(row, col);
@@ -48,7 +49,7 @@ public class ServerFeedbackStorage extends FeedbackAgregation<MUExperiment>{
 				sparse.setSimilarity(row, col, sim);
 				exp.setUflStorageClassPos(sparse);
 			}
-			if (exp.feedback.equals("UNCORRECT"))
+			if (userFeedback.equals(Validation.INCORRECT))
 			{
 				sparse=exp.getUflStorageClass_neg();
 				sim=sparse.getSimilarity(row, col);
@@ -65,7 +66,7 @@ public class ServerFeedbackStorage extends FeedbackAgregation<MUExperiment>{
 				correctionLabel=labelizeSingleTS(exp.getUflStoragePropertyPos().getSimilarity(candidateMapping.getSourceKey(), candidateMapping.getTargetKey()),exp.getUflStorageProperty_neg().getSimilarity(candidateMapping.getSourceKey(), candidateMapping.getTargetKey()));
 			}
 			
-			if (exp.feedback.equals("CORRECT"))
+			if (userFeedback.equals(Validation.CORRECT))
 			{
 				sparse=exp.getUflStoragePropertyPos();
 				sim=sparse.getSimilarity(row, col);
@@ -73,7 +74,7 @@ public class ServerFeedbackStorage extends FeedbackAgregation<MUExperiment>{
 				sparse.setSimilarity(row, col, sim);
 				exp.setUflStoragePropertyPos(sparse);
 			}
-			if (exp.feedback.equals("UNCORRECT"))
+			if (userFeedback.equals(Validation.INCORRECT))
 			{
 				sparse=exp.getUflStorageProperty_neg();
 				sim=sparse.getSimilarity(row, col);
@@ -102,7 +103,7 @@ public class ServerFeedbackStorage extends FeedbackAgregation<MUExperiment>{
 	
 	private int labelizeSingleTS(double pos, double neg)
 	{
-		int x=experiment.feedback.equals("CORRECT")?1:-1;
+		int x=experiment.userFeedback.equals("CORRECT")?1:-1;
 		int sum=(int)pos-(int)neg+x;
 		if (sum>0) return 1;
 		if (sum<0) return 0;
@@ -138,6 +139,12 @@ public class ServerFeedbackStorage extends FeedbackAgregation<MUExperiment>{
 		{
 			for(int j=0;j<sparsePos.getColumns();j++)
 			{
+				if ((i==55) & (j==41))
+				{
+					System.out.println(sparsePos.getSimilarity(55, 41));
+					System.out.println(sparseNeg.getSimilarity(55, 41));
+				}
+				
 				sum=sparsePos.getSimilarity(i, j)-sparseNeg.getSimilarity(i, j);
 				if (sum!=0)
 					class_trn.add(getLabeledMapping(sparsePos.get(i, j),sum));
