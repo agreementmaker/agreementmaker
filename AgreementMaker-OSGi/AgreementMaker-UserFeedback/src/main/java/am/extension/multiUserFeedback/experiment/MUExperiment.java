@@ -84,15 +84,26 @@ public void setAlignCardinalityType(alignCardinality alignCardinalityType) {
 	this.alignCardinalityType = alignCardinalityType;
 }
 
-//forbidden position keeper
-public SparseMatrix classesSparseMatrix;
-public SparseMatrix propertiesSparseMatrix;
+	//forbidden position keeper
+	public SparseMatrix forbiddenPositionsClasses;
+	public SparseMatrix forbiddenPositionsProperties;
 
+	public SparseMatrix getForbiddenPositionsClasses() {
+		return forbiddenPositionsClasses;
+	}
+	
+	public void setForbiddenPositionsClasses(SparseMatrix classesSparseMatrix) {
+		this.forbiddenPositionsClasses = classesSparseMatrix;
+	}
+	
+	public SparseMatrix getForbiddenPositionsProperties() {
+		return forbiddenPositionsProperties;
+	}
 
-public SparseMatrix getClassesSparseMatrix() {
-	return classesSparseMatrix;
-}
-
+	public void setForbiddenPositionsProperties(SparseMatrix propertiesSparseMatrix) {
+		this.forbiddenPositionsProperties = propertiesSparseMatrix;
+	}
+	
 public SparseMatrix getUflStorageClass_neg() {
 	return uflStorageClass_neg;
 }
@@ -109,15 +120,6 @@ public void setUflStorageProperty_neg(SparseMatrix uflStorageProperty_neg) {
 	this.uflStorageProperty_neg = uflStorageProperty_neg;
 }
 
-public void setClassesSparseMatrix(SparseMatrix classesSparseMatrix) {
-	this.classesSparseMatrix = classesSparseMatrix;
-}
-
-
-public SparseMatrix getPropertiesSparseMatrix() {
-	return propertiesSparseMatrix;
-}
-
 public SparseMatrix getUflStorageClassPos() {
 	return uflStorageClass_pos;
 }
@@ -132,11 +134,6 @@ public SparseMatrix getUflStoragePropertyPos() {
 
 public void setUflStoragePropertyPos(SparseMatrix uflStorageProperty) {
 	this.uflStorageProperty_pos = uflStorageProperty;
-}
-
-
-public void setPropertiesSparseMatrix(SparseMatrix propertiesSparseMatrix) {
-	this.propertiesSparseMatrix = propertiesSparseMatrix;
 }
 
 public Object[][] getTrainingSet_classes() {

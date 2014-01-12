@@ -98,7 +98,7 @@ public class MUFeedbackPropagation  extends FeedbackPropagation<MUExperiment> {
 			inputMatchers=experiment.initialMatcher.getComponentMatchers();
 			Mapping candidateMapping = experiment.selectedMapping;
 			List<AbstractMatcher> availableMatchers = experiment.initialMatcher.getComponentMatchers();
-			Object[][] trainingSet=new Object[1][availableMatchers.size()];
+			Object[][] trainingSet = null;
 			
 			Validation userFeedback = experiment.userFeedback.getUserFeedback();
 			
@@ -119,13 +119,13 @@ public class MUFeedbackPropagation  extends FeedbackPropagation<MUExperiment> {
 				{ 
 
 					feedbackClassMatrix.setSimilarity(m.getSourceKey(), m.getTargetKey(), 1.0);
-					experiment.classesSparseMatrix.setSimilarity(m.getSourceKey(), m.getTargetKey(), 1);
+					experiment.forbiddenPositionsClasses.setSimilarity(m.getSourceKey(), m.getTargetKey(), 1);
 					
 				}
 				else if( userFeedback.equals("INCORRECT") ) 
 				{ 
 					feedbackClassMatrix.setSimilarity(m.getSourceKey(), m.getTargetKey(), 0.0);
-					experiment.classesSparseMatrix.setSimilarity(m.getSourceKey(), m.getTargetKey(), 1);
+					experiment.forbiddenPositionsClasses.setSimilarity(m.getSourceKey(), m.getTargetKey(), 1);
 				}
 				
 			} 
@@ -139,12 +139,12 @@ public class MUFeedbackPropagation  extends FeedbackPropagation<MUExperiment> {
 				if( userFeedback.equals("CORRECT") ) 
 				{ 
 					feedbackPropertyMatrix.setSimilarity(m.getSourceKey(), m.getTargetKey(), 1.0);
-					experiment.propertiesSparseMatrix.setSimilarity(m.getSourceKey(), m.getTargetKey(), 1);
+					experiment.forbiddenPositionsProperties.setSimilarity(m.getSourceKey(), m.getTargetKey(), 1);
 				}
 				else if( userFeedback.equals("INCORRECT") ) 
 				{
 					feedbackPropertyMatrix.setSimilarity(m.getSourceKey(), m.getTargetKey(), 0.0);
-					experiment.propertiesSparseMatrix.setSimilarity(m.getSourceKey(), m.getTargetKey(), 1);
+					experiment.forbiddenPositionsProperties.setSimilarity(m.getSourceKey(), m.getTargetKey(), 1);
 				}
 			}
 			
@@ -152,13 +152,13 @@ public class MUFeedbackPropagation  extends FeedbackPropagation<MUExperiment> {
 			
 			if( candidateMapping.getAlignmentType() == alignType.aligningClasses )
 			{
-				feedbackClassMatrix=com(experiment.classesSparseMatrix , feedbackClassMatrix, trainingSet, "classes");
+				feedbackClassMatrix=com(experiment.forbiddenPositionsClasses , feedbackClassMatrix, trainingSet, "classes");
 			}
 			else
 			{
 				if( candidateMapping.getAlignmentType() == alignType.aligningProperties ) 
 				{
-					feedbackPropertyMatrix=com(experiment.propertiesSparseMatrix, feedbackPropertyMatrix, trainingSet, "properties");
+					feedbackPropertyMatrix=com(experiment.forbiddenPositionsProperties, feedbackPropertyMatrix, trainingSet, "properties");
 				}
 			}
 			
@@ -282,9 +282,9 @@ public class MUFeedbackPropagation  extends FeedbackPropagation<MUExperiment> {
 					{
 						sm.setSimilarity(k, h, (double)trainingSet[index][trainingSet[0].length-1]);
 						if (type=="classes")
-							experiment.classesSparseMatrix.setSimilarity(k, h, 1);
+							experiment.forbiddenPositionsClasses.setSimilarity(k, h, 1);
 						else
-							experiment.propertiesSparseMatrix.setSimilarity(k, h, 1);
+							experiment.forbiddenPositionsProperties.setSimilarity(k, h, 1);
 						
 					}
 				}
