@@ -36,8 +36,8 @@ public class MUDataInizialization  extends FeedbackLoopInizialization<MUExperime
 		am=exp.initialMatcher.getFinalMatcher().getPropertiesMatrix();
 		smProperty=prepareSMforNB(smProperty, am);
 		
-		exp.setUflClassMatrix(smClass);
-		exp.setUflPropertyMatrix(smProperty);
+		exp.setComputedUFLMatrix(alignType.aligningClasses, smClass);
+		exp.setComputedUFLMatrix(alignType.aligningProperties, smProperty);
 		
 		exp.forbiddenPositionsClasses = 
 				new SparseMatrix(

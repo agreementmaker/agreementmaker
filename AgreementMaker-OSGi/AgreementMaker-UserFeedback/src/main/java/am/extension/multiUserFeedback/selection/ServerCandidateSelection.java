@@ -16,6 +16,7 @@ import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.evaluation.disagreement.variance.VarianceDisagreement;
 import am.evaluation.disagreement.variance.VarianceDisagreementParameters;
 import am.extension.multiUserFeedback.experiment.MUExperiment;
+import am.extension.userfeedback.UserFeedback.Validation;
 
 public class ServerCandidateSelection extends MUCandidateSelection<MUExperiment> {
 	
@@ -97,8 +98,8 @@ public class ServerCandidateSelection extends MUCandidateSelection<MUExperiment>
 	
 	private void inizialization()
 	{
-		classesMatrix=experiment.getUflClassMatrix();
-		propertiesMatrix=experiment.getUflPropertyMatrix();
+		classesMatrix = experiment.getComputedUFLMatrix(alignType.aligningClasses);
+		propertiesMatrix = experiment.getComputedUFLMatrix(alignType.aligningProperties);
 	}
 	
 	private SimilarityMatrix userDisagrement(alignType atp)
@@ -106,15 +107,12 @@ public class ServerCandidateSelection extends MUCandidateSelection<MUExperiment>
 		double sim=0;
 		int numPos=0;
 		int numNeg=0;
-		SimilarityMatrix ud=experiment.getUflClassMatrix();
-		SparseMatrix sparsePos=experiment.getUflStorageClassPos();
-		SparseMatrix sparseNeg=experiment.getUflStorageClass_neg();
-		if (atp.equals(alignType.aligningProperties))
-		{
-			ud=experiment.getUflPropertyMatrix();
-			sparsePos=experiment.getUflStoragePropertyPos();
-			sparseNeg=experiment.getUflStorageProperty_neg();
-		}
+		
+		SimilarityMatrix ud = experiment.getComputedUFLMatrix(atp);
+		
+		SparseMatrix sparsePos = experiment.getFeedbackMatrix(atp, Validation.CORRECT);
+		SparseMatrix sparseNeg = experiment.getFeedbackMatrix(atp, Validation.INCORRECT);
+		
 		for (int i=0;i<ud.getRows();i++)
 		{
 			for(int j=0;j<ud.getColumns();j++)

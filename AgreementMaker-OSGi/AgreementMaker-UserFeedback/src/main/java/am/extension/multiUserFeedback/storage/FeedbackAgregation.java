@@ -2,13 +2,13 @@ package am.extension.multiUserFeedback.storage;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 import javax.swing.SwingUtilities;
 import javax.swing.event.EventListenerList;
 
-import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
-import am.extension.userfeedback.UserFeedback.Validation;
 import am.extension.userfeedback.experiments.UFLExperiment;
 import am.extension.userfeedback.ui.UFLControlGUI;
 
@@ -23,7 +23,7 @@ public abstract class FeedbackAgregation <T extends UFLExperiment>{
 	}
 	public abstract void addFeedback(T exp);
 	
-	public abstract void getTrainingSet();
+	public abstract Object[][] getTrainingSet(alignType type);
 	
 	public void addActionListener( ActionListener l ) {
 		listeners.add(ActionListener.class, l);

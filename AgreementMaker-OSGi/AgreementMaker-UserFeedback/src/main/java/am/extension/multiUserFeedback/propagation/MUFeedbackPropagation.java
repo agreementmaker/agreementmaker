@@ -105,8 +105,8 @@ public class MUFeedbackPropagation  extends FeedbackPropagation<MUExperiment> {
 			
 
 
-			SimilarityMatrix feedbackClassMatrix=experiment.getUflClassMatrix();
-			SimilarityMatrix feedbackPropertyMatrix=experiment.getUflPropertyMatrix();
+			SimilarityMatrix feedbackClassMatrix=experiment.getComputedUFLMatrix(alignType.aligningClasses);
+			SimilarityMatrix feedbackPropertyMatrix=experiment.getComputedUFLMatrix(alignType.aligningProperties);
 			Mapping m=null;
 			if( candidateMapping.getAlignmentType() == alignType.aligningClasses ) 
 			{
@@ -168,8 +168,8 @@ public class MUFeedbackPropagation  extends FeedbackPropagation<MUExperiment> {
 
 			experiment.setMLAlignment(combineResults(ufl));
 		
-			experiment.setUflClassMatrix(feedbackClassMatrix);
-			experiment.setUflPropertyMatrix(feedbackPropertyMatrix);
+			experiment.setComputedUFLMatrix(alignType.aligningClasses, feedbackClassMatrix);
+			experiment.setComputedUFLMatrix(alignType.aligningProperties, feedbackPropertyMatrix);
 			
 			done();
 		}

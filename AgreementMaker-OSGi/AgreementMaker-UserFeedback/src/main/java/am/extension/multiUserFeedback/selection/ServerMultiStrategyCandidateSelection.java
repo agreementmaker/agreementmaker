@@ -9,6 +9,7 @@ import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping;
 import am.app.ontology.Ontology;
 import am.extension.multiUserFeedback.experiment.MUExperiment;
+import am.extension.userfeedback.UserFeedback.Validation;
 import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
 import am.extension.userfeedback.rankingStrategies.DisagreementRanking;
 import am.extension.userfeedback.rankingStrategies.MappingQualityRanking;
@@ -41,14 +42,31 @@ public class ServerMultiStrategyCandidateSelection extends MUCandidateSelection<
 		if (exp.incorrectMappings!=null)
 			toRank.addAll(exp.incorrectMappings);
 		
-		DisagreementRanking dr=new DisagreementRanking(extractList(exp.initialMatcher.getComponentMatchers(), alignType.aligningClasses),
-				extractList(exp.initialMatcher.getComponentMatchers(), alignType.aligningProperties), exp.getUflStorageClassPos(), 
-				exp.getUflStorageClass_neg(), exp.getUflStoragePropertyPos(), exp.getUflStorageProperty_neg(), exp.getUflClassMatrix(), exp.getUflPropertyMatrix());
-		MappingQualityRanking mqr=new MappingQualityRanking(exp.getUflClassMatrix(), exp.getUflPropertyMatrix());
-		RevalidationRanking rr=new RevalidationRanking(extractList(exp.initialMatcher.getComponentMatchers(), alignType.aligningClasses),
-				extractList(exp.initialMatcher.getComponentMatchers(), alignType.aligningProperties), exp.getUflStorageClassPos(), 
-				exp.getUflStorageClass_neg(), exp.getUflStoragePropertyPos(), exp.getUflStorageProperty_neg(),
-				exp.getUflClassMatrix(), exp.getUflPropertyMatrix(),toRank);
+		DisagreementRanking dr=new DisagreementRanking(
+				extractList(exp.initialMatcher.getComponentMatchers(), alignType.aligningClasses),
+				extractList(exp.initialMatcher.getComponentMatchers(), alignType.aligningProperties), 
+				exp.getFeedbackMatrix(alignType.aligningClasses, Validation.CORRECT),
+				exp.getFeedbackMatrix(alignType.aligningClasses, Validation.INCORRECT),
+				exp.getFeedbackMatrix(alignType.aligningProperties, Validation.CORRECT),
+				exp.getFeedbackMatrix(alignType.aligningProperties, Validation.INCORRECT),
+				exp.getComputedUFLMatrix(alignType.aligningClasses), 
+				exp.getComputedUFLMatrix(alignType.aligningProperties));
+		
+		MappingQualityRanking mqr=new MappingQualityRanking(
+				exp.getComputedUFLMatrix(alignType.aligningClasses),
+				exp.getComputedUFLMatrix(alignType.aligningProperties));
+		
+		RevalidationRanking rr=new RevalidationRanking(
+				extractList(exp.initialMatcher.getComponentMatchers(), alignType.aligningClasses),
+				extractList(exp.initialMatcher.getComponentMatchers(), alignType.aligningProperties),
+				exp.getFeedbackMatrix(alignType.aligningClasses, Validation.CORRECT),
+				exp.getFeedbackMatrix(alignType.aligningClasses, Validation.INCORRECT),
+				exp.getFeedbackMatrix(alignType.aligningProperties, Validation.CORRECT),
+				exp.getFeedbackMatrix(alignType.aligningProperties, Validation.INCORRECT),
+				exp.getComputedUFLMatrix(alignType.aligningClasses), 
+				exp.getComputedUFLMatrix(alignType.aligningProperties),
+				toRank);
+		
 		mqList=mqr.rank();
 		drList=dr.rank();
 		rrList=rr.rank();
