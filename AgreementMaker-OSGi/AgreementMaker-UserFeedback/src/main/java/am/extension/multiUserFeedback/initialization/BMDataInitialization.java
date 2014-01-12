@@ -22,18 +22,18 @@ public class BMDataInitialization extends FeedbackLoopInizialization<BMexperimen
 		super();
 	}
 	
-	private void initializeParameters()
-	{
-		experiment.setup.parameters.setIntParameter(Parameter.NUM_USERS, 10);
-		experiment.setup.parameters.setIntParameter(Parameter.NUM_ITERATIONS, 100);
-		experiment.setup.parameters.setDoubleParameter(Parameter.ERROR_RATE, 0.1);
-		experiment.setup.parameters.setDoubleParameter(Parameter.REVALIDATION_RATE, 0.3);
-	}
+//	private void initializeParameters()
+//	{
+//		experiment.setup.parameters.setIntParameter(Parameter.NUM_USERS, 10);
+//		experiment.setup.parameters.setIntParameter(Parameter.NUM_ITERATIONS, 100);
+//		experiment.setup.parameters.setDoubleParameter(Parameter.ERROR_RATE, 0.1);
+//		experiment.setup.parameters.setDoubleParameter(Parameter.REVALIDATION_RATE, 0.3);
+//	}
 	
 	@Override
 	public void inizialize(BMexperiment exp) {
 		this.experiment=exp;
-		initializeParameters();
+		//initializeParameters();
 		// TODO Auto-generated method stub
 		SimilarityMatrix smClass=exp.initialMatcher.getFinalMatcher().getClassesMatrix().clone();
 		SimilarityMatrix smProperty=exp.initialMatcher.getFinalMatcher().getPropertiesMatrix().clone();

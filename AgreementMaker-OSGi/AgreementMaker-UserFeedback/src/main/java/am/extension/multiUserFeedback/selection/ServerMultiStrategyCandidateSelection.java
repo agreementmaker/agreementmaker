@@ -89,31 +89,34 @@ public class ServerMultiStrategyCandidateSelection extends MUCandidateSelection<
 
 	@Override
 	public Mapping getCandidateMapping() {
-		double c1=(total!=0)? count[0]/total:0.0;
-		double c2=(total!=0)? count[1]/total:0.0;
-		double c3=(total!=0)? count[2]/total:0.0;
+		double c1=(total!=0)? count[0]/(double)total:0.0;
+		double c2=(total!=0)? count[1]/(double)total:0.0;
+		double c3=(total!=0)? count[2]/(double)total:0.0;
 		total++;
-		if (c1<mqRate)
+		if (c1<=mqRate)
 		{
 			count[0]++;
 			experiment.data.count=count;
 			experiment.data.total=total;
-			return getCandidateMappingFromList(mqList);
+			experiment.selectedMapping=getCandidateMappingFromList(mqList);
+			return experiment.selectedMapping;
 			
 		}
-		if (c2<dRate)
+		if (c2<=dRate)
 		{
 			count[1]++;
 			experiment.data.count=count;
 			experiment.data.total=total;
-			return getCandidateMappingFromList(drList);
+			experiment.selectedMapping=getCandidateMappingFromList(drList);
+			return experiment.selectedMapping;
 		}
-		if (c3<revalidationRate)
+		if (c3<=revalidationRate)
 		{
 			count[2]++;
 			experiment.data.count=count;
 			experiment.data.total=total;
-			return getCandidateMappingFromList(rrList);
+			experiment.selectedMapping=rrList.get(0);
+			return experiment.selectedMapping;
 		}
 		
 		return null;
@@ -170,7 +173,6 @@ public class ServerMultiStrategyCandidateSelection extends MUCandidateSelection<
 	@Override
 	public Mapping getSelectedMapping() {
 		// TODO Auto-generated method stub
-		experiment.selectedMapping=getCandidateMapping();
 		return experiment.selectedMapping;
 	}
 
