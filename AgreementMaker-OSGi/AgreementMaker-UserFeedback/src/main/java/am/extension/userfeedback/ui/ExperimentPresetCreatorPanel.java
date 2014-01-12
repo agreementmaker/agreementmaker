@@ -22,6 +22,7 @@ import org.apache.log4j.Logger;
 import am.extension.userfeedback.UFLRegistry.CSEvaluationRegistry;
 import am.extension.userfeedback.UFLRegistry.CandidateSelectionRegistry;
 import am.extension.userfeedback.UFLRegistry.ExperimentRegistry;
+import am.extension.userfeedback.UFLRegistry.FeedbackAggregationRegistry;
 import am.extension.userfeedback.UFLRegistry.FeedbackPropagationRegistry;
 import am.extension.userfeedback.UFLRegistry.InitialMatcherRegistry;
 import am.extension.userfeedback.UFLRegistry.LoopInizializationRegistry;
@@ -68,6 +69,9 @@ public class ExperimentPresetCreatorPanel extends SettingsPanel implements Actio
 	
 	private JLabel lblUV = new JLabel("User Validation:");
 	private JComboBox<UserValidationRegistry> cmbUV = new JComboBox<>(UserValidationRegistry.values());
+	
+	private JLabel lblFA = new JLabel("Feedback Agregation:");
+	private JComboBox<FeedbackAggregationRegistry> cmbFA = new JComboBox<>(FeedbackAggregationRegistry.values());
 	
 	private JLabel lblFP = new JLabel("Feedback Propagation:");
 	private JComboBox<FeedbackPropagationRegistry> cmbFP = new JComboBox<>(FeedbackPropagationRegistry.values());
@@ -117,6 +121,7 @@ public class ExperimentPresetCreatorPanel extends SettingsPanel implements Actio
 		if( this.preset.getExperimentSetup().cs != null ) cmbCS.setSelectedItem(this.preset.getExperimentSetup().cs);
 		if( this.preset.getExperimentSetup().cse != null ) cmbCSE.setSelectedItem(this.preset.getExperimentSetup().cse);
 		if( this.preset.getExperimentSetup().uv != null ) cmbUV.setSelectedItem(this.preset.getExperimentSetup().uv);
+		if( this.preset.getExperimentSetup().fa != null ) cmbFA.setSelectedItem(this.preset.getExperimentSetup().fa);
 		if( this.preset.getExperimentSetup().fp != null ) cmbFP.setSelectedItem(this.preset.getExperimentSetup().fp);
 		if( this.preset.getExperimentSetup().pe != null ) cmbPE.setSelectedItem(this.preset.getExperimentSetup().pe);
 		if( this.preset.getExperimentSetup().sf != null ) cmbSF.setSelectedItem(this.preset.getExperimentSetup().sf);
@@ -252,38 +257,51 @@ public class ExperimentPresetCreatorPanel extends SettingsPanel implements Actio
 			c.fill = GridBagConstraints.HORIZONTAL;
 			c.gridx = 0;
 			c.gridy = 9;
-			add(lblFP, c);
+			add(lblFA, c);
 		}{
 			GridBagConstraints c = new GridBagConstraints();
 			c.fill = GridBagConstraints.HORIZONTAL;
 			c.gridx = 1;
 			c.gridy = 9;
 			c.gridwidth = 2;
-			add(cmbFP, c);
+			add(cmbFA, c);
 		}{
 			GridBagConstraints c = new GridBagConstraints();
 			c.fill = GridBagConstraints.HORIZONTAL;
 			c.gridx = 0;
 			c.gridy = 10;
-			add(lblPE, c);
+			add(lblFP, c);
 		}{
 			GridBagConstraints c = new GridBagConstraints();
 			c.fill = GridBagConstraints.HORIZONTAL;
 			c.gridx = 1;
 			c.gridy = 10;
 			c.gridwidth = 2;
-			add(cmbPE, c);
+			add(cmbFP, c);
 		}{
 			GridBagConstraints c = new GridBagConstraints();
 			c.fill = GridBagConstraints.HORIZONTAL;
 			c.gridx = 0;
 			c.gridy = 11;
-			add(lblSF, c);
+			add(lblPE, c);
 		}{
 			GridBagConstraints c = new GridBagConstraints();
 			c.fill = GridBagConstraints.HORIZONTAL;
 			c.gridx = 1;
 			c.gridy = 11;
+			c.gridwidth = 2;
+			add(cmbPE, c);
+		}{
+			GridBagConstraints c = new GridBagConstraints();
+			c.fill = GridBagConstraints.HORIZONTAL;
+			c.gridx = 0;
+			c.gridy = 12;
+			add(lblSF, c);
+		}{
+			GridBagConstraints c = new GridBagConstraints();
+			c.fill = GridBagConstraints.HORIZONTAL;
+			c.gridx = 1;
+			c.gridy = 12;
 			c.gridwidth = 2;
 			add(cmbSF, c);
 		}
@@ -306,6 +324,7 @@ public class ExperimentPresetCreatorPanel extends SettingsPanel implements Actio
 		preset.getExperimentSetup().cs = (CandidateSelectionRegistry) cmbCS.getSelectedItem();
 		preset.getExperimentSetup().cse = (CSEvaluationRegistry) cmbCSE.getSelectedItem();
 		preset.getExperimentSetup().uv = (UserValidationRegistry) cmbUV.getSelectedItem();
+		preset.getExperimentSetup().fa = (FeedbackAggregationRegistry) cmbFA.getSelectedItem();
 		preset.getExperimentSetup().fp = (FeedbackPropagationRegistry) cmbFP.getSelectedItem();
 		preset.getExperimentSetup().pe = (PropagationEvaluationRegistry) cmbPE.getSelectedItem();
 		preset.getExperimentSetup().sf = (SaveFeedbackRegistry) cmbSF.getSelectedItem();

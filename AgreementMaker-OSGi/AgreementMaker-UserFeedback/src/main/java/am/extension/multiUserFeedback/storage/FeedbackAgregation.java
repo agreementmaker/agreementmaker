@@ -25,6 +25,10 @@ public abstract class FeedbackAgregation <T extends UFLExperiment>{
 	
 	public abstract void getTrainingSet();
 	
+	public void addActionListener( ActionListener l ) {
+		listeners.add(ActionListener.class, l);
+	}
+	
 	
 	protected void fireEvent( ActionEvent e ) {
 		final ActionEvent evt = e;

@@ -2,6 +2,8 @@ package am.extension.userfeedback.logic;
 
 import java.awt.event.ActionListener;
 
+import am.extension.multiUserFeedback.experiment.MUExperiment;
+import am.extension.multiUserFeedback.storage.FeedbackAgregation;
 import am.extension.userfeedback.ExecutionSemantics;
 import am.extension.userfeedback.experiments.UFLExperiment;
 

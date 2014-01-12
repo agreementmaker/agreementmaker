@@ -66,7 +66,7 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 	public void propagate(MUExperiment exp) 
 	{
 		this.experiment=exp;
-
+		
 		Mapping candidateMapping = experiment.userFeedback.getCandidateMapping();
 		
 		experiment.getFinalAlignment();
@@ -153,12 +153,11 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 	{
 		Mapping mp;
 		Object[] ssv;
-		double tmp=0;
-		double sim;
+
 		double distance=0;
 		double min=Double.MAX_VALUE;
 		int index=0;
-		double avg_dist=0;
+
 		for(int k=0;k<sm.getRows();k++)
 		{
 			for(int h=0;h<sm.getColumns();h++)
@@ -178,15 +177,14 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 						distance+=Math.pow((double)ssv[j]-(double)trainingSet[i][j],2);
 					}
 					distance=Math.sqrt(distance);
-					avg_dist+=distance;
 					if (distance<min)
 					{
 						min=distance;
 						index=i;
 					}
 				}
-				//tmp=(double)trainingSet[index][trainingSet[0].length-1];
-				if ((min==0.0))// & (tmp==1.0))
+
+				if ((min==0.0))
 				{
 					sm.setSimilarity(k, h, (double)trainingSet[index][trainingSet[0].length-1]);
 					if (type.equals(alignType.aligningClasses))
@@ -195,23 +193,7 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 						experiment.propertiesSparseMatrix.setSimilarity(k, h, 1);
 					
 				}
-//				if ((min>0) &(min<experiment.avg_dist))// & (tmp==1.0))
-//				{
-//					sim=sm.getSimilarity(k, h);
-//					if ((double)trainingSet[index][trainingSet[0].length-1]==1.0)
-//					{
-//						if (sim<0.9)
-//							sim+=0.1;
-//					}
-//					else
-//					{
-//						if (sim>0.1)
-//							sim-=0.1;
-//					}
-//					sm.setSimilarity(k, h, sim);
-//					
-//					
-//				}
+
 			}
 		}
 
