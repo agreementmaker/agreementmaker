@@ -42,7 +42,7 @@ public class DisagreementRanking implements StrategyInterface{
 		List<Mapping> rankList=linearCombination(classMatrices, classPos, classNeg, refMatrixC);
 		rankList.addAll(linearCombination(propMatrices, propPos, propNeg,refMatrixP));
 		Collections.sort(rankList, new MappingSimilarityComparator() );
-		//Collections.reverse(rankList);
+		Collections.reverse(rankList);
 		
 		return rankList;
 	}
