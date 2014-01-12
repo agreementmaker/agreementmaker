@@ -14,81 +14,43 @@ import am.extension.multiUserFeedback.experiment.MUExperiment;
 import am.extension.userfeedback.UserFeedback.Validation;
 
 public class ServerFeedbackStorage extends FeedbackAgregation<MUExperiment>{
-	MUExperiment experiment;
-	Mapping lastAdded;
-	double correctionLabel=0;
-	Boolean flag=false;
 	
-	public ServerFeedbackStorage(){}
+	private MUExperiment experiment;
 	
+	//Boolean flag=false;
 	
 	@Override
 	public void addFeedback(MUExperiment exp) {
 		this.experiment=exp;
-		Mapping candidateMapping=exp.selectedMapping;
+		Mapping candidateMapping = exp.selectedMapping;
 		
 		int mappingRow = candidateMapping.getSourceKey();
 		int mappingCol = candidateMapping.getTargetKey();
 		
-		Validation userFeedback = experiment.userFeedback.getUserFeedback();
-		
-		if(candidateMapping.getAlignmentType() == alignType.aligningClasses)
+		final Validation userFeedback = experiment.userFeedback.getUserFeedback();
+
+		/*double correctionLabel = 0;
+		if (flag)
 		{
-			if (flag)
-			{
-				correctionLabel=labelizeSingleTS(exp.getUflStorageClassPos().getSimilarity(candidateMapping.getSourceKey(), candidateMapping.getTargetKey()),exp.getUflStorageClass_neg().getSimilarity(candidateMapping.getSourceKey(), candidateMapping.getTargetKey()));
-			}
-			
-			if (userFeedback.equals(Validation.CORRECT))
-			{
-				SparseMatrix m = exp.getUflStorageClassPos();
-				int count = (int) m.getSimilarity(mappingRow, mappingCol);
-				count++;
-				m.setSimilarity(mappingRow, mappingCol, (double)count);
-				//exp.setUflStorageClassPos(m);
-			}
-			if (userFeedback.equals(Validation.INCORRECT))
-			{
-				SparseMatrix m = exp.getUflStorageClass_neg();
-				int count = (int) m.getSimilarity(mappingRow, mappingCol);
-				count++;
-				m.setSimilarity(mappingRow, mappingCol, (double)count);
-				//exp.setUflStorageClass_neg(m);
-			}
-			
-		}
-		else if(candidateMapping.getAlignmentType() == alignType.aligningProperties)
-		{
-			if (flag)
-			{
-				correctionLabel=labelizeSingleTS(exp.getUflStoragePropertyPos().getSimilarity(candidateMapping.getSourceKey(), candidateMapping.getTargetKey()),exp.getUflStorageProperty_neg().getSimilarity(candidateMapping.getSourceKey(), candidateMapping.getTargetKey()));
-			}
-			
-			if (userFeedback.equals(Validation.CORRECT))
-			{
-				SparseMatrix m = exp.getUflStoragePropertyPos();
-				int count = (int) m.getSimilarity(mappingRow, mappingCol);
-				count++;
-				m.setSimilarity(mappingRow, mappingCol, (double)count);
-				//exp.setUflStoragePropertyPos(m);
-			}
-			if (userFeedback.equals(Validation.INCORRECT))
-			{
-				SparseMatrix m = exp.getUflStorageProperty_neg();
-				int count = (int) m.getSimilarity(mappingRow, mappingCol);
-				count++;
-				m.setSimilarity(mappingRow, mappingCol, (double)count);
-				//exp.setUflStorageProperty_neg(m);
-			}
-			
-		}
+			correctionLabel = labelizeSingleTS(exp.getUflStorageClassPos().getSimilarity(candidateMapping.getSourceKey(), candidateMapping.getTargetKey()),exp.getUflStorageClass_neg().getSimilarity(candidateMapping.getSourceKey(), candidateMapping.getTargetKey()));
+		}*/
 		
-		getTrainingSet();
+		// update the validation matrices
+		SparseMatrix validationMatrix = exp.getFeedbackMatrix(candidateMapping.getAlignmentType(), userFeedback);
+		int count = (int) validationMatrix.getSimilarity(mappingRow, mappingCol);
+		count++;
+		validationMatrix.setSimilarity(mappingRow, mappingCol, (double)count);
+		
+		// update the forbidden positions
+		updateForbiddenPositions(candidateMapping, userFeedback);
+		
+		experiment.setTrainingSet_classes(getTrainingSet(alignType.aligningClasses));
+		experiment.setTrainingSet_property(getTrainingSet(alignType.aligningProperties));
 		
 		done();
 	}
 	
-	public void getSingleTrainingSet()
+	/*public void getSingleTrainingSet()
 	{
 		Object[][] tmp= new Object[1][experiment.initialMatcher.getComponentMatchers().size()+1];
 		tmp[0]=getLabeledMapping(lastAdded,correctionLabel);
@@ -108,51 +70,48 @@ public class ServerFeedbackStorage extends FeedbackAgregation<MUExperiment>{
 		if (x>0) return 1;
 		return 0;
 		
-	}
+	}*/
 
-	/**
-	 * FIXME: Move the duplicated code into its own private method.
-	 */
 	@Override
-	public void getTrainingSet() {
-		List<Object[]> class_trn = new ArrayList<Object[]>();
-		SparseMatrix sparsePos = experiment.getUflStorageClassPos();
-		SparseMatrix sparseNeg = experiment.getUflStorageClass_neg();
-		for(int i=0;i<sparsePos.getRows();i++)
+	public Object[][] getTrainingSet(alignType type) {
+		List<Object[]> trainingSet = new ArrayList<Object[]>();
+		SparseMatrix positiveFeedback = experiment.getFeedbackMatrix(type, Validation.CORRECT);
+		SparseMatrix negativeFeedback = experiment.getFeedbackMatrix(type, Validation.INCORRECT);
+		
+		for(int i=0;i < positiveFeedback.getRows();i++)
 		{
-			for(int j=0;j<sparsePos.getColumns();j++)
+			for(int j=0;j < positiveFeedback.getColumns();j++)
 			{
-				int sum = (int)sparsePos.getSimilarity(i, j) - (int)sparseNeg.getSimilarity(i, j);
+				int sum = (int)positiveFeedback.getSimilarity(i, j) - (int)negativeFeedback.getSimilarity(i, j);
 				if (sum != 0) {
-					Mapping m = sparsePos.get(i, j) == null ? sparseNeg.get(i, j) : sparsePos.get(i, j);
-					class_trn.add(getLabeledMapping(m,sum));
+					Mapping m = positiveFeedback.get(i, j) == null ? negativeFeedback.get(i, j) : positiveFeedback.get(i, j);
+					trainingSet.add(getLabeledMapping(m,sum));
 				}
 			}
 		}
 
-		Object[][] cl_training=new Object[class_trn.size()][experiment.initialMatcher.getComponentMatchers().size()+1];
-		class_trn.toArray(cl_training);
-		experiment.setTrainingSet_classes(cl_training);
+		return trainingSet.toArray(new Object[0][0]);
+	}
+	
+	/**
+	 * Update the forbidden position matrix.  We will unforbid mappings that are ambiguous.
+	 */
+	private void updateForbiddenPositions(Mapping candidateMapping, Validation userFeedback) {
+		SparseMatrix positiveFeedback = experiment.getFeedbackMatrix(candidateMapping.getAlignmentType(), Validation.CORRECT);
+		SparseMatrix negativeFeedback = experiment.getFeedbackMatrix(candidateMapping.getAlignmentType(), Validation.INCORRECT);
 		
-		List<Object[]> prop_trn = new ArrayList<Object[]>();
-		sparsePos=experiment.getUflStoragePropertyPos();
-		sparseNeg=experiment.getUflStorageProperty_neg();
-		for(int i=0;i<sparsePos.getRows();i++)
-		{
-			for(int j=0;j<sparsePos.getColumns();j++)
-			{
-				int sum = (int)sparsePos.getSimilarity(i, j) - (int)sparseNeg.getSimilarity(i, j);
-				if (sum!=0) {
-					Mapping m = sparsePos.get(i, j) == null ? sparseNeg.get(i, j) : sparsePos.get(i, j);
-					prop_trn.add(getLabeledMapping(m, sum));
-				}
-			}
+		int i = candidateMapping.getSourceKey();
+		int j = candidateMapping.getTargetKey();
+		
+		int sum = (int)positiveFeedback.getSimilarity(i, j) - (int)negativeFeedback.getSimilarity(i, j);
+		
+		SparseMatrix forbiddenPositionsMatrix = experiment.getForbiddenPositions(candidateMapping.getAlignmentType());
+		if( sum == 0 ) {
+			forbiddenPositionsMatrix.setSimilarity(i, j, 0.0);
 		}
-		
-		Object[][] pr_training=new Object[prop_trn.size()][experiment.initialMatcher.getComponentMatchers().size()+1];
-		prop_trn.toArray(pr_training);
-		experiment.setTrainingSet_property(pr_training);
-
+		else {
+			forbiddenPositionsMatrix.setSimilarity(i, j, 1.0);
+		}
 	}
 	
 	/**
@@ -180,18 +139,17 @@ public class ServerFeedbackStorage extends FeedbackAgregation<MUExperiment>{
 	
 	private Object[] getSignatureVector(Mapping mp)
 	{
-		int size=experiment.initialMatcher.getComponentMatchers().size();
+		int numMatchers = experiment.initialMatcher.getComponentMatchers().size();
 		Node sourceNode=mp.getEntity1();
 		Node targetNode=mp.getEntity2();
 		AbstractMatcher a;
-		Object[] ssv=new Object[size];
-		for (int i=0;i<size;i++)
+		Object[] signatureVector = new Object[numMatchers];
+		for (int i=0; i < numMatchers;i++)
 		{
 			a = experiment.initialMatcher.getComponentMatchers().get(i);
-			ssv[i]=a.getAlignment().getSimilarity(sourceNode, targetNode);
-			
+			signatureVector[i] = a.getAlignment().getSimilarity(sourceNode, targetNode);
 		}
-		return ssv;
+		return signatureVector;
 	}
 
 

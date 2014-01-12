@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import am.app.Core;
+import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
@@ -30,8 +31,10 @@ public BufferedWriter logFile;
 private Alignment<Mapping> MLAlignment;
 private Object[][] trainingSet_classes;
 private Object[][] trainingSet_property;
-private SimilarityMatrix uflClassMatrix;
-private SimilarityMatrix uflPropertyMatrix;
+
+	private SimilarityMatrix uflClassMatrix;
+	private SimilarityMatrix uflPropertyMatrix;
+
 private SparseMatrix uflStorageClass_pos;
 private SparseMatrix uflStorageClass_neg;
 private SparseMatrix uflStorageProperty_pos;
@@ -88,48 +91,64 @@ public void setAlignCardinalityType(alignCardinality alignCardinalityType) {
 	public SparseMatrix forbiddenPositionsClasses;
 	public SparseMatrix forbiddenPositionsProperties;
 
-	public SparseMatrix getForbiddenPositionsClasses() {
-		return forbiddenPositionsClasses;
+	public SparseMatrix getForbiddenPositions(alignType type) {
+		switch(type) {
+		case aligningClasses:
+			return forbiddenPositionsClasses;
+		case aligningProperties:
+			return forbiddenPositionsProperties;
+		default:
+			throw new RuntimeException(type + " is not accepted");
+		}
 	}
 	
-	public void setForbiddenPositionsClasses(SparseMatrix classesSparseMatrix) {
-		this.forbiddenPositionsClasses = classesSparseMatrix;
+	public void setForbiddenPositions(alignType type, SparseMatrix matrix) {
+		switch(type) {
+		case aligningClasses:
+			this.forbiddenPositionsClasses = matrix; return;
+		case aligningProperties:
+			this.forbiddenPositionsProperties = matrix;	return;
+		default:
+			throw new RuntimeException(type + " is not accepted");
+		}
 	}
 	
-	public SparseMatrix getForbiddenPositionsProperties() {
-		return forbiddenPositionsProperties;
+	public SparseMatrix getFeedbackMatrix(alignType type, Validation validation) {
+		switch(type) {
+		case aligningClasses:
+			switch(validation) {
+			case CORRECT:
+				return uflStorageClass_pos;
+			case INCORRECT:
+				return uflStorageClass_neg;
+			default:
+				throw new RuntimeException(validation + " is not accepted");
+			}
+		case aligningProperties:
+			switch(validation) {
+			case CORRECT:
+				return uflStorageProperty_pos;
+			case INCORRECT:
+				return uflStorageProperty_neg;
+			default:
+				throw new RuntimeException(validation + " is not accepted");
+			}
+		default:
+			throw new RuntimeException(type + " is not accepted");
+		}
 	}
 
-	public void setForbiddenPositionsProperties(SparseMatrix propertiesSparseMatrix) {
-		this.forbiddenPositionsProperties = propertiesSparseMatrix;
-	}
-	
-public SparseMatrix getUflStorageClass_neg() {
-	return uflStorageClass_neg;
-}
 
 public void setUflStorageClass_neg(SparseMatrix uflStorageClass_neg) {
 	this.uflStorageClass_neg = uflStorageClass_neg;
-}
-
-public SparseMatrix getUflStorageProperty_neg() {
-	return uflStorageProperty_neg;
 }
 
 public void setUflStorageProperty_neg(SparseMatrix uflStorageProperty_neg) {
 	this.uflStorageProperty_neg = uflStorageProperty_neg;
 }
 
-public SparseMatrix getUflStorageClassPos() {
-	return uflStorageClass_pos;
-}
-
 public void setUflStorageClassPos(SparseMatrix uflStorageClass) {
 	this.uflStorageClass_pos = uflStorageClass;
-}
-
-public SparseMatrix getUflStoragePropertyPos() {
-	return uflStorageProperty_pos;
 }
 
 public void setUflStoragePropertyPos(SparseMatrix uflStorageProperty) {
@@ -155,25 +174,28 @@ public void setTrainingSet_property(Object[][] trainingSet_property) {
 	this.trainingSet_property = trainingSet_property;
 }
 
+	public SimilarityMatrix getComputedUFLMatrix(alignType type) {
+		switch(type) {
+		case aligningClasses:
+			return uflClassMatrix;
+		case aligningProperties:
+			return uflPropertyMatrix;
+		default:
+			throw new RuntimeException(type + " is not accepted");
+		}
+	}
 
-public SimilarityMatrix getUflClassMatrix() {
-	return uflClassMatrix;
-}
+	public void setComputedUFLMatrix(alignType type, SimilarityMatrix matrix) {
+		switch(type) {
+		case aligningClasses:
+			this.uflClassMatrix = matrix; break;
+		case aligningProperties:
+			this.uflPropertyMatrix = matrix; break;
+		default:
+			throw new RuntimeException(type + " is not accepted");
+		}
+	}
 
-
-public void setUflClassMatrix(SimilarityMatrix uflClassMatrix) {
-	this.uflClassMatrix = uflClassMatrix;
-}
-
-
-public SimilarityMatrix getUflPropertyMatrix() {
-	return uflPropertyMatrix;
-}
-
-
-public void setUflPropertyMatrix(SimilarityMatrix uflPropertyMatrix) {
-	this.uflPropertyMatrix = uflPropertyMatrix;
-}
 
 public Alignment<Mapping> getMLAlignment() {
 	return MLAlignment;

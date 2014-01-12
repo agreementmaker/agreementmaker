@@ -100,8 +100,8 @@ public class MultiStrategyRanking extends CandidateSelection<MUExperiment>{
 	
 	private void inizialization()
 	{
-		classesMatrix=experiment.getUflClassMatrix();
-		propertiesMatrix=experiment.getUflPropertyMatrix();
+		classesMatrix=experiment.getComputedUFLMatrix(alignType.aligningClasses);
+		propertiesMatrix=experiment.getComputedUFLMatrix(alignType.aligningProperties);
 	}
 	
 	//one time strategy
