@@ -68,7 +68,7 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 		this.experiment=exp;
 		
 		Mapping candidateMapping = experiment.userFeedback.getCandidateMapping();
-		
+		inputMatchers=experiment.initialMatcher.getComponentMatchers();
 		experiment.getFinalAlignment();
 
 		SimilarityMatrix feedbackClassMatrix=experiment.getUflClassMatrix();
@@ -177,10 +177,10 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 				if ((min==0.0))
 				{
 					sm.setSimilarity(k, h, (double)trainingSet[index][trainingSet[0].length-1]);
-					if (type.equals(alignType.aligningClasses))
-						experiment.forbiddenPositionsClasses.setSimilarity(k, h, 1);
-					else
-						experiment.forbiddenPositionsProperties.setSimilarity(k, h, 1);
+//					if (type.equals(alignType.aligningClasses))
+//						experiment.forbiddenPositionsClasses.setSimilarity(k, h, 1);
+//					else
+//						experiment.forbiddenPositionsProperties.setSimilarity(k, h, 1);
 					
 				}
 
@@ -308,10 +308,10 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 					
 					sm.setSimilarity(k, h, sim);
 					
-					if (type.equals(alignType.aligningClasses))
-						experiment.forbiddenPositionsClasses.setSimilarity(k, h, 1);
-					else
-						experiment.forbiddenPositionsProperties.setSimilarity(k, h, 1);
+//					if (type.equals(alignType.aligningClasses))
+//						experiment.forbiddenPositionsClasses.setSimilarity(k, h, 1);
+//					else
+//						experiment.forbiddenPositionsProperties.setSimilarity(k, h, 1);
 				}
 			}
 		}

@@ -6,6 +6,8 @@ import java.util.List;
 
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MappingSimilarityComparator;
+import am.app.mappingEngine.qualityEvaluation.MappingQualityMetric;
+import am.app.mappingEngine.qualityEvaluation.metrics.InverseOf;
 import am.app.mappingEngine.qualityEvaluation.metrics.ufl.CrossCountQuality;
 import am.app.mappingEngine.qualityEvaluation.metrics.ufl.RevalidationRate;
 import am.app.mappingEngine.qualityEvaluation.metrics.ufl.SimilarityScoreHardness;
@@ -28,7 +30,7 @@ public class RevalidationRanking implements StrategyInterface{
 	private double alpha=1.0;
 	private double beta=1.0;
 	private double gamma=1.0;
-	private double tetha=1.0;
+	private double tetha=3.0;
 	private double zeta=1.0;
 	
 	
@@ -65,17 +67,19 @@ public class RevalidationRanking implements StrategyInterface{
 		UserDisagrement ud=new UserDisagrement(mPos, mNeg);
 		CrossCountQuality ccq=new CrossCountQuality(mtrx);
 		SimilarityScoreHardness ssh=new SimilarityScoreHardness(mtrx);
-		RevalidationRate rr=new RevalidationRate(mPos, mNeg);
+		MappingQualityMetric rr=new InverseOf(new RevalidationRate(mPos, mNeg));
 		VarianceMatcherDisagreement vmd=new VarianceMatcherDisagreement(lMtrx);
 		if (toRank==null) return new ArrayList<Mapping>();
-		for (int i=0;i<mPos.getRows();i++)
+		for (int i=0;i<mtrx.getRows();i++)
 		{
-			for (int j=0;j<mPos.getColumns();j++)
+			for (int j=0;j<mtrx.getColumns();j++)
 			{
+				mp=mtrx.get(i, j);
 				if (toRank.contains(mp))
 				{
-					mp=mPos.get(i, j);
-					sim=alpha*ud.getQuality(null, i, j)+beta*ccq.getQuality(null, i, j)+gamma*(1-ssh.getQuality(null, i, j))+tetha*rr.getQuality(null, i, j)+zeta*vmd.getQuality(null, i, j);;
+					sim=alpha*ud.getQuality(null, i, j)+beta*ccq.getQuality(null, i, j)+
+							gamma*(1-ssh.getQuality(null, i, j))+tetha*rr.getQuality(null, i, j)+
+							zeta*vmd.getQuality(null, i, j);
 					mp.setSimilarity(sim);
 					lst.add(mp);
 				}

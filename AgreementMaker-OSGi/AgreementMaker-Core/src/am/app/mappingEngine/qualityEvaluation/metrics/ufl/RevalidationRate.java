@@ -42,6 +42,6 @@ public class RevalidationRate extends AbstractQualityMetric {
 	public double getQuality(alignType type, int i, int j) 
 	{
 		int validationCount = (int)(positiveMatrix.getSimilarity(i, j) + negativeMatrix.getSimilarity(i, j));
-		return validationCount / (double)maxRepetition;
+		return (validationCount / (double)maxRepetition);
 	}
 }
