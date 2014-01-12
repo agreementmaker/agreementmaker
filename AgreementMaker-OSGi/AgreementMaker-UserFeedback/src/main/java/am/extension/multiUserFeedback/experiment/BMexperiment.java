@@ -16,14 +16,12 @@ import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.extension.multiUserFeedback.logic.BMlogic;
-import am.extension.multiUserFeedback.storage.MUFeedbackStorage;
 import am.extension.userfeedback.UserFeedback.Validation;
 import am.extension.userfeedback.experiments.UFLExperiment;
 import am.extension.userfeedback.logic.UFLControlLogic;
 
 public class BMexperiment extends UFLExperiment {
 
-public 	MUFeedbackStorage<UFLExperiment>	feedbackStorage;
 	
 public BufferedWriter logFile;
 private Alignment<Mapping> MLAlignment;

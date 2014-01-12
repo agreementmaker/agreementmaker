@@ -11,6 +11,7 @@ import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.app.ontology.Node;
 import am.extension.multiUserFeedback.experiment.MUExperiment;
+import am.extension.userfeedback.UserFeedback.Validation;
 import am.extension.userfeedback.propagation.FeedbackPropagation;
 import am.matcher.Combination.CombinationMatcher;
 
@@ -99,7 +100,7 @@ public class MUFeedbackPropagation  extends FeedbackPropagation<MUExperiment> {
 			List<AbstractMatcher> availableMatchers = experiment.initialMatcher.getComponentMatchers();
 			Object[][] trainingSet=new Object[1][availableMatchers.size()];
 			
-			String userFeedback = experiment.feedback;
+			Validation userFeedback = experiment.userFeedback.getUserFeedback();
 			
 			
 

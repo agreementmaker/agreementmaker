@@ -19,6 +19,7 @@ import am.extension.userfeedback.UFLRegistry;
 import am.extension.userfeedback.UFLRegistry.CSEvaluationRegistry;
 import am.extension.userfeedback.UFLRegistry.CandidateSelectionRegistry;
 import am.extension.userfeedback.UFLRegistry.ExperimentRegistry;
+import am.extension.userfeedback.UFLRegistry.FeedbackAggregationRegistry;
 import am.extension.userfeedback.UFLRegistry.FeedbackPropagationRegistry;
 import am.extension.userfeedback.UFLRegistry.InitialMatcherRegistry;
 import am.extension.userfeedback.UFLRegistry.LoopInizializationRegistry;
@@ -36,6 +37,7 @@ public class UFLControlGUI_InitialSettingsPanel extends JPanel implements Action
 	public JComboBox<LoopInizializationRegistry> cmbInizialization;
 	public JComboBox<CandidateSelectionRegistry> cmbCandidate;
 	public JComboBox<CSEvaluationRegistry> cmbCSEvaluation;
+	public JComboBox<FeedbackAggregationRegistry> cmbAgregation;
 	public JComboBox<FeedbackPropagationRegistry> cmbPropagation;
 	public JComboBox<PropagationEvaluationRegistry> cmbPropagationEvaluation;
 	public JComboBox<UserValidationRegistry> cmbUserFeedback;
@@ -52,6 +54,7 @@ public class UFLControlGUI_InitialSettingsPanel extends JPanel implements Action
 		CandidateSelectionRegistry[] 	CandidateSelectionEntries 		= UFLRegistry.CandidateSelectionRegistry.values();
 		CSEvaluationRegistry[] 			CSEvaluationEntries 			= UFLRegistry.CSEvaluationRegistry.values();
 		UserValidationRegistry[] 		UserValidationEntries 			= UFLRegistry.UserValidationRegistry.values();
+		FeedbackAggregationRegistry[] 	FeedbackAgregationEntries 		= UFLRegistry.FeedbackAggregationRegistry.values();
 		FeedbackPropagationRegistry[] 	FeedbackPropagationEntries 		= UFLRegistry.FeedbackPropagationRegistry.values();
 		PropagationEvaluationRegistry[] PropagationEvaluationEntries 	= UFLRegistry.PropagationEvaluationRegistry.values();
 		
@@ -79,6 +82,10 @@ public class UFLControlGUI_InitialSettingsPanel extends JPanel implements Action
 		cmbUserFeedback = new JComboBox<UserValidationRegistry>(UserValidationEntries);
 		cmbUserFeedback.setActionCommand( UFLControlGUI.ActionCommands.INITSCREEN_cmbUserFeedback.name() );
 		cmbUserFeedback.addActionListener(this);
+		
+		cmbAgregation = new JComboBox<FeedbackAggregationRegistry>(FeedbackAgregationEntries);
+		cmbAgregation.setActionCommand( UFLControlGUI.ActionCommands.INITSCREEN_cmbAgregation.name() );
+		cmbAgregation.addActionListener(this);
 		
 		cmbPropagation = new JComboBox<FeedbackPropagationRegistry>(FeedbackPropagationEntries);
 		cmbPropagation.setActionCommand( UFLControlGUI.ActionCommands.INITSCREEN_cmbPropagation.name() );

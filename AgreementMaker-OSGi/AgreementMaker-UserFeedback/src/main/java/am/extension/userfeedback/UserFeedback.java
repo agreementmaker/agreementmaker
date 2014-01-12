@@ -10,7 +10,7 @@ import am.app.mappingEngine.Mapping;
 import am.extension.userfeedback.experiments.UFLExperiment;
 import am.extension.userfeedback.ui.UFLControlGUI;
 
-public abstract class UserFeedback {
+public abstract class UserFeedback <T extends UFLExperiment>{
 
 	private EventListenerList listeners;  // list of listeners for this class
 	
@@ -19,7 +19,7 @@ public abstract class UserFeedback {
 	}
 	public enum Validation { CORRECT, INCORRECT, SKIP, END_EXPERIMENT; }
 
-	public abstract void validate( UFLExperiment experiment );
+	public abstract void validate( T experiment );
 	public abstract Validation getUserFeedback();
 	public abstract void setUserFeedback(Validation feedback);
 	public abstract Mapping getCandidateMapping();

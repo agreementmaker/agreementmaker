@@ -1,5 +1,6 @@
 package am.extension.userfeedback;
 
+import am.extension.multiUserFeedback.storage.FeedbackAgregation;
 import am.extension.userfeedback.evaluation.CandidateSelectionEvaluation;
 import am.extension.userfeedback.evaluation.PropagationEvaluation;
 import am.extension.userfeedback.experiments.UFLExperiment;
@@ -62,6 +63,7 @@ public class UFLRegistry {
 	
 	
 	public enum CandidateSelectionRegistry {
+		ServerMultiStrategy (am.extension.multiUserFeedback.selection.ServerMultiStrategyCandidateSelection.class),
 		ClientCandidateSelection (am.extension.multiUserFeedback.selection.ClientCandidateSelection.class),
 		ServerCandidateSelection (am.extension.multiUserFeedback.selection.ServerCandidateSelection.class),
 		MultiStrategyRanking (am.extension.userfeedback.clustering.disagreement.MultiStrategyRanking.class),
@@ -95,6 +97,16 @@ public class UFLRegistry {
 		
 		UserValidationRegistry( Class<? extends UserFeedback> cs ) { clazz = cs; }
 		public Class<? extends UserFeedback> getEntryClass() { return clazz; }
+	}
+	
+	public enum FeedbackAggregationRegistry {
+		ServerFeedbackAggregation (am.extension.multiUserFeedback.storage.ServerFeedbackStorage.class);
+		
+		/* *********************** DO NOT EDIT BELOW THIS LINE **************************** */
+		Class<? extends FeedbackAgregation> clazz;
+		
+		FeedbackAggregationRegistry( Class<? extends FeedbackAgregation> fa ) { clazz = fa; }
+		public Class<? extends FeedbackAgregation> getEntryClass() { return clazz; }
 	}
 	
 	

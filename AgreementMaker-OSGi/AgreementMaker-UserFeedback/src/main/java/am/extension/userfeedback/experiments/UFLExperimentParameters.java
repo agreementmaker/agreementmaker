@@ -16,7 +16,6 @@ public class UFLExperimentParameters extends Properties {
 	private static final long serialVersionUID = -1375888271615206058L;
 
 	public enum Parameter {
-		VALIDATION_OVERLAP,
 		NUM_ITERATIONS,  // how many iterations are we doing
 		ERROR_RATE,
 		NUM_USERS,

@@ -12,16 +12,19 @@ import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.app.ontology.Node;
 import am.extension.multiUserFeedback.experiment.MUExperiment;
 
-public class ServerFeedbackStorage extends MUFeedbackStorage<MUExperiment>{
+public class ServerFeedbackStorage extends FeedbackAgregation<MUExperiment>{
 	MUExperiment experiment;
 	Mapping lastAdded;
 	double correctionLabel=0;
 	Boolean flag=false;
+	
+	public ServerFeedbackStorage(){}
+	
+	
 	@Override
-	public void addFeedback(MUExperiment exp, Mapping candidateMapping,
-			String id) {
+	public void addFeedback(MUExperiment exp) {
 		this.experiment=exp;
-		
+		Mapping candidateMapping=exp.selectedMapping;
 		// TODO Auto-generated method stub
 		SparseMatrix sparse=exp.getUflStorageClassPos();
 		int row=candidateMapping.getSourceKey();
@@ -143,7 +146,7 @@ public class ServerFeedbackStorage extends MUFeedbackStorage<MUExperiment>{
 		
 		Object[][] pr_training=new Object[prop_trn.size()][experiment.initialMatcher.getComponentMatchers().size()+1];
 		class_trn.toArray(pr_training);
-		experiment.setTrainingSet_classes(pr_training);
+		experiment.setTrainingSet_property(pr_training);
 
 	}
 	

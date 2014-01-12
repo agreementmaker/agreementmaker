@@ -9,21 +9,19 @@ import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.DefaultSelectionParameters;
 import am.app.mappingEngine.MatchingTask;
-import am.app.mappingEngine.SelectionAlgorithm;
 import am.app.mappingEngine.SelectionResult;
 import am.app.mappingEngine.oneToOneSelection.MwbmSelection;
+import am.extension.multiUserFeedback.experiment.MUExperiment;
 import am.extension.userfeedback.UserFeedback.Validation;
-import am.extension.userfeedback.experiments.MLFExperiment;
 import am.extension.userfeedback.ui.UFLControlGUI.ActionCommands;
-import am.ui.MatcherProgressDialog;
-import am.ui.UICore;
 
-public class IndependentSequentialLogicPaper extends UFLControlLogic<MLFExperiment> {
+
+public class IndependentSequentialLogicPaper extends UFLControlLogic<MUExperiment> {
 	
 	private static Logger LOG = Logger.getLogger(IndependentSequentialLogicMultiUser.class);
 	
 	@Override
-	public void runExperiment(MLFExperiment exp) {
+	public void runExperiment(MUExperiment exp) {
 		this.experiment = exp;
 		runInitialMatchers();
 	}
@@ -39,7 +37,7 @@ public class IndependentSequentialLogicPaper extends UFLControlLogic<MLFExperime
 			
 			try {				
 				experiment.logFile.close();
-				am.Utility.displayMessagePane("<html><p>Your logfile has been saved to:</p><p>"+ experiment.logFileFile.getAbsolutePath() + "</p></html>", "LOG File Location");
+				//am.Utility.displayMessagePane("<html><p>Your logfile has been saved to:</p><p>"+ experiment.logFileFile.getAbsolutePath() + "</p></html>", "LOG File Location");
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -71,6 +69,10 @@ public class IndependentSequentialLogicPaper extends UFLControlLogic<MLFExperime
 				experiment.feedbackCount++;
 			}
 			
+			runFeedbackAggregation();
+		}
+		
+		if( e.getActionCommand() == ActionCommands.FEEDBACK_AGREGATION_DONE.name() ) {
 			runFeedbackPropagation();
 		}
 		
