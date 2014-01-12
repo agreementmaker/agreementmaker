@@ -35,7 +35,9 @@ public class ServerMultiStrategyCandidateSelection extends MUCandidateSelection<
 		this.count=exp.data.count;
 		this.total=exp.data.total;
 		
-		List<Mapping> toRank=exp.correctMappings;
+		List<Mapping> toRank=new ArrayList<Mapping>();
+		if (exp.correctMappings!=null)
+			toRank.addAll(exp.correctMappings);
 		if (exp.incorrectMappings!=null)
 			toRank.addAll(exp.incorrectMappings);
 		

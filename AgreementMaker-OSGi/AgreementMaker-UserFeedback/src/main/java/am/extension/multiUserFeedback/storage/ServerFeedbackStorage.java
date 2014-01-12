@@ -141,12 +141,6 @@ public class ServerFeedbackStorage extends FeedbackAgregation<MUExperiment>{
 		{
 			for(int j=0;j<sparsePos.getColumns();j++)
 			{
-				if ((i==55) & (j==41))
-				{
-					System.out.println(sparsePos.getSimilarity(55, 41));
-					System.out.println(sparseNeg.getSimilarity(55, 41));
-				}
-				
 				int sum = (int)sparsePos.getSimilarity(i, j) - (int)sparseNeg.getSimilarity(i, j);
 				if (sum!=0) {
 					Mapping m = sparsePos.get(i, j) == null ? sparseNeg.get(i, j) : sparsePos.get(i, j);
