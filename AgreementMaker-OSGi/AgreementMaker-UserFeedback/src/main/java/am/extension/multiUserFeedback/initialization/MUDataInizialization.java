@@ -5,6 +5,7 @@ import java.util.List;
 
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
@@ -12,6 +13,7 @@ import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.app.ontology.Node;
 import am.extension.multiUserFeedback.experiment.MUExperiment;
 import am.extension.userfeedback.inizialization.FeedbackLoopInizialization;
+import am.matcher.Combination.CombinationMatcher;
 
 public class MUDataInizialization  extends FeedbackLoopInizialization<MUExperiment> {
 	List<AbstractMatcher> inputMatchers = new ArrayList<AbstractMatcher>();
@@ -78,6 +80,13 @@ public class MUDataInizialization  extends FeedbackLoopInizialization<MUExperime
 		exp.setUflStoragePropertyPos(sparsePropPos);
 		exp.setUflStorageProperty_neg(sparsePropNeg);
 		
+		AbstractMatcher ufl=new CombinationMatcher();
+		ufl.setClassesMatrix(smClass);
+		ufl.setPropertiesMatrix(smProperty);
+		ufl.select();
+
+		exp.setMLAlignment(combineResults(ufl, exp));
+		
 		done();
 	}
 
@@ -132,5 +141,36 @@ public class MUDataInizialization  extends FeedbackLoopInizialization<MUExperime
 				return true;
 		}
 		return false;
+	}
+	
+	private Alignment<Mapping> combineResults(AbstractMatcher am, MUExperiment experiment)
+	{
+		Alignment<Mapping> alg=new Alignment<Mapping>(0,0);
+		int row=am.getClassesMatrix().getRows();
+		int col=am.getClassesMatrix().getColumns();
+		double ufl_sim=0;
+		for (int i=0;i<row;i++)
+		{
+			for(int j=0;j<col;j++)
+			{
+				ufl_sim=am.getClassesMatrix().getSimilarity(i, j);
+				if (ufl_sim!=0.0)
+					alg.add(experiment.initialMatcher.getFinalMatcher().getClassesMatrix().get(i, j));
+			}
+		}
+		row=am.getPropertiesMatrix().getRows();
+		col=am.getPropertiesMatrix().getColumns();
+		ufl_sim=0;
+		for (int i=0;i<row;i++)
+		{
+			for(int j=0;j<col;j++)
+			{
+				ufl_sim=am.getPropertiesMatrix().getSimilarity(i, j);
+				if (ufl_sim!=0.0)
+					alg.add(experiment.initialMatcher.getFinalMatcher().getPropertiesMatrix().get(i, j));
+			}
+		}
+		
+		return alg;
 	}
 }

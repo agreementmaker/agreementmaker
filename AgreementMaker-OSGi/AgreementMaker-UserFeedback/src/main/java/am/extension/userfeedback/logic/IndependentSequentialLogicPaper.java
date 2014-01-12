@@ -54,6 +54,10 @@ public class IndependentSequentialLogicPaper extends UFLControlLogic<MUExperimen
 		}
 		
 		if( e.getActionCommand() == ActionCommands.CANDIDATE_SELECTION_DONE.name() ) {
+			runCandidateSelectionEvaluation();
+		}
+
+		if( e.getActionCommand() == ActionCommands.CS_EVALUATION_DONE.name() ) {
 			runUserValidation();
 		}
 		
@@ -72,9 +76,14 @@ public class IndependentSequentialLogicPaper extends UFLControlLogic<MUExperimen
 		}
 		
 		if( e.getActionCommand() == ActionCommands.PROPAGATION_DONE.name() ) {
-			experiment.newIteration();
-			runCandidateSelection(); // back to top /\
+			runPropagationEvaluation();
 		}
+		
+		if( e.getActionCommand() == ActionCommands.PROPAGATION_EVALUATION_DONE.name() ) {
+			experiment.newIteration();
+			runCandidateSelection();
+		}
+		
 	}
 	
 	@Override

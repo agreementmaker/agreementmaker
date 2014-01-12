@@ -198,7 +198,8 @@ public void setMLAlignment(Alignment<Mapping> mLAlignment) {
 
 	@Override
 	public Alignment<Mapping> getFinalAlignment() {
-		return initialMatcher.getAlignment();
+		//return initialMatcher.getAlignment();
+		return MLAlignment;
 	}
 
 	@Override
