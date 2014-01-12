@@ -2,6 +2,7 @@ package am.extension.userfeedback.logic;
 
 import java.awt.event.ActionListener;
 
+import am.extension.userfeedback.ExecutionSemantics;
 import am.extension.userfeedback.experiments.UFLExperiment;
 
 public abstract class UFLControlLogic<T extends UFLExperiment>  implements ActionListener {
@@ -89,6 +90,22 @@ public abstract class UFLControlLogic<T extends UFLExperiment>  implements Actio
 			startThread(new Runnable() {
 				@Override public void run() {
 					experiment.userFeedback.validate(experiment);
+				}
+			});
+		} catch (InstantiationException | IllegalAccessException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	protected void runFeedbackAggregation() {
+		try {
+			experiment.feedbackAggregation = experiment.setup.fa.getEntryClass().newInstance();
+			experiment.feedbackAggregation.addActionListener(this);
+
+			startThread(new Runnable() {
+				@Override
+				public void run() {
+					experiment.feedbackAggregation.addFeedback(experiment);
 				}
 			});
 		} catch (InstantiationException | IllegalAccessException e) {

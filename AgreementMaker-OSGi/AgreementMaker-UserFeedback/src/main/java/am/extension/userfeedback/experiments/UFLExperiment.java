@@ -3,6 +3,8 @@ package am.extension.userfeedback.experiments;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.ontology.Ontology;
+
+import am.extension.multiUserFeedback.storage.FeedbackAgregation;
 import am.extension.userfeedback.ExecutionSemantics;
 import am.extension.userfeedback.SaveFeedback;
 import am.extension.userfeedback.UserFeedback;
@@ -28,6 +30,7 @@ public abstract class UFLExperiment {
 	public PropagationEvaluation< UFLExperiment>			propagationEvaluation;
 	public UFLProgressDisplay								gui;
 	public SaveFeedback< UFLExperiment>						saveFeedback;
+	public 	FeedbackAgregation<UFLExperiment>					feedbackAggregation;
 
 	protected Ontology sourceOntology;	
 	protected Ontology targetOntology;

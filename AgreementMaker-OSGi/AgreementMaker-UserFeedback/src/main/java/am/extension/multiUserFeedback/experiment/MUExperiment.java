@@ -19,7 +19,7 @@ import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.app.ontology.Ontology;
-import am.extension.multiUserFeedback.storage.MUFeedbackStorage;
+import am.extension.multiUserFeedback.storage.FeedbackAgregation;
 import am.extension.userfeedback.UserFeedback.Validation;
 import am.extension.userfeedback.experiments.UFLExperiment;
 import am.extension.userfeedback.logic.IndependentSequentialLogicMultiUser;
@@ -28,7 +28,7 @@ import am.extension.userfeedback.logic.UFLControlLogic;
 
 public class MUExperiment extends UFLExperiment {
 
-public 	MUFeedbackStorage<UFLExperiment>	feedbackStorage;
+
 	
 public BufferedWriter logFile;
 private Alignment<Mapping> MLAlignment;
@@ -44,6 +44,7 @@ public List<Mapping> disRanked;
 public List<Mapping> uncertainRanking;
 public List<Mapping> almostRanking;
 public Mapping selectedMapping;
+public int feedbackCount;
 public String feedback;
 public List<Mapping> alreadyEvaluated=new ArrayList<Mapping>();
 public List<Mapping> conflictualClass;
@@ -53,6 +54,11 @@ public HashMap<String, Integer> usersGroup=new HashMap<String, Integer>();
 public HashMap<String, SimilarityMatrix> usersClass=new HashMap<String, SimilarityMatrix>();
 public HashMap<String, SimilarityMatrix> usersProp=new HashMap<String, SimilarityMatrix>();
 
+public class csData{
+	public int[] count={0,0,0};
+	public int total=0;
+}
+public csData data=new csData();
 
 
 private alignCardinality alignCardinalityType=alignCardinality.cn_m;

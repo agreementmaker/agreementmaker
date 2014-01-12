@@ -67,6 +67,7 @@ public class RevalidationRanking implements StrategyInterface{
 		SimilarityScoreHardness ssh=new SimilarityScoreHardness(mtrx);
 		RevalidationRate rr=new RevalidationRate(mPos, mNeg);
 		VarianceMatcherDisagreement vmd=new VarianceMatcherDisagreement(lMtrx);
+		if (toRank==null) return new ArrayList<Mapping>();
 		for (int i=0;i<mPos.getRows();i++)
 		{
 			for (int j=0;j<mPos.getColumns();j++)

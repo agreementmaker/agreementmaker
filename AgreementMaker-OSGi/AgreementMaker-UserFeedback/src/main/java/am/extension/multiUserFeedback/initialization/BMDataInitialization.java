@@ -27,7 +27,7 @@ public class BMDataInitialization extends FeedbackLoopInizialization<BMexperimen
 		experiment.setup.parameters.setIntParameter(Parameter.NUM_USERS, 10);
 		experiment.setup.parameters.setIntParameter(Parameter.NUM_ITERATIONS, 100);
 		experiment.setup.parameters.setDoubleParameter(Parameter.ERROR_RATE, 0.1);
-		experiment.setup.parameters.setDoubleParameter(Parameter.VALIDATION_OVERLAP, 0.3);
+		experiment.setup.parameters.setDoubleParameter(Parameter.REVALIDATION_RATE, 0.3);
 	}
 	
 	@Override

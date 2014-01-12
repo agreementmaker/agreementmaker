@@ -12,16 +12,16 @@ import am.extension.userfeedback.UserFeedback.Validation;
 import am.extension.userfeedback.experiments.UFLExperiment;
 import am.extension.userfeedback.ui.UFLControlGUI;
 
-public abstract class MUFeedbackStorage <T extends UFLExperiment>{
+public abstract class FeedbackAgregation <T extends UFLExperiment>{
 	SimilarityMatrix classes;
 	SimilarityMatrix properties;
 	
 	EventListenerList listeners;  // list of listeners for this class
 	
-	public MUFeedbackStorage() {
+	public FeedbackAgregation() {
 		listeners = new EventListenerList();
 	}
-	public abstract void addFeedback(T exp, Mapping candidateMapping, String id);
+	public abstract void addFeedback(T exp);
 	
 	public abstract void getTrainingSet();
 	
@@ -42,7 +42,7 @@ public abstract class MUFeedbackStorage <T extends UFLExperiment>{
 	}
 	
 	protected void done() {
-		ActionEvent e = new ActionEvent(this, 0, UFLControlGUI.ActionCommands.EXECUTION_SEMANTICS_DONE.name() );
+		ActionEvent e = new ActionEvent(this, 0, UFLControlGUI.ActionCommands.FEEDBACK_AGREGATION_DONE.name() );
 		fireEvent(e);
 	}
 	

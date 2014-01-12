@@ -15,6 +15,7 @@ import am.app.mappingEngine.AbstractMatcher;
 import am.extension.userfeedback.UFLRegistry.CSEvaluationRegistry;
 import am.extension.userfeedback.UFLRegistry.CandidateSelectionRegistry;
 import am.extension.userfeedback.UFLRegistry.ExperimentRegistry;
+import am.extension.userfeedback.UFLRegistry.FeedbackAggregationRegistry;
 import am.extension.userfeedback.UFLRegistry.FeedbackPropagationRegistry;
 import am.extension.userfeedback.UFLRegistry.InitialMatcherRegistry;
 import am.extension.userfeedback.UFLRegistry.LoopInizializationRegistry;
@@ -46,6 +47,7 @@ public class UFLControlGUI extends AMTabSupportPanel implements ActionListener, 
     	INITSCREEN_cmbUserFeedback,
     	INITSCREEN_cmbFeedbackStorage, 
     	INITSCREEN_cmbPropagationEvaluation,  
+    	INITSCREEN_cmbAgregation,
     	INITSCREEN_cmbPropagation,
     	INITSCREEN_btnStart,
     	
@@ -54,6 +56,7 @@ public class UFLControlGUI extends AMTabSupportPanel implements ActionListener, 
     	CANDIDATE_SELECTION_DONE, 
     	CS_EVALUATION_DONE, 
     	USER_STORAGE_DONE, 
+    	FEEDBACK_AGREGATION_DONE,
     	USER_FEEDBACK_DONE, 
     	PROPAGATION_DONE, 
     	PROPAGATION_EVALUATION_DONE,
@@ -132,6 +135,7 @@ public class UFLControlGUI extends AMTabSupportPanel implements ActionListener, 
 				newExperiment.setup.cs = (CandidateSelectionRegistry) panel.cmbCandidate.getSelectedItem();
 				newExperiment.setup.cse = (CSEvaluationRegistry) panel.cmbCSEvaluation.getSelectedItem();
 				newExperiment.setup.uv = (UserValidationRegistry) panel.cmbUserFeedback.getSelectedItem();
+				newExperiment.setup.fa = (FeedbackAggregationRegistry) panel.cmbAgregation.getSelectedItem();
 				newExperiment.setup.fp = (FeedbackPropagationRegistry) panel.cmbPropagation.getSelectedItem();
 				newExperiment.setup.pe = (PropagationEvaluationRegistry) panel.cmbPropagationEvaluation.getSelectedItem();
 				newExperiment.setup.sf= SaveFeedbackRegistry.MultiUserSaveFeedback; 
