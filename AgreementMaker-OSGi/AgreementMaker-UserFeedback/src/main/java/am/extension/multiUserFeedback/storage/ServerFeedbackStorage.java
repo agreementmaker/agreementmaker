@@ -44,6 +44,9 @@ public class ServerFeedbackStorage extends FeedbackAgregation<MUExperiment>{
 		// update the forbidden positions
 		updateForbiddenPositions(candidateMapping, userFeedback);
 		
+		// print out the forbidden positions
+		printForbiddenPositions();
+		
 		experiment.setTrainingSet_classes(getTrainingSet(alignType.aligningClasses));
 		experiment.setTrainingSet_property(getTrainingSet(alignType.aligningProperties));
 		
@@ -152,5 +155,8 @@ public class ServerFeedbackStorage extends FeedbackAgregation<MUExperiment>{
 		return signatureVector;
 	}
 
+	private void printForbiddenPositions() {
+		
+	}
 
 }

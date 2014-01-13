@@ -82,14 +82,22 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 		if( candidateMapping.getAlignmentType() == alignType.aligningClasses )
 		{
 			trainingSet=experiment.getTrainingSet_classes();
-			feedbackClassMatrix=logDistance(experiment.forbiddenPositionsClasses , feedbackClassMatrix, trainingSet,alignType.aligningClasses);
+			feedbackClassMatrix=logDistance(
+					experiment.getForbiddenPositions(alignType.aligningClasses),
+					feedbackClassMatrix,
+					trainingSet,
+					alignType.aligningClasses);
 		}
 		else
 		{
 			if( candidateMapping.getAlignmentType() == alignType.aligningProperties ) 
 			{
 				trainingSet=experiment.getTrainingSet_property();
-				feedbackPropertyMatrix=logDistance(experiment.forbiddenPositionsProperties, feedbackPropertyMatrix, trainingSet,alignType.aligningProperties);
+				feedbackPropertyMatrix=logDistance(
+						experiment.getForbiddenPositions(alignType.aligningProperties),
+						feedbackPropertyMatrix,
+						trainingSet,
+						alignType.aligningProperties);
 			}
 		}
 		

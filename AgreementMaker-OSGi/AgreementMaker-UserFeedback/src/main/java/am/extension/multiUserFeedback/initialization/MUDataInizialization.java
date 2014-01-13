@@ -39,17 +39,17 @@ public class MUDataInizialization  extends FeedbackLoopInizialization<MUExperime
 		exp.setComputedUFLMatrix(alignType.aligningClasses, smClass);
 		exp.setComputedUFLMatrix(alignType.aligningProperties, smProperty);
 		
-		exp.forbiddenPositionsClasses = 
+		exp.setForbiddenPositions(alignType.aligningClasses, 
 				new SparseMatrix(
 						Core.getInstance().getSourceOntology(),
 						Core.getInstance().getTargetOntology(), 
-						alignType.aligningClasses);
+						alignType.aligningClasses));
 		
-		exp.forbiddenPositionsProperties = 
+		exp.setForbiddenPositions(alignType.aligningProperties, 
 				new SparseMatrix(
 						Core.getInstance().getSourceOntology(),
 						Core.getInstance().getTargetOntology(), 
-						alignType.aligningProperties);
+						alignType.aligningProperties));
 		
 		
 		// set the UFL matrices for classes

@@ -88,8 +88,8 @@ public void setAlignCardinalityType(alignCardinality alignCardinalityType) {
 }
 
 	//forbidden position keeper
-	public SparseMatrix forbiddenPositionsClasses;
-	public SparseMatrix forbiddenPositionsProperties;
+	private SparseMatrix forbiddenPositionsClasses;
+	private SparseMatrix forbiddenPositionsProperties;
 
 	public SparseMatrix getForbiddenPositions(alignType type) {
 		switch(type) {
