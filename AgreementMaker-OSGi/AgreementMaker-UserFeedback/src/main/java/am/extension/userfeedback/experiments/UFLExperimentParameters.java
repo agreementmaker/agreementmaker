@@ -19,7 +19,11 @@ public class UFLExperimentParameters extends Properties {
 		NUM_ITERATIONS,  // how many iterations are we doing
 		ERROR_RATE,
 		NUM_USERS,
-		REVALIDATION_RATE;
+		REVALIDATION_RATE,
+		PRINT_FORBIDDEN_POSITIONS, // whether to print out the forbidden matrices every time
+		PROPAGATION_METHOD, // the propagation method we will use in Feedback Propagation.
+		STATIC_CANDIDATE_SELECTION // whether our CS is static (only computed before experiment) or dynamic (computed every new itertation).
+		;
 	}
 	
 	public void setParameter(Parameter p, String value) {
@@ -51,6 +55,7 @@ public class UFLExperimentParameters extends Properties {
 	}
 	
 	public boolean getBooleanParameter(Parameter p) {
+		if( getProperty(p.name()) == null ) return false;
 		return Boolean.parseBoolean(getProperty(p.name()));
 	}
 	
