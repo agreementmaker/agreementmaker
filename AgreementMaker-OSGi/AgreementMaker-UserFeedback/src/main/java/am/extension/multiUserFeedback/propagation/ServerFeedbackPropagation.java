@@ -74,31 +74,23 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 		SimilarityMatrix feedbackClassMatrix = experiment.getComputedUFLMatrix(alignType.aligningClasses);
 		SimilarityMatrix feedbackPropertyMatrix = experiment.getComputedUFLMatrix(alignType.aligningProperties);
 		
-		Object[][] trainingSet=null;
-		
-
-		
-
 		if( candidateMapping.getAlignmentType() == alignType.aligningClasses )
 		{
-			trainingSet=experiment.getTrainingSet_classes();
+			Object[][] trainingSet=experiment.getTrainingSet_classes();
 			feedbackClassMatrix=logDistance(
 					experiment.getForbiddenPositions(alignType.aligningClasses),
 					feedbackClassMatrix,
 					trainingSet,
 					alignType.aligningClasses);
 		}
-		else
+		else if( candidateMapping.getAlignmentType() == alignType.aligningProperties ) 
 		{
-			if( candidateMapping.getAlignmentType() == alignType.aligningProperties ) 
-			{
-				trainingSet=experiment.getTrainingSet_property();
-				feedbackPropertyMatrix=logDistance(
-						experiment.getForbiddenPositions(alignType.aligningProperties),
-						feedbackPropertyMatrix,
-						trainingSet,
-						alignType.aligningProperties);
-			}
+			Object[][] trainingSet=experiment.getTrainingSet_property();
+			feedbackPropertyMatrix=logDistance(
+					experiment.getForbiddenPositions(alignType.aligningProperties),
+					feedbackPropertyMatrix,
+					trainingSet,
+					alignType.aligningProperties);
 		}
 		
 		AbstractMatcher ufl=new CombinationMatcher();
