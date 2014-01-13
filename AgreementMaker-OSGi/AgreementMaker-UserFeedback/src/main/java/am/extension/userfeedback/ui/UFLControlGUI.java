@@ -3,6 +3,7 @@ package am.extension.userfeedback.ui;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
+import java.lang.reflect.Constructor;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -126,19 +127,24 @@ public class UFLControlGUI extends AMTabSupportPanel implements ActionListener, 
 			if( e.getActionCommand() == ActionCommands.INITSCREEN_btnStart.name() ) {
 				
 				ExperimentRegistry experimentRegistryEntry = (ExperimentRegistry) panel.cmbExperiment.getSelectedItem();
-				final UFLExperiment newExperiment = experimentRegistryEntry.getEntryClass().newInstance();
-				newExperiment.gui = this;
 				
-				newExperiment.setup = new UFLExperimentSetup();
-				newExperiment.setup.im = (InitialMatcherRegistry) panel.cmbMatcher.getSelectedItem();
-				newExperiment.setup.fli= (LoopInizializationRegistry) panel.cmbInizialization.getSelectedItem();
-				newExperiment.setup.cs = (CandidateSelectionRegistry) panel.cmbCandidate.getSelectedItem();
-				newExperiment.setup.cse = (CSEvaluationRegistry) panel.cmbCSEvaluation.getSelectedItem();
-				newExperiment.setup.uv = (UserValidationRegistry) panel.cmbUserFeedback.getSelectedItem();
-				newExperiment.setup.fa = (FeedbackAggregationRegistry) panel.cmbAgregation.getSelectedItem();
-				newExperiment.setup.fp = (FeedbackPropagationRegistry) panel.cmbPropagation.getSelectedItem();
-				newExperiment.setup.pe = (PropagationEvaluationRegistry) panel.cmbPropagationEvaluation.getSelectedItem();
-				newExperiment.setup.sf= SaveFeedbackRegistry.MultiUserSaveFeedback; 
+				UFLExperimentSetup newSetup = new UFLExperimentSetup();
+				newSetup.im = (InitialMatcherRegistry) panel.cmbMatcher.getSelectedItem();
+				newSetup.fli= (LoopInizializationRegistry) panel.cmbInizialization.getSelectedItem();
+				newSetup.cs = (CandidateSelectionRegistry) panel.cmbCandidate.getSelectedItem();
+				newSetup.cse = (CSEvaluationRegistry) panel.cmbCSEvaluation.getSelectedItem();
+				newSetup.uv = (UserValidationRegistry) panel.cmbUserFeedback.getSelectedItem();
+				newSetup.fa = (FeedbackAggregationRegistry) panel.cmbAgregation.getSelectedItem();
+				newSetup.fp = (FeedbackPropagationRegistry) panel.cmbPropagation.getSelectedItem();
+				newSetup.pe = (PropagationEvaluationRegistry) panel.cmbPropagationEvaluation.getSelectedItem();
+				newSetup.sf= SaveFeedbackRegistry.MultiUserSaveFeedback;
+				
+				Constructor<? extends UFLExperiment> constructor = 
+						experimentRegistryEntry.getEntryClass().getConstructor(new Class<?>[] { UFLExperimentSetup.class });
+				final UFLExperiment newExperiment = constructor.newInstance(newSetup);
+				
+				newExperiment.gui = this;
+				 
 				// the experiment is starting, or we have just completed an iteration of the loop (assuming the propagation evaluation is done last)
 
 				// Step 1.  experiment is starting.  Initialize the experiment setup.

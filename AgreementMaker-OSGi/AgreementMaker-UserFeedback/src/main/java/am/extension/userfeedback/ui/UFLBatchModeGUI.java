@@ -6,6 +6,8 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -33,6 +35,7 @@ import am.ui.UICore;
 import am.ui.api.impl.AMTabSupportPanel;
 import am.ui.utility.SettingsDialog;
 import am.utility.Pair;
+import am.utility.RunTimer;
 import am.utility.referenceAlignment.AlignmentUtilities;
 
 public class UFLBatchModeGUI extends AMTabSupportPanel implements UFLProgressDisplay, ActionListener {
@@ -52,6 +55,8 @@ public class UFLBatchModeGUI extends AMTabSupportPanel implements UFLProgressDis
 	
 	private int runStatus = 0; // 0 stopped, 1 = running
 	private int runNumber = 0;
+	
+	private RunTimer timer = new RunTimer();
 	
 	public UFLBatchModeGUI() {
 		super("UFL Batch Mode");
@@ -109,30 +114,47 @@ public class UFLBatchModeGUI extends AMTabSupportPanel implements UFLProgressDis
 					ExperimentRegistry experimentRegistryEntry = newSetup.exp;
 					UFLExperiment newExperiment = null;
 					try {
-						newExperiment = experimentRegistryEntry.getEntryClass().newInstance();
+						Constructor<? extends UFLExperiment> constructor = 
+								experimentRegistryEntry.getEntryClass().getConstructor(new Class<?>[] { UFLExperimentSetup.class });
+						newExperiment = constructor.newInstance(newSetup);
 					} catch (InstantiationException | IllegalAccessException e) {
 						// exceptions caught, skip this run
 						e.printStackTrace();
 						UFLBatchModeGUI.this.nextRun();
 						return;
+					} catch (NoSuchMethodException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (SecurityException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IllegalArgumentException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (InvocationTargetException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
 					
 					// set experiment variables
 					final MatchingTaskPreset task = currentRun.getLeft();
-					newExperiment.setSourceOntology( OntoTreeBuilder.loadOWLOntology(task.getSourceOntology()) );
-					newExperiment.setTargetOntology( OntoTreeBuilder.loadOWLOntology(task.getTargetOntology()) );
 					
-					Core.getInstance().setSourceOntology(newExperiment.getSourceOntology());
-					Core.getInstance().setTargetOntology(newExperiment.getTargetOntology());
+					final Ontology sourceOntology = OntoTreeBuilder.loadOWLOntology(task.getSourceOntology());
+					final Ontology targetOntology = OntoTreeBuilder.loadOWLOntology(task.getTargetOntology());
+					
+					newExperiment.setSourceOntology(sourceOntology);
+					newExperiment.setTargetOntology(targetOntology);
+					
+					Core.getInstance().setSourceOntology(sourceOntology);
+					Core.getInstance().setTargetOntology(targetOntology);
 					
 					if( task.hasReference() ) {
 						Alignment<Mapping> alignment = AlignmentUtilities.getOAEIAlignment(
-								task.getReference(), newExperiment.getSourceOntology(), newExperiment.getTargetOntology());
+								task.getReference(), sourceOntology, targetOntology);
 						newExperiment.setReferenceAlignment(alignment);
 					}
 					
 					newExperiment.gui = UFLBatchModeGUI.this;
-					newExperiment.setup = newSetup;
 
 					// Step 1.  experiment is starting.  Initialize the experiment setup.
 					final UFLControlLogic logic = newExperiment.getControlLogic();
@@ -146,6 +168,9 @@ public class UFLBatchModeGUI extends AMTabSupportPanel implements UFLProgressDis
 							break;
 						}
 					}
+					
+					Core.getInstance().removeOntology(sourceOntology);
+					Core.getInstance().removeOntology(targetOntology);
 					
 					UFLBatchModeGUI.this.nextRun();
 				}				
@@ -167,6 +192,8 @@ public class UFLBatchModeGUI extends AMTabSupportPanel implements UFLProgressDis
 			btnRun.setEnabled(true);
 			proBar.setValue(runs.size());
 			proBar.setMaximum(runs.size());
+			timer.stop();
+			LOG.info("Completed " + runs.size() + " runs in " + timer);
 		}
 		
 		
@@ -221,6 +248,7 @@ public class UFLBatchModeGUI extends AMTabSupportPanel implements UFLProgressDis
 			if( runStatus == 0 ) {
 				btnRun.setEnabled(false);
 				runNumber = 0;
+				timer.resetAndStart();
 				nextRun(); 
 			}
 		}

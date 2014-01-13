@@ -14,6 +14,8 @@ import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.app.ontology.Ontology;
 import am.extension.userfeedback.UserFeedback.Validation;
 import am.extension.userfeedback.experiments.UFLExperiment;
+import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
+import am.extension.userfeedback.experiments.UFLExperimentSetup;
 import am.extension.userfeedback.logic.IndependentSequentialLogic;
 import am.extension.userfeedback.logic.UFLControlLogic;
 
@@ -30,10 +32,13 @@ public class ManualExperimentSetup extends UFLExperiment {
 	
 	private BufferedWriter logFile;
 	
-	public ManualExperimentSetup() {
+	public ManualExperimentSetup(UFLExperimentSetup setup) {
+		super(setup);
 		// setup the log file
 		try {
-			FileWriter fr = new FileWriter("/home/frank/Desktop/ufllog.txt",false);
+			String log = setup.parameters.getParameter(Parameter.LOGFILE);
+			String root = Core.getInstance().getRoot();
+			FileWriter fr = new FileWriter(root + log, false);
 			logFile = new BufferedWriter(fr);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

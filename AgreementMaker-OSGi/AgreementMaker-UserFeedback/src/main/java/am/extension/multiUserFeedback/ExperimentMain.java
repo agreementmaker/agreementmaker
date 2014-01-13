@@ -2,10 +2,8 @@ package am.extension.multiUserFeedback;
 
 
 import java.io.File;
-import java.rmi.dgc.VMID;
 
 import am.Utility;
-import am.app.Core;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.app.ontology.ontologyParser.OntologyDefinition;
@@ -13,7 +11,6 @@ import am.app.ontology.ontologyParser.OntologyDefinition.OntologyLanguage;
 import am.app.ontology.ontologyParser.OntologyDefinition.OntologySyntax;
 import am.app.ontology.profiling.manual.ManualOntologyProfiler;
 import am.extension.multiUserFeedback.experiment.BMexperiment;
-import am.extension.multiUserFeedback.experiment.MUExperiment;
 import am.extension.userfeedback.UFLRegistry.CSEvaluationRegistry;
 import am.extension.userfeedback.UFLRegistry.CandidateSelectionRegistry;
 import am.extension.userfeedback.UFLRegistry.FeedbackPropagationRegistry;
@@ -24,14 +21,13 @@ import am.extension.userfeedback.UFLRegistry.SaveFeedbackRegistry;
 import am.extension.userfeedback.UFLRegistry.UserValidationRegistry;
 import am.extension.userfeedback.experiments.UFLExperimentSetup;
 import am.extension.userfeedback.logic.UFLControlLogic;
-import am.ui.UICore;
 
 public class ExperimentMain {
 	final static int clientNumber=10;
 	private static String ONTOLOGY_BASE_PATH = "/home/frank/Documents/ontologies/benchmarks/"; // Change ONLY IF REQUIRED
 	private static String SOURCE_ONTOLOGY = "101";  // Change this for TESTING
 	private static String TARGET_ONTOLOGY = ""; // Change this for TESTING
-	final static BMexperiment newExperiment=new BMexperiment();;
+	private static BMexperiment newExperiment;
 	
 	public static void main(String arg[])
 	{
@@ -59,17 +55,19 @@ public class ExperimentMain {
 	static void runExp(){
 		
 		try{
-			newExperiment.usersNumber=clientNumber;
-			newExperiment.setup = new UFLExperimentSetup();
-			newExperiment.setup.im = InitialMatcherRegistry.OrthoCombination;
-			newExperiment.setup.fli=  LoopInizializationRegistry.ServerDataInizialization;
-			newExperiment.setup.cs = CandidateSelectionRegistry.ServerCandidateSelection;
-			newExperiment.setup.cse = CSEvaluationRegistry.PrecisionRecallEval;//not used
-			newExperiment.setup.uv = UserValidationRegistry.AutomaticReference;//not used
-			newExperiment.setup.fp = FeedbackPropagationRegistry.ServerFeedbackPropagation;
-			newExperiment.setup.pe = PropagationEvaluationRegistry.ServerPropagationEvaluation;
-			newExperiment.setup.sf= SaveFeedbackRegistry.MultiUserSaveFeedback; 
+			UFLExperimentSetup setup = new UFLExperimentSetup();
+		
+			setup.im = InitialMatcherRegistry.OrthoCombination;
+			setup.fli=  LoopInizializationRegistry.ServerDataInizialization;
+			setup.cs = CandidateSelectionRegistry.ServerCandidateSelection;
+			setup.cse = CSEvaluationRegistry.PrecisionRecallEval;//not used
+			setup.uv = UserValidationRegistry.AutomaticReference;//not used
+			setup.fp = FeedbackPropagationRegistry.ServerFeedbackPropagation;
+			setup.pe = PropagationEvaluationRegistry.ServerPropagationEvaluation;
+			setup.sf= SaveFeedbackRegistry.MultiUserSaveFeedback; 
 
+			newExperiment = new BMexperiment(setup);
+			newExperiment.usersNumber = clientNumber;
 				
 			final UFLControlLogic<BMexperiment> logic = newExperiment.getControlLogic();
 				

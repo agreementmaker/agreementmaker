@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import am.app.Core;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
@@ -18,6 +19,8 @@ import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.extension.multiUserFeedback.logic.BMlogic;
 import am.extension.userfeedback.UserFeedback.Validation;
 import am.extension.userfeedback.experiments.UFLExperiment;
+import am.extension.userfeedback.experiments.UFLExperimentSetup;
+import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
 import am.extension.userfeedback.logic.UFLControlLogic;
 
 public class BMexperiment extends UFLExperiment {
@@ -40,6 +43,11 @@ public List<Mapping> alreadyEvaluated=new ArrayList<Mapping>();
 public List<Mapping> conflictualClass;
 public List<Mapping> conflictualProp;
 public int currentUser=0;
+
+/**
+ * @deprecated Use {@link am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter#NUM_USERS}.
+ */
+@Deprecated
 public int usersNumber=10;
 public int realIteration=0;
 
@@ -53,19 +61,21 @@ public HashMap<String, SimilarityMatrix> usersProp=new HashMap<String, Similarit
 
 private alignCardinality alignCardinalityType=alignCardinality.cn_m;
 
-public BMexperiment ()
-{
-	super();
-	FileWriter file;
-	try {
-		file = new FileWriter("uflLog.txt");
-		logFile=new BufferedWriter(file);
-	} catch (IOException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-		am.Utility.displayErrorPane("Permission error: Log file can not be created", "Error");
+	public BMexperiment(UFLExperimentSetup setup)
+	{
+		super(setup);
+		
+		try {
+			String log = setup.parameters.getParameter(Parameter.LOGFILE);
+			String root = Core.getInstance().getRoot();
+			FileWriter file = new FileWriter(root + log, false);
+			logFile=new BufferedWriter(file);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			am.Utility.displayErrorPane("Permission error: Log file can not be created", "Error");
+		}
 	}
-}
 
 public alignCardinality getAlignCardinalityType() {
 	return alignCardinalityType;
