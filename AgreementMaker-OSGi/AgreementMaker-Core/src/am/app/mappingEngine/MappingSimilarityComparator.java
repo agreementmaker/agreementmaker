@@ -5,7 +5,7 @@ import java.util.Comparator;
 /**
  * This is a comparator that can be used to sort Mapping objects by their similarity.
  * 
- * @author Cosmin Stroe, January 29th, 2011.
+ * @author Cosmin Stroe, January 29th, 2011. Simplified Jan 12th, 2014.
  *
  */
 public class MappingSimilarityComparator implements Comparator<Mapping> {
@@ -16,10 +16,7 @@ public class MappingSimilarityComparator implements Comparator<Mapping> {
 	 */
 	@Override
 	public int compare(Mapping o1, Mapping o2) {
-		if( o1.getSimilarity() <  o2.getSimilarity() ) return -1;
-		if( o1.getSimilarity() == o2.getSimilarity() ) return 0;
-		if( o1.getSimilarity() >  o2.getSimilarity() ) return 1;
-		return 0;
+		return Double.compare(o1.getSimilarity(), o2.getSimilarity());
 	}
 
 }
