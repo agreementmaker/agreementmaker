@@ -3,11 +3,15 @@ package am.extension.multiUserFeedback.storage;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.app.ontology.Node;
 import am.extension.multiUserFeedback.experiment.MUExperiment;
@@ -45,7 +49,8 @@ public class ServerFeedbackStorage extends FeedbackAgregation<MUExperiment>{
 		updateForbiddenPositions(candidateMapping, userFeedback);
 		
 		// print out the forbidden positions
-		printForbiddenPositions();
+		printForbiddenPositions(alignType.aligningClasses);
+		printForbiddenPositions(alignType.aligningProperties);
 		
 		experiment.setTrainingSet_classes(getTrainingSet(alignType.aligningClasses));
 		experiment.setTrainingSet_property(getTrainingSet(alignType.aligningProperties));
@@ -100,8 +105,8 @@ public class ServerFeedbackStorage extends FeedbackAgregation<MUExperiment>{
 	 * Update the forbidden position matrix.  We will unforbid mappings that are ambiguous.
 	 */
 	private void updateForbiddenPositions(Mapping candidateMapping, Validation userFeedback) {
-		SparseMatrix positiveFeedback = experiment.getFeedbackMatrix(candidateMapping.getAlignmentType(), Validation.CORRECT);
-		SparseMatrix negativeFeedback = experiment.getFeedbackMatrix(candidateMapping.getAlignmentType(), Validation.INCORRECT);
+		SimilarityMatrix positiveFeedback = experiment.getFeedbackMatrix(candidateMapping.getAlignmentType(), Validation.CORRECT);
+		SimilarityMatrix negativeFeedback = experiment.getFeedbackMatrix(candidateMapping.getAlignmentType(), Validation.INCORRECT);
 		
 		int i = candidateMapping.getSourceKey();
 		int j = candidateMapping.getTargetKey();
@@ -115,6 +120,16 @@ public class ServerFeedbackStorage extends FeedbackAgregation<MUExperiment>{
 		else {
 			forbiddenPositionsMatrix.setSimilarity(i, j, 1.0);
 		}
+		
+		// update the computed matrix with the appropriate similarity
+		SimilarityMatrix uflMatrix = experiment.getComputedUFLMatrix(candidateMapping.getAlignmentType());
+		if( diff > 0 ) {
+			uflMatrix.setSimilarity(i, j, 1.0d);
+		}
+		else if( diff < 0 ){
+			uflMatrix.setSimilarity(i, j, 0.0d);
+		}
+		
 	}
 	
 	/**
@@ -155,8 +170,37 @@ public class ServerFeedbackStorage extends FeedbackAgregation<MUExperiment>{
 		return signatureVector;
 	}
 
-	private void printForbiddenPositions() {
+	private void printForbiddenPositions(alignType type) {
+		SimilarityMatrix m = experiment.getForbiddenPositions(type);
 		
+		List<Mapping> forbiddenMappings = new LinkedList<>();
+		
+		for( int i = 0; i < m.getRows(); i++ ) {
+			for( int j = 0; j < m.getColumns(); j++ ) {
+				if( m.getSimilarity(i, j) != 0d ) {
+					forbiddenMappings.add(m.get(i, j));
+				}
+			}
+		}
+		
+		Collections.sort(forbiddenMappings, new Comparator<Mapping>() {
+			@Override
+			public int compare(Mapping o1, Mapping o2) {
+				if( o1.getSourceKey() == o2.getSourceKey() ) 
+					return Integer.compare(o1.getTargetKey(), o2.getTargetKey());
+				else
+					return Integer.compare(o1.getSourceKey(), o2.getSourceKey());
+			}
+		});
+		
+		
+		experiment.info(
+				"Forbidden " + 
+				(type == alignType.aligningClasses ? "classes" : "properties") + ": " + forbiddenMappings.size() + " mappings.");
+		
+		for(Mapping fm : forbiddenMappings) {
+			experiment.info(fm.toString());
+		}
 	}
 
 }
