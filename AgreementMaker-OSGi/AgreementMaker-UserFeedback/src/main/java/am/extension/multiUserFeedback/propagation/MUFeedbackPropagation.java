@@ -8,7 +8,6 @@ import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
-import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.app.ontology.Node;
 import am.extension.multiUserFeedback.experiment.MUExperiment;
 import am.extension.userfeedback.UserFeedback.Validation;
@@ -101,76 +100,43 @@ public class MUFeedbackPropagation  extends FeedbackPropagation<MUExperiment> {
 			Object[][] trainingSet = null;
 			
 			Validation userFeedback = experiment.userFeedback.getUserFeedback();
+						
+			SimilarityMatrix uflMatrix = experiment.getComputedUFLMatrix(candidateMapping.getAlignmentType());
 			
+			Mapping m = uflMatrix.get(candidateMapping.getSourceKey(), candidateMapping.getTargetKey());
+			if( m == null ) m = new Mapping(candidateMapping);
 			
-
-
-			SimilarityMatrix feedbackClassMatrix=experiment.getComputedUFLMatrix(alignType.aligningClasses);
-			SimilarityMatrix feedbackPropertyMatrix=experiment.getComputedUFLMatrix(alignType.aligningProperties);
-			Mapping m=null;
+			if( userFeedback == Validation.CORRECT ) {
+				uflMatrix.setSimilarity(m.getSourceKey(), m.getTargetKey(), 1.0);
+			}
+			else {
+				uflMatrix.setSimilarity(m.getSourceKey(), m.getTargetKey(), 0.0);
+				experiment.getForbiddenPositions(candidateMapping.getAlignmentType());
+			}
+				
+			SimilarityMatrix forbiddenPositions = experiment.getForbiddenPositions(candidateMapping.getAlignmentType());
+			forbiddenPositions.setSimilarity(m.getSourceKey(), m.getTargetKey(), 1d);
+			
 			if( candidateMapping.getAlignmentType() == alignType.aligningClasses ) 
 			{
-				trainingSet=exp.getTrainingSet_classes();
-				m = feedbackClassMatrix.get(candidateMapping.getSourceKey(), candidateMapping.getTargetKey());
-				if( m == null ) 
-					m = new Mapping(candidateMapping);
-				
-				if( userFeedback.equals("CORRECT") ) 
-				{ 
-
-					feedbackClassMatrix.setSimilarity(m.getSourceKey(), m.getTargetKey(), 1.0);
-					experiment.forbiddenPositionsClasses.setSimilarity(m.getSourceKey(), m.getTargetKey(), 1);
-					
-				}
-				else if( userFeedback.equals("INCORRECT") ) 
-				{ 
-					feedbackClassMatrix.setSimilarity(m.getSourceKey(), m.getTargetKey(), 0.0);
-					experiment.forbiddenPositionsClasses.setSimilarity(m.getSourceKey(), m.getTargetKey(), 1);
-				}
-				
+				trainingSet=exp.getTrainingSet_classes();				
 			} 
 			else if( candidateMapping.getAlignmentType() == alignType.aligningProperties ) 
 			{
 				trainingSet=exp.getTrainingSet_property();
-				m = feedbackPropertyMatrix.get(candidateMapping.getSourceKey(), candidateMapping.getTargetKey());
-				if( m == null ) 
-					m = new Mapping(candidateMapping);
-				
-				if( userFeedback.equals("CORRECT") ) 
-				{ 
-					feedbackPropertyMatrix.setSimilarity(m.getSourceKey(), m.getTargetKey(), 1.0);
-					experiment.forbiddenPositionsProperties.setSimilarity(m.getSourceKey(), m.getTargetKey(), 1);
-				}
-				else if( userFeedback.equals("INCORRECT") ) 
-				{
-					feedbackPropertyMatrix.setSimilarity(m.getSourceKey(), m.getTargetKey(), 0.0);
-					experiment.forbiddenPositionsProperties.setSimilarity(m.getSourceKey(), m.getTargetKey(), 1);
-				}
 			}
 			
 			trainingSet=optimizeTrainingSet(trainingSet);
 			
-			if( candidateMapping.getAlignmentType() == alignType.aligningClasses )
-			{
-				feedbackClassMatrix=com(experiment.forbiddenPositionsClasses , feedbackClassMatrix, trainingSet, "classes");
-			}
-			else
-			{
-				if( candidateMapping.getAlignmentType() == alignType.aligningProperties ) 
-				{
-					feedbackPropertyMatrix=com(experiment.forbiddenPositionsProperties, feedbackPropertyMatrix, trainingSet, "properties");
-				}
-			}
+			uflMatrix = com(forbiddenPositions, uflMatrix, trainingSet, alignType.aligningClasses);
 			
-			AbstractMatcher ufl=new CombinationMatcher();
-			ufl.setClassesMatrix(feedbackClassMatrix);
-			ufl.setPropertiesMatrix(feedbackPropertyMatrix);
+			
+			AbstractMatcher ufl = new CombinationMatcher();
+			ufl.setClassesMatrix(experiment.getComputedUFLMatrix(alignType.aligningClasses));
+			ufl.setPropertiesMatrix(experiment.getComputedUFLMatrix(alignType.aligningProperties));
 
 			experiment.setMLAlignment(combineResults(ufl));
 		
-			experiment.setComputedUFLMatrix(alignType.aligningClasses, feedbackClassMatrix);
-			experiment.setComputedUFLMatrix(alignType.aligningProperties, feedbackPropertyMatrix);
-			
 			done();
 		}
 		
@@ -245,7 +211,7 @@ public class MUFeedbackPropagation  extends FeedbackPropagation<MUExperiment> {
 		
 		
 
-		private SimilarityMatrix com(SparseMatrix forbidden_pos, SimilarityMatrix sm,Object[][] trainingSet, String type)
+		private SimilarityMatrix com(SimilarityMatrix forbidden_pos, SimilarityMatrix sm,Object[][] trainingSet, alignType type)
 		{
 			Mapping mp;
 			Object[] ssv;
@@ -281,11 +247,7 @@ public class MUFeedbackPropagation  extends FeedbackPropagation<MUExperiment> {
 					if (min==0)
 					{
 						sm.setSimilarity(k, h, (double)trainingSet[index][trainingSet[0].length-1]);
-						if (type=="classes")
-							experiment.forbiddenPositionsClasses.setSimilarity(k, h, 1);
-						else
-							experiment.forbiddenPositionsProperties.setSimilarity(k, h, 1);
-						
+						experiment.getForbiddenPositions(type).setSimilarity(k, h, 1d);
 					}
 				}
 			}
