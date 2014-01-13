@@ -81,11 +81,21 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 		{
 			feedbackClassMatrix = runPropagation(candidateMapping.getAlignmentType(), metric);
 			feedbackPropertyMatrix = experiment.getComputedUFLMatrix(alignType.aligningProperties);
+			/*feedbackClassMatrix=euclideanDistance(
+					experiment.getForbiddenPositions(alignType.aligningClasses),
+					feedbackClassMatrix,
+					trainingSet,
+					alignType.aligningClasses);*/
 		}
 		else if( candidateMapping.getAlignmentType() == alignType.aligningProperties ) 
 		{
 			feedbackClassMatrix = experiment.getComputedUFLMatrix(alignType.aligningClasses);
 			feedbackPropertyMatrix = runPropagation(candidateMapping.getAlignmentType(), metric);
+//			feedbackPropertyMatrix=euclideanDistance(
+//					experiment.getForbiddenPositions(alignType.aligningProperties),
+//					feedbackPropertyMatrix,
+//					trainingSet,
+//					alignType.aligningProperties);
 		}
 		
 		AbstractMatcher ufl=new CombinationMatcher();

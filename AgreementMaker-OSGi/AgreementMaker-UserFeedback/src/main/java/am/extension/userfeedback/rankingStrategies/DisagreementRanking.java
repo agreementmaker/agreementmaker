@@ -21,8 +21,6 @@ public class DisagreementRanking implements StrategyInterface{
 	private SparseMatrix propNeg;
 	private SimilarityMatrix refMatrixC;
 	private SimilarityMatrix refMatrixP;
-	private double alpha=1.0;
-	private double beta=1.0;
 	
 	
 	public DisagreementRanking(List<SimilarityMatrix> clMatrix, List<SimilarityMatrix> prMatrix, SparseMatrix cp, SparseMatrix cn, SparseMatrix pp,SparseMatrix pn, SimilarityMatrix referenceMC, SimilarityMatrix referenceMP)
@@ -54,7 +52,6 @@ public class DisagreementRanking implements StrategyInterface{
 		Mapping mp=null;
 		double sim=0;
 		List<Mapping> lst=new ArrayList<Mapping>();
-		UserDisagrement ud=new UserDisagrement(mPos, mNeg);
 		VarianceMatcherDisagreement vmd=new VarianceMatcherDisagreement(lMtrx);
 		for (int i=0;i<mPos.getRows();i++)
 		{
@@ -62,7 +59,7 @@ public class DisagreementRanking implements StrategyInterface{
 			{
 				mp=refMatrix.get(i, j);
 				
-				sim=alpha*ud.getQuality(null, i, j)+beta*vmd.getQuality(null, i, j);
+				sim=vmd.getQuality(null, i, j);
 				mp.setSimilarity(sim);
 				lst.add(mp);
 			}
