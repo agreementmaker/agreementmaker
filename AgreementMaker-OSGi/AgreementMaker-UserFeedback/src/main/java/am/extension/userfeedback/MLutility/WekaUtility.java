@@ -13,12 +13,19 @@ import weka.classifiers.lazy.IBk;
 
 public class WekaUtility {
 	Instances trainingSet;
+	LinearRegression lr=new LinearRegression();
 	
 	
 	
 	public void setTrainingSet(Object[][] ts)
 	{
 		trainingSet=createTrainingInstances(ts);
+		try {
+			lr.buildClassifier(trainingSet);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 
@@ -112,13 +119,11 @@ public class WekaUtility {
 	{
 		double lrSim=0;
 		Instance dataSet=createDataInstances(ds);
-		LinearRegression lr=new LinearRegression();
 
 		try {
-			lr.buildClassifier(trainingSet);
 			
-			Instance inst=dataSet;
-			lrSim=lr.classifyInstance(inst);
+			
+			lrSim=lr.classifyInstance(dataSet);
 
 			
 		} catch (Exception e) {
