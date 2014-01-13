@@ -4,7 +4,6 @@
 package am.extension.multiUserFeedback.experiment;
 
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Serializable;
@@ -20,6 +19,8 @@ import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.extension.userfeedback.UserFeedback.Validation;
 import am.extension.userfeedback.experiments.UFLExperiment;
+import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
+import am.extension.userfeedback.experiments.UFLExperimentSetup;
 import am.extension.userfeedback.logic.IndependentSequentialLogicPaper;
 import am.extension.userfeedback.logic.UFLControlLogic;
 
@@ -65,21 +66,21 @@ public csData data=new csData();
 
 private alignCardinality alignCardinalityType=alignCardinality.cn_m;
 
-public MUExperiment ()
-{
-	super();
-	
-	try {
-		final String root = Core.getInstance().getRoot();
-		File logFileFile = new File(root + "settings/tmp/uflLog." + System.currentTimeMillis() + ".txt");
-		FileWriter file = new FileWriter(logFileFile);
-		logFile = new BufferedWriter(file);
-	} catch (IOException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-		am.Utility.displayErrorPane("Permission error: Log file can not be created", "Error");
+	public MUExperiment(UFLExperimentSetup setup)
+	{
+		super(setup);
+		
+		try {
+			String log = setup.parameters.getParameter(Parameter.LOGFILE);
+			String root = Core.getInstance().getRoot();
+			FileWriter fw = new FileWriter(root + log, false);
+			logFile = new BufferedWriter(fw);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			am.Utility.displayErrorPane("Permission error: Log file can not be created", "Error");
+		}
 	}
-}
 
 public alignCardinality getAlignCardinalityType() {
 	return alignCardinalityType;

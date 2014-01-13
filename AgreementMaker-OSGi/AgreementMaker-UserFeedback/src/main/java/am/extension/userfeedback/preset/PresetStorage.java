@@ -155,6 +155,16 @@ public class PresetStorage {
 		}
 	}
 	
+	public static void resetExperimentPresets() {
+		List<ExperimentPreset> loadedExperimentList = new LinkedList<>();
+		saveExperimentPresets(loadedExperimentList);
+	}
+	
+	public static void resetMatchingTaskPresets() {
+		List<MatchingTaskPreset> loadedTaskList = new LinkedList<>();
+		saveMatchingTaskPresets(loadedTaskList);
+	}
+	
 	/**
 	 * Add a matching task preset to the presets list, and save it to the disk.
 	 */

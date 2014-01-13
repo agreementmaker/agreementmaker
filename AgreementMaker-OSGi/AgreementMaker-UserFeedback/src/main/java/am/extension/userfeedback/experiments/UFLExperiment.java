@@ -19,7 +19,7 @@ import am.extension.userfeedback.ui.UFLProgressDisplay;
 
 public abstract class UFLExperiment {
 
-	public UFLExperimentSetup								setup;  
+	public final UFLExperimentSetup							setup;  
 	
 	public ExecutionSemantics 								initialMatcher;
 	public FeedbackLoopInizialization<UFLExperiment>        dataInizialization;
@@ -48,6 +48,10 @@ public abstract class UFLExperiment {
     
     private int iterationNumber = 0;
 
+    public UFLExperiment(UFLExperimentSetup setup) {
+		this.setup = setup;
+	}
+    
 	public Ontology getSourceOntology()             { return sourceOntology; }
 	public void     setSourceOntology(Ontology ont) { this.sourceOntology = ont; }
 	public Ontology getTargetOntology()             { return targetOntology; }

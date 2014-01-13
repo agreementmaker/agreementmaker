@@ -1,14 +1,5 @@
 package am.extension.userfeedback.common;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.List;
-
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.extension.userfeedback.evaluation.CandidateSelectionEvaluation;

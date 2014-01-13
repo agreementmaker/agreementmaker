@@ -13,12 +13,10 @@ import org.apache.log4j.Logger;
 import am.app.Core;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.MatchingTask;
-import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
-import am.app.ontology.Ontology;
 import am.extension.userfeedback.UserFeedback.Validation;
+import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
 import am.extension.userfeedback.logic.IndipendentSequentialLogicSU;
 import am.extension.userfeedback.logic.UFLControlLogic;
 
@@ -156,15 +154,13 @@ public void setMLAlignment(Alignment<Mapping> mLAlignment) {
 	MLAlignment = mLAlignment;
 }
 
-	public SUExperiment() {
-		// TODO Auto-generated constructor stub
-	
-		super();
-		
-		FileWriter file;
+	public SUExperiment(UFLExperimentSetup setup) {
+		super(setup);
+
 		try {
-			logFileFile = new File("UFLlog.txt");
-			file = new FileWriter(logFileFile);
+			String log = setup.parameters.getParameter(Parameter.LOGFILE);
+			String root = Core.getInstance().getRoot();
+			FileWriter file = new FileWriter(root + log, false);
 			logFile=new BufferedWriter(file);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

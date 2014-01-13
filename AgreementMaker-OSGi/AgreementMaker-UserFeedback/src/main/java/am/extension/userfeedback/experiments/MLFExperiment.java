@@ -29,8 +29,8 @@ import am.extension.collaborationClient.api.CollaborationUser;
 import am.extension.collaborationClient.restful.RESTfulCollaborationServer;
 import am.extension.multiUserFeedback.ui.TaskSelectionDialog;
 import am.extension.userfeedback.UserFeedback.Validation;
+import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
 import am.extension.userfeedback.logic.IndependentSequentialLogicML;
-import am.extension.userfeedback.logic.IndependentSequentialLogicMultiUser;
 import am.extension.userfeedback.logic.UFLControlLogic;
 import am.ui.UICore;
 
@@ -170,13 +170,13 @@ public void setMLAlignment(Alignment<Mapping> mLAlignment) {
 	MLAlignment = mLAlignment;
 }
 
-	public MLFExperiment() {
-		super();
+	public MLFExperiment(UFLExperimentSetup setup) {
+		super(setup);
 		
-		FileWriter file;
 		try {
-			logFileFile = new File("UFLlog.txt");
-			file = new FileWriter(logFileFile, true);
+			String log = setup.parameters.getParameter(Parameter.LOGFILE);
+			String root = Core.getInstance().getRoot();
+			FileWriter file = new FileWriter(root + log, false);
 			logFile=new BufferedWriter(file);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
