@@ -38,37 +38,51 @@ public class ServerMultiStrategyCandidateSelection extends MUCandidateSelection<
 			toRank.addAll(exp.correctMappings);
 		if (exp.incorrectMappings!=null)
 			toRank.addAll(exp.incorrectMappings);
-		
-		DisagreementRanking dr=new DisagreementRanking(
-				extractList(exp.initialMatcher.getComponentMatchers(), alignType.aligningClasses),
-				extractList(exp.initialMatcher.getComponentMatchers(), alignType.aligningProperties), 
-				exp.getFeedbackMatrix(alignType.aligningClasses, Validation.CORRECT),
-				exp.getFeedbackMatrix(alignType.aligningClasses, Validation.INCORRECT),
-				exp.getFeedbackMatrix(alignType.aligningProperties, Validation.CORRECT),
-				exp.getFeedbackMatrix(alignType.aligningProperties, Validation.INCORRECT),
-				exp.getComputedUFLMatrix(alignType.aligningClasses), 
-				exp.getComputedUFLMatrix(alignType.aligningProperties));
-		
-		MappingQualityRanking mqr=new MappingQualityRanking(
-				exp.getComputedUFLMatrix(alignType.aligningClasses),
-				exp.getComputedUFLMatrix(alignType.aligningProperties));
-		
-		RevalidationRanking rr=new RevalidationRanking(
-				extractList(exp.initialMatcher.getComponentMatchers(), alignType.aligningClasses),
-				extractList(exp.initialMatcher.getComponentMatchers(), alignType.aligningProperties),
-				exp.getFeedbackMatrix(alignType.aligningClasses, Validation.CORRECT),
-				exp.getFeedbackMatrix(alignType.aligningClasses, Validation.INCORRECT),
-				exp.getFeedbackMatrix(alignType.aligningProperties, Validation.CORRECT),
-				exp.getFeedbackMatrix(alignType.aligningProperties, Validation.INCORRECT),
-				exp.getComputedUFLMatrix(alignType.aligningClasses), 
-				exp.getComputedUFLMatrix(alignType.aligningProperties),
-				toRank);
-		
+				
 		boolean staticCS = experiment.setup.parameters.getBooleanParameter(Parameter.STATIC_CANDIDATE_SELECTION);
 		
+		// if we're running dynamic OR we're on the first iteration of the static
+		// then recompute the metrics
 		if( !staticCS || (staticCS && exp.getIterationNumber() == 0) ) {
+			
+			// NOTE: This is an optimization. Because the disagreement ranking
+			// is based only on the Automatic Matchers disagreement, and the
+			// automatic matcher outputs don't change, that means we need
+			// to run the ranking only once, on the first iteration.
+			// Afterwards, the ranking will get a mapping from the pre-computed
+			// list. If a mapping is forbidden (in the forbidden matrix), then
+			// we choose the next mapping (see getCandidateMappingFromList).
+			//if( exp.getIterationNumber() == 0 ) {
+				DisagreementRanking dr=new DisagreementRanking(
+						extractList(exp.initialMatcher.getComponentMatchers(), alignType.aligningClasses),
+						extractList(exp.initialMatcher.getComponentMatchers(), alignType.aligningProperties), 
+						exp.getFeedbackMatrix(alignType.aligningClasses, Validation.CORRECT),
+						exp.getFeedbackMatrix(alignType.aligningClasses, Validation.INCORRECT),
+						exp.getFeedbackMatrix(alignType.aligningProperties, Validation.CORRECT),
+						exp.getFeedbackMatrix(alignType.aligningProperties, Validation.INCORRECT),
+						exp.getComputedUFLMatrix(alignType.aligningClasses), 
+						exp.getComputedUFLMatrix(alignType.aligningProperties));
+				
+				exp.data.drList = dr.rank();
+			//}
+			
+			MappingQualityRanking mqr=new MappingQualityRanking(
+					exp.getComputedUFLMatrix(alignType.aligningClasses),
+					exp.getComputedUFLMatrix(alignType.aligningProperties));
+			
 			exp.data.mqList = mqr.rank();
-			exp.data.drList = dr.rank();
+			
+			RevalidationRanking rr = new RevalidationRanking(
+					extractList(exp.initialMatcher.getComponentMatchers(), alignType.aligningClasses),
+					extractList(exp.initialMatcher.getComponentMatchers(), alignType.aligningProperties),
+					exp.getFeedbackMatrix(alignType.aligningClasses, Validation.CORRECT),
+					exp.getFeedbackMatrix(alignType.aligningClasses, Validation.INCORRECT),
+					exp.getFeedbackMatrix(alignType.aligningProperties, Validation.CORRECT),
+					exp.getFeedbackMatrix(alignType.aligningProperties, Validation.INCORRECT),
+					exp.getComputedUFLMatrix(alignType.aligningClasses), 
+					exp.getComputedUFLMatrix(alignType.aligningProperties),
+					toRank);
+			
 			exp.data.rrList = rr.rank();
 		}
 		
@@ -147,10 +161,13 @@ public class ServerMultiStrategyCandidateSelection extends MUCandidateSelection<
 	{
 
 		for( int i = 0; i < lst.size(); i++ ){
-			if( experiment.correctMappings == null && experiment.incorrectMappings == null )
-				return lst.get(i);
-			
 			Mapping m = lst.get(i);
+			
+			if( experiment.correctMappings == null && experiment.incorrectMappings == null ) {
+				//lst.remove(i); // optimization
+				return m;
+			}
+						
 			if( experiment.correctMappings != null && (experiment.correctMappings.contains(m.getEntity1(),Ontology.SOURCE) != null ||
 				experiment.correctMappings.contains(m.getEntity2(),Ontology.TARGET) != null) ) 
 			{
@@ -159,7 +176,8 @@ public class ServerMultiStrategyCandidateSelection extends MUCandidateSelection<
 			}
 			if( experiment.incorrectMappings != null && experiment.incorrectMappings.contains(m) ) 
 				continue; // we've validated this mapping already.
-				
+			
+			//lst.remove(i); // optimization.
 			return m;
 		}
 		
