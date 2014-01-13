@@ -1,9 +1,10 @@
 package am.extension.userfeedback.experiments;
 
+import org.apache.log4j.Logger;
+
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.ontology.Ontology;
-
 import am.extension.multiUserFeedback.storage.FeedbackAgregation;
 import am.extension.userfeedback.ExecutionSemantics;
 import am.extension.userfeedback.SaveFeedback;
@@ -11,6 +12,7 @@ import am.extension.userfeedback.UserFeedback;
 import am.extension.userfeedback.UserFeedback.Validation;
 import am.extension.userfeedback.evaluation.CandidateSelectionEvaluation;
 import am.extension.userfeedback.evaluation.PropagationEvaluation;
+import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
 import am.extension.userfeedback.inizialization.FeedbackLoopInizialization;
 import am.extension.userfeedback.logic.UFLControlLogic;
 import am.extension.userfeedback.propagation.FeedbackPropagation;
@@ -19,6 +21,8 @@ import am.extension.userfeedback.ui.UFLProgressDisplay;
 
 public abstract class UFLExperiment {
 
+	private static final Logger LOG = Logger.getLogger(UFLExperiment.class);
+	
 	public final UFLExperimentSetup							setup;  
 	
 	public ExecutionSemantics 								initialMatcher;
@@ -50,6 +54,13 @@ public abstract class UFLExperiment {
 
     public UFLExperiment(UFLExperimentSetup setup) {
 		this.setup = setup;
+		
+		String log = setup.parameters.getParameter(Parameter.LOGFILE);
+		if( log == null ) {
+			log = "settings/tmp/uflLog." + System.currentTimeMillis() + ".txt";
+			setup.parameters.setParameter(Parameter.LOGFILE, log);
+			LOG.error("The LOGFILE parameter has not been set for this experiment. Log file is defaulting to \""+log+"\".");
+		}
 	}
     
 	public Ontology getSourceOntology()             { return sourceOntology; }
