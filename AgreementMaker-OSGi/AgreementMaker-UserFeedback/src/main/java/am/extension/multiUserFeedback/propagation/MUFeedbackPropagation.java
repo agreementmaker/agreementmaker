@@ -117,16 +117,9 @@ public class MUFeedbackPropagation  extends FeedbackPropagation<MUExperiment> {
 			SimilarityMatrix forbiddenPositions = experiment.getForbiddenPositions(candidateMapping.getAlignmentType());
 			forbiddenPositions.setSimilarity(m.getSourceKey(), m.getTargetKey(), 1d);
 			
-			if( candidateMapping.getAlignmentType() == alignType.aligningClasses ) 
-			{
-				trainingSet=exp.getTrainingSet_classes();				
-			} 
-			else if( candidateMapping.getAlignmentType() == alignType.aligningProperties ) 
-			{
-				trainingSet=exp.getTrainingSet_property();
-			}
-			
-			trainingSet=optimizeTrainingSet(trainingSet);
+			trainingSet = exp.getTrainingSet(candidateMapping.getAlignmentType());
+						
+			trainingSet = optimizeTrainingSet(trainingSet);
 			
 			uflMatrix = com(forbiddenPositions, uflMatrix, trainingSet, alignType.aligningClasses);
 			

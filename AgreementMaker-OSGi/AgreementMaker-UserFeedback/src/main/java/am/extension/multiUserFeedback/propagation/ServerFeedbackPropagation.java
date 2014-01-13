@@ -7,7 +7,6 @@ package am.extension.multiUserFeedback.propagation;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
@@ -15,9 +14,9 @@ import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.app.ontology.Node;
-
 import am.extension.multiUserFeedback.experiment.MUExperiment;
 import am.extension.userfeedback.MLutility.WekaUtility;
+import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
 import am.extension.userfeedback.propagation.FeedbackPropagation;
 import am.matcher.Combination.CombinationMatcher;
 
@@ -30,8 +29,10 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 	private MUExperiment experiment;
 	List<AbstractMatcher> inputMatchers = new ArrayList<AbstractMatcher>();
 	
-
-
+	public static final String PROPAGATION_NONE 		= "none";
+	public static final String PROPAGATION_EUCLIDEAN 	= "euzero";
+	public static final String PROPAGATION_LOG 			= "logdist";
+	public static final String PROPAGATION_REGRESSION 	= "regression";
 	
 	private Object[] getSignatureVector(Mapping mp)
 	{
@@ -74,23 +75,17 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 		SimilarityMatrix feedbackClassMatrix = experiment.getComputedUFLMatrix(alignType.aligningClasses);
 		SimilarityMatrix feedbackPropertyMatrix = experiment.getComputedUFLMatrix(alignType.aligningProperties);
 		
+		final String metric = experiment.setup.parameters.getParameter(Parameter.PROPAGATION_METHOD);
+		
 		if( candidateMapping.getAlignmentType() == alignType.aligningClasses )
 		{
-			Object[][] trainingSet=experiment.getTrainingSet_classes();
-			feedbackClassMatrix=logDistance(
-					experiment.getForbiddenPositions(alignType.aligningClasses),
-					feedbackClassMatrix,
-					trainingSet,
-					alignType.aligningClasses);
+			feedbackClassMatrix = runPropagation(candidateMapping.getAlignmentType(), metric);
+			feedbackPropertyMatrix = experiment.getComputedUFLMatrix(alignType.aligningProperties);
 		}
 		else if( candidateMapping.getAlignmentType() == alignType.aligningProperties ) 
 		{
-			Object[][] trainingSet=experiment.getTrainingSet_property();
-			feedbackPropertyMatrix=logDistance(
-					experiment.getForbiddenPositions(alignType.aligningProperties),
-					feedbackPropertyMatrix,
-					trainingSet,
-					alignType.aligningProperties);
+			feedbackClassMatrix = experiment.getComputedUFLMatrix(alignType.aligningClasses);
+			feedbackPropertyMatrix = runPropagation(candidateMapping.getAlignmentType(), metric);
 		}
 		
 		AbstractMatcher ufl=new CombinationMatcher();
@@ -106,7 +101,32 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 		done();
 	}
 	
-	
+
+	private SimilarityMatrix runPropagation(alignType type, String metric) {
+		switch(metric) {
+		case PROPAGATION_NONE:
+			return experiment.getComputedUFLMatrix(type);
+		case PROPAGATION_EUCLIDEAN:
+			return euclideanDistance(
+					experiment.getForbiddenPositions(type), 
+					experiment.getComputedUFLMatrix(type),
+					experiment.getTrainingSet(type),
+					type);
+		case PROPAGATION_LOG:
+			return logDistance(
+					experiment.getForbiddenPositions(type), 
+					experiment.getComputedUFLMatrix(type),
+					experiment.getTrainingSet(type),
+					type);
+		case PROPAGATION_REGRESSION:
+			return wekaRegression(
+					experiment.getForbiddenPositions(type),
+					experiment.getComputedUFLMatrix(type),
+					experiment.getTrainingSet(type));
+		default:
+			throw new RuntimeException("Propagation method was not correctly specificied.");
+		}
+	}
 
 	
 	private Alignment<Mapping> combineResults(AbstractMatcher am, MUExperiment experiment)

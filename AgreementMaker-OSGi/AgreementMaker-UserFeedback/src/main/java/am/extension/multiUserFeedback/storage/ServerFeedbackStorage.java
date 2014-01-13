@@ -16,6 +16,7 @@ import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.app.ontology.Node;
 import am.extension.multiUserFeedback.experiment.MUExperiment;
 import am.extension.userfeedback.UserFeedback.Validation;
+import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
 
 public class ServerFeedbackStorage extends FeedbackAgregation<MUExperiment>{
 	
@@ -49,8 +50,10 @@ public class ServerFeedbackStorage extends FeedbackAgregation<MUExperiment>{
 		updateForbiddenPositions(candidateMapping, userFeedback);
 		
 		// print out the forbidden positions
-		printForbiddenPositions(alignType.aligningClasses);
-		printForbiddenPositions(alignType.aligningProperties);
+		if( exp.setup.parameters.getBooleanParameter(Parameter.PRINT_FORBIDDEN_POSITIONS) ) {
+			printForbiddenPositions(alignType.aligningClasses);
+			printForbiddenPositions(alignType.aligningProperties);
+		}
 		
 		experiment.setTrainingSet_classes(getTrainingSet(alignType.aligningClasses));
 		experiment.setTrainingSet_property(getTrainingSet(alignType.aligningProperties));

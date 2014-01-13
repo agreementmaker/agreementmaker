@@ -23,9 +23,6 @@ public class ServerMultiStrategyCandidateSelection extends MUCandidateSelection<
 	double dRate=0;
 	double mqRate=0;
 	int total=0;
-	List<Mapping> mqList;
-	List<Mapping> drList;
-	List<Mapping> rrList;
 	
 	@Override
 	public void rank(MUExperiment exp) {
@@ -67,12 +64,17 @@ public class ServerMultiStrategyCandidateSelection extends MUCandidateSelection<
 				exp.getComputedUFLMatrix(alignType.aligningProperties),
 				toRank);
 		
-		mqList=mqr.rank();
-		drList=dr.rank();
-		rrList=rr.rank();
-		revalidationRate=exp.setup.parameters.getDoubleParameter(Parameter.REVALIDATION_RATE);
-		dRate=(1-revalidationRate)/2;
-		mqRate=(1-revalidationRate)/2;
+		boolean staticCS = experiment.setup.parameters.getBooleanParameter(Parameter.STATIC_CANDIDATE_SELECTION);
+		
+		if( !staticCS || (staticCS && exp.getIterationNumber() == 0) ) {
+			exp.data.mqList = mqr.rank();
+			exp.data.drList = dr.rank();
+			exp.data.rrList = rr.rank();
+		}
+		
+		revalidationRate = exp.setup.parameters.getDoubleParameter(Parameter.REVALIDATION_RATE);
+		dRate  = (1-revalidationRate)/2;
+		mqRate = (1-revalidationRate)/2;
 		
 		done();
 	}
@@ -116,7 +118,7 @@ public class ServerMultiStrategyCandidateSelection extends MUCandidateSelection<
 			count[0]++;
 			experiment.data.count=count;
 			experiment.data.total=total;
-			experiment.selectedMapping=getCandidateMappingFromList(mqList);
+			experiment.selectedMapping=getCandidateMappingFromList(experiment.data.mqList);
 			return experiment.selectedMapping;
 			
 		}
@@ -125,7 +127,7 @@ public class ServerMultiStrategyCandidateSelection extends MUCandidateSelection<
 			count[1]++;
 			experiment.data.count=count;
 			experiment.data.total=total;
-			experiment.selectedMapping=getCandidateMappingFromList(drList);
+			experiment.selectedMapping=getCandidateMappingFromList(experiment.data.drList);
 			return experiment.selectedMapping;
 		}
 		if (c3<=revalidationRate)
@@ -133,7 +135,7 @@ public class ServerMultiStrategyCandidateSelection extends MUCandidateSelection<
 			count[2]++;
 			experiment.data.count=count;
 			experiment.data.total=total;
-			experiment.selectedMapping=rrList.get(0);
+			experiment.selectedMapping=experiment.data.rrList.get(0);
 			return experiment.selectedMapping;
 		}
 		

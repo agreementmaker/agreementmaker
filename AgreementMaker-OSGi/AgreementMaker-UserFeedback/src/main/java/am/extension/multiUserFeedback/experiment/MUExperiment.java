@@ -56,6 +56,9 @@ public HashMap<String, SimilarityMatrix> usersProp=new HashMap<String, Similarit
 public class csData{
 	public int[] count={0,0,0};
 	public int total=0;
+	public List<Mapping> mqList;
+	public List<Mapping> drList;
+	public List<Mapping> rrList;
 }
 public csData data=new csData();
 
@@ -155,20 +158,20 @@ public void setUflStoragePropertyPos(SparseMatrix uflStorageProperty) {
 	this.uflStorageProperty_pos = uflStorageProperty;
 }
 
-public Object[][] getTrainingSet_classes() {
-	return trainingSet_classes;
-}
-
+	public Object[][] getTrainingSet(alignType type) {
+		switch(type) {
+		case aligningClasses:
+			return trainingSet_classes;
+		case aligningProperties:
+			return trainingSet_property;
+		default:
+			throw new RuntimeException(type + " is not accepted");
+		}
+	}
 
 public void setTrainingSet_classes(Object[][] trainingSet_classes) {
 	this.trainingSet_classes = trainingSet_classes;
 }
-
-
-public Object[][] getTrainingSet_property() {
-	return trainingSet_property;
-}
-
 
 public void setTrainingSet_property(Object[][] trainingSet_property) {
 	this.trainingSet_property = trainingSet_property;
