@@ -3,6 +3,9 @@ package am.extension.userfeedback.inizialization;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+import org.openjena.atlas.logging.Log;
+
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcher.alignType;
@@ -14,6 +17,9 @@ import am.extension.userfeedback.experiments.SUExperiment;
 import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
 
 public class DataInizialization extends FeedbackLoopInizialization<SUExperiment> {
+	
+	private static final Logger LOG = Logger.getLogger(DataInizialization.class);
+	
 	List<AbstractMatcher> inputMatchers = new ArrayList<AbstractMatcher>();
 	public DataInizialization()
 	{
@@ -58,30 +64,35 @@ public class DataInizialization extends FeedbackLoopInizialization<SUExperiment>
 		
 		
 		// output the experiment description
-		exp.info("============================ Running UFL Experiment: =================================");
-		exp.info("         NUM_USERS:" + exp.setup.parameters.getIntParameter(Parameter.NUM_USERS));
-		exp.info("    NUM_ITERATIONS:" + exp.setup.parameters.getIntParameter(Parameter.NUM_ITERATIONS));
-		exp.info("        ERROR_RATE:" + exp.setup.parameters.getDoubleParameter(Parameter.ERROR_RATE));
-		exp.info(" REVALIDATION_RATE:" + exp.setup.parameters.getParameter(Parameter.REVALIDATION_RATE));
-		exp.info("         STATIC_CS:" + exp.setup.parameters.getBooleanParameter(Parameter.STATIC_CANDIDATE_SELECTION));
-		exp.info("PROPAGATION_METHOD:" + exp.setup.parameters.getParameter(Parameter.PROPAGATION_METHOD));
-		exp.info("======================================================================================");
+		StringBuilder d = new StringBuilder();
+		
+		d.append("============================ Running UFL Experiment: =================================\n");
+		d.append("         NUM_USERS:" + exp.setup.parameters.getIntParameter(Parameter.NUM_USERS) + "\n");
+		d.append("    NUM_ITERATIONS:" + exp.setup.parameters.getIntParameter(Parameter.NUM_ITERATIONS) + "\n");
+		d.append("        ERROR_RATE:" + exp.setup.parameters.getDoubleParameter(Parameter.ERROR_RATE) + "\n");
+		d.append(" REVALIDATION_RATE:" + exp.setup.parameters.getParameter(Parameter.REVALIDATION_RATE) + "\n");
+		d.append("         STATIC_CS:" + exp.setup.parameters.getBooleanParameter(Parameter.STATIC_CANDIDATE_SELECTION) + "\n");
+		d.append("PROPAGATION_METHOD:" + exp.setup.parameters.getParameter(Parameter.PROPAGATION_METHOD) + "\n");
+		d.append("======================================================================================\n");
 		
 		String sourceFile = Core.getInstance().getSourceOntology().getFilename();
 		if( sourceFile.length() >= 51 ) {
-			exp.info("Source Ont: ..." + sourceFile.substring(sourceFile.length()-50-1, sourceFile.length()-1));
+			d.append("Source Ont: ..." + sourceFile.substring(sourceFile.length()-50-1, sourceFile.length()-1) + "\n");
 		}
 		else {
-			exp.info("Source Ont: " + sourceFile);
+			d.append("Source Ont: " + sourceFile + "\n");
 		}
 		
 		String targetFile = Core.getInstance().getTargetOntology().getFilename();
 		if( targetFile.length() >= 51 ) {
-			exp.info("Target Ont: ..." + targetFile.substring(targetFile.length()-50-1, targetFile.length()-1));
+			d.append("Target Ont: ..." + targetFile.substring(targetFile.length()-50-1, targetFile.length()-1) + "\n");
 		}
 		else {
-			exp.info("Target Ont: " + targetFile);
+			d.append("Target Ont: " + targetFile + "\n");
 		}
+		
+		exp.info(d.toString());
+		LOG.info(d.toString());
 		
 		done();
 	}
