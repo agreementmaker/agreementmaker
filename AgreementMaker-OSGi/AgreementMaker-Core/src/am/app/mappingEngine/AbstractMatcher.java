@@ -1584,7 +1584,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	  * 
 	  *  @author Cosmin Stroe @date Dec 17, 2008
 	  */
-	 protected void stepDone() {
+	 public void stepDone() {
 		 stepsDone++;
 	 }
 
@@ -1595,7 +1595,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	  *  @author Cosmin Stroe @date Dec 17, 2008
 	  *  @author Cosmin Stroe @date Oct 1, 2010 @comment Updated to display estimated total time and estimated time left.  
 	  */	
-	 protected void updateProgress() {
+	 public void updateProgress() {
 
 		 long currentTime = System.currentTimeMillis();
 		 if( !useProgressDelay || currentTime - timeOfLastUpdate > 500 ) {
