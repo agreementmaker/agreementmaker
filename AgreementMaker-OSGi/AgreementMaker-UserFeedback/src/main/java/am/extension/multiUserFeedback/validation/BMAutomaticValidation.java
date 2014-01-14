@@ -55,11 +55,11 @@ public class BMAutomaticValidation extends UserFeedback {
 			
 			if (userValidation==Validation.CORRECT){
 				userValidation=Validation.INCORRECT;
-				log.info("ERROR, this mapping should be CORRECT " + candidateMapping.toString() );
+				log.info("GENERATED ERROR: This mapping should be CORRECT: " + candidateMapping.toString() );
 			}else
 			{
 				userValidation=Validation.CORRECT;
-				log.info("ERROR, this mapping should be INCORRECT " + candidateMapping.toString() );
+				log.info("GENERATED ERROR: This mapping should be INCORRECT: " + candidateMapping.toString() );
 			}
 		}
 		
