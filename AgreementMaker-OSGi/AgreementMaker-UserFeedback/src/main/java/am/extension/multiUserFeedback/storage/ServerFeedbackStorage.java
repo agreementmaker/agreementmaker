@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
@@ -100,8 +101,38 @@ public class ServerFeedbackStorage extends FeedbackAgregation<MUExperiment>{
 				}
 			}
 		}
-
+		List<Object[]> tt =addAMconfidentMapping();
+		trainingSet.addAll(tt);
 		return trainingSet.toArray(new Object[0][0]);
+	}
+	
+	private List<Object[]> addAMconfidentMapping()
+	{
+		int count=0;
+		Alignment<Mapping> amFinal=experiment.initialMatcher.getFinalMatcher().getAlignment();
+		List<Object[]> trainingSet = new ArrayList<Object[]>();
+		for(Mapping m : amFinal)
+		{
+			
+			if (m.getSimilarity()>0.89)
+			{
+				trainingSet.add(getLabeledMapping(m,1));
+				count++;
+			}
+			
+		}
+		for(Mapping m : amFinal)
+		{
+			
+			if (m.getSimilarity()<0.1)
+			{
+				trainingSet.add(getLabeledMapping(m,0));
+				count--;
+			}
+			if(count==0) break;
+			
+		}
+		return trainingSet;
 	}
 	
 	/**
@@ -133,6 +164,62 @@ public class ServerFeedbackStorage extends FeedbackAgregation<MUExperiment>{
 			uflMatrix.setSimilarity(i, j, 0.0d);
 		}
 		
+	}
+	
+	private SimilarityMatrix zeroSim(SimilarityMatrix sm,int source_index,int target_index, int sourceCardinality, int targetCardinality)
+	{
+		ArrayList<Integer> sourceToKeep=new ArrayList<Integer>();
+		ArrayList<Integer> targetToKeep=new ArrayList<Integer>();
+		if (sourceCardinality!=1)
+		{
+			sourceToKeep=topN(sm,-1,target_index,sourceCardinality);
+		}
+		
+		if (targetCardinality!=1)
+		{
+			targetToKeep=topN(sm,source_index,-1,sourceCardinality);
+		}
+		sourceToKeep.add(source_index);
+		targetToKeep.add(target_index);
+
+		
+		for(int i=0;i<sm.getRows();i++)
+		{
+			if (sourceToKeep.contains(i)) 
+				continue;
+			sm.setSimilarity(i, target_index, 0.0);		
+		}
+		for(int j=0;j<sm.getColumns();j++)
+		{
+			if (targetToKeep.contains(j)) 
+				continue;
+			sm.setSimilarity(source_index, j, 0.0);	
+		}
+		return sm;
+	}
+	
+	private ArrayList<Integer> topN (SimilarityMatrix sm, int sourceIndex, int targetIndex, int topNumber)
+	{
+		ArrayList<Integer> top=new ArrayList<Integer>();
+		Mapping[] tmp;
+		if (targetIndex==-1)
+		{
+			tmp=sm.getRowMaxValues(sourceIndex, topNumber);	
+			for (Mapping m : tmp)
+			{
+				top.add(m.getTargetKey());
+			}
+		}
+		else
+		{
+			tmp=sm.getColMaxValues(targetIndex, topNumber);
+			for (Mapping m : tmp)
+			{
+				top.add(m.getSourceKey());
+			}
+		}
+
+		return top;
 	}
 	
 	/**

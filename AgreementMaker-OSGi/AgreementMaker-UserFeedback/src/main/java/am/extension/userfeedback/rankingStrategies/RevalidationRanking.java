@@ -9,6 +9,7 @@ import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MappingSimilarityComparator;
 import am.app.mappingEngine.qualityEvaluation.MappingQualityMetric;
 import am.app.mappingEngine.qualityEvaluation.metrics.InverseOf;
+import am.app.mappingEngine.qualityEvaluation.metrics.ufl.ConsensusQuality;
 import am.app.mappingEngine.qualityEvaluation.metrics.ufl.CrossCountQuality;
 import am.app.mappingEngine.qualityEvaluation.metrics.ufl.RevalidationRate;
 import am.app.mappingEngine.qualityEvaluation.metrics.ufl.SimilarityScoreHardness;
@@ -28,13 +29,16 @@ public class RevalidationRanking implements StrategyInterface{
 	private SparseMatrix propNeg;
 	private SimilarityMatrix uflClass;
 	private SimilarityMatrix uflProp;
+	private SimilarityMatrix forbiddenClass;
+	private SimilarityMatrix forbiddenProp;
 	private double alpha=1.0;
 	private double beta=1.0;
-	private double gamma=1.0;
+	private double gamma=2.0;
+	
 
 	
 	
-	public RevalidationRanking(List<SimilarityMatrix> clMatrix, List<SimilarityMatrix> prMatrix, SparseMatrix cp, SparseMatrix cn, SparseMatrix pp,SparseMatrix pn, SimilarityMatrix uClass, SimilarityMatrix uProp, List<Mapping> torank)
+	public RevalidationRanking(List<SimilarityMatrix> clMatrix, List<SimilarityMatrix> prMatrix, SparseMatrix cp, SparseMatrix cn, SparseMatrix pp,SparseMatrix pn, SimilarityMatrix uClass, SimilarityMatrix uProp, List<Mapping> torank, SimilarityMatrix forbiddenClass, SimilarityMatrix forbiddenProp)
 	{
 		this.classMatrices=clMatrix;
 		this.propMatrices=prMatrix;
@@ -45,12 +49,14 @@ public class RevalidationRanking implements StrategyInterface{
 		this.uflClass=uClass;
 		this.uflProp=uProp;
 		this.toRank=torank;
+		this.forbiddenClass=forbiddenClass;
+		this.forbiddenProp=forbiddenProp;
 	}
 	
 	@Override
 	public List<Mapping> rank() {
-		List<Mapping> rankList=linearCombination(alignType.aligningClasses,classMatrices, classPos, classNeg, uflClass);
-		rankList.addAll(linearCombination(alignType.aligningProperties,propMatrices, propPos, propNeg,uflProp));
+		List<Mapping> rankList=linearCombination(alignType.aligningClasses,classMatrices, classPos, classNeg, uflClass,forbiddenClass);
+		rankList.addAll(linearCombination(alignType.aligningProperties,propMatrices, propPos, propNeg,uflProp,forbiddenProp));
 		Collections.sort(rankList, new MappingSimilarityComparator() );
 		Collections.reverse(rankList);
 		
@@ -59,16 +65,18 @@ public class RevalidationRanking implements StrategyInterface{
 	
 	
 	//Linear combination of UD and the inverse of AMD
-	private List<Mapping> linearCombination(alignType type, List<SimilarityMatrix>  lMtrx, SparseMatrix mPos, SparseMatrix mNeg, SimilarityMatrix mtrx)
+	private List<Mapping> linearCombination(alignType type, List<SimilarityMatrix>  lMtrx, SparseMatrix mPos, SparseMatrix mNeg, SimilarityMatrix mtrx, SimilarityMatrix forbidden)
 	{
-		List<Double> ud_norm=new ArrayList<Double>();
+		//List<Double> ud_norm=new ArrayList<Double>();
 		List<Double> ccq_norm=new ArrayList<Double>();
-		List<Double> rr_norm=new ArrayList<Double>();
+		List<Double> cq_norm=new ArrayList<Double>();
+		//List<Double> rr_norm=new ArrayList<Double>();
 		double sim=0;
 		List<Mapping> lst=new ArrayList<Mapping>();
-		UserDisagrement ud=new UserDisagrement(mPos, mNeg);
-		CrossCountQuality ccq=new CrossCountQuality(mtrx);
-		MappingQualityMetric rr=new InverseOf(new RevalidationRate(mPos, mNeg));
+		//UserDisagrement ud=new UserDisagrement(mPos, mNeg);
+		ConsensusQuality cq=new ConsensusQuality(mPos, mNeg);
+		CrossCountQuality ccq=new CrossCountQuality(mtrx, forbidden);
+		//MappingQualityMetric rr=new InverseOf(new RevalidationRate(mPos, mNeg));
 		if (toRank==null) return new ArrayList<Mapping>();
 		for (Mapping m : toRank)
 		{
@@ -76,18 +84,20 @@ public class RevalidationRanking implements StrategyInterface{
 			
 			int i=m.getSourceKey();
 			int j=m.getTargetKey();
-			ud_norm.add(ud.getQuality(null, i, j));
+			//ud_norm.add(ud.getQuality(null, i, j));
 			ccq_norm.add(ccq.getQuality(null, i, j));
-			rr_norm.add(rr.getQuality(null, i, j));
+			cq_norm.add(cq.getQuality(null, i, j));
+			//rr_norm.add(rr.getQuality(null, i, j));
+			
 		}
-		normalize(ud_norm);
-		normalize(ccq_norm);
-		normalize(rr_norm);
+		//normalize(ud_norm);
+		//normalize(ccq_norm);
+		//normalize(rr_norm);
 		int count=0;
 		for (Mapping m : toRank)
 		{
 			if(m.getAlignmentType() != type) continue;
-			sim=alpha*ud_norm.get(count)+beta*ccq_norm.get(count)+gamma*rr_norm.get(count);
+			sim=alpha*(1-cq_norm.get(count))+beta*ccq_norm.get(count);//+gamma*rr_norm.get(count);
 			m.setSimilarity(sim);
 			lst.add(m);
 			count++;

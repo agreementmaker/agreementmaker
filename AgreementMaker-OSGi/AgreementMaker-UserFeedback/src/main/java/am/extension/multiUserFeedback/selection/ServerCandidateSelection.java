@@ -38,7 +38,7 @@ public class ServerCandidateSelection extends MUCandidateSelection<MUExperiment>
 		inizialization();
 		
 		uncertainMappingRetrieval();
-		almostCertainMappingRetrieval();
+		//almostCertainMappingRetrieval();
 		disagreementRanking();
 		
 		done();
@@ -273,65 +273,65 @@ public class ServerCandidateSelection extends MUCandidateSelection<MUExperiment>
 		return count;
 	}
 
-	private void almostCertainMappingRetrieval()
-	{
-		List<Mapping> unClasses=retriveUnconfidentMapping(classesMatrix);
-		List<Mapping> unProperties=retriveUnconfidentMapping(propertiesMatrix);
-		SimilarityMatrix rankedClasses=almostCertainMappingComputation(classesMatrix);
-		SimilarityMatrix rankedProperties=almostCertainMappingComputation(propertiesMatrix);
-		try {
-			unClasses = rankedClasses.toList();
-			Collections.sort(unClasses, new MappingSimilarityComparator() );
-		} catch (Exception e) {
-			e.printStackTrace();
-			return;
-		}
-		
-		try {
-			unProperties = rankedProperties.toList();
-			Collections.sort(unProperties, new MappingSimilarityComparator() );
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		experiment.almostRanking = new ArrayList<Mapping>();
-		
-		experiment.almostRanking.addAll(unClasses);
-		experiment.almostRanking.addAll(unProperties);
-		Collections.sort(experiment.almostRanking, new MappingSimilarityComparator() );
-		Collections.reverse(experiment.almostRanking);
-		
-	}
+//	private void almostCertainMappingRetrieval()
+//	{
+//		List<Mapping> unClasses=retriveUnconfidentMapping(classesMatrix);
+//		List<Mapping> unProperties=retriveUnconfidentMapping(propertiesMatrix);
+//		SimilarityMatrix rankedClasses=almostCertainMappingComputation(classesMatrix);
+//		SimilarityMatrix rankedProperties=almostCertainMappingComputation(propertiesMatrix);
+//		try {
+//			unClasses = rankedClasses.toList();
+//			Collections.sort(unClasses, new MappingSimilarityComparator() );
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			return;
+//		}
+//		
+//		try {
+//			unProperties = rankedProperties.toList();
+//			Collections.sort(unProperties, new MappingSimilarityComparator() );
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		
+//		experiment.almostRanking = new ArrayList<Mapping>();
+//		
+//		experiment.almostRanking.addAll(unClasses);
+//		experiment.almostRanking.addAll(unProperties);
+//		Collections.sort(experiment.almostRanking, new MappingSimilarityComparator() );
+//		Collections.reverse(experiment.almostRanking);
+//		
+//	}
 	
-	private SimilarityMatrix almostCertainMappingComputation(SimilarityMatrix ufl)
-	{
-		SimilarityMatrix sm=ufl.clone();
-		Alignment<Mapping> unAlignment=retriveUnconfidentMapping(ufl);
-		int row=sm.getRows();
-		int col=sm.getColumns();
-		double sim=0;
-		for(int i=0;i<row;i++)
-		{
-			for(int j=0;j<col;j++)
-			{
-				if (unAlignment.contains(sm.get(i, j)))
-				{
-					sim=unAlignment.getSimilarity(sm.get(i, j).getEntity1(), sm.get(i, j).getEntity2());
-					sm.setSimilarity(i, j, sim);
-				}
-			}
-		}
-		return sm;
-	}
+//	private SimilarityMatrix almostCertainMappingComputation(SimilarityMatrix ufl)
+//	{
+//		SimilarityMatrix sm=ufl.clone();
+//		//Alignment<Mapping> unAlignment=retriveUnconfidentMapping(ufl);
+//		int row=sm.getRows();
+//		int col=sm.getColumns();
+//		double sim=0;
+//		for(int i=0;i<row;i++)
+//		{
+//			for(int j=0;j<col;j++)
+//			{
+//				if (unAlignment.contains(sm.get(i, j)))
+//				{
+//					sim=unAlignment.getSimilarity(sm.get(i, j).getEntity1(), sm.get(i, j).getEntity2());
+//					sm.setSimilarity(i, j, sim);
+//				}
+//			}
+//		}
+//		return sm;
+//	}
 	
-	private Alignment<Mapping> retriveUnconfidentMapping(SimilarityMatrix sm)
+	private Alignment<Mapping> retriveUnconfidentMapping(SimilarityMatrix sm, SimilarityMatrix forbidden)
 	{
 		Alignment<Mapping> mpng=new Alignment<Mapping>(0,0);
 		Mapping m=null;
 		double maxValue=0.0;
 		int row=sm.getRows();
 		int col=sm.getColumns();
-		CrossCountQuality qm = new CrossCountQuality(sm);
+		CrossCountQuality qm = new CrossCountQuality(sm, forbidden);
 		for(int i=0;i<row;i++)
 		{
 			for(int j=0;j<col;j++)

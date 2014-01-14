@@ -4,6 +4,7 @@ import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.qualityEvaluation.AbstractQualityMetric;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
+import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import static am.Utility.IntArray.getMaxValue;
 
 /**
@@ -17,13 +18,13 @@ public class CrossCountQuality extends AbstractQualityMetric {
 		
 	private int[] rowCounts;
 	private int[] colCounts;
-	
+	SimilarityMatrix forbidden;
 	private int normalizationFactor;
 	
-	public CrossCountQuality(SimilarityMatrix matrix)
+	public CrossCountQuality(SimilarityMatrix matrix, SimilarityMatrix forbidden)
 	{
 		super();
-			
+		this.forbidden=forbidden;
 		// row counts
 		rowCounts = new int[matrix.getRows()];
 		for( int i = 0; i < matrix.getRows(); i++ ) {
@@ -53,7 +54,10 @@ public class CrossCountQuality extends AbstractQualityMetric {
 	{
 		int count = 0;
 		for(Mapping m : map){
-			if( m.getSimilarity() > 0.0 ) count++;
+//			if (forbidden.getSimilarity(m.getSourceKey(), m.getTargetKey())==1)
+//				count++;
+//			else
+				if( m.getSimilarity() > 0.0 ) count++;
 		}
 		return count;
 	}
