@@ -5,14 +5,13 @@ import java.util.List;
 
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.app.ontology.Node;
-import am.extension.multiUserFeedback.experiment.MUExperiment;
-import am.extension.userfeedback.experiments.MLFExperiment;
 import am.extension.userfeedback.experiments.SUExperiment;
+import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
 
 public class DataInizialization extends FeedbackLoopInizialization<SUExperiment> {
 	List<AbstractMatcher> inputMatchers = new ArrayList<AbstractMatcher>();
@@ -56,6 +55,33 @@ public class DataInizialization extends FeedbackLoopInizialization<SUExperiment>
 						Core.getInstance().getSourceOntology(),
 						Core.getInstance().getTargetOntology(), 
 						alignType.aligningProperties);
+		
+		
+		// output the experiment description
+		exp.info("============================ Running UFL Experiment: =================================");
+		exp.info("         NUM_USERS:" + exp.setup.parameters.getIntParameter(Parameter.NUM_USERS));
+		exp.info("    NUM_ITERATIONS:" + exp.setup.parameters.getIntParameter(Parameter.NUM_ITERATIONS));
+		exp.info("        ERROR_RATE:" + exp.setup.parameters.getDoubleParameter(Parameter.ERROR_RATE));
+		exp.info(" REVALIDATION_RATE:" + exp.setup.parameters.getParameter(Parameter.REVALIDATION_RATE));
+		exp.info("         STATIC_CS:" + exp.setup.parameters.getBooleanParameter(Parameter.STATIC_CANDIDATE_SELECTION));
+		exp.info("PROPAGATION_METHOD:" + exp.setup.parameters.getParameter(Parameter.PROPAGATION_METHOD));
+		exp.info("======================================================================================");
+		
+		String sourceFile = Core.getInstance().getSourceOntology().getFilename();
+		if( sourceFile.length() >= 51 ) {
+			exp.info("Source Ont: ..." + sourceFile.substring(sourceFile.length()-50-1, sourceFile.length()-1));
+		}
+		else {
+			exp.info("Source Ont: " + sourceFile);
+		}
+		
+		String targetFile = Core.getInstance().getTargetOntology().getFilename();
+		if( targetFile.length() >= 51 ) {
+			exp.info("Target Ont: ..." + targetFile.substring(targetFile.length()-50-1, targetFile.length()-1));
+		}
+		else {
+			exp.info("Target Ont: " + targetFile);
+		}
 		
 		done();
 	}
