@@ -4,6 +4,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import am.Utility;
 import am.app.Core;
 import am.app.lexicon.LexiconBuilderParameters;
@@ -18,8 +20,6 @@ import am.extension.userfeedback.ExecutionSemantics;
 import am.extension.userfeedback.experiments.UFLExperiment;
 import am.matcher.Combination.CombinationMatcher;
 import am.matcher.Combination.CombinationParameters;
-import am.matcher.IterativeInstanceStructuralMatcher.IterativeInstanceStructuralMatcher;
-import am.matcher.IterativeInstanceStructuralMatcher.IterativeInstanceStructuralParameters;
 import am.matcher.LexicalSynonymMatcher.LexicalSynonymMatcher;
 import am.matcher.LexicalSynonymMatcher.LexicalSynonymMatcherParameters;
 import am.matcher.asm.AdvancedSimilarityMatcher;
@@ -31,16 +31,8 @@ import am.matcher.multiWords.MultiWordsParameters;
 import am.matcher.parametricStringMatcher.ParametricStringMatcher;
 import am.matcher.parametricStringMatcher.ParametricStringParameters;
 
-/**
- * The orthogonal combination matcher.  Used as the first step in the new
- * User Feedback Loop.
- * 
- * @author Cosmin Stroe - Jan 29th, 2011.
- *
- */
-public class OrthoCombinationMatcher extends ExecutionSemantics {
-
-	public OrthoCombinationMatcher() { super(); }
+public class LargeOntologyOrthoMatchers extends ExecutionSemantics {
+private static final Logger LOG = Logger.getLogger(OrthoCombinationMatchers.class);
 	
 	@Override
 	public List<AbstractMatcher> getComponentMatchers() {
@@ -77,7 +69,7 @@ public class OrthoCombinationMatcher extends ExecutionSemantics {
 	
 	private MatchingProgressListener progressDisplay;
 	
-	private UFLExperiment experiment;
+	private UFLExperiment exp;
 	
 	@Override
 	public void run(UFLExperiment experiment) {
@@ -87,7 +79,7 @@ public class OrthoCombinationMatcher extends ExecutionSemantics {
 			return;
 		}
 		
-		this.experiment = experiment;
+		this.exp = experiment;
 		
 		try {
 			
@@ -100,23 +92,30 @@ public class OrthoCombinationMatcher extends ExecutionSemantics {
 				progressDisplay.ignoreComplete(true);
 				
 				progressDisplay.setProgressLabel("BSM (1/5)");
+				exp.info("Running BSM..."); LOG.info("Running BSM...");
 				m_bsm.match();
 				
 				progressDisplay.setProgressLabel("ASM (2/5)");
-				m_asm.match();
+				exp.info("Running ASM..."); LOG.info("Running ASM...");
+				if( m_asm != null ) 
+					m_asm.match();
 				
+				exp.info("Running PSM..."); LOG.info("Running PSM...");
 				progressDisplay.setProgressLabel("PSM (3/5)");
 				m_psm.match();
 				
+				exp.info("Running VMM..."); LOG.info("Running VMM...");
 				progressDisplay.setProgressLabel("VMM (4/5)");
 				m_vmm.match();
 				
+				exp.info("Running LSM..."); LOG.info("Running LSM...");
 				progressDisplay.setProgressLabel("LSM");
 				m_lsm.match();
 				
+				exp.info("Running LWC..."); LOG.info("Running LWC...");
 				progressDisplay.setProgressLabel("LWC (5/5)");
 				m_lwc.addInputMatcher(m_bsm);
-				m_lwc.addInputMatcher(m_asm);
+				if( m_asm != null ) m_lwc.addInputMatcher(m_asm);
 				m_lwc.addInputMatcher(m_psm);
 				m_lwc.addInputMatcher(m_vmm);
 				m_lwc.addInputMatcher(m_lsm);
@@ -165,35 +164,49 @@ public class OrthoCombinationMatcher extends ExecutionSemantics {
 		
 		//threshold
 		param_bsm.threshold =
-				param_asm.threshold =
-						param_psm.threshold=
-								param_vmm.threshold=
-										param_lsm.threshold=
-										param_lwc.threshold=0.4;
+		param_asm.threshold =
+		param_psm.threshold =
+		param_vmm.threshold =
+		param_lsm.threshold =
+		param_lwc.threshold = 0.4;
 		
 		
 		// BSM
 		param_bsm.useDictionary = false;
+		param_bsm.useProfiling = false;
+		param_bsm.useLocalname = false;
+		param_bsm.useNorm2 = false;
+		param_bsm.useNorm3 = false;
+		param_bsm.threadedExecution = true;
+		param_bsm.threadedOverlap = true;
 		m_bsm = new BaseSimilarityMatcher(param_bsm);
 		m_bsm.setOntologies(sourceOntology, targetOntology);
 		if (progressDisplay!=null)
 			m_bsm.addProgressDisplay(progressDisplay);
 		
 		// ASM
-		param_asm.initForOAEI2009();
+		param_asm.useDictionary = false;
+		param_asm.useProfiling = false;
+		param_asm.useLabel = true;
+		param_asm.threadedExecution = true;
+		param_asm.threadedOverlap = false;
 		m_asm = new AdvancedSimilarityMatcher(param_asm);
 		m_asm.setOntologies(sourceOntology, targetOntology);
 		if (progressDisplay!=null)m_asm.addProgressDisplay(progressDisplay);
 		
 		// PSM
-		param_psm.initForOAEI2010(OAEI_Track.Benchmarks);  // use the OAEI 2010 settings
+		param_psm.initForOAEI2010(OAEI_Track.Anatomy);  // use the OAEI 2010 settings
+		param_psm.useNormalizer = false;
+		param_psm.threadedExecution = true;
+		param_psm.threadedOverlap = true;
 		m_psm = new ParametricStringMatcher( param_psm );
 		m_psm.setOntologies(sourceOntology, targetOntology);
 		if (progressDisplay!=null)m_psm.addProgressDisplay(progressDisplay);
 		
 		// VMM
 		try {
-			param_vmm.initForOAEI2010(OAEI_Track.Benchmarks); // use the OAEI 2010 settings for this also.
+			param_vmm.initForOAEI2010(OAEI_Track.Anatomy); // use the OAEI 2010 settings for this also.
+			param_vmm.threadedExecution = true;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -204,6 +217,7 @@ public class OrthoCombinationMatcher extends ExecutionSemantics {
 		if (progressDisplay!=null)m_vmm.addProgressDisplay(progressDisplay);
 		
 		param_lsm.useSynonymTerms = false;
+		param_lsm.threadedExecution = true;
 		m_lsm = new LexicalSynonymMatcher( param_lsm );
 		m_lsm.setOntologies(sourceOntology, targetOntology);
 		if (progressDisplay!=null)m_lsm.addProgressDisplay(progressDisplay);
@@ -265,12 +279,12 @@ public class OrthoCombinationMatcher extends ExecutionSemantics {
 		
 		//Logger log = Logger.getLogger(this.getClass().toString());
 		
-		UFLExperiment log = experiment;
+		UFLExperiment log = exp;
 		
 		
 		
 		// output the reference alignment
-		Alignment<Mapping> referenceAlignment = experiment.getReferenceAlignment();
+		Alignment<Mapping> referenceAlignment = exp.getReferenceAlignment();
 		
 		//FIXME: We should not be looking at the reference alignment here.
 		if( referenceAlignment != null ) {

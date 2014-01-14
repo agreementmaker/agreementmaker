@@ -22,9 +22,17 @@ public class UFLExperimentParameters extends Properties {
 		REVALIDATION_RATE,
 		PRINT_FORBIDDEN_POSITIONS, // whether to print out the forbidden matrices every time
 		PROPAGATION_METHOD, // the propagation method we will use in Feedback Propagation.
-		STATIC_CANDIDATE_SELECTION, // whether our CS is static (only computed before experiment) or dynamic (computed every new itertation).
+		STATIC_CANDIDATE_SELECTION("false"), // whether our CS is static (only computed before experiment) or dynamic (computed every new itertation).
 		LOGFILE, // the name of the logfile
+		IM_THRESHOLD("0.6"), // the initial matchers threshold
 		;
+		
+		private String defaultValue;
+		
+		private Parameter() { this.defaultValue = null; }
+		private Parameter(String def) { this.defaultValue = def; }
+		public boolean hasDefaultValue() { return this.defaultValue != null; }
+		public String getDefaultValue() { return this.defaultValue; }
 	}
 	
 	public void setParameter(Parameter p, String value) {
@@ -48,16 +56,36 @@ public class UFLExperimentParameters extends Properties {
 	}
 	
 	public int getIntParameter(Parameter p) {
-		return Integer.parseInt(getProperty(p.name()));
+		String value = getProperty(p.name());
+		if( value == null && p.hasDefaultValue() ) {
+			return Integer.parseInt(p.getDefaultValue());
+		}
+		else if( value != null ) {
+			return Integer.parseInt(value);
+		}
+		throw new RuntimeException("The parameter has not been set and it does not have a default value.");
 	}
 	
 	public double getDoubleParameter(Parameter p) {
-		return Double.parseDouble(getProperty(p.name()));
+		String value = getProperty(p.name());
+		if( value == null && p.hasDefaultValue() ) {
+			return Double.parseDouble(p.getDefaultValue());
+		}
+		else if( value != null ) {
+			return Double.parseDouble(value);
+		}
+		throw new RuntimeException("The parameter has not been set and it does not have a default value.");
 	}
 	
 	public boolean getBooleanParameter(Parameter p) {
-		if( getProperty(p.name()) == null ) return false;
-		return Boolean.parseBoolean(getProperty(p.name()));
+		String value = getProperty(p.name());
+		if( value == null && p.hasDefaultValue() ) {
+			return Boolean.parseBoolean(p.getDefaultValue());
+		}
+		else if( value != null ) {
+			return Boolean.parseBoolean(value);
+		}
+		throw new RuntimeException("The parameter has not been set and it does not have a default value.");
 	}
 	
 	public String[] toStringList() {

@@ -189,7 +189,6 @@ public class MultiWordsMatcher extends AbstractMatcher {
 	@SuppressWarnings("unchecked")
 	private String createMultiWordsString(Node node, alignType typeOfNodes) throws Exception {
 		
-		mWS = new String();
 		String multiWordsString = "";
 
 		MultiWordsParameters mp = (MultiWordsParameters)param;
@@ -200,20 +199,10 @@ public class MultiWordsMatcher extends AbstractMatcher {
 			multiWordsString = Utility.smartConcat(multiWordsString, node.getComment());
 			multiWordsString = Utility.smartConcat(multiWordsString, node.getSeeAlsoLabel());
 			multiWordsString = Utility.smartConcat(multiWordsString, node.getIsDefinedByLabel());
-			
-			if( param.storeProvenance ) {
-				mWS+="considering Concept:\n";
-				mWS+="\tlabel and/or name: "+getLabelAndOrNameString(node)+"\n";
-				mWS+="\tcomment: "+node.getComment()+"\n";
-				mWS+="\tSee also label: "+node.getSeeAlsoLabel()+"\n";
-				mWS+="\tis defined by label: "+node.getIsDefinedByLabel()+"\n";
-			}
 		}
 
 		//add neighbors strings
 		if(mp.considerNeighbors) {
-			if( param.storeProvenance ) mWS+="considering neighbors:\n";
-			
 			String neighbourString = "";
 			HashSet<Node> neighborNodes = new HashSet<Node>(); // use a hashset to avoid duplicates
 			

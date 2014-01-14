@@ -5,11 +5,11 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 
-import am.AMException;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.MatcherFeature;
 import am.app.mappingEngine.StringUtil.Normalizer;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
@@ -148,7 +148,7 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 		 */
 		
 		OntologyProfiler pro = Core.getInstance().getOntologyProfiler();
-		if( pro != null ) {
+		if( pro != null && ((BaseSimilarityParameters)param).useProfiling ) {
 			// we are using ontology profiling
 			double highestSimilarity = 0.0d;
 			Pair<String,String> highestPair = null;
@@ -202,9 +202,9 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 			}
 		}
 		 else {
-			 	throw new AMException("Base Similarity Matcher requires Annotation Profiling to be setup.");
+			 	//throw new AMException("Base Similarity Matcher requires Annotation Profiling to be setup.");
 				// we are not using ontology profiling
-				//return withoutProfiling(source, target, typeOfNodes);
+				return withoutProfiling(source, target, typeOfNodes);
 		 }
 	}
 	
@@ -214,7 +214,7 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 	 * @param target
 	 * @return
 	 */
-	/*private Mapping withoutProfiling(Node source, Node target, alignType typeOfNode ) {
+	private Mapping withoutProfiling(Node source, Node target, alignType typeOfNode ) {
 		if( param != null && ((BaseSimilarityParameters) param).useDictionary ) {  // Step 3a
 			String sourceName = source.getLabel();
 			String targetName = target.getLabel();
@@ -283,159 +283,81 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 		}
 		else {  // Step no dictionary
 			// the user does not want to use the dictionary
-			// Changed from the one of Sunna
-			
+
 			//FOCUS ON LOCALNAMES
-			//equivalence return 1
-			String sLocalname = source.getLocalName();
-			String tLocalname = target.getLocalName();
-			
-			//setup the base of the provenance string
-			String provenanceString = null;
-			if( param.storeProvenance ) {
-				provenanceString="\t********BaseSimilarityMatcher********\n";
-				provenanceString += "sim(\"" 
-					+ sLocalname + "\", \""
-					+ tLocalname
-					+ "\") = ";
-			}
-			
-			if(sLocalname.equalsIgnoreCase(tLocalname)){
-				if( param.storeProvenance ){
-					//setup the rest of the string
-					provenanceString+="1\nmatched by exact local match";
-				}
-				
-				Mapping pmapping=new Mapping( source, target, 1d, MappingRelation.EQUIVALENCE, typeOfNode);
-				if( param.storeProvenance ) pmapping.setProvenance(provenanceString+"\n");
-				return pmapping;
-			}
-				
-			//all normalization without stemming and digits return 0.95
-			
-			String sProcessedLocalnames = norm1.normalize(sLocalname);
-			String tProcessedLocalnames = norm1.normalize(tLocalname);
-			if(sProcessedLocalnames.equals(tProcessedLocalnames)){
-				if( param.storeProvenance ){
-					//setup the rest of the string
-					provenanceString+=".95\nmatched by local stem \""+sProcessedLocalnames+"\"";
-				}
-				
-				Mapping pmapping=new Mapping( source, target, 0.95d, MappingRelation.EQUIVALENCE, typeOfNode);
-				if( param.storeProvenance ) pmapping.setProvenance(provenanceString+"\n");
-				return pmapping;
-			}
-			//all normalization without digits return 0.90
+			if( ((BaseSimilarityParameters)param).useLocalname ) {
+				String sLocalname = source.getLocalName();
+				String tLocalname = target.getLocalName();
 
-			sProcessedLocalnames = norm2.normalize(sLocalname);
-			tProcessedLocalnames = norm2.normalize(tLocalname);
-			if(sProcessedLocalnames.equals(tProcessedLocalnames)){
-				if( param.storeProvenance ){
-					//setup the rest of the string
-					provenanceString+=".9\nmatched by local stem \""+sProcessedLocalnames+"\"";
+				//equivalence return 1
+				if(sLocalname.equalsIgnoreCase(tLocalname))		
+					return new Mapping( source, target, 1d, MappingRelation.EQUIVALENCE, typeOfNode);
+				
+				if( ((BaseSimilarityParameters)param).useNorm1 ) {
+					//all normalization without stemming and digits return 0.95
+					String sProcessedLocalnames = norm1.normalize(sLocalname);
+					String tProcessedLocalnames = norm1.normalize(tLocalname);
+					if(sProcessedLocalnames.equals(tProcessedLocalnames))
+						return new Mapping( source, target, 0.95d, MappingRelation.EQUIVALENCE, typeOfNode);
 				}
 				
-				Mapping pmapping=new Mapping( source, target, 0.9d, MappingRelation.EQUIVALENCE, typeOfNode);
-				if( param.storeProvenance ) pmapping.setProvenance(provenanceString+"\n");
-				return pmapping;
-			}
-			//all normalization return 0.8
+				if( ((BaseSimilarityParameters)param).useNorm2 ) {
+					//all normalization without digits return 0.90
+					String sProcessedLocalnames = norm2.normalize(sLocalname);
+					String tProcessedLocalnames = norm2.normalize(tLocalname);
+					if(sProcessedLocalnames.equals(tProcessedLocalnames))
+						return new Mapping( source, target, 0.9d, MappingRelation.EQUIVALENCE, typeOfNode);
+				}
 
-			sProcessedLocalnames = norm3.normalize(sLocalname);
-			tProcessedLocalnames = norm3.normalize(tLocalname);
-			if(sProcessedLocalnames.equals(tProcessedLocalnames))
-			{
-				if( param.storeProvenance ){
-					//setup the rest of the string
-					provenanceString+=".8\nmatched by local stem \""+sProcessedLocalnames+"\"";
+				if( ((BaseSimilarityParameters)param).useNorm3 ) {
+					//all normalization return 0.8
+					String sProcessedLocalnames = norm3.normalize(sLocalname);
+					String tProcessedLocalnames = norm3.normalize(tLocalname);
+					if(sProcessedLocalnames.equals(tProcessedLocalnames))
+						return new Mapping( source, target, 0.9d, MappingRelation.EQUIVALENCE, typeOfNode);
 				}
-				
-				Mapping pmapping=new Mapping( source, target, 0.9d, MappingRelation.EQUIVALENCE, typeOfNode);
-				if( param.storeProvenance ) pmapping.setProvenance(provenanceString+"\n");
-				return pmapping;
 			}
 	
 			//FOCUS ON LABELS
 			//equivalence return 1
-			String sLabel = source.getLabel();
-			String tLabel = target.getLabel();
-			
-			provenanceString = null;
-			if( param.storeProvenance ) {
-				provenanceString="\t********BaseSimilarityMatcher********\n";
-				provenanceString += "sim(\"" 
-					+ sLabel + "\", \""
-					+ tLabel
-					+ "\") = ";
-			}
-			
-			if( !(sLabel.equals("") || tLabel.equals("")) ){
-				if(sLabel.equalsIgnoreCase(tLabel))
-				{
-					if( param.storeProvenance ){
-						//setup the rest of the string
-						provenanceString+="1\nmatched by exact label match";
-					}
+			if( ((BaseSimilarityParameters)param).useLabel == true ) {
+				String sLabel = source.getLabel();
+				String tLabel = target.getLabel();
+				
+				if( !(sLabel.equals("") || tLabel.equals("")) ){
+					if(sLabel.equalsIgnoreCase(tLabel))
+						return new Mapping( source, target, 1d, MappingRelation.EQUIVALENCE, typeOfNode);
 					
-					Mapping pmapping=new Mapping( source, target, 1d, MappingRelation.EQUIVALENCE, typeOfNode);
-					if( param.storeProvenance ) pmapping.setProvenance(provenanceString+"\n");
-					return pmapping;
-				}
-				//all normalization without stemming and digits return 0.95
-				
-				
-				
-				String sProcessedLabel = norm1.normalize(sLabel);
-				String tProcessedLabel = norm1.normalize(tLabel);
-				if(sProcessedLabel.equals(tProcessedLabel))
-				{
-					if( param.storeProvenance ){
-						//setup the rest of the string
-						provenanceString+=".95\nmatched by label stem \""+sProcessedLabel+"\"";
+					if( ((BaseSimilarityParameters)param).useNorm1 ) {
+						//all normalization without stemming and digits return 0.95
+						String sProcessedLabel = norm1.normalize(sLabel);
+						String tProcessedLabel = norm1.normalize(tLabel);
+						if(sProcessedLabel.equals(tProcessedLabel))
+							return new Mapping( source, target, .95d, MappingRelation.EQUIVALENCE, typeOfNode);
 					}
-					
-					Mapping pmapping=new Mapping( source, target, .95d, MappingRelation.EQUIVALENCE, typeOfNode);
-					if( param.storeProvenance ) pmapping.setProvenance(provenanceString+"\n");
-					return pmapping;
-				}
-				//apply stem return 0.90 
-				
-				
-				
-				sProcessedLabel = norm2.normalize(sLabel);
-				tProcessedLabel = norm2.normalize(tLabel);
-				if(sProcessedLabel.equals(tProcessedLabel))
-				{
-					if( param.storeProvenance ){
-						//setup the rest of the string
-						provenanceString+=".9\nmatched by label stem \""+sProcessedLabel+"\"";
-					}
-					
-					Mapping pmapping=new Mapping( source, target, .9d, MappingRelation.EQUIVALENCE, typeOfNode);
-					if( param.storeProvenance ) pmapping.setProvenance(provenanceString+"\n");
-					return pmapping;
-				}
-				//apply normDigits return 0.8
-				
 
-				sProcessedLabel = norm3.normalize(sLabel);
-				tProcessedLabel = norm3.normalize(tLabel);
-				if(sProcessedLabel.equals(tProcessedLabel))
-				{
-					if( param.storeProvenance ){
-						//setup the rest of the string
-						provenanceString+=".8\nmatched by label stem \""+sProcessedLabel+"\"";
+				
+					if( ((BaseSimilarityParameters)param).useNorm2 ) {
+						//apply stem return 0.90
+						String sProcessedLabel = norm2.normalize(sLabel);
+						String tProcessedLabel = norm2.normalize(tLabel);
+						if(sProcessedLabel.equals(tProcessedLabel))
+							return new Mapping( source, target, .9d, MappingRelation.EQUIVALENCE, typeOfNode);
 					}
-					
-					Mapping pmapping=new Mapping( source, target, .8d, MappingRelation.EQUIVALENCE, typeOfNode);
-					if( param.storeProvenance ) pmapping.setProvenance(provenanceString+"\n");
-					return pmapping;
+
+					if( ((BaseSimilarityParameters)param).useNorm3 ) {
+						//apply normDigits return 0.8
+						String sProcessedLabel = norm3.normalize(sLabel);
+						String tProcessedLabel = norm3.normalize(tLabel);
+						if(sProcessedLabel.equals(tProcessedLabel))
+							return new Mapping( source, target, .8d, MappingRelation.EQUIVALENCE, typeOfNode);
+					}
 				}
 			}
 			//none of the above
-			return new  Mapping( source, target, 0.0d, MappingRelation.EQUIVALENCE, typeOfNode);
+			return null;
 		}
-	}*/
+	}
 	
 	
 	/**

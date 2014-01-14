@@ -223,7 +223,17 @@ public class PresetUtilities {
 			setup.parameters.setParameter(			Parameter.PROPAGATION_METHOD, ServerFeedbackPropagation.PROPAGATION_REGRESSION);
 			ExperimentPreset exp = new ExperimentPreset(EXPERIMENT[i++], setup);
 			PresetStorage.addExperimentPreset(exp);
+		}{
+			UFLExperimentSetup setup = createEmptyUFLSetup();
+			setup.im = InitialMatcherRegistry.LargeOrthoCombination;
+			setup.parameters.setDoubleParameter(	Parameter.ERROR_RATE, 0d);
+			setup.parameters.setDoubleParameter(	Parameter.REVALIDATION_RATE, 0.1d);
+			setup.parameters.setParameter(			Parameter.PROPAGATION_METHOD, ServerFeedbackPropagation.PROPAGATION_REGRESSION);
+			ExperimentPreset exp = new ExperimentPreset("LargeOntology", setup);
+			PresetStorage.addExperimentPreset(exp);
 		}
+		
+		
 		
 	}
 	

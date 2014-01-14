@@ -318,14 +318,7 @@ public class LexiconBuilderDialog extends JDialog implements ListSelectionListen
 		if( annotationList == null ) {
 
 			annotationList = new ArrayList<Property>();
-			Set<Property> uniqueAnnotationProperties = new HashSet<>();
-			for( Node classNode : ont.getClassesList() ) 
-				uniqueAnnotationProperties.addAll(ManualOntologyProfiler.createClassAnnotationsList(classNode));
-			
-			for( Node propertyNode : ont.getPropertiesList() ) 
-				uniqueAnnotationProperties.addAll(ManualOntologyProfiler.createPropertyAnnotationsList(propertyNode));
-			
-			annotationList.addAll(uniqueAnnotationProperties);
+			annotationList.addAll(ont.getModel().listAnnotationProperties().toList());
 			
 			Collections.sort(annotationList, new LocalnameComparator());
 			

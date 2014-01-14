@@ -19,6 +19,7 @@ import javax.swing.JProgressBar;
 
 import org.apache.log4j.Logger;
 
+import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
@@ -57,6 +58,11 @@ public class UFLBatchModeGUI extends AMTabSupportPanel implements UFLProgressDis
 	private int runNumber = 0;
 	
 	private RunTimer timer = new RunTimer();
+
+	private String logLabel;
+	private int progress;
+
+	private AbstractMatcher matcherRunning;
 	
 	public UFLBatchModeGUI() {
 		super("UFL Batch Mode");
@@ -199,18 +205,28 @@ public class UFLBatchModeGUI extends AMTabSupportPanel implements UFLProgressDis
 		
 	}
 	
-	@Override public void matchingStarted(AbstractMatcher matcher) {}
-	@Override public void matchingComplete() {}
+	@Override public void matchingStarted(AbstractMatcher matcher) {
+		this.matcherRunning = matcher;
+	}
+	@Override public void matchingComplete() {
+		LOG.info(logLabel + " finished in " + Utility.getFormattedTime(matcherRunning.getRunningTime()));
+	}
 	@Override public void clearReport() {}
-	@Override public void appendToReport(String report) {}
+	@Override public void appendToReport(String report) {
+		//LOG.info(report);
+	}
 	@Override public void scrollToEndOfReport() {}
-	@Override public void setProgressLabel(String label) {}
+	@Override public void setProgressLabel(String label) {
+		this.logLabel = label;
+	}
 	@Override public void setIndeterminate(boolean indeterminate) {}
 	@Override public void ignoreComplete(boolean ignore) {}
 
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
-		
+		if( evt.getPropertyName().equals("progress") ) {
+			LOG.info(logLabel + " progress: " + evt.getNewValue().toString() );
+		}
 	}
 	
 	@Override
