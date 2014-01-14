@@ -31,7 +31,7 @@ public class BMAutomaticValidation extends UserFeedback {
 		UFLExperiment log = experiment;
 		candidateMapping = experiment.candidateSelection.getSelectedMapping();
 
-		if( candidateMapping == null || experiment.getIterationNumber() > 100 ) {
+		if( candidateMapping == null || experiment.getIterationNumber() > experiment.setup.parameters.getIntParameter(Parameter.NUM_ITERATIONS) ) {
 			userValidation = Validation.END_EXPERIMENT;
 			done();
 			return;
@@ -52,10 +52,15 @@ public class BMAutomaticValidation extends UserFeedback {
 		double errorProb=Math.random();
 		if (errorProb<experiment.setup.parameters.getDoubleParameter(Parameter.ERROR_RATE))
 		{
-			if (userValidation==Validation.CORRECT)
+			
+			if (userValidation==Validation.CORRECT){
 				userValidation=Validation.INCORRECT;
-			else
+				log.info("ERROR, this mapping should be CORRECT " + candidateMapping.toString() );
+			}else
+			{
 				userValidation=Validation.CORRECT;
+				log.info("ERROR, this mapping should be INCORRECT " + candidateMapping.toString() );
+			}
 		}
 		
 		log.info("");
