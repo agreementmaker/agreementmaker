@@ -9,6 +9,7 @@ import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping;
 import am.app.ontology.Ontology;
 import am.extension.multiUserFeedback.experiment.MUExperiment;
+import am.extension.multiUserFeedback.experiment.MUExperiment.csData.MappingSource;
 import am.extension.userfeedback.UserFeedback.Validation;
 import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
 import am.extension.userfeedback.rankingStrategies.DisagreementRanking;
@@ -130,9 +131,10 @@ public class ServerMultiStrategyCandidateSelection extends MUCandidateSelection<
 		if (c1<=mqRate)
 		{
 			count[0]++;
-			experiment.data.count=count;
-			experiment.data.total=total;
-			experiment.selectedMapping=getCandidateMappingFromList(experiment.data.mqList);
+			experiment.data.count = count;
+			experiment.data.total = total; 
+			experiment.selectedMapping = getCandidateMappingFromList(experiment.data.mqList);
+			experiment.data.mappingSource = MappingSource.MappingQuality; // for evaluation
 			return experiment.selectedMapping;
 			
 		}
@@ -142,6 +144,7 @@ public class ServerMultiStrategyCandidateSelection extends MUCandidateSelection<
 			experiment.data.count=count;
 			experiment.data.total=total;
 			experiment.selectedMapping=getCandidateMappingFromList(experiment.data.drList);
+			experiment.data.mappingSource = MappingSource.DisagreementRanking; // for evaluation
 			return experiment.selectedMapping;
 		}
 		if (c3<=revalidationRate)
@@ -150,6 +153,7 @@ public class ServerMultiStrategyCandidateSelection extends MUCandidateSelection<
 			experiment.data.count=count;
 			experiment.data.total=total;
 			experiment.selectedMapping=experiment.data.rrList.get(0);
+			experiment.data.mappingSource = MappingSource.RevalidationRanking; // for evaluation
 			return experiment.selectedMapping;
 		}
 		
@@ -213,6 +217,5 @@ public class ServerMultiStrategyCandidateSelection extends MUCandidateSelection<
 		// TODO Auto-generated method stub
 		return experiment.selectedMapping;
 	}
-
 
 }
