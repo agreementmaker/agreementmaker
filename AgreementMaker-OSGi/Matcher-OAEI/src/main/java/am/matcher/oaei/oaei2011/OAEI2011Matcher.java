@@ -364,7 +364,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 			
 			AdvancedSimilarityParameters asmParam = 
 					new AdvancedSimilarityParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign);
-			asmParam.useLabels = false;
+			asmParam.useLabel = false;
 			
 			setupSubMatcher(asm, asmParam);
 			runSubMatcher(asm, "ASM 1/6");
