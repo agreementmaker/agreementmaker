@@ -54,13 +54,15 @@ public HashMap<String, Integer> usersGroup=new HashMap<String, Integer>();
 public HashMap<String, SimilarityMatrix> usersClass=new HashMap<String, SimilarityMatrix>();
 public HashMap<String, SimilarityMatrix> usersProp=new HashMap<String, SimilarityMatrix>();
 
-public class csData{
-	public int[] count={0,0,0};
-	public int total=0;
-	public List<Mapping> mqList;
-	public List<Mapping> drList;
-	public List<Mapping> rrList;
-}
+	public static class csData{
+		public static enum MappingSource { DisagreementRanking, MappingQuality, RevalidationRanking };
+		public int[] count={0,0,0};
+		public int total=0;
+		public List<Mapping> mqList;
+		public List<Mapping> drList;
+		public List<Mapping> rrList;
+		public MappingSource mappingSource;
+	}
 public csData data=new csData();
 
 
@@ -201,9 +203,13 @@ public void setTrainingSet_property(Object[][] trainingSet_property) {
 	}
 
 
-public Alignment<Mapping> getMLAlignment() {
-	return MLAlignment;
-}
+	/**
+	 * @deprecated Use {@link #getFinalAlignment()}.
+	 */
+	@Deprecated
+	public Alignment<Mapping> getMLAlignment() {
+		return MLAlignment;
+	}
 
 
 public void setMLAlignment(Alignment<Mapping> mLAlignment) {
@@ -224,7 +230,6 @@ public void setMLAlignment(Alignment<Mapping> mLAlignment) {
 
 	@Override
 	public Alignment<Mapping> getFinalAlignment() {
-		//return initialMatcher.getAlignment();
 		return MLAlignment;
 	}
 
