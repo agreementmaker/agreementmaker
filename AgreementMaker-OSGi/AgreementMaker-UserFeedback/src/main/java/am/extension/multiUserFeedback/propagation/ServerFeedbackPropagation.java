@@ -26,6 +26,7 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 	final double treshold_up=0.6;
 	final double treshold_down=0.1;
 	final double penalize_ratio=0.9;
+	final double log_multiplier=1.2;
 	private MUExperiment experiment;
 	List<AbstractMatcher> inputMatchers = new ArrayList<AbstractMatcher>();
 	
@@ -329,7 +330,7 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 				if ((minDistance<avgDistance))
 				{
 					sim=Math.log(2-minDistance) / Math.log(2);
-					sim*=1.2;
+					sim*=log_multiplier;
 					if ((double)trainingSet[index][trainingSet[0].length-1]==1.0)
 						sim=sm.getSimilarity(k, h)+sim;
 					else
