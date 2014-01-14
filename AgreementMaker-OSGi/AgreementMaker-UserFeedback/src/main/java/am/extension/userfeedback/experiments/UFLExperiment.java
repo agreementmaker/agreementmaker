@@ -1,5 +1,8 @@
 package am.extension.userfeedback.experiments;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.log4j.Logger;
 
 import am.app.mappingEngine.Alignment;
@@ -41,6 +44,20 @@ public abstract class UFLExperiment {
 	protected Alignment<Mapping> referenceAlignment = null;
 	
 	/**
+	 * A shared object store, that is used to keep objects. NOTE: This object is
+	 * needed because of the way the UFLControlLogic has evolved. The
+	 * UFLControlLogics we implemented did not allow UFL objects to persist
+	 * beyond one iteration. On each iteration, new objects are instantitated.
+	 * So we moved a lot of the data structures we wanted to persist into the
+	 * UFLExperiment subclasses. This object is an attempt to simplify that
+	 * task. Instead of adding a new field every time we want to save a new data
+	 * structure, we will just put the object in the object store, and retrieve
+	 * it later. There should be a better way to do this, or ideally move to an
+	 * OSGi-based model.
+	 */
+	private Map<String,Object> sharedObjectStore;
+	
+	/**
 	 * These mappings were validated by the user as being CORRECT.
 	 */
     public Alignment<Mapping>				correctMappings;
@@ -61,6 +78,8 @@ public abstract class UFLExperiment {
 			setup.parameters.setParameter(Parameter.LOGFILE, log);
 			LOG.error("The LOGFILE parameter has not been set for this experiment. Log file is defaulting to \""+log+"\".");
 		}
+		
+		sharedObjectStore = new HashMap<>();
 	}
     
 	public Ontology getSourceOntology()             { return sourceOntology; }
@@ -109,4 +128,29 @@ public abstract class UFLExperiment {
 	public abstract String getDescription(); 
 	
 
+	/**
+	 * @param key The key for the object.
+	 * @return An object from the shared object store.
+	 */
+	public Object getSharedObject(String key) {
+		return sharedObjectStore.get(key);
+	}
+	
+	/**
+	 * @param key The key for the object.
+	 * @param object The object we want to store in the shared object store.
+	 */
+	public void setSharedObject(String key, Object object) {
+		sharedObjectStore.put(key, object);
+	}
+	
+	/**
+	 * @return A list of all the mappings that have been validated by the user.
+	 */
+	public Alignment<Mapping> getValidatedMappings() {
+		Alignment<Mapping> a = new Alignment<>(getSourceOntology().getID(),getTargetOntology().getID());
+		if( correctMappings != null ) a.addAll(correctMappings);
+		if( incorrectMappings != null ) a.addAll(incorrectMappings);
+		return a;
+	}
 }
