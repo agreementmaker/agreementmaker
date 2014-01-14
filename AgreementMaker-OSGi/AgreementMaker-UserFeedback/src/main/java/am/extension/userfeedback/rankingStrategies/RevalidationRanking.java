@@ -38,7 +38,18 @@ public class RevalidationRanking implements StrategyInterface{
 
 	
 	
-	public RevalidationRanking(List<SimilarityMatrix> clMatrix, List<SimilarityMatrix> prMatrix, SparseMatrix cp, SparseMatrix cn, SparseMatrix pp,SparseMatrix pn, SimilarityMatrix uClass, SimilarityMatrix uProp, List<Mapping> torank, SimilarityMatrix forbiddenClass, SimilarityMatrix forbiddenProp)
+	public RevalidationRanking(
+			List<SimilarityMatrix> clMatrix, 
+			List<SimilarityMatrix> prMatrix, 
+			SparseMatrix cp, 
+			SparseMatrix cn, 
+			SparseMatrix pp,
+			SparseMatrix pn,
+			SimilarityMatrix uClass,
+			SimilarityMatrix uProp,
+			List<Mapping> torank,
+			SimilarityMatrix forbiddenClass,
+			SimilarityMatrix forbiddenProp)
 	{
 		this.classMatrices=clMatrix;
 		this.propMatrices=prMatrix;
