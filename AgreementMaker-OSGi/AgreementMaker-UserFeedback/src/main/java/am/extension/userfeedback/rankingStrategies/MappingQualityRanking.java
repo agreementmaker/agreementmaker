@@ -14,20 +14,24 @@ public class MappingQualityRanking implements StrategyInterface{
 
 	private SimilarityMatrix classMatrix;
 	private SimilarityMatrix propMatrix;
+	private SimilarityMatrix forbiddenClass;
+	private SimilarityMatrix forbiddnProp;
 	private double alpha=1.0;
 	private double beta=1.0;
 	
 	
-	public MappingQualityRanking(SimilarityMatrix clMatrix, SimilarityMatrix prMatrix)
+	public MappingQualityRanking(SimilarityMatrix clMatrix, SimilarityMatrix prMatrix, SimilarityMatrix forbiddenClass, SimilarityMatrix forbiddenProp)
 	{
 		this.classMatrix=clMatrix;
 		this.propMatrix=prMatrix;
+		this.forbiddenClass=forbiddenClass;
+		this.forbiddnProp=forbiddenProp;
 	}
 	
 	@Override
 	public List<Mapping> rank() {
-		List<Mapping> rankList=linearCombination(classMatrix);
-		rankList.addAll(linearCombination(propMatrix));
+		List<Mapping> rankList=linearCombination(classMatrix, forbiddenClass);
+		rankList.addAll(linearCombination(propMatrix,forbiddnProp));
 		Collections.sort(rankList, new MappingSimilarityComparator() );
 		Collections.reverse(rankList);
 		
@@ -36,14 +40,14 @@ public class MappingQualityRanking implements StrategyInterface{
 	
 	
 	//Linear combination of CCQ and the inverse of SSH
-	private List<Mapping> linearCombination(SimilarityMatrix mtrx)
+	private List<Mapping> linearCombination(SimilarityMatrix mtrx, SimilarityMatrix forbidden)
 	{
 		List<Double> ssh_norm=new ArrayList<Double>();
 		List<Double> ccq_norm=new ArrayList<Double>();
 		Mapping mp=null;
 		double sim=0;
 		List<Mapping> lst=new ArrayList<Mapping>();
-		CrossCountQuality ccq=new CrossCountQuality(mtrx);
+		CrossCountQuality ccq=new CrossCountQuality(mtrx,forbidden);
 		SimilarityScoreHardness ssh=new SimilarityScoreHardness(mtrx);
 		for(int i=0;i<mtrx.getRows();i++)
 		{
@@ -54,8 +58,8 @@ public class MappingQualityRanking implements StrategyInterface{
 
 			}
 		}
-		normalize(ccq_norm);
-		normalize(ssh_norm);
+		//normalize(ccq_norm);
+		//normalize(ssh_norm);
 		int count=0;
 		for(int i=0;i<mtrx.getRows();i++)
 		{

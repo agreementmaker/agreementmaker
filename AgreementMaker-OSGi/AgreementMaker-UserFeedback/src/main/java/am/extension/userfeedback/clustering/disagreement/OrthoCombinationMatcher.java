@@ -51,7 +51,7 @@ public class OrthoCombinationMatcher extends ExecutionSemantics {
 		l.add(m_psm);
 		l.add(m_vmm);
 		l.add(m_lsm);
-		l.add(m_iism);
+		//l.add(m_iism);
 		
 		return l;
 	}
@@ -63,7 +63,7 @@ public class OrthoCombinationMatcher extends ExecutionSemantics {
 	private LexicalSynonymMatcherParameters param_lsm; // LSM parameters
 	
 	private CombinationParameters		param_lwc;  // LWC params
-	private IterativeInstanceStructuralParameters param_iism;
+	//private IterativeInstanceStructuralParameters param_iism;
 	
 	/********* MATCHERS **********/
 	private BaseSimilarityMatcher		m_bsm;
@@ -73,7 +73,7 @@ public class OrthoCombinationMatcher extends ExecutionSemantics {
 	private LexicalSynonymMatcher       m_lsm;
 	
 	private CombinationMatcher			m_lwc;
-	private IterativeInstanceStructuralMatcher m_iism;
+	//private IterativeInstanceStructuralMatcher m_iism;
 	
 	private MatchingProgressListener progressDisplay;
 	
@@ -122,15 +122,15 @@ public class OrthoCombinationMatcher extends ExecutionSemantics {
 				m_lwc.addInputMatcher(m_lsm);
 				m_lwc.match();
 				
-				m_iism.addInputMatcher(m_lwc);
-				m_iism.match();
+//				m_iism.addInputMatcher(m_lwc);
+//				m_iism.match();
 				
 				progressDisplay.ignoreComplete(false);
 			} else {
 				m_bsm.match();
 				m_asm.match();
 				m_psm.match();
-				//m_vmm.match();
+				m_vmm.match();
 				m_lsm.match();
 				
 				m_lwc.addInputMatcher(m_bsm);
@@ -140,8 +140,8 @@ public class OrthoCombinationMatcher extends ExecutionSemantics {
 				m_lwc.addInputMatcher(m_lsm);
 				m_lwc.match();
 				
-				m_iism.addInputMatcher(m_lwc);
-				m_iism.match();
+//				m_iism.addInputMatcher(m_lwc);
+//				m_iism.match();
 			}
 			
 			done();
@@ -161,7 +161,16 @@ public class OrthoCombinationMatcher extends ExecutionSemantics {
 		param_lsm = new LexicalSynonymMatcherParameters();
 		
 		param_lwc = new CombinationParameters();
-		param_iism = new IterativeInstanceStructuralParameters();
+		//param_iism = new IterativeInstanceStructuralParameters();
+		
+		//threshold
+		param_bsm.threshold =
+				param_asm.threshold =
+						param_psm.threshold=
+								param_vmm.threshold=
+										param_lsm.threshold=
+										param_lwc.threshold=0.4;
+		
 		
 		// BSM
 		param_bsm.useDictionary = false;
@@ -210,12 +219,12 @@ public class OrthoCombinationMatcher extends ExecutionSemantics {
 		m_lwc.setOntologies(sourceOntology, targetOntology);
 		if (progressDisplay!=null)m_lwc.addProgressDisplay(progressDisplay);
 		
-		// IISM
-		param_iism.setForOAEI2010();
-		m_iism = new IterativeInstanceStructuralMatcher();
-		m_iism.setParameters(param_iism);
-		m_iism.setOntologies(sourceOntology, targetOntology);
-		if (progressDisplay!=null)m_iism.addProgressDisplay(progressDisplay);
+//		// IISM
+//		param_iism.setForOAEI2010();
+//		m_iism = new IterativeInstanceStructuralMatcher();
+//		m_iism.setParameters(param_iism);
+//		m_iism.setOntologies(sourceOntology, targetOntology);
+//		if (progressDisplay!=null)m_iism.addProgressDisplay(progressDisplay);
 		
 		// Initialize the OntologyProfiling algorithm because The BSM needs an ontology profiler.
 		if( Core.getInstance().getOntologyProfiler() == null ) {

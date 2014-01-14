@@ -126,7 +126,7 @@ public class MaxInformationRanking extends CandidateSelection<SUExperiment> {
 
 		//if (ex.getIterationNumber()<=1)
 		//{
-		rank(matchers);
+		//rank(matchers);
 		ex.disRanked=allRanked;
 		//}
 		//else
@@ -242,72 +242,72 @@ public class MaxInformationRanking extends CandidateSelection<SUExperiment> {
 	
 	
 	
-	private SimilarityMatrix addPropagationWeight(SimilarityMatrix sm, SimilarityMatrix ufl)
-	{
-		Alignment<Mapping> unAlignment=retriveUnconfidentMapping(ufl);
-		int row=sm.getRows();
-		int col=sm.getColumns();
-		double sim=0;
-		for(int i=0;i<row;i++)
-		{
-			for(int j=0;j<col;j++)
-			{
-				if (unAlignment.contains(sm.get(i, j)))
-				{
-					sim=sm.getSimilarity(i, j)+unAlignment.getSimilarity(sm.get(i, j).getEntity1(), sm.get(i, j).getEntity2());
-					sm.setSimilarity(i, j, sim);
-				}
-			}
-		}
-		return sm;
-	}
+//	private SimilarityMatrix addPropagationWeight(SimilarityMatrix sm, SimilarityMatrix ufl)
+//	{
+//		Alignment<Mapping> unAlignment=retriveUnconfidentMapping(ufl);
+//		int row=sm.getRows();
+//		int col=sm.getColumns();
+//		double sim=0;
+//		for(int i=0;i<row;i++)
+//		{
+//			for(int j=0;j<col;j++)
+//			{
+//				if (unAlignment.contains(sm.get(i, j)))
+//				{
+//					sim=sm.getSimilarity(i, j)+unAlignment.getSimilarity(sm.get(i, j).getEntity1(), sm.get(i, j).getEntity2());
+//					sm.setSimilarity(i, j, sim);
+//				}
+//			}
+//		}
+//		return sm;
+//	}
 	
 	
 	
 	
-	private Alignment<Mapping> retriveUnconfidentMapping(SimilarityMatrix sm)
-	{
-		Alignment<Mapping> mpng=new Alignment<Mapping>(0,0);
-		Mapping m=null;
-		int row=sm.getRows();
-		int col=sm.getColumns();
-		double weight=0;
-		CrossCountQuality qm = new CrossCountQuality(sm);
-		for(int i=0;i<row;i++)
-		{
-			for(int j=0;j<col;j++)
-			{
-				weight=0.0;
-				if (sm.getSimilarity(i, j)==0.0)
-				{
-//					continue;
-					if (sm.getRowMaxValues(i, 1)[0].getSimilarity()==0.0)
-					{
-						if (sm.getColMaxValues(j, 1)[0].getSimilarity()==0.0)
-						{
-							weight=weight_mm;
-						}
-						else
-						{
-							continue;
-						}
-					}
-					else
-					{
-						continue;
-					}
-				}
-				else
-				{
-					m=sm.get(i, j);
-					m.setSimilarity( qm.getQuality(null, i, j) );
-					mpng.add(m);
-				}
-			}
-		}
-		
-		return mpng;
-	}
+//	private Alignment<Mapping> retriveUnconfidentMapping(SimilarityMatrix sm)
+//	{
+//		Alignment<Mapping> mpng=new Alignment<Mapping>(0,0);
+//		Mapping m=null;
+//		int row=sm.getRows();
+//		int col=sm.getColumns();
+//		double weight=0;
+//		CrossCountQuality qm = new CrossCountQuality(sm);
+//		for(int i=0;i<row;i++)
+//		{
+//			for(int j=0;j<col;j++)
+//			{
+//				weight=0.0;
+//				if (sm.getSimilarity(i, j)==0.0)
+//				{
+////					continue;
+//					if (sm.getRowMaxValues(i, 1)[0].getSimilarity()==0.0)
+//					{
+//						if (sm.getColMaxValues(j, 1)[0].getSimilarity()==0.0)
+//						{
+//							weight=weight_mm;
+//						}
+//						else
+//						{
+//							continue;
+//						}
+//					}
+//					else
+//					{
+//						continue;
+//					}
+//				}
+//				else
+//				{
+//					m=sm.get(i, j);
+//					m.setSimilarity( qm.getQuality(null, i, j) );
+//					mpng.add(m);
+//				}
+//			}
+//		}
+//		
+//		return mpng;
+//	}
 	
 
 
@@ -471,59 +471,59 @@ public class MaxInformationRanking extends CandidateSelection<SUExperiment> {
 	}
 	
 	
-	public void rank(List<AbstractMatcher> matchers)
-	{
-		
-
-		// setup the variance disagreement calculation
-		VarianceDisagreementParameters disagreementParams = new VarianceDisagreementParameters();
-		disagreementParams.setMatchers(matchers);
-		
-		VarianceDisagreement disagreementMetric = new VarianceDisagreement();
-		disagreementMetric.setParameters(disagreementParams);
-		
-		// run the disagreement calculations
-		SimilarityMatrix classDisagreement = disagreementMetric.getDisagreementMatrix(alignType.aligningClasses);
-		
-		//add the weight coming from the ranking matrix produced in the UFL propagation phase
-		
-		classDisagreement=addPropagationWeight(classDisagreement, experiment.getUflClassMatrix());
-
-		try {
-			rankedClassMappings = classDisagreement.toList();
-			Collections.sort(rankedClassMappings, new MappingSimilarityComparator() );
-		} catch (Exception e) {
-			e.printStackTrace();
-			return;
-		}
-		classDisagreement = null;  // release the memory used by this
-
-		
-		SimilarityMatrix propertyDisagreement = disagreementMetric.getDisagreementMatrix(alignType.aligningProperties);
-		
-		//add the weight coming from the ranking matrix produced in the UFL propagation phase
-		
-		propertyDisagreement=addPropagationWeight(propertyDisagreement, experiment.getUflPropertyMatrix());
-
-		try {
-			rankedPropertyMappings = propertyDisagreement.toList();
-			Collections.sort(rankedPropertyMappings, new MappingSimilarityComparator() );
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		propertyDisagreement = null;
-		
-		
-		allRanked = new ArrayList<Mapping>();
-		
-		allRanked.addAll(rankedClassMappings);
-		allRanked.addAll(rankedPropertyMappings);
-		Collections.sort(allRanked, new MappingSimilarityComparator() );
-		Collections.reverse(allRanked);
-//		if(useProperty)
-//			propertyRank(allRanked, matchers);
-		
-	}
+//	public void rank(List<AbstractMatcher> matchers)
+//	{
+//		
+//
+//		// setup the variance disagreement calculation
+//		VarianceDisagreementParameters disagreementParams = new VarianceDisagreementParameters();
+//		disagreementParams.setMatchers(matchers);
+//		
+//		VarianceDisagreement disagreementMetric = new VarianceDisagreement();
+//		disagreementMetric.setParameters(disagreementParams);
+//		
+//		// run the disagreement calculations
+//		SimilarityMatrix classDisagreement = disagreementMetric.getDisagreementMatrix(alignType.aligningClasses);
+//		
+//		//add the weight coming from the ranking matrix produced in the UFL propagation phase
+//		
+//		classDisagreement=addPropagationWeight(classDisagreement, experiment.getUflClassMatrix());
+//
+//		try {
+//			rankedClassMappings = classDisagreement.toList();
+//			Collections.sort(rankedClassMappings, new MappingSimilarityComparator() );
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			return;
+//		}
+//		classDisagreement = null;  // release the memory used by this
+//
+//		
+//		SimilarityMatrix propertyDisagreement = disagreementMetric.getDisagreementMatrix(alignType.aligningProperties);
+//		
+//		//add the weight coming from the ranking matrix produced in the UFL propagation phase
+//		
+//		propertyDisagreement=addPropagationWeight(propertyDisagreement, experiment.getUflPropertyMatrix());
+//
+//		try {
+//			rankedPropertyMappings = propertyDisagreement.toList();
+//			Collections.sort(rankedPropertyMappings, new MappingSimilarityComparator() );
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		propertyDisagreement = null;
+//		
+//		
+//		allRanked = new ArrayList<Mapping>();
+//		
+//		allRanked.addAll(rankedClassMappings);
+//		allRanked.addAll(rankedPropertyMappings);
+//		Collections.sort(allRanked, new MappingSimilarityComparator() );
+//		Collections.reverse(allRanked);
+////		if(useProperty)
+////			propertyRank(allRanked, matchers);
+//		
+//	}
 
 	@Override
 	public Mapping getSelectedMapping() {

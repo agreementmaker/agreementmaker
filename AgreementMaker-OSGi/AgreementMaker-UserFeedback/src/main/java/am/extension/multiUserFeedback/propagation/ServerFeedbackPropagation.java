@@ -329,6 +329,7 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 				if ((minDistance<avgDistance))
 				{
 					sim=Math.log(2-minDistance) / Math.log(2);
+					sim*=1.2;
 					if ((double)trainingSet[index][trainingSet[0].length-1]==1.0)
 						sim=sm.getSimilarity(k, h)+sim;
 					else
