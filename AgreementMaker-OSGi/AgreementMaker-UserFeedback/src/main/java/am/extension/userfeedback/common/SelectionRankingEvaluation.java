@@ -72,7 +72,7 @@ public class SelectionRankingEvaluation extends
 			data.cumulativeRecall += computeRecall(exp, data, delta, iterationsLeft);
 			
 			if( iterationsLeft == 0 ) {
-				exp.info("Selection Ranking Evaluation: " + data.cumulativeRecall);
+				exp.info("Selection Ranking Cumulative Recall: " + data.cumulativeRecall);
 			}
 		} else
 			LOG.debug("Expecting 'ServerMultiStrategyCandidateSelection' but not the case.  Not doing any ranking evaluation.");
@@ -87,9 +87,19 @@ public class SelectionRankingEvaluation extends
 		
 		if( deltaFromReference == 0 ) return 1d;
 		if( mappingsLeft.isEmpty() ) return 0d;
+		
 		AlignmentMetrics metrics = new AlignmentMetrics(exp.getReferenceAlignment(), mappingsLeft);
 		
-		return Math.min( metrics.getNumCorrect() , Math.min(iterationsLeft, deltaFromReference) ) / (double)deltaFromReference;
+		int possibleRepairs = Math.min( metrics.getNumCorrect() , iterationsLeft );
+		Alignment<Mapping> mappingsRepaired = 
+				new Alignment<>(exp.getReferenceAlignment().getSourceOntologyID(),exp.getReferenceAlignment().getSourceOntologyID());
+		for( int i = 0; i < possibleRepairs; i++ ) {
+			mappingsRepaired.add( mappingsLeft.get(i));
+		}
+		
+		AlignmentMetrics finalMetric = new AlignmentMetrics(exp.getReferenceAlignment(), mappingsRepaired);
+		
+		return finalMetric.getRecall();
 	}
 
 	private Alignment<Mapping> generateMappingList(MUExperiment exp, int iterationsLeft) {
