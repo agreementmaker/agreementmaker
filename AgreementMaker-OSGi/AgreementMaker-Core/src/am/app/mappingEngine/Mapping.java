@@ -266,13 +266,7 @@ public class Mapping implements Serializable
     
     public boolean equals(Object o){
 		if(o instanceof Mapping){
-			Mapping alignment = (Mapping)o;
-	        if (entity1.equals(alignment.getEntity1()) 
-	                && entity2.equals(alignment.getEntity2())) {
-	            return true;
-	        } else {
-	            return false;
-	        }
+			return equals((Mapping)o);
 		}
 		return false;
 	}
