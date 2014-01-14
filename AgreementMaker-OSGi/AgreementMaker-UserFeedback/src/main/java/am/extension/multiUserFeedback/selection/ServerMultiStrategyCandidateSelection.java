@@ -3,10 +3,10 @@ package am.extension.multiUserFeedback.selection;
 import java.util.ArrayList;
 import java.util.List;
 
-import am.app.mappingEngine.AbstractMatcher.alignType;
-import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.ontology.Ontology;
 import am.extension.multiUserFeedback.experiment.MUExperiment;
 import am.extension.multiUserFeedback.experiment.MUExperiment.csData.MappingSource;
@@ -69,7 +69,9 @@ public class ServerMultiStrategyCandidateSelection extends MUCandidateSelection<
 			
 			MappingQualityRanking mqr=new MappingQualityRanking(
 					exp.getComputedUFLMatrix(alignType.aligningClasses),
-					exp.getComputedUFLMatrix(alignType.aligningProperties));
+					exp.getComputedUFLMatrix(alignType.aligningProperties),
+					exp.getForbiddenPositions(alignType.aligningClasses),
+					exp.getForbiddenPositions(alignType.aligningProperties));
 			
 			exp.data.mqList = mqr.rank();
 			
@@ -82,7 +84,9 @@ public class ServerMultiStrategyCandidateSelection extends MUCandidateSelection<
 					exp.getFeedbackMatrix(alignType.aligningProperties, Validation.INCORRECT),
 					exp.getComputedUFLMatrix(alignType.aligningClasses), 
 					exp.getComputedUFLMatrix(alignType.aligningProperties),
-					toRank);
+					toRank,
+					exp.getForbiddenPositions(alignType.aligningClasses),
+					exp.getForbiddenPositions(alignType.aligningProperties));
 			
 			exp.data.rrList = rr.rank();
 		}
