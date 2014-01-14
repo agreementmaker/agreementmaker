@@ -771,20 +771,12 @@ public static void testClassified() {
 		
 		// create the source property
 		ArrayList<Property> sourceProperties = new ArrayList<Property>();
-		for( Node classNode : sourceOntology.getClassesList() ) 
-			sourceProperties.addAll(ManualOntologyProfiler.createClassAnnotationsList(classNode));
-		
-		for( Node propertyNode : sourceOntology.getPropertiesList() )
-			sourceProperties.addAll(ManualOntologyProfiler.createPropertyAnnotationsList(propertyNode));
-		
+		sourceProperties.addAll(sourceOnto.getModel().listAnnotationProperties().toList());
 		Collections.sort(sourceProperties, new LocalnameComparator());
 		
 		// create the target property
 		ArrayList<Property> targetProperties = new ArrayList<Property>();
-		for( Node classNode : targetOntology.getClassesList() ) 
-			targetProperties.addAll(ManualOntologyProfiler.createClassAnnotationsList(classNode));
-		for( Node propertyNode : targetOntology.getPropertiesList() ) 
-			targetProperties.addAll(ManualOntologyProfiler.createPropertyAnnotationsList(propertyNode));
+		targetProperties.addAll(targetOnto.getModel().listAnnotationProperties().toList());
 		Collections.sort(targetProperties, new LocalnameComparator());
 		
 		
