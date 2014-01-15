@@ -3,19 +3,25 @@ package am.extension.multiUserFeedback.initialization;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.app.ontology.Node;
 import am.extension.multiUserFeedback.experiment.MUExperiment;
+import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
 import am.extension.userfeedback.inizialization.FeedbackLoopInizialization;
 import am.matcher.Combination.CombinationMatcher;
 
 public class MUDataInizialization  extends FeedbackLoopInizialization<MUExperiment> {
+	
+	private static final Logger LOG = Logger.getLogger(MUDataInizialization.class);
+	
 	List<AbstractMatcher> inputMatchers = new ArrayList<AbstractMatcher>();
 	public MUDataInizialization()
 	{
@@ -86,6 +92,37 @@ public class MUDataInizialization  extends FeedbackLoopInizialization<MUExperime
 		ufl.select();
 
 		exp.setMLAlignment(combineResults(ufl, exp));
+		
+		// output the experiment description
+		StringBuilder d = new StringBuilder();
+		
+		d.append("============================ Running UFL Experiment: =================================\n");
+		d.append("         NUM_USERS:" + exp.setup.parameters.getIntParameter(Parameter.NUM_USERS) + "\n");
+		d.append("    NUM_ITERATIONS:" + exp.setup.parameters.getIntParameter(Parameter.NUM_ITERATIONS) + "\n");
+		d.append("        ERROR_RATE:" + exp.setup.parameters.getDoubleParameter(Parameter.ERROR_RATE) + "\n");
+		d.append(" REVALIDATION_RATE:" + exp.setup.parameters.getParameter(Parameter.REVALIDATION_RATE) + "\n");
+		d.append("         STATIC_CS:" + exp.setup.parameters.getBooleanParameter(Parameter.STATIC_CANDIDATE_SELECTION) + "\n");
+		d.append("PROPAGATION_METHOD:" + exp.setup.parameters.getParameter(Parameter.PROPAGATION_METHOD) + "\n");
+		d.append("======================================================================================\n");
+		
+		String sourceFile = Core.getInstance().getSourceOntology().getFilename();
+		if( sourceFile.length() >= 51 ) {
+			d.append("Source Ont: ..." + sourceFile.substring(sourceFile.length()-50-1, sourceFile.length()-1) + "\n");
+		}
+		else {
+			d.append("Source Ont: " + sourceFile + "\n");
+		}
+		
+		String targetFile = Core.getInstance().getTargetOntology().getFilename();
+		if( targetFile.length() >= 51 ) {
+			d.append("Target Ont: ..." + targetFile.substring(targetFile.length()-50-1, targetFile.length()-1) + "\n");
+		}
+		else {
+			d.append("Target Ont: " + targetFile + "\n");
+		}
+		
+		exp.info(d.toString());
+		LOG.info(d.toString());
 		
 		done();
 	}
