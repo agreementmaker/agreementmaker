@@ -30,7 +30,7 @@ public class PresetUtilities {
 	public final static String BENCHMARKS_FILTERED_RA = "UFL/FilteredAlignments";
 	public final static String ANATOMY_DIR = "OAEI/2013/anatomy";
 	private static double error_rate=0.1;
-	private static double revalidation_rate=0.45;
+	private static double revalidation_rate=0.4;
 	public final static String ANATOMY_TASK_NAME = "Anatomy";
 	
 	// the number of the target ontology will be appened to this name.
@@ -38,25 +38,20 @@ public class PresetUtilities {
 	public final static String BENCHMARK_TASK_BASENAME = "Benchmark ";
 	
 	public static final String[] EXPERIMENT = new String[] { 
-		"00 - ER=0% RR=0% CS=static, PE=none",
-		"01 - ER=0% RR=0% CS=static, PE=euzero",
-		"02 - ER=0% RR=0% CS=static, PE=log",
-		"03 - ER=0% RR=0% CS=static, PE=regression",
+		"00 - ER=10% RR=0% CS=static, PE=none",
+		"01 - ER=10% RR=0% CS=static, PE=euzero",
+		"02 - ER=10% RR=0% CS=static, PE=log",
+		"03 - ER=10% RR=0% CS=static, PE=regression",
 		
-		"04 - ER=0% RR=0% CS=dynamic, PE=none",
-		"05 - ER=0% RR=0% CS=dynamic, PE=euzero",
-		"06 - ER=0% RR=0% CS=dynamic, PE=log",
-		"07 - ER=0% RR=0% CS=dynamic PE=regression",
+		"04 - ER=10% RR=20% CS=dynamic, PE=none",
+		"05 - ER=10% RR=20% CS=dynamic, PE=euzero",
+		"06 - ER=10% RR=20% CS=dynamic, PE=log",
+		"07 - ER=10% RR=20% CS=dynamic PE=regression",
 		
-		"08 - ER=0% RR=5% CS=dynamic, PE=none",
-		"09 - ER=0% RR=5% CS=dynamic, PE=euzero",
-		"10 - ER=0% RR=5% CS=dynamic, PE=log",
-		"11 - ER=0% RR=5% CS=dynamic, PE=regression",
-		
-		"12 - ER=0% RR=10% CS=dynamic, PE=none",
-		"13 - ER=0% RR=10% CS=dynamic, PE=euzero",
-		"14 - ER=0% RR=10% CS=dynamic, PE=log",
-		"15 - ER=0% RR=10% CS=dynamic, PE=regression" };
+		"08 - ER=10% RR=40% CS=dynamic, PE=none",
+		"09 - ER=10% RR=40% CS=dynamic, PE=euzero",
+		"10 - ER=10% RR=40% CS=dynamic, PE=log",
+		"11 - ER=10% RR=40% CS=dynamic, PE=regression" };
 	
 	public static String[] EXPERIMENT2 = new String[42]; 
 	
@@ -198,28 +193,28 @@ public class PresetUtilities {
 		{
 			UFLExperimentSetup setup = createEmptyUFLSetup();
 			setup.parameters.setDoubleParameter(	Parameter.ERROR_RATE, error_rate);
-			setup.parameters.setDoubleParameter(	Parameter.REVALIDATION_RATE, revalidation_rate);
+			setup.parameters.setDoubleParameter(	Parameter.REVALIDATION_RATE, 0.2d);
 			setup.parameters.setParameter(			Parameter.PROPAGATION_METHOD, ServerFeedbackPropagation.PROPAGATION_NONE);
 			ExperimentPreset exp = new ExperimentPreset(EXPERIMENT[i++], setup);
 			PresetStorage.addExperimentPreset(exp);
 		}{
 			UFLExperimentSetup setup = createEmptyUFLSetup();
 			setup.parameters.setDoubleParameter(	Parameter.ERROR_RATE, error_rate);
-			setup.parameters.setDoubleParameter(	Parameter.REVALIDATION_RATE, revalidation_rate);
+			setup.parameters.setDoubleParameter(	Parameter.REVALIDATION_RATE, 0.2d);
 			setup.parameters.setParameter(			Parameter.PROPAGATION_METHOD, ServerFeedbackPropagation.PROPAGATION_EUCLIDEAN);
 			ExperimentPreset exp = new ExperimentPreset(EXPERIMENT[i++], setup);
 			PresetStorage.addExperimentPreset(exp);
 		}{
 			UFLExperimentSetup setup = createEmptyUFLSetup();
 			setup.parameters.setDoubleParameter(	Parameter.ERROR_RATE, error_rate);
-			setup.parameters.setDoubleParameter(	Parameter.REVALIDATION_RATE, revalidation_rate);
+			setup.parameters.setDoubleParameter(	Parameter.REVALIDATION_RATE, 0.2d);
 			setup.parameters.setParameter(			Parameter.PROPAGATION_METHOD, ServerFeedbackPropagation.PROPAGATION_LOG);
 			ExperimentPreset exp = new ExperimentPreset(EXPERIMENT[i++], setup);
 			PresetStorage.addExperimentPreset(exp);
 		}{
 			UFLExperimentSetup setup = createEmptyUFLSetup();
 			setup.parameters.setDoubleParameter(	Parameter.ERROR_RATE, error_rate);
-			setup.parameters.setDoubleParameter(	Parameter.REVALIDATION_RATE, revalidation_rate);
+			setup.parameters.setDoubleParameter(	Parameter.REVALIDATION_RATE, 0.2d);
 			setup.parameters.setParameter(			Parameter.PROPAGATION_METHOD, ServerFeedbackPropagation.PROPAGATION_REGRESSION);
 			ExperimentPreset exp = new ExperimentPreset(EXPERIMENT[i++], setup);
 			PresetStorage.addExperimentPreset(exp);
@@ -255,43 +250,35 @@ public class PresetUtilities {
 			PresetStorage.addExperimentPreset(exp);
 		}
 		
-		{
-			UFLExperimentSetup setup = createEmptyUFLSetup();
-			setup.parameters.setDoubleParameter(	Parameter.ERROR_RATE, error_rate);
-			setup.parameters.setDoubleParameter(	Parameter.REVALIDATION_RATE, revalidation_rate);
-			setup.parameters.setParameter(			Parameter.PROPAGATION_METHOD, ServerFeedbackPropagation.PROPAGATION_NONE);
-			ExperimentPreset exp = new ExperimentPreset(EXPERIMENT[i++], setup);
-			PresetStorage.addExperimentPreset(exp);
-		}{
-			UFLExperimentSetup setup = createEmptyUFLSetup();
-			setup.parameters.setDoubleParameter(	Parameter.ERROR_RATE, error_rate);
-			setup.parameters.setDoubleParameter(	Parameter.REVALIDATION_RATE, revalidation_rate);
-			setup.parameters.setParameter(			Parameter.PROPAGATION_METHOD, ServerFeedbackPropagation.PROPAGATION_EUCLIDEAN);
-			ExperimentPreset exp = new ExperimentPreset(EXPERIMENT[i++], setup);
-			PresetStorage.addExperimentPreset(exp);
-		}{
-			UFLExperimentSetup setup = createEmptyUFLSetup();
-			setup.parameters.setDoubleParameter(	Parameter.ERROR_RATE, error_rate);
-			setup.parameters.setDoubleParameter(	Parameter.REVALIDATION_RATE, revalidation_rate);
-			setup.parameters.setParameter(			Parameter.PROPAGATION_METHOD, ServerFeedbackPropagation.PROPAGATION_LOG);
-			ExperimentPreset exp = new ExperimentPreset(EXPERIMENT[i++], setup);
-			PresetStorage.addExperimentPreset(exp);
-		}{
-			UFLExperimentSetup setup = createEmptyUFLSetup();
-			setup.parameters.setDoubleParameter(	Parameter.ERROR_RATE, error_rate);
-			setup.parameters.setDoubleParameter(	Parameter.REVALIDATION_RATE, revalidation_rate);
-			setup.parameters.setParameter(			Parameter.PROPAGATION_METHOD, ServerFeedbackPropagation.PROPAGATION_REGRESSION);
-			ExperimentPreset exp = new ExperimentPreset(EXPERIMENT[i++], setup);
-			PresetStorage.addExperimentPreset(exp);
-		}{
-			UFLExperimentSetup setup = createEmptyUFLSetup();
-			setup.im = InitialMatcherRegistry.LargeOrthoCombination;
-			setup.parameters.setDoubleParameter(	Parameter.ERROR_RATE, 0d);
-			setup.parameters.setDoubleParameter(	Parameter.REVALIDATION_RATE, 0.1d);
-			setup.parameters.setParameter(			Parameter.PROPAGATION_METHOD, ServerFeedbackPropagation.PROPAGATION_REGRESSION);
-			ExperimentPreset exp = new ExperimentPreset("LargeOntology", setup);
-			PresetStorage.addExperimentPreset(exp);
-		}
+//		{
+//			UFLExperimentSetup setup = createEmptyUFLSetup();
+//			setup.parameters.setDoubleParameter(	Parameter.ERROR_RATE, error_rate);
+//			setup.parameters.setDoubleParameter(	Parameter.REVALIDATION_RATE, revalidation_rate);
+//			setup.parameters.setParameter(			Parameter.PROPAGATION_METHOD, ServerFeedbackPropagation.PROPAGATION_NONE);
+//			ExperimentPreset exp = new ExperimentPreset(EXPERIMENT[i++], setup);
+//			PresetStorage.addExperimentPreset(exp);
+//		}{
+//			UFLExperimentSetup setup = createEmptyUFLSetup();
+//			setup.parameters.setDoubleParameter(	Parameter.ERROR_RATE, error_rate);
+//			setup.parameters.setDoubleParameter(	Parameter.REVALIDATION_RATE, revalidation_rate);
+//			setup.parameters.setParameter(			Parameter.PROPAGATION_METHOD, ServerFeedbackPropagation.PROPAGATION_EUCLIDEAN);
+//			ExperimentPreset exp = new ExperimentPreset(EXPERIMENT[i++], setup);
+//			PresetStorage.addExperimentPreset(exp);
+//		}{
+//			UFLExperimentSetup setup = createEmptyUFLSetup();
+//			setup.parameters.setDoubleParameter(	Parameter.ERROR_RATE, error_rate);
+//			setup.parameters.setDoubleParameter(	Parameter.REVALIDATION_RATE, revalidation_rate);
+//			setup.parameters.setParameter(			Parameter.PROPAGATION_METHOD, ServerFeedbackPropagation.PROPAGATION_LOG);
+//			ExperimentPreset exp = new ExperimentPreset(EXPERIMENT[i++], setup);
+//			PresetStorage.addExperimentPreset(exp);
+//		}{
+//			UFLExperimentSetup setup = createEmptyUFLSetup();
+//			setup.parameters.setDoubleParameter(	Parameter.ERROR_RATE, error_rate);
+//			setup.parameters.setDoubleParameter(	Parameter.REVALIDATION_RATE, revalidation_rate);
+//			setup.parameters.setParameter(			Parameter.PROPAGATION_METHOD, ServerFeedbackPropagation.PROPAGATION_REGRESSION);
+//			ExperimentPreset exp = new ExperimentPreset(EXPERIMENT[i++], setup);
+//			PresetStorage.addExperimentPreset(exp);
+//		}
 		
 		
 		
@@ -331,13 +318,13 @@ public class PresetUtilities {
 		List<Pair<MatchingTaskPreset,ExperimentPreset>> runs = new LinkedList<>();
 		
 		List<MatchingTaskPreset> tasks = new LinkedList<>();
-		//tasks.add( PresetStorage.getMatchingTaskPreset(BENCHMARK_TASK_BASENAME + "301") );
-		//tasks.add( PresetStorage.getMatchingTaskPreset(BENCHMARK_TASK_BASENAME + "302") );
-		//tasks.add( PresetStorage.getMatchingTaskPreset(BENCHMARK_TASK_BASENAME + "303") );
+		tasks.add( PresetStorage.getMatchingTaskPreset(BENCHMARK_TASK_BASENAME + "301") );
+		tasks.add( PresetStorage.getMatchingTaskPreset(BENCHMARK_TASK_BASENAME + "302") );
+		tasks.add( PresetStorage.getMatchingTaskPreset(BENCHMARK_TASK_BASENAME + "303") );
 		tasks.add( PresetStorage.getMatchingTaskPreset(BENCHMARK_TASK_BASENAME + "304") );
 		
 		for( MatchingTaskPreset mtp : tasks ) {
-			for( String exp : EXPERIMENT2 ) {
+			for( String exp : EXPERIMENT ) {
 				ExperimentPreset exppset = PresetStorage.getExperimentPreset(exp);
 				final String[] mtNameSplit = mtp.getName().split(" ");
 				final String[] expNameSplit = exppset.getName().split(" ");
@@ -347,7 +334,7 @@ public class PresetUtilities {
 			}
 		}
 		
-		PresetStorage.saveBatchModeRuns(runs, "ESWC2014-Benchmark-Robustness-noProp.runs.bz2");
+		PresetStorage.saveBatchModeRuns(runs, "ESWC2014-Benchmark-BASELINE.runs.bz2");
 	}
 	
 	public static void main(String[] args) {
@@ -357,7 +344,7 @@ public class PresetUtilities {
 		
 		// create the experiment setups
 		PresetStorage.resetExperimentPresets();
-		PresetUtilities.createExperiments2();
+		PresetUtilities.createExperiments();
 		
 		PresetUtilities.createRunFile();
 	}
