@@ -113,7 +113,7 @@ public class SelectionRankingEvaluation extends
 		int total = exp.data.total;
 		int[] count = Arrays.copyOf(exp.data.count, 3);
 			
-		int dIndex = 0, mqIndex = 0, rIndex = 0;
+		int dIndex = 0, mqIndex = 0;
 		for( int i = 0; i < iterationsLeft; i++ ) {
 			double dPercent  = (total!=0) ? count[0]/(double)total : 0d;
 			double mqPercent = (total!=0) ? count[1]/(double)total : 0d;
@@ -131,7 +131,7 @@ public class SelectionRankingEvaluation extends
 				dIndex++;
 				count[0]++;
 			}
-			else if( dPercent <= mqRate ) {
+			else if( mqPercent <= mqRate ) {
 				// we're selecting from the mapping quality list
 				Mapping m = exp.data.mqList.get(mqIndex);
 				while( mL.contains(m) ) {
