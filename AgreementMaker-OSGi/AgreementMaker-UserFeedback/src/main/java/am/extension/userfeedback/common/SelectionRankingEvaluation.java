@@ -18,8 +18,7 @@ import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
 import am.extension.userfeedback.selection.CandidateSelection;
 import am.utility.Pair;
 
-public class SelectionRankingEvaluation extends
-		PropagationEvaluation<MUExperiment> {
+public class SelectionRankingEvaluation extends PropagationEvaluation<MUExperiment> {
 
 	private static final Logger LOG = Logger
 			.getLogger(SelectionRankingEvaluation.class);

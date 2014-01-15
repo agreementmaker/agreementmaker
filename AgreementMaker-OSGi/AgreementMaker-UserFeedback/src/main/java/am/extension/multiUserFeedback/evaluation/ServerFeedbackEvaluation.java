@@ -13,7 +13,7 @@ public class ServerFeedbackEvaluation extends PropagationEvaluation<MUExperiment
 		DeltaFromReference deltaFromReference = new DeltaFromReference(exp.getReferenceAlignment());
 		int delta = deltaFromReference.getDelta(exp.getFinalAlignment());
 		
-		AlignmentMetrics metrics = new AlignmentMetrics(exp.getReferenceAlignment(), exp.getMLAlignment()); //exp.getFinalAlignment());
+		AlignmentMetrics metrics = new AlignmentMetrics(exp.getReferenceAlignment(), exp.getFinalAlignment());
 		
 		exp.info("Iteration: " + exp.getIterationNumber() + ", Delta from reference: " + delta + 
 				", Precision: " + metrics.getPrecisionPercent() + ", Recall: " + metrics.getRecallPercent() + ", FMeasure: " + metrics.getFMeasurePercent());
