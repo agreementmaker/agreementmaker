@@ -251,7 +251,7 @@ public class PresetUtilities {
 		setup.uv  = UserValidationRegistry.FakeClient;
 		setup.fa  = FeedbackAggregationRegistry.ServerFeedbackAggregation;
 		setup.fp  = FeedbackPropagationRegistry.ServerFeedbackPropagation;
-		setup.pe  = PropagationEvaluationRegistry.SelectionRankingEvaluation;
+		setup.pe  = PropagationEvaluationRegistry.ServerPropagationEvaluation;
 		setup.sf  = SaveFeedbackRegistry.MultiUserSaveFeedback;
 		
 		setup.parameters = new UFLExperimentParameters();
