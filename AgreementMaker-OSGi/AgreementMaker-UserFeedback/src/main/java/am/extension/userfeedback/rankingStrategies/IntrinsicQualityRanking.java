@@ -10,7 +10,7 @@ import am.app.mappingEngine.qualityEvaluation.metrics.ufl.CrossCountQuality;
 import am.app.mappingEngine.qualityEvaluation.metrics.ufl.SimilarityScoreHardness;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 
-public class MappingQualityRanking implements StrategyInterface{
+public class IntrinsicQualityRanking implements StrategyInterface{
 
 	private SimilarityMatrix classMatrix;
 	private SimilarityMatrix propMatrix;
@@ -20,7 +20,7 @@ public class MappingQualityRanking implements StrategyInterface{
 	private double beta=1.0;
 	
 	
-	public MappingQualityRanking(SimilarityMatrix clMatrix, SimilarityMatrix prMatrix, SimilarityMatrix forbiddenClass, SimilarityMatrix forbiddenProp)
+	public IntrinsicQualityRanking(SimilarityMatrix clMatrix, SimilarityMatrix prMatrix, SimilarityMatrix forbiddenClass, SimilarityMatrix forbiddenProp)
 	{
 		this.classMatrix=clMatrix;
 		this.propMatrix=prMatrix;

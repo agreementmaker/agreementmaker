@@ -11,7 +11,7 @@ import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.qualityEvaluation.AbstractQualityMetric;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 
-public class ConsensusQuality extends AbstractQualityMetric {
+public class PropagationImpactMetric extends  AbstractQualityMetric {
 		
 	/** The matrix of positive user validations */
 	private SparseMatrix positiveMatrix;
@@ -19,14 +19,16 @@ public class ConsensusQuality extends AbstractQualityMetric {
 	/** The matrix of negative user validations */
 	private SparseMatrix negativeMatrix;
 	
+	private int maxConsensus;
+	
 	//private final int maxRevalidation=5;
 	
-	public ConsensusQuality(SparseMatrix matrixPos, SparseMatrix matrixNeg)
+	public PropagationImpactMetric (SparseMatrix matrixPos, SparseMatrix matrixNeg, int validation)
 	{
 		super();
 		this.positiveMatrix = matrixPos;
 		this.negativeMatrix = matrixNeg;
-		
+		this.maxConsensus=(validation/2)+1;
 	}
 	
 	/**
@@ -36,11 +38,7 @@ public class ConsensusQuality extends AbstractQualityMetric {
 	@Override
 	public double getQuality(alignType type, int i, int j) 
 	{		
-		int numPos = (int)positiveMatrix.getSimilarity(i, j);
-		int numNeg = (int)negativeMatrix.getSimilarity(i, j);
-		
-		double max=(Math.max(positiveMatrix.getMaxValue(), negativeMatrix.getMaxValue()));
 
-		return Math.min((max-numPos), (max-numNeg))/max;
+		return Math.abs(positiveMatrix.getSimilarity(i, j)-negativeMatrix.getSimilarity(i, j))/maxConsensus;
 	}
 }

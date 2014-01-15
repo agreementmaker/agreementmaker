@@ -1,5 +1,9 @@
 package am.extension.multiUserFeedback.validation;
 
+import java.util.Map;
+
+import org.apache.commons.collections.map.HashedMap;
+
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.extension.userfeedback.UserFeedback;
@@ -12,6 +16,7 @@ public class BMAutomaticValidation extends UserFeedback {
 	Validation userValidation;
 	Mapping candidateMapping;
 
+	private final int maxError=1;
 	/**
 	 * If false, the user validation will ignore the relation type of the mapping.
 	 * TODO: Make this be a parameter that can be changed programatically.
@@ -30,7 +35,7 @@ public class BMAutomaticValidation extends UserFeedback {
 		//Logger log = Logger.getLogger(this.getClass());
 		UFLExperiment log = experiment;
 		candidateMapping = experiment.candidateSelection.getSelectedMapping();
-
+		
 		if( candidateMapping == null || experiment.getIterationNumber() > experiment.setup.parameters.getIntParameter(Parameter.NUM_ITERATIONS) ) {
 			userValidation = Validation.END_EXPERIMENT;
 			done();
@@ -48,18 +53,36 @@ public class BMAutomaticValidation extends UserFeedback {
 			userValidation = Validation.INCORRECT;
 			log.info("Automatic Evaluation: Incorrect mapping, " + candidateMapping.toString() );
 		}
+		double errorRate=experiment.setup.parameters.getDoubleParameter(Parameter.ERROR_RATE);
+		int errorIteration=1;
+		if ((experiment.getIterationNumber()!=0)&&(errorRate>0)) {
+				double denom =(errorRate*100d);
+				int step = experiment.setup.parameters.getIntParameter(Parameter.NUM_ITERATIONS) / (int)denom;
+				errorIteration= experiment.getIterationNumber() % step;
+		}
+		else
+			errorIteration=1;
+		//double errorProb=Math.random();
 		
-		double errorProb=Math.random();
-		if (errorProb<experiment.setup.parameters.getDoubleParameter(Parameter.ERROR_RATE))
+		
+		if ((!experiment.incorrectFeedback.containsKey(candidateMapping))||(experiment.incorrectFeedback.get(candidateMapping)<maxError))
+		if ((errorIteration==0))
 		{
-			
+			if (experiment.incorrectFeedback.containsKey(candidateMapping))
+			{
+				experiment.incorrectFeedback.put(candidateMapping, experiment.incorrectFeedback.get(candidateMapping)+1);
+			}
+			else
+			{
+				experiment.incorrectFeedback.put(candidateMapping, 1);
+			}
 			if (userValidation==Validation.CORRECT){
 				userValidation=Validation.INCORRECT;
-				log.info("GENERATED ERROR: This mapping should be CORRECT: " + candidateMapping.toString() );
+				log.info("GENERATED ERROR at iteration "+ experiment.getIterationNumber() + ": This mapping should be CORRECT: " + candidateMapping.toString() );
 			}else
 			{
 				userValidation=Validation.CORRECT;
-				log.info("GENERATED ERROR: This mapping should be INCORRECT: " + candidateMapping.toString() );
+				log.info("GENERATED ERROR at iteration "+ experiment.getIterationNumber() + ": This mapping should be INCORRECT: " + candidateMapping.toString() );
 			}
 		}
 		

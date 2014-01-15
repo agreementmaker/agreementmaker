@@ -11,6 +11,7 @@ import am.app.mappingEngine.qualityEvaluation.MappingQualityMetric;
 import am.app.mappingEngine.qualityEvaluation.metrics.InverseOf;
 import am.app.mappingEngine.qualityEvaluation.metrics.ufl.ConsensusQuality;
 import am.app.mappingEngine.qualityEvaluation.metrics.ufl.CrossCountQuality;
+import am.app.mappingEngine.qualityEvaluation.metrics.ufl.PropagationImpactMetric;
 import am.app.mappingEngine.qualityEvaluation.metrics.ufl.RevalidationRate;
 import am.app.mappingEngine.qualityEvaluation.metrics.ufl.SimilarityScoreHardness;
 import am.app.mappingEngine.qualityEvaluation.metrics.ufl.UserDisagrement;
@@ -34,7 +35,7 @@ public class RevalidationRanking implements StrategyInterface{
 	private double alpha=1.0;
 	private double beta=1.0;
 	private double gamma=2.0;
-	
+	private final int maxValidation=3;
 
 	
 	
@@ -81,25 +82,35 @@ public class RevalidationRanking implements StrategyInterface{
 		//List<Double> ud_norm=new ArrayList<Double>();
 		List<Double> ccq_norm=new ArrayList<Double>();
 		List<Double> cq_norm=new ArrayList<Double>();
+		List<Double> pim_norm=new ArrayList<Double>();
 		//List<Double> rr_norm=new ArrayList<Double>();
 		double sim=0;
 		List<Mapping> lst=new ArrayList<Mapping>();
 		//UserDisagrement ud=new UserDisagrement(mPos, mNeg);
 		ConsensusQuality cq=new ConsensusQuality(mPos, mNeg);
 		CrossCountQuality ccq=new CrossCountQuality(mtrx, forbidden);
+		PropagationImpactMetric pim=new PropagationImpactMetric(mPos, mNeg, maxValidation);
 		//MappingQualityMetric rr=new InverseOf(new RevalidationRate(mPos, mNeg));
 		if (toRank==null) return new ArrayList<Mapping>();
 		for (Mapping m : toRank)
 		{
-			if(m.getAlignmentType() != type) continue;
-			
 			int i=m.getSourceKey();
 			int j=m.getTargetKey();
-			//ud_norm.add(ud.getQuality(null, i, j));
-			ccq_norm.add(ccq.getQuality(null, i, j));
-			cq_norm.add(cq.getQuality(null, i, j));
-			//rr_norm.add(rr.getQuality(null, i, j));
-			
+			if(m.getAlignmentType() != type) continue;
+			if (mPos.getSimilarity(i, j)+mNeg.getSimilarity(i, j)>=maxValidation)
+			{
+				ccq_norm.add(0d);
+				cq_norm.add(0d);
+				pim_norm.add(0d);
+			}
+			else
+			{
+				//ud_norm.add(ud.getQuality(null, i, j));
+				ccq_norm.add(ccq.getQuality(null, i, j));
+				cq_norm.add(cq.getQuality(null, i, j));
+				pim_norm.add(pim.getQuality(null, i, j));
+				//rr_norm.add(rr.getQuality(null, i, j));
+			}
 		}
 		//normalize(ud_norm);
 		//normalize(ccq_norm);
@@ -108,7 +119,7 @@ public class RevalidationRanking implements StrategyInterface{
 		for (Mapping m : toRank)
 		{
 			if(m.getAlignmentType() != type) continue;
-			sim=alpha*(1-cq_norm.get(count))+beta*ccq_norm.get(count);//+gamma*rr_norm.get(count);
+			sim=alpha*(1-cq_norm.get(count))+beta*ccq_norm.get(count)+gamma*pim_norm.get(count);
 			m.setSimilarity(sim);
 			lst.add(m);
 			count++;

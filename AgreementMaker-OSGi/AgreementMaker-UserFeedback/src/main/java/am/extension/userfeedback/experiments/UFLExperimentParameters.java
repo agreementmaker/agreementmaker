@@ -20,7 +20,7 @@ public class UFLExperimentParameters extends Properties {
 		ERROR_RATE,
 		NUM_USERS,
 		REVALIDATION_RATE,
-		PRINT_FORBIDDEN_POSITIONS, // whether to print out the forbidden matrices every time
+		PRINT_FORBIDDEN_POSITIONS("false"), // whether to print out the forbidden matrices every time
 		PROPAGATION_METHOD, // the propagation method we will use in Feedback Propagation.
 		STATIC_CANDIDATE_SELECTION("false"), // whether our CS is static (only computed before experiment) or dynamic (computed every new itertation).
 		LOGFILE, // the name of the logfile

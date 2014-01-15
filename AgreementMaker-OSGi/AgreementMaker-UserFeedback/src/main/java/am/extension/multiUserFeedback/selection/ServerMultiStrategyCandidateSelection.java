@@ -13,7 +13,7 @@ import am.extension.multiUserFeedback.experiment.MUExperiment.csData.MappingSour
 import am.extension.userfeedback.UserFeedback.Validation;
 import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
 import am.extension.userfeedback.rankingStrategies.DisagreementRanking;
-import am.extension.userfeedback.rankingStrategies.MappingQualityRanking;
+import am.extension.userfeedback.rankingStrategies.IntrinsicQualityRanking;
 import am.extension.userfeedback.rankingStrategies.RevalidationRanking;
 
 public class ServerMultiStrategyCandidateSelection extends MUCandidateSelection<MUExperiment> {
@@ -67,7 +67,7 @@ public class ServerMultiStrategyCandidateSelection extends MUCandidateSelection<
 				exp.data.drList = dr.rank();
 			//}
 			
-			MappingQualityRanking mqr=new MappingQualityRanking(
+			IntrinsicQualityRanking mqr=new IntrinsicQualityRanking(
 					exp.getComputedUFLMatrix(alignType.aligningClasses),
 					exp.getComputedUFLMatrix(alignType.aligningProperties),
 					exp.getForbiddenPositions(alignType.aligningClasses),

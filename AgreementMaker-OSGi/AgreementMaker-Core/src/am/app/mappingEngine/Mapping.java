@@ -277,7 +277,7 @@ public class Mapping implements Serializable
 		//map can be replaced with string except empty string
 		//this method is used in the PRAintegrationMatcher
 		//and in the conference conflict resolution.
-		return (entity1.getIndex()+"map"+entity2.getIndex()).hashCode();
+		return (typeOfConcepts.toString() + entity1.getIndex()+"map"+entity2.getIndex()).hashCode();
 	}
 	
 	
