@@ -2,6 +2,7 @@ package am.extension.userfeedback.common;
 
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
+import am.extension.multiUserFeedback.experiment.MUExperiment;
 import am.extension.userfeedback.evaluation.CandidateSelectionEvaluation;
 import am.extension.userfeedback.experiments.UFLExperiment;
 
@@ -27,6 +28,10 @@ public class PrecisionRecallPlot extends CandidateSelectionEvaluation {
 		Alignment<Mapping> referenceAlignment = exp.getReferenceAlignment();
 		
 		Mapping candidateMapping = exp.candidateSelection.getCandidateMapping();
+		if(candidateMapping == null) {
+			log.info( "Candidate Selection presented null mapping. Mapping source: " + ((MUExperiment)exp).data.mappingSource.name() );
+			return;
+		}
 		boolean mappingIsInReference = false;
 		if( referenceAlignment.contains(candidateMapping) ) mappingIsInReference = true;
 		

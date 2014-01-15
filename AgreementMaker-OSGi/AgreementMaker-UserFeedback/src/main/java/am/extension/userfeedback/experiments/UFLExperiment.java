@@ -38,7 +38,7 @@ public abstract class UFLExperiment {
 	public UFLProgressDisplay								gui;
 	public SaveFeedback< UFLExperiment>						saveFeedback;
 	public 	FeedbackAgregation<UFLExperiment>					feedbackAggregation;
-
+	public Map<Mapping,Integer> incorrectFeedback=new HashMap();
 	protected Ontology sourceOntology;	
 	protected Ontology targetOntology;
 	protected Alignment<Mapping> referenceAlignment = null;
