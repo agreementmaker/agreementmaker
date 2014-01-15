@@ -54,19 +54,19 @@ public class BMAutomaticValidation extends UserFeedback {
 			log.info("Automatic Evaluation: Incorrect mapping, " + candidateMapping.toString() );
 		}
 		double errorRate=experiment.setup.parameters.getDoubleParameter(Parameter.ERROR_RATE);
-		int errorIteration=1;
-		if ((experiment.getIterationNumber()!=0)&&(errorRate>0)) {
-				double denom =(errorRate*100d);
-				int step = experiment.setup.parameters.getIntParameter(Parameter.NUM_ITERATIONS) / (int)denom;
-				errorIteration= experiment.getIterationNumber() % step;
-		}
-		else
-			errorIteration=1;
-		//double errorProb=Math.random();
+//		int errorIteration=1;
+//		if ((experiment.getIterationNumber()!=0)&&(errorRate>0)) {
+//				double denom =(errorRate*100d);
+//				int step = experiment.setup.parameters.getIntParameter(Parameter.NUM_ITERATIONS) / (int)denom;
+//				errorIteration= experiment.getIterationNumber() % step;
+//		}
+//		else
+//			errorIteration=1;
+		double errorProb=Math.random();
 		
 		
-		if ((!experiment.incorrectFeedback.containsKey(candidateMapping))||(experiment.incorrectFeedback.get(candidateMapping)<maxError))
-		if ((errorIteration==0))
+		if ( (!experiment.incorrectFeedback.containsKey(candidateMapping)) || (experiment.incorrectFeedback.get(candidateMapping)<maxError))
+		if ((errorProb<errorRate))
 		{
 			if (experiment.incorrectFeedback.containsKey(candidateMapping))
 			{
