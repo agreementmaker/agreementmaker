@@ -14,7 +14,7 @@ public class MatchingTaskPreset implements Comparable<MatchingTaskPreset>, Seria
 
 	private static final long serialVersionUID = -8532157957978948285L;
 	
-	private static final String AM_ROOT = "AM_ROOT";
+	private static final String AM_ROOT = "AM_ROOT/";
 	
 	private String name;
 	private String sourceOnt;
@@ -71,6 +71,16 @@ public class MatchingTaskPreset implements Comparable<MatchingTaskPreset>, Seria
 		this.reference = reference;
 	}
 	
+	/** Cloning constructor */
+	public MatchingTaskPreset(MatchingTaskPreset p) {
+		// TODO: Use reflection to do this.
+		this.name = p.name;
+		this.sourceOnt = p.sourceOnt;
+		this.targetOnt = p.targetOnt;
+		this.hasReference = p.hasReference;
+		this.reference = p.reference;  
+	}
+	
 	/**
 	 * @return The name of this matching task.
 	 */
@@ -124,17 +134,14 @@ public class MatchingTaskPreset implements Comparable<MatchingTaskPreset>, Seria
 	public String toString() {
 		return getName();
 	}
-	
-	@Override
-	public boolean equals(Object obj) {
-		if( obj instanceof MatchingTaskPreset ) {
-			return ((MatchingTaskPreset) obj).getName().equals(name);
-		}
-		return false;
-	}
 
 	@Override
 	public int compareTo(MatchingTaskPreset o) {
 		return getName().compareTo(o.getName());
+	}
+	
+	@Override
+	public MatchingTaskPreset clone() throws CloneNotSupportedException {
+		return new MatchingTaskPreset(this);
 	}
 }

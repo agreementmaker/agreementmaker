@@ -2,11 +2,14 @@ package am.extension.userfeedback.preset;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -16,6 +19,8 @@ import org.apache.log4j.Logger;
 
 import am.app.Core;
 import am.utility.Pair;
+
+import com.thoughtworks.xstream.XStream;
 
 /**
  * Used to save and retrieve UFL experiment presets to the disk.
@@ -56,6 +61,12 @@ public class PresetStorage {
 		}
 		
 		return filteredTaskList.toArray(new MatchingTaskPreset[0]);
+	}
+	
+	public static void addMatchingTaskPresets(Collection<MatchingTaskPreset> presets) {
+		for( MatchingTaskPreset p : presets ) {
+			addMatchingTaskPreset(p);
+		}
 	}
 	
 	/**
@@ -266,62 +277,70 @@ public class PresetStorage {
 		}
 	}
 	
-	public static String saveBatchModeRuns(List<Pair<MatchingTaskPreset,ExperimentPreset>> presets, String fileName) {
-		final String rootDir = Core.getInstance().getRoot();
-		File outputDir = new File(rootDir + File.separator + Core.SETTINGS_DIR);
-		if( !outputDir.exists() && !outputDir.mkdirs() ) {
-			LOG.error("Presets will not be stored.  Could not create directory: " + outputDir);
-			return null;
+	/**
+	 * @param runs The list of runs we are saving.
+	 * @param fileName If this filename is relative (doesn't start with /) it will be made relative to the AM_ROOT.
+	 */
+	public static void saveBatchModeRunsToXML(List<Pair<MatchingTaskPreset,ExperimentPreset>> runs, String fileName) {
+		if( !fileName.startsWith(File.separator) ) {
+			fileName = Core.getInstance().getRoot() + fileName;
 		}
 		
-		// serialize the object
+		List<Pair<MatchingTaskPreset,ExperimentPreset>> runsCopy = new LinkedList<>();
+		runsCopy.addAll(runs);
+		
+		Comparator<Pair<MatchingTaskPreset,ExperimentPreset>> c = 
+				new Comparator<Pair<MatchingTaskPreset,ExperimentPreset>>() {
+			@Override
+			public int compare(Pair<MatchingTaskPreset, ExperimentPreset> o1,
+					Pair<MatchingTaskPreset, ExperimentPreset> o2) {
+				int mt = o1.getLeft().getName().compareTo(o2.getRight().getName());
+				if( mt == 0 ) {
+					return o1.getRight().getName().compareTo(o2.getRight().getName());
+				}
+				return mt;
+			}
+			
+		};
+		
+		// serialize in order
+		Collections.sort(runsCopy, c);
+		
+		XStream xs = getXStream();
+		
 		try {
-			final String outputFile = outputDir.getAbsolutePath() + File.separator + fileName;
-			
-			FileOutputStream fileOut = new FileOutputStream(outputFile);
-			BZip2CompressorOutputStream bzOut = new BZip2CompressorOutputStream(fileOut); // bzip the serialized object to save space
-			ObjectOutputStream out = new ObjectOutputStream(bzOut);
-			
-			out.writeObject(presets);
-			
-			out.close();
-			bzOut.close();
-			fileOut.close();
-			
-			LOG.debug("Serialized batch mode presets to: " + outputFile);
-			return outputFile;
-		} catch (IOException e) {
-			LOG.error(e);
-			return null;
+			FileOutputStream fos = new FileOutputStream(fileName);
+			xs.toXML(runs,fos);
+			fos.close();
+			LOG.info("Saved UFL batch mode experiments: " + fileName);
+		}
+		catch (IOException ioex) {
+			LOG.error(ioex);
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
-	public static List<Pair<MatchingTaskPreset,ExperimentPreset>> loadBatchModeRuns(String filePath) {
+	private static XStream getXStream() {
+		XStream xs = new XStream();
+		xs.registerConverter(new UFLExperimentParametersConverter());
+		xs.alias("pair", Pair.class);
+		return xs;
+	}
+	
+	public static List<Pair<MatchingTaskPreset, ExperimentPreset>> loadBatchModeRunsFromXML(String filePath) {
+		if( !filePath.startsWith(File.separator) ) {
+			filePath = Core.getInstance().getRoot() + filePath;
+		}
+		
 		File inputFile = new File(filePath);
-		if( !inputFile.exists() ) {
-			LOG.error("Experiment Presets will not be read.  File not found: " + inputFile);
-			return null;
-		}
+		if( !inputFile.exists() )
+			throw new AssertionError("UFL Batch Mode runs file not found.", new FileNotFoundException(filePath));
 		
-		List<Pair<MatchingTaskPreset,ExperimentPreset>> presetList = null;
-		try {
-			FileInputStream fileIn = new FileInputStream(inputFile);
-			BZip2CompressorInputStream bzIn = new BZip2CompressorInputStream(fileIn);
-			ObjectInputStream in = new ObjectInputStream(bzIn);
-			
-			presetList = (List<Pair<MatchingTaskPreset,ExperimentPreset>>) in.readObject();
-			
-			in.close();
-			bzIn.close();
-			fileIn.close();
-			
-			LOG.info("Deserialized experiment runs from: " + inputFile);
-		} catch (IOException | ClassNotFoundException e) {
-			LOG.error(e);
-			return null;
-		}
-		
+		XStream xs = getXStream();
+		@SuppressWarnings("unchecked")
+		List<Pair<MatchingTaskPreset,ExperimentPreset>> presetList =
+				(List<Pair<MatchingTaskPreset, ExperimentPreset>>) xs.fromXML(inputFile);
+		LOG.info("Deserialized experiment runs from: " + inputFile);
+
 		return presetList;
 	}
 	

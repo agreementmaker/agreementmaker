@@ -113,7 +113,7 @@ public class ExperimentPresetCreatorPanel extends SettingsPanel implements Actio
 		if( this.preset.getExperimentSetup().parameters == null ) {
 			this.preset.getExperimentSetup().parameters = new UFLExperimentParameters();
 		}
-		lstParameters.setListData(this.preset.getExperimentSetup().parameters.toStringList());
+		lstParameters.setListData(this.preset.getExperimentSetup().parameters.toStringArray());
 		
 		if( this.preset.getExperimentSetup().exp != null ) cmbExperiment.setSelectedItem(this.preset.getExperimentSetup().exp);
 		if( this.preset.getExperimentSetup().im != null ) cmbInitialMatcher.setSelectedItem(this.preset.getExperimentSetup().im);
@@ -340,7 +340,7 @@ public class ExperimentPresetCreatorPanel extends SettingsPanel implements Actio
 			d.setVisible(true);
 			if( d.getStatus() == SettingsDialog.OK ) {
 				preset.getExperimentSetup().parameters.setProperty(panel.getParameter().name(), panel.getValue());
-				lstParameters.setListData(preset.getExperimentSetup().parameters.toStringList());
+				lstParameters.setListData(preset.getExperimentSetup().parameters.toStringArray());
 			}
 		}
 		
@@ -352,7 +352,7 @@ public class ExperimentPresetCreatorPanel extends SettingsPanel implements Actio
 				return;
 			}
 			preset.getExperimentSetup().parameters.remove(split[0]);
-			lstParameters.setListData(preset.getExperimentSetup().parameters.toStringList());
+			lstParameters.setListData(preset.getExperimentSetup().parameters.toStringArray());
 		}
 	}
 	
