@@ -18,12 +18,12 @@ import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
 import am.extension.userfeedback.inizialization.FeedbackLoopInizialization;
 import am.matcher.Combination.CombinationMatcher;
 
-public class MUDataInizialization  extends FeedbackLoopInizialization<MUExperiment> {
+public class MUDataInitialization  extends FeedbackLoopInizialization<MUExperiment> {
 	
-	private static final Logger LOG = Logger.getLogger(MUDataInizialization.class);
+	private static final Logger LOG = Logger.getLogger(MUDataInitialization.class);
 	
 	List<AbstractMatcher> inputMatchers = new ArrayList<AbstractMatcher>();
-	public MUDataInizialization()
+	public MUDataInitialization()
 	{
 		super();
 	}
@@ -34,13 +34,12 @@ public class MUDataInizialization  extends FeedbackLoopInizialization<MUExperime
 		inputMatchers=exp.initialMatcher.getComponentMatchers();
 		SimilarityMatrix smClass=exp.initialMatcher.getFinalMatcher().getClassesMatrix().clone();
 		SimilarityMatrix smProperty=exp.initialMatcher.getFinalMatcher().getPropertiesMatrix().clone();
-		
-		
-		
+
+
 		SimilarityMatrix am=exp.initialMatcher.getFinalMatcher().getClassesMatrix();
-		smClass=prepareSMforNB(smClass, am);
+		smClass=prepare(smClass, am);
 		am=exp.initialMatcher.getFinalMatcher().getPropertiesMatrix();
-		smProperty=prepareSMforNB(smProperty, am);
+		smProperty=prepare(smProperty, am);
 		
 		exp.setComputedUFLMatrix(alignType.aligningClasses, smClass);
 		exp.setComputedUFLMatrix(alignType.aligningProperties, smProperty);
@@ -129,7 +128,7 @@ public class MUDataInizialization  extends FeedbackLoopInizialization<MUExperime
 
 
 	
-	private SimilarityMatrix prepareSMforNB(SimilarityMatrix sm, SimilarityMatrix am)
+	private SimilarityMatrix prepare(SimilarityMatrix sm, SimilarityMatrix am)
 	{
 		Mapping mp;
 		Object[] ssv;
