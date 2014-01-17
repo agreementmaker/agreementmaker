@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 /**
  * Unified experiment parameters.
@@ -33,8 +34,26 @@ public class UFLExperimentParameters extends Properties {
 		private Parameter(String def) { this.defaultValue = def; }
 		public boolean hasDefaultValue() { return this.defaultValue != null; }
 		public String getDefaultValue() { return this.defaultValue; }
+		
+		/**
+		 * @return The parameter with the given name. null if no parameter exists.
+		 */
+		public static Parameter getParameter(String name) {
+			for( Parameter p : Parameter.values() ) {
+				if( p.name().equals(name) ) return p;
+			}
+			return null;
+		}
 	}
+	public UFLExperimentParameters() {}
 	
+	/** Cloning constructor */
+	public UFLExperimentParameters(UFLExperimentParameters p) {
+		for(Object k : p.keySet()) {
+			this.put(k, p.get(k));
+		}
+	}
+		
 	public void setParameter(Parameter p, String value) {
 		setProperty(p.name(), value);
 	}
@@ -88,7 +107,16 @@ public class UFLExperimentParameters extends Properties {
 		throw new RuntimeException("The parameter has not been set and it does not have a default value.");
 	}
 	
-	public String[] toStringList() {
+	public Parameter[] toParameterArray() {
+		Object[] keySet = keySet().toArray();
+		Parameter[] p = new Parameter[keySet.length];
+		for(int i = 0; i < keySet.length; i++ ) {
+			p[i] = Parameter.getParameter((String)keySet[i]);
+		}
+		return p;
+	}
+	
+	public String[] toStringArray() {
 		List<String> params = new LinkedList<>();
 		
 		for( Object o : keySet() ) {
@@ -99,5 +127,9 @@ public class UFLExperimentParameters extends Properties {
 		Collections.sort(params);
 		
 		return params.toArray(new String[0]);
+	}
+	
+	public UFLExperimentParameters clone() {
+		return new UFLExperimentParameters(this);
 	}
 }

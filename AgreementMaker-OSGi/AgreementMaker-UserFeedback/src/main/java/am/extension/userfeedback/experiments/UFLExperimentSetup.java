@@ -1,6 +1,7 @@
 package am.extension.userfeedback.experiments;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
 
 import am.extension.userfeedback.UFLRegistry.CSEvaluationRegistry;
 import am.extension.userfeedback.UFLRegistry.CandidateSelectionRegistry;
@@ -34,4 +35,27 @@ public class UFLExperimentSetup implements Serializable {
 	 * Experiment-wide parameters.
 	 */
 	public UFLExperimentParameters			parameters;
+	
+	public UFLExperimentSetup() {}
+	
+	/** Cloning constructor */
+	public UFLExperimentSetup(UFLExperimentSetup s) {
+		
+		for( Field f : getClass().getFields() ) {
+			try {
+				f.set(this, f.get(s));
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		this.parameters = s.parameters.clone();
+	}
+	
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		return new UFLExperimentSetup(this);
+	}
 }

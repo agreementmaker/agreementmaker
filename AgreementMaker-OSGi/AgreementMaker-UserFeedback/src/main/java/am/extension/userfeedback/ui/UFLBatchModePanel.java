@@ -5,6 +5,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.prefs.Preferences;
@@ -17,6 +18,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
+import javax.swing.filechooser.FileFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
@@ -175,10 +177,31 @@ public class UFLBatchModePanel extends SettingsPanel implements ActionListener {
 			String lastDir = prefs.get(PREF_LOAD_DIR, Core.getInstance().getRoot());
 			
 			JFileChooser fc = new JFileChooser(lastDir);
+			FileFilter fl = new FileFilter() {
+
+				@Override
+				public boolean accept(File pathname) {
+					if( pathname.isDirectory() ) return true;
+
+					if( pathname.getName().matches("(?i).*\\.xml$") ) {
+						return true;
+					}
+					else {
+						return false;
+					}
+				}
+
+				@Override
+				public String getDescription() {
+					return "XML files (*.xml)";
+				}
+				
+			};
+			fc.setFileFilter(fl);
 			int result = fc.showOpenDialog(this);
 			if( result == JFileChooser.APPROVE_OPTION ) {
 				prefs.put(PREF_LOAD_DIR, fc.getSelectedFile().getAbsolutePath());
-				runs = PresetStorage.loadBatchModeRuns(fc.getSelectedFile().getAbsolutePath());
+				runs = PresetStorage.loadBatchModeRunsFromXML(fc.getSelectedFile().getAbsolutePath());
 				updateTable();
 			}
 		}

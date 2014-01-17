@@ -17,6 +17,19 @@ public class ExperimentPreset implements Serializable {
 		this.setup = setup;
 	}
 	
+	/**
+	 * Cloning constructor.
+	 */
+	public ExperimentPreset(ExperimentPreset p) {
+		this.name = p.name;
+		try {
+			this.setup = (UFLExperimentSetup) p.setup.clone();
+		} catch (CloneNotSupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -42,10 +55,7 @@ public class ExperimentPreset implements Serializable {
 	}
 	
 	@Override
-	public boolean equals(Object obj) {
-		if( obj instanceof ExperimentPreset ) {
-			return ((ExperimentPreset) obj).getName().equals(name);
-		}
-		return false;
+	protected ExperimentPreset clone() throws CloneNotSupportedException {
+		return new ExperimentPreset(this);
 	}
 }
