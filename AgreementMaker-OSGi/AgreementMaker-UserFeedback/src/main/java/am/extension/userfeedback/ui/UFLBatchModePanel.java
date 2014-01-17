@@ -208,8 +208,8 @@ public class UFLBatchModePanel extends SettingsPanel implements ActionListener {
 		
 		if( e.getSource() == btnSaveRuns ) {
 			String fileName = JOptionPane.showInputDialog("Please enter a file name, without any file extensions:");
-			fileName = fileName + ".runs.bz2";
-			String outputFile = PresetStorage.saveBatchModeRuns(runs, fileName);
+			fileName = fileName + ".xml";
+			String outputFile = PresetStorage.saveBatchModeRunsToXML(runs, fileName);
 			if( outputFile == null ) {
 				JOptionPane.showMessageDialog(this, "Could not save batch mode runs.", "Error: Could not save", JOptionPane.ERROR_MESSAGE);
 			}
