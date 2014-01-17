@@ -142,8 +142,8 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 					currentMatcher.getMaxInputMatchers() + " matcher(s).");
 		}
 		for(int i = 0; i < rowsIndex.length && i < currentMatcher.getMaxInputMatchers(); i++) {
-			AbstractMatcher input = Core.getInstance().getMatcherInstances().get(rowsIndex[i]);
-			currentMatcher.addInputMatcher(input);
+			MatchingTask input = Core.getInstance().getMatchingTasks().get(rowsIndex[i]);
+			currentMatcher.addInputTask(input);
 		}
 		
 	}

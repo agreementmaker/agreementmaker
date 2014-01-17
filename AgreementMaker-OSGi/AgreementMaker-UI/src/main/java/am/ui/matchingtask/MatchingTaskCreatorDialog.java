@@ -100,6 +100,19 @@ public class MatchingTaskCreatorDialog extends JDialog implements MessageDispatc
 		AbstractMatcher matchingAlgorithm = null;
 		try {
 			matchingAlgorithm = pnlMatchingAlgorithm.getMatcher().getClass().newInstance();
+			
+			// add the input matchers
+			int[] rowsIndex = UICore.getUI().getControlPanel().getTablePanel().getTable().getSelectedRows();
+			if( rowsIndex.length > matchingAlgorithm.getMaxInputMatchers() ) {
+				System.err.println("You have selected more than " + 
+						matchingAlgorithm.getMaxInputMatchers() + " input matcher(s).  Using the top " + 
+						matchingAlgorithm.getMaxInputMatchers() + " matcher(s).");
+			}
+			for(int i = 0; i < rowsIndex.length && i < matchingAlgorithm.getMaxInputMatchers(); i++) {
+				MatchingTask input = Core.getInstance().getMatchingTasks().get(rowsIndex[i]);
+				matchingAlgorithm.addInputTask(input);
+			}
+			
 		} catch (InstantiationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
