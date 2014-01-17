@@ -93,8 +93,16 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	/**If the algo calculates prop alignments*/
 	protected boolean alignClass;
 
-	/***Some algorithms may need other algorithms as input*/
+	/**
+	 * Some algorithms may need other algorithms as input
+	 * @deprecated We're moving to MatchingTask based API.  Use {@link #inputTasks}.
+	 */
+	@Deprecated
 	protected transient List<AbstractMatcher> inputMatchers;
+	
+	protected transient List<MatchingTask> inputTasks;
+
+	
 	/**Minum and maximum number of input matchers
 	 * a generic matcher which doesn't need any inputs should have 0, 0
 	 * */
@@ -214,7 +222,6 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	protected long lastStepsDone = 0;
 	protected int tentativealignments = 0;  // incremental selection?
 	protected long timeOfLastUpdate = 0;
-
 
 	/**
 	 * The constructor must be a Nullary Constructor
@@ -1220,6 +1227,16 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		 return inputMatchers;
 	 }
 
+	 public void addInputTask(MatchingTask t) {
+		 if( inputTasks == null ) inputTasks = new LinkedList<MatchingTask>();
+		 inputTasks.add(t);
+		 // TODO Remove this when the transition to MatchingTask is done.
+		 addInputMatcher(t.matchingAlgorithm);
+	 }
+	 
+	 /**
+	  * @deprecated Use {@link #addInputTask(MatchingTask)}
+	  */
 	 public void addInputMatcher(AbstractMatcher a) {
 		 if( inputMatchers == null ) inputMatchers = new ArrayList<AbstractMatcher>();
 		 inputMatchers.add(a);
