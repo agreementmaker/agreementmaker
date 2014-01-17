@@ -281,7 +281,7 @@ public class PresetStorage {
 	 * @param runs The list of runs we are saving.
 	 * @param fileName If this filename is relative (doesn't start with /) it will be made relative to the AM_ROOT.
 	 */
-	public static void saveBatchModeRunsToXML(List<Pair<MatchingTaskPreset,ExperimentPreset>> runs, String fileName) {
+	public static String saveBatchModeRunsToXML(List<Pair<MatchingTaskPreset,ExperimentPreset>> runs, String fileName) {
 		if( !fileName.startsWith(File.separator) ) {
 			fileName = Core.getInstance().getRoot() + fileName;
 		}
@@ -313,10 +313,13 @@ public class PresetStorage {
 			xs.toXML(runs,fos);
 			fos.close();
 			LOG.info("Saved UFL batch mode experiments: " + fileName);
+			return fileName;
 		}
 		catch (IOException ioex) {
 			LOG.error(ioex);
 		}
+		
+		return null;
 	}
 	
 	private static XStream getXStream() {
