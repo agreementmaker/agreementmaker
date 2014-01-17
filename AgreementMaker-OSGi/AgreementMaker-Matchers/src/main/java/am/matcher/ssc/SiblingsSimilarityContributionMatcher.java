@@ -24,12 +24,12 @@ public class SiblingsSimilarityContributionMatcher extends AbstractMatcher {
 	
 	private double MCP;
 	
-	public SiblingsSimilarityContributionMatcher() {
+	public SiblingsSimilarityContributionMatcher(SiblingsSimilarityContributionParameters param) {
 		super();
 
 		needsParam = true; // we need to set the MCP before running SSC
 		
-		
+		this.param=param;
 		// requires base similarity result (but can work on any alignment result) 
 		minInputMatchers = 1;
 		maxInputMatchers = 1;

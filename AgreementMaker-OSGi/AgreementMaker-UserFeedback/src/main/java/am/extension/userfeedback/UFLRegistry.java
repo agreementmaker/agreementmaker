@@ -31,6 +31,7 @@ public class UFLRegistry {
 	}
 	
 	public enum InitialMatcherRegistry {
+		SemanticStructuralCombination( am.extension.userfeedback.clustering.disagreement.SestCombinationMatchers.class ),
 		LargeOrthoCombination ( am.extension.userfeedback.clustering.disagreement.LargeOntologyOrthoMatchers.class ),
 		OrthoCombination ( am.extension.userfeedback.clustering.disagreement.OrthoCombinationMatchers.class );
 			
