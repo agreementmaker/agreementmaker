@@ -4,6 +4,11 @@ package am.extension.multiUserFeedback.propagation;
  */
 
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -76,6 +81,14 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 		SimilarityMatrix feedbackClassMatrix = experiment.getComputedUFLMatrix(alignType.aligningClasses);
 		SimilarityMatrix feedbackPropertyMatrix = experiment.getComputedUFLMatrix(alignType.aligningProperties);
 		
+		try {
+			writeSimilarityMatrix(feedbackClassMatrix,exp.getIterationNumber(),"Classes");
+			writeSimilarityMatrix(feedbackPropertyMatrix,exp.getIterationNumber(),"Properties");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		final String metric = experiment.setup.parameters.getParameter(Parameter.PROPAGATION_METHOD);
 		
 		if( candidateMapping.getAlignmentType() == alignType.aligningClasses )
@@ -108,6 +121,8 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 		
 		experiment.setComputedUFLMatrix(alignType.aligningClasses, feedbackClassMatrix);
 		experiment.setComputedUFLMatrix(alignType.aligningProperties, feedbackPropertyMatrix);
+		
+		
 		
 		done();
 	}
@@ -245,7 +260,10 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 				
 				if ((sim>0.0))
 				{
-					sm.setSimilarity(k, h, sim);
+					if (sim<1.0)
+						sm.setSimilarity(k, h, sim);
+					else
+						sm.setSimilarity(k, h, 1.0d);
 					
 				}
 			}
@@ -350,6 +368,50 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 		}
 		
 		return sm;
+	}
+	
+	private void writeSimilarityMatrix(SimilarityMatrix sm, int iteration, String type) throws IOException
+	{
+		File file = new File("/home/frank/Documents/SimilarityMatrix"+type+"/similarityMatrix_"+iteration+".txt");
+		// if file doesnt exists, then create it
+		if (!file.exists()) 
+			file.createNewFile();
+		FileWriter fw=null;
+
+		fw = new FileWriter(file.getAbsoluteFile());
+
+		BufferedWriter bw = new BufferedWriter(fw);
+
+		for(int i=-1;i<sm.getRows();i++)
+		{
+
+			bw.write(i+"\t");
+			for (int j=0;j<sm.getColumns();j++)
+			{
+				if (i==-1)
+				{
+					bw.write(j+"\t");
+				}
+				else
+				{
+					bw.write(round(sm.getSimilarity(i, j),2)+"");
+					if (j<sm.getColumns()-1)
+						bw.write("\t");
+				}
+				
+			}
+			bw.write("\n");
+		}
+
+		bw.close();
+	}
+	
+	private double round(double value, int places) {
+	    if (places < 0) throw new IllegalArgumentException();
+
+	    BigDecimal bd = new BigDecimal(value);
+	    bd = bd.setScale(places, BigDecimal.ROUND_HALF_UP);
+	    return bd.doubleValue();
 	}
 
 

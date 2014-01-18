@@ -25,6 +25,8 @@ import am.matcher.asm.AdvancedSimilarityMatcher;
 import am.matcher.asm.AdvancedSimilarityParameters;
 import am.matcher.bsm.BaseSimilarityMatcher;
 import am.matcher.bsm.BaseSimilarityParameters;
+import am.matcher.dsi.DescendantsSimilarityInheritanceMatcher;
+import am.matcher.dsi.DescendantsSimilarityInheritanceParameters;
 import am.matcher.multiWords.MultiWordsMatcher;
 import am.matcher.multiWords.MultiWordsParameters;
 import am.matcher.parametricStringMatcher.ParametricStringMatcher;
@@ -55,6 +57,7 @@ public class SestCombinationMatchers extends ExecutionSemantics {
 		l.add(m_vmm);
 		l.add(m_lsm);
 		l.add(m_ssc);
+		l.add(m_dsi);
 		//l.add(m_iism);
 		
 		return l;
@@ -66,7 +69,7 @@ public class SestCombinationMatchers extends ExecutionSemantics {
 	private MultiWordsParameters		param_vmm;  // VMM parameters
 	private LexicalSynonymMatcherParameters param_lsm; // LSM parameters
 	private SiblingsSimilarityContributionParameters param_ssc; //SSC parameter
-	
+	private DescendantsSimilarityInheritanceParameters param_dsi; //DSI parameter
 	private CombinationParameters		param_lwc;  // LWC params
 	//private IterativeInstanceStructuralParameters param_iism;
 	
@@ -77,8 +80,10 @@ public class SestCombinationMatchers extends ExecutionSemantics {
 	private MultiWordsMatcher			m_vmm;
 	private LexicalSynonymMatcher       m_lsm;
 	private SiblingsSimilarityContributionMatcher m_ssc;
+	private DescendantsSimilarityInheritanceMatcher m_dsi;
 	
 	private CombinationMatcher			m_lwc;
+	private CombinationMatcher			m_lwc2;
 	//private IterativeInstanceStructuralMatcher m_iism;
 	
 	private MatchingProgressListener progressDisplay;
@@ -134,10 +139,23 @@ public class SestCombinationMatchers extends ExecutionSemantics {
 				m_lwc.addInputMatcher(m_lsm);
 				m_lwc.match();
 				
+				exp.info("Running DSI..."); LOG.info("Running DSI...");
+				m_dsi.addInputMatcher(m_lwc);
+				progressDisplay.setProgressLabel("DSI");
+				m_dsi.match();
+				
 				exp.info("Running SSC..."); LOG.info("Running SSC...");
 				m_ssc.addInputMatcher(m_lwc);
 				progressDisplay.setProgressLabel("SSC");
 				m_ssc.match();
+				
+				
+//				exp.info("Running LWC..."); LOG.info("Running LWC...");
+//				progressDisplay.setProgressLabel("LWC (5/5)");
+//				m_lwc2.addInputMatcher(m_lwc);
+//				m_lwc2.addInputMatcher(m_dsi);
+//				m_lwc2.addInputMatcher(m_ssc);
+//				m_lwc2.match();
 				
 //				m_iism.addInputMatcher(m_lwc);
 //				m_iism.match();
@@ -158,8 +176,18 @@ public class SestCombinationMatchers extends ExecutionSemantics {
 				m_lwc.addInputMatcher(m_lsm);
 				m_lwc.match();
 				
+
+				
+				m_dsi.addInputMatcher(m_lwc);
+				m_dsi.match();
+				
 				m_ssc.addInputMatcher(m_lwc);
 				m_ssc.match();
+				
+//				m_lwc2.addInputMatcher(m_lwc);
+//				m_lwc2.addInputMatcher(m_dsi);
+//				m_lwc2.addInputMatcher(m_ssc);
+//				m_lwc2.match();
 //				m_iism.addInputMatcher(m_lwc);
 //				m_iism.match();
 			}
@@ -182,6 +210,7 @@ public class SestCombinationMatchers extends ExecutionSemantics {
 		
 		param_lwc = new CombinationParameters();
 		param_ssc= new SiblingsSimilarityContributionParameters();
+		param_dsi=new DescendantsSimilarityInheritanceParameters();
 		//param_iism = new IterativeInstanceStructuralParameters();
 		
 		//threshold
@@ -191,6 +220,7 @@ public class SestCombinationMatchers extends ExecutionSemantics {
 		param_vmm.threshold =
 		param_lsm.threshold =
 		param_lwc.threshold = 
+		param_dsi.threshold =
 		param_ssc.threshold = 0.4;
 		
 		
@@ -248,12 +278,26 @@ public class SestCombinationMatchers extends ExecutionSemantics {
 		m_lwc.setOntologies(sourceOntology, targetOntology);
 		if (progressDisplay!=null)m_lwc.addProgressDisplay(progressDisplay);
 		
+		//DSI
+		param_dsi.MCP=0.6;
+		m_dsi= new DescendantsSimilarityInheritanceMatcher();
+		m_dsi.setParameters(param_dsi);
+		m_dsi.setOntologies(sourceOntology, targetOntology);
+		if (progressDisplay!=null)m_dsi.addProgressDisplay(progressDisplay);
+		
 		
 		//SSC
 		param_ssc.MCP=0.6;
 		m_ssc= new SiblingsSimilarityContributionMatcher(param_ssc);
 		m_ssc.setOntologies(sourceOntology, targetOntology);
 		if (progressDisplay!=null)m_ssc.addProgressDisplay(progressDisplay);
+		
+//		//LWC2
+//		m_lwc2 = new CombinationMatcher( param_lwc );
+//		m_lwc2.setOntologies(sourceOntology, targetOntology);
+//		if (progressDisplay!=null)m_lwc2.addProgressDisplay(progressDisplay);
+		
+		
 //		// IISM
 //		param_iism.setForOAEI2010();
 //		m_iism = new IterativeInstanceStructuralMatcher();
@@ -292,7 +336,7 @@ public class SestCombinationMatchers extends ExecutionSemantics {
 		return getFinalMatcher().getPropertyAlignmentSet(); }
 	
 	@Override public AbstractMatcher getFinalMatcher() {
-		return m_lwc;
+		return m_lwc; //return m_lwc2;
 	}
 	
 	@Override
