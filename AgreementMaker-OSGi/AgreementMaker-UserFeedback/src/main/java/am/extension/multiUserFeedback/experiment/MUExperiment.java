@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import com.tomgibara.cluster.gvm.dbl.DblResult;
+
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Alignment;
@@ -46,6 +48,8 @@ public List<Mapping> almostRanking;
 public Mapping selectedMapping;
 public int feedbackCount;
 public String feedback;
+
+public List<DblResult<List<double[]>>> cluster;
 public List<Mapping> alreadyEvaluated=new ArrayList<Mapping>();
 public List<Mapping> conflictualClass;
 public List<Mapping> conflictualProp;

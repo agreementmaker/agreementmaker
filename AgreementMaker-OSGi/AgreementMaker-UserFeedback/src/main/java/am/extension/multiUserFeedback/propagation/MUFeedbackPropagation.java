@@ -12,6 +12,7 @@ import am.app.ontology.Node;
 import am.extension.multiUserFeedback.experiment.MUExperiment;
 import am.extension.userfeedback.UserFeedback.Validation;
 import am.extension.userfeedback.propagation.FeedbackPropagation;
+import am.extension.userfeedback.utility.UFLutility;
 import am.matcher.Combination.CombinationMatcher;
 
 public class MUFeedbackPropagation  extends FeedbackPropagation<MUExperiment> {
@@ -20,6 +21,7 @@ public class MUFeedbackPropagation  extends FeedbackPropagation<MUExperiment> {
 		final double treshold_down=0.01;
 		final double penalize_ratio=0.9;
 		private MUExperiment experiment;
+		final double alpha=0.2;
 		List<AbstractMatcher> inputMatchers = new ArrayList<AbstractMatcher>();
 		
 
@@ -244,6 +246,41 @@ public class MUFeedbackPropagation  extends FeedbackPropagation<MUExperiment> {
 					}
 				}
 			}
+			return sm;
+		}
+		
+		private SimilarityMatrix clusterRowColumnPropagation(SimilarityMatrix forbidden_pos, SimilarityMatrix sm, Mapping candidateMapping, Validation val, alignType type)
+		{
+			
+			Mapping mp;
+			Object[] ssv;
+			double deltaSim=alpha;
+			double sim=0;
+			List<List<Mapping>> lst=UFLutility.getRelations(sm, experiment.initialMatcher.getComponentMatchers());
+			int trn_cl;
+			
+			for (List<Mapping> l : lst)
+			{
+				if (l.contains(candidateMapping))
+				{
+					for (Mapping m :l)
+					{
+						if (val.equals(Validation.CORRECT))
+						{
+							sim=sm.getSimilarity(m.getSourceKey(), m.getTargetKey());
+							sim=UFLutility.ammortizeSimilarity(sim, deltaSim);
+							sm.setSimilarity(m.getSourceKey(), m.getTargetKey(), sim);
+						}
+						if (val.equals(Validation.INCORRECT))
+						{
+							sim=sm.getSimilarity(m.getSourceKey(), m.getTargetKey());
+							sim=UFLutility.ammortizeSimilarity(sim, (deltaSim)*(-1));
+							sm.setSimilarity(m.getSourceKey(), m.getTargetKey(), sim);
+						}
+					}
+				}
+			}
+
 			return sm;
 		}
 		

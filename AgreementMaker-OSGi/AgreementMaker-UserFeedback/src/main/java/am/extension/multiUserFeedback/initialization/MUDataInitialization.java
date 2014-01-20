@@ -1,9 +1,12 @@
 package am.extension.multiUserFeedback.initialization;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+
+import com.tomgibara.cluster.gvm.dbl.DblResult;
 
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
@@ -13,9 +16,11 @@ import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.app.ontology.Node;
+import am.evaluation.clustering.gvm.GVM_Clustering;
 import am.extension.multiUserFeedback.experiment.MUExperiment;
 import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
 import am.extension.userfeedback.inizialization.FeedbackLoopInizialization;
+import am.extension.userfeedback.utility.UFLutility;
 import am.matcher.Combination.CombinationMatcher;
 
 public class MUDataInitialization  extends FeedbackLoopInizialization<MUExperiment> {
@@ -23,6 +28,8 @@ public class MUDataInitialization  extends FeedbackLoopInizialization<MUExperime
 	private static final Logger LOG = Logger.getLogger(MUDataInitialization.class);
 	
 	List<AbstractMatcher> inputMatchers = new ArrayList<AbstractMatcher>();
+	MUExperiment experiment;
+	int count_vsv=0;
 	public MUDataInitialization()
 	{
 		super();
@@ -31,15 +38,32 @@ public class MUDataInitialization  extends FeedbackLoopInizialization<MUExperime
 	@Override
 	public void inizialize(MUExperiment exp) {
 		// TODO Auto-generated method stub
+		this.experiment=exp;
 		inputMatchers=exp.initialMatcher.getComponentMatchers();
+		
+		SignatureVectorStats svs=new SignatureVectorStats(exp);
+		try {
+			svs.printSV(exp.initialMatcher.getFinalMatcher().getClassesMatrix(), alignType.aligningClasses);
+			svs.printSV(exp.initialMatcher.getFinalMatcher().getPropertiesMatrix(), alignType.aligningProperties);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
 		SimilarityMatrix smClass=exp.initialMatcher.getFinalMatcher().getClassesMatrix().clone();
 		SimilarityMatrix smProperty=exp.initialMatcher.getFinalMatcher().getPropertiesMatrix().clone();
 
 
 		SimilarityMatrix am=exp.initialMatcher.getFinalMatcher().getClassesMatrix();
 		smClass=prepare(smClass, am);
+		
 		am=exp.initialMatcher.getFinalMatcher().getPropertiesMatrix();
 		smProperty=prepare(smProperty, am);
+		
+		GVM_Clustering gvm=new GVM_Clustering(inputMatchers, count_vsv/10);
+		gvm.cluster();
+		exp.cluster=gvm.getClusters();
 		
 		exp.setComputedUFLMatrix(alignType.aligningClasses, smClass);
 		exp.setComputedUFLMatrix(alignType.aligningProperties, smProperty);
@@ -90,7 +114,7 @@ public class MUDataInitialization  extends FeedbackLoopInizialization<MUExperime
 		ufl.setPropertiesMatrix(smProperty);
 		ufl.select();
 
-		exp.setMLAlignment(combineResults(ufl, exp));
+		exp.setMLAlignment(UFLutility.combineResults(ufl, exp));
 		
 		// output the experiment description
 		StringBuilder d = new StringBuilder();
@@ -136,77 +160,20 @@ public class MUDataInitialization  extends FeedbackLoopInizialization<MUExperime
 			for(int j=0;j<sm.getColumns();j++)
 			{
 				mp = sm.get(i, j);
-				ssv=getSignatureVector(mp);
-				if (!validSsv(ssv))
+				ssv=UFLutility.getSignatureVector(mp,experiment.initialMatcher.getComponentMatchers());
+				if (!UFLutility.validSsv(ssv))
 				{ 
 					sm.setSimilarity(i, j, 0.0);
 				}
 				else
 				{
 					sm.setSimilarity(i, j, am.getSimilarity(i, j));
+					count_vsv++;
 				}
 			}
 		
 		return sm;
 	}
-	
-	private Object[] getSignatureVector(Mapping mp)
-	{
-		int size=inputMatchers.size();
-		Node sourceNode=mp.getEntity1();
-		Node targetNode=mp.getEntity2();
-		AbstractMatcher a;
-		Object[] ssv=new Object[size];
-		for (int i=0;i<size;i++)
-		{
-			a = inputMatchers.get(i);
-			ssv[i]=a.getAlignment().getSimilarity(sourceNode, targetNode);
-			
-		}
-		return ssv;
-	}
-	
-	
-	//check if the signature vector is valid. A valid signature vector must have at least one non zero element.
-	private boolean validSsv(Object[] ssv)
-	{
-		Object obj=0.0;
-		for(int i=0;i<ssv.length;i++)
-		{
-			if (!ssv[i].equals(obj))
-				return true;
-		}
-		return false;
-	}
-	
-	private Alignment<Mapping> combineResults(AbstractMatcher am, MUExperiment experiment)
-	{
-		Alignment<Mapping> alg=new Alignment<Mapping>(0,0);
-		int row=am.getClassesMatrix().getRows();
-		int col=am.getClassesMatrix().getColumns();
-		double ufl_sim=0;
-		for (int i=0;i<row;i++)
-		{
-			for(int j=0;j<col;j++)
-			{
-				ufl_sim=am.getClassesMatrix().getSimilarity(i, j);
-				if (ufl_sim!=0.0)
-					alg.add(experiment.initialMatcher.getFinalMatcher().getClassesMatrix().get(i, j));
-			}
-		}
-		row=am.getPropertiesMatrix().getRows();
-		col=am.getPropertiesMatrix().getColumns();
-		ufl_sim=0;
-		for (int i=0;i<row;i++)
-		{
-			for(int j=0;j<col;j++)
-			{
-				ufl_sim=am.getPropertiesMatrix().getSimilarity(i, j);
-				if (ufl_sim!=0.0)
-					alg.add(experiment.initialMatcher.getFinalMatcher().getPropertiesMatrix().get(i, j));
-			}
-		}
-		
-		return alg;
-	}
+
+
 }
