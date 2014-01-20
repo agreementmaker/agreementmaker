@@ -279,7 +279,7 @@ public class SestCombinationMatchers extends ExecutionSemantics {
 		if (progressDisplay!=null)m_lwc.addProgressDisplay(progressDisplay);
 		
 		//DSI
-		param_dsi.MCP=0.6;
+		param_dsi.MCP=0.8;
 		m_dsi= new DescendantsSimilarityInheritanceMatcher();
 		m_dsi.setParameters(param_dsi);
 		m_dsi.setOntologies(sourceOntology, targetOntology);
@@ -287,7 +287,7 @@ public class SestCombinationMatchers extends ExecutionSemantics {
 		
 		
 		//SSC
-		param_ssc.MCP=0.6;
+		param_ssc.MCP=0.8;
 		m_ssc= new SiblingsSimilarityContributionMatcher(param_ssc);
 		m_ssc.setOntologies(sourceOntology, targetOntology);
 		if (progressDisplay!=null)m_ssc.addProgressDisplay(progressDisplay);

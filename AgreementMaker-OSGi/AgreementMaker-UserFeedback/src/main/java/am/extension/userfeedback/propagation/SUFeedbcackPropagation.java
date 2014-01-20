@@ -31,6 +31,7 @@ import am.extension.userfeedback.MLutility.WekaUtility;
 //import am.extension.userfeedback.MLutility.NaiveBayes;
 import am.extension.userfeedback.UserFeedback.Validation;
 import am.extension.userfeedback.experiments.SUExperiment;
+import am.extension.userfeedback.utility.UFLutility;
 import am.matcher.Combination.CombinationMatcher;
 public class SUFeedbcackPropagation extends FeedbackPropagation<SUExperiment> {
 	
@@ -298,7 +299,7 @@ public class SUFeedbcackPropagation extends FeedbackPropagation<SUExperiment> {
 		ufl.setPropertiesMatrix(feedbackPropertyMatrix);
 		//ufl.select();
 
-		experiment.setMLAlignment(combineResults(ufl));
+		experiment.setMLAlignment(UFLutility.combineResults(ufl,experiment));
 		
 		if( candidateMapping.getAlignmentType() == alignType.aligningClasses ) 
 		{
@@ -426,7 +427,7 @@ public class SUFeedbcackPropagation extends FeedbackPropagation<SUExperiment> {
 				}
 				else
 				{
-					bw.write(round(sm.getSimilarity(i, j),2)+"");
+					bw.write(UFLutility.round(sm.getSimilarity(i, j),2)+"");
 					if (j<sm.getColumns()-1)
 						bw.write("\t");
 				}
@@ -438,45 +439,9 @@ public class SUFeedbcackPropagation extends FeedbackPropagation<SUExperiment> {
 		bw.close();
 	}
 	
-	private double round(double value, int places) {
-	    if (places < 0) throw new IllegalArgumentException();
 
-	    BigDecimal bd = new BigDecimal(value);
-	    bd = bd.setScale(places, BigDecimal.ROUND_HALF_UP);
-	    return bd.doubleValue();
-	}
 	
-	private Alignment<Mapping> combineResults(AbstractMatcher am)
-	{
-		Alignment<Mapping> alg=new Alignment<Mapping>(0,0);
-		int row=am.getClassesMatrix().getRows();
-		int col=am.getClassesMatrix().getColumns();
-		double ufl_sim=0;
-		for (int i=0;i<row;i++)
-		{
-			for(int j=0;j<col;j++)
-			{
-				ufl_sim=am.getClassesMatrix().getSimilarity(i, j);
-				if (ufl_sim>0.6)
-					alg.add(experiment.initialMatcher.getFinalMatcher().getClassesMatrix().get(i, j));
-			}
-		}
-		row=am.getPropertiesMatrix().getRows();
-		col=am.getPropertiesMatrix().getColumns();
-		ufl_sim=0;
-		for (int i=0;i<row;i++)
-		{
-			for(int j=0;j<col;j++)
-			{
-				ufl_sim=am.getPropertiesMatrix().getSimilarity(i, j);
-				if (ufl_sim>0.6)
-					alg.add(experiment.initialMatcher.getFinalMatcher().getPropertiesMatrix().get(i, j));
-			}
-		}
-		
-		return alg;
-	}
-	
+
 	
 
 //	private SimilarityMatrix prepareSMforNB(SimilarityMatrix sm)
