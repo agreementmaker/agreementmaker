@@ -1,16 +1,13 @@
 package am.ui;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -44,7 +41,6 @@ import am.app.ontology.ontologyParser.OntologyDefinition.OntologySyntax;
 import am.app.ontology.profiling.ProfilingDialog;
 import am.app.ontology.profiling.metrics.OntologyMetric;
 import am.app.ontology.profiling.metrics.OntologyMetricsRegistry;
-import am.evaluation.clustering.gvm.GVM_Clustering_Panel;
 import am.tools.ThresholdAnalysis.ThresholdAnalysis;
 import am.ui.VisualizationChangeEvent.VisualizationEventType;
 import am.ui.canvas2.Canvas2;
@@ -354,34 +350,6 @@ public class UIMenuListener implements ActionListener {
 			}
 			else if(obj == menu.refEvaluateMatching) {
 				controlPanel.btnEvaluateClick();
-			}
-			else if( obj == menu.clusteringClasses ) {
-				/** Clustering with GVM for classes */
-				MatchersTablePanel m = controlPanel.getTablePanel();
-
-				int[] selectedRows =  m.getTable().getSelectedRows();
-
-				if(selectedRows.length < 2) {
-					Utility.displayErrorPane("You must select at least two matchers in the Matchers Control Panel.", null);
-					return;
-				}
-
-				List<AbstractMatcher> selectedMatchers = new ArrayList<AbstractMatcher>();
-				List<AbstractMatcher> matcherInstances = Core.getInstance().getMatcherInstances();
-
-				for( int i : selectedRows ) {
-					selectedMatchers.add(matcherInstances.get(i));
-				}
-
-				GVM_Clustering_Panel gvm = new GVM_Clustering_Panel(selectedMatchers);
-
-				JFrame frm = new JFrame();
-				frm.setLayout(new BorderLayout());
-				frm.add(gvm, BorderLayout.CENTER);
-				frm.pack();
-				frm.setLocationRelativeTo(null);
-				frm.setVisible(true);
-
 			}
 			else if(obj == menu.clearAll) {
 				controlPanel.clearAll();
