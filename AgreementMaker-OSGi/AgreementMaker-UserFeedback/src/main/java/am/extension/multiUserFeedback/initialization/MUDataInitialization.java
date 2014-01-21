@@ -61,7 +61,7 @@ public class MUDataInitialization  extends FeedbackLoopInizialization<MUExperime
 		am=exp.initialMatcher.getFinalMatcher().getPropertiesMatrix();
 		smProperty=prepare(smProperty, am);
 		
-		GVM_Clustering gvm=new GVM_Clustering(inputMatchers, count_vsv/10);
+		GVM_Clustering gvm=new GVM_Clustering(inputMatchers, count_vsv/5);
 		gvm.cluster();
 		exp.cluster=gvm.getClusters();
 		
