@@ -109,7 +109,7 @@ public class UFLutility {
 			for(int j=0;j<sm.getColumns();j++)
 			{
 				mp=sm.get(i, j);
-				if (!inList(mp, lst))
+				if ((!inList(mp, lst))&&(validSsv(getSignatureVector(mp, inputMatchers))))
 				{
 					lst.add(addToList(mp, sm, inputMatchers));
 				}
@@ -139,7 +139,7 @@ public class UFLutility {
 		for(int i=0;i<sm.getRows();i++)
 		{
 			m=sm.get(i, col);
-			if ( (!validSsv(getSignatureVector(m, inputMatchers))) && (!m.equals(mp)) )
+			if ( (validSsv(getSignatureVector(m, inputMatchers))) && (!m.equals(mp)) )
 			{
 				lst.add(m);
 			}
@@ -147,7 +147,7 @@ public class UFLutility {
 		for(int j=0;j<sm.getColumns();j++)
 		{
 			m=sm.get(row,j);
-			if ( (!validSsv(getSignatureVector(m, inputMatchers))) && (!m.equals(mp)) )
+			if ( (validSsv(getSignatureVector(m, inputMatchers))) && (!m.equals(mp)) )
 			{
 				lst.add(m);
 			}

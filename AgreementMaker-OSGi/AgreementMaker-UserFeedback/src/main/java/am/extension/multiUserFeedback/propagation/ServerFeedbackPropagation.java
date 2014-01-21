@@ -12,6 +12,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.tomgibara.cluster.gvm.dbl.DblResult;
+
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
@@ -19,19 +21,28 @@ import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.app.ontology.Node;
+
 import am.extension.multiUserFeedback.experiment.MUExperiment;
 import am.extension.userfeedback.MLutility.WekaUtility;
+import am.extension.userfeedback.UserFeedback.Validation;
 import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
 import am.extension.userfeedback.propagation.FeedbackPropagation;
+import am.extension.userfeedback.utility.UFLutility;
 import am.matcher.Combination.CombinationMatcher;
 
 public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>{
 
+	private class ClusterData {
+		int clusterID;
+		int clusterSize;
+		int correctMappings;
+	}
 
 	final double treshold_up=0.6;
 	final double treshold_down=0.1;
 	final double penalize_ratio=0.9;
 	final double log_multiplier=1.2;
+	final double alpha=0.2;
 	private MUExperiment experiment;
 	List<AbstractMatcher> inputMatchers = new ArrayList<AbstractMatcher>();
 	
@@ -39,6 +50,7 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 	public static final String PROPAGATION_EUCLIDEAN 	= "euzero";
 	public static final String PROPAGATION_LOG 			= "logdist";
 	public static final String PROPAGATION_REGRESSION 	= "regression";
+	public static final String PROPAGATION_CRC 	= "crc";
 	
 	private Object[] getSignatureVector(Mapping mp)
 	{
@@ -129,29 +141,36 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 	
 
 	private SimilarityMatrix runPropagation(alignType type, String metric) {
-		switch(metric) {
-		case PROPAGATION_NONE:
-			return experiment.getComputedUFLMatrix(type);
-		case PROPAGATION_EUCLIDEAN:
-			return euclideanDistance(
-					experiment.getForbiddenPositions(type), 
-					experiment.getComputedUFLMatrix(type),
-					experiment.getTrainingSet(type),
-					type);
-		case PROPAGATION_LOG:
-			return logDistance(
-					experiment.getForbiddenPositions(type), 
-					experiment.getComputedUFLMatrix(type),
-					experiment.getTrainingSet(type),
-					type);
-		case PROPAGATION_REGRESSION:
-			return wekaRegression(
-					experiment.getForbiddenPositions(type),
-					experiment.getComputedUFLMatrix(type),
-					experiment.getTrainingSet(type));
-		default:
-			throw new RuntimeException("Propagation method was not correctly specificied.");
-		}
+//		switch(metric) {
+//		case PROPAGATION_NONE:
+//			return experiment.getComputedUFLMatrix(type);
+//		case PROPAGATION_EUCLIDEAN:
+//			return euclideanDistance(
+//					experiment.getForbiddenPositions(type), 
+//					experiment.getComputedUFLMatrix(type),
+//					experiment.getTrainingSet(type),
+//					type);
+//		case PROPAGATION_LOG:
+//			return logDistance(
+//					experiment.getForbiddenPositions(type), 
+//					experiment.getComputedUFLMatrix(type),
+//					experiment.getTrainingSet(type),
+//					type);
+//		case PROPAGATION_REGRESSION:
+//			return wekaRegression(
+//					experiment.getForbiddenPositions(type),
+//					experiment.getComputedUFLMatrix(type),
+//					experiment.getTrainingSet(type));
+//		case PROPAGATION_CRC:
+//			return clusterRowColumnPropagation(experiment.getForbiddenPositions(type), 
+//					experiment.getComputedUFLMatrix(type),experiment.userFeedback.getCandidateMapping(),
+//					experiment.userFeedback.getUserFeedback(), type);
+//		default:
+//			throw new RuntimeException("Propagation method was not correctly specificied.");
+//		}
+		return clusterRowColumnPropagation(experiment.getForbiddenPositions(type), 
+				experiment.getComputedUFLMatrix(type),experiment.userFeedback.getCandidateMapping(),
+				experiment.userFeedback.getUserFeedback(), type);
 	}
 
 	
@@ -412,6 +431,83 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 	    BigDecimal bd = new BigDecimal(value);
 	    bd = bd.setScale(places, BigDecimal.ROUND_HALF_UP);
 	    return bd.doubleValue();
+	}
+	
+	
+	private SimilarityMatrix clusterRowColumnPropagation(SimilarityMatrix forbidden_pos, SimilarityMatrix sm, Mapping candidateMapping, Validation val, alignType type)
+	{
+		
+		Mapping mp;
+		Object[] ssv;
+		double deltaSim=alpha;
+		double sim=0;
+		List<List<Mapping>> lst=UFLutility.getRelations(sm, experiment.initialMatcher.getComponentMatchers());
+		
+		for (List<Mapping> l : lst)
+		{
+			if (l.contains(candidateMapping))
+			{
+				for (Mapping m :l)
+				{
+					if (!m.equals(candidateMapping))
+					{
+						if (val.equals(Validation.CORRECT))
+						{
+							sim=sm.getSimilarity(m.getSourceKey(), m.getTargetKey());
+							sim=UFLutility.ammortizeSimilarity(sim, (deltaSim)*(-1));
+							sm.setSimilarity(m.getSourceKey(), m.getTargetKey(), sim);
+						}
+						if (val.equals(Validation.INCORRECT))
+						{
+							sim=sm.getSimilarity(m.getSourceKey(), m.getTargetKey());
+							sim=UFLutility.ammortizeSimilarity(sim, (deltaSim));
+							sm.setSimilarity(m.getSourceKey(), m.getTargetKey(), sim);
+						}
+					}
+				}
+			}
+		}
+		
+		
+		List<Node> sourceClasses = experiment.initialMatcher.getFinalMatcher().getSourceOntology().getClassesList();
+		List<Node> targetClasses = experiment.initialMatcher.getFinalMatcher().getTargetOntology().getClassesList();
+		List<DblResult<List<double[]>>> clusters = experiment.cluster;
+		Alignment<Mapping> classesAlignment = experiment.initialMatcher.getFinalMatcher().getClassAlignmentSet();
+		//
+		List<ClusterData> clusterData = new ArrayList<ClusterData>();
+		//loop thru clusters, for each cluster, there is a cluster KEY [for each key we have a 
+		// row and column of mapping. keys is a list, of all of the mappings in the cluster
+		// and the mappings are identified by row and column stored in array of doubles. 
+		
+		// every mapping gets a number inside a NEW matrix 
+		for( int i = 0; i < clusters.size(); i++ ) {
+			DblResult<List<double[]>> currentCluster = clusters.get(i);
+			List<double[]> clusterKey = currentCluster.getKey();
+			
+			ClusterData cd = new ClusterData();
+			cd.clusterID = i;
+			cd.clusterSize = clusterKey.size();
+			cd.correctMappings = 0;
+			
+			for( int j = 0; j < clusterKey.size(); j++ ) {
+				double[] point = clusterKey.get(j);
+				
+				Node sourceNode = sourceClasses.get((int)point[point.length-2]);
+				Node targetNode = targetClasses.get((int)point[point.length-1]);
+				
+				if( classesAlignment.contains( sourceNode, targetNode) != null )  {
+					cd.correctMappings++;
+				}
+				/*if( classesMatrix.getSimilarity( (int)point[point.length-2], (int)point[point.length-1]) > 0.0d )
+					cd.correctMappings++;*/
+			}
+			
+			clusterData.add(cd);
+		}
+		
+		
+
+		return sm;
 	}
 
 
