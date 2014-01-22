@@ -7,19 +7,13 @@ import java.util.List;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MappingSimilarityComparator;
-import am.app.mappingEngine.qualityEvaluation.MappingQualityMetric;
-import am.app.mappingEngine.qualityEvaluation.metrics.InverseOf;
 import am.app.mappingEngine.qualityEvaluation.metrics.ufl.ConsensusQuality;
 import am.app.mappingEngine.qualityEvaluation.metrics.ufl.CrossCountQuality;
 import am.app.mappingEngine.qualityEvaluation.metrics.ufl.PropagationImpactMetric;
-import am.app.mappingEngine.qualityEvaluation.metrics.ufl.RevalidationRate;
-import am.app.mappingEngine.qualityEvaluation.metrics.ufl.SimilarityScoreHardness;
-import am.app.mappingEngine.qualityEvaluation.metrics.ufl.UserDisagrement;
-import am.app.mappingEngine.qualityEvaluation.metrics.ufl.VarianceMatcherDisagreement;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 
-public class RevalidationRanking implements StrategyInterface{
+public class RevalidationRanking extends AbstractRankingStrategy {
 
 	private List<SimilarityMatrix> classMatrices=new ArrayList<SimilarityMatrix>();
 	private List<SimilarityMatrix> propMatrices=new ArrayList<SimilarityMatrix>();
@@ -37,8 +31,6 @@ public class RevalidationRanking implements StrategyInterface{
 	private double gamma=2.0;
 	private final int maxValidation=3;
 
-	
-	
 	public RevalidationRanking(
 			List<SimilarityMatrix> clMatrix, 
 			List<SimilarityMatrix> prMatrix, 
@@ -48,7 +40,7 @@ public class RevalidationRanking implements StrategyInterface{
 			SparseMatrix pn,
 			SimilarityMatrix uClass,
 			SimilarityMatrix uProp,
-			List<Mapping> torank,
+			List<Mapping> toRank,
 			SimilarityMatrix forbiddenClass,
 			SimilarityMatrix forbiddenProp)
 	{
@@ -60,19 +52,17 @@ public class RevalidationRanking implements StrategyInterface{
 		this.propNeg=pn;
 		this.uflClass=uClass;
 		this.uflProp=uProp;
-		this.toRank=torank;
 		this.forbiddenClass=forbiddenClass;
 		this.forbiddenProp=forbiddenProp;
+		this.toRank = toRank;
 	}
 	
 	@Override
-	public List<Mapping> rank() {
-		List<Mapping> rankList=linearCombination(alignType.aligningClasses,classMatrices, classPos, classNeg, uflClass,forbiddenClass);
-		rankList.addAll(linearCombination(alignType.aligningProperties,propMatrices, propPos, propNeg,uflProp,forbiddenProp));
-		Collections.sort(rankList, new MappingSimilarityComparator() );
-		Collections.reverse(rankList);
-		
-		return rankList;
+	public void rank() {
+		rankedList = linearCombination(alignType.aligningClasses,classMatrices, classPos, classNeg, uflClass,forbiddenClass);
+		rankedList.addAll(linearCombination(alignType.aligningProperties,propMatrices, propPos, propNeg,uflProp,forbiddenProp));
+		Collections.sort(rankedList, new MappingSimilarityComparator() );
+		Collections.reverse(rankedList);
 	}
 	
 	

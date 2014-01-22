@@ -10,7 +10,7 @@ import am.app.mappingEngine.qualityEvaluation.metrics.ufl.CrossCountQuality;
 import am.app.mappingEngine.qualityEvaluation.metrics.ufl.SimilarityScoreHardness;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 
-public class IntrinsicQualityRanking implements StrategyInterface{
+public class IntrinsicQualityRanking extends AbstractRankingStrategy {
 
 	private SimilarityMatrix classMatrix;
 	private SimilarityMatrix propMatrix;
@@ -29,13 +29,11 @@ public class IntrinsicQualityRanking implements StrategyInterface{
 	}
 	
 	@Override
-	public List<Mapping> rank() {
-		List<Mapping> rankList=linearCombination(classMatrix, forbiddenClass);
-		rankList.addAll(linearCombination(propMatrix,forbiddnProp));
-		Collections.sort(rankList, new MappingSimilarityComparator() );
-		Collections.reverse(rankList);
-		
-		return rankList;
+	public void rank() {
+		rankedList=linearCombination(classMatrix, forbiddenClass);
+		rankedList.addAll(linearCombination(propMatrix,forbiddnProp));
+		Collections.sort(rankedList, new MappingSimilarityComparator() );
+		Collections.reverse(rankedList);
 	}
 	
 	

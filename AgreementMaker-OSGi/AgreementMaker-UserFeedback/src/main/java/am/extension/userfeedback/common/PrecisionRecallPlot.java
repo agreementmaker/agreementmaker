@@ -29,7 +29,7 @@ public class PrecisionRecallPlot extends CandidateSelectionEvaluation {
 		
 		Mapping candidateMapping = exp.candidateSelection.getCandidateMapping();
 		if(candidateMapping == null) {
-			log.info( "Candidate Selection presented null mapping. Mapping source: " + ((MUExperiment)exp).data.mappingSource.name() );
+			log.info( "Candidate Selection presented null mapping. Mapping source: " + ((MUExperiment)exp).data.mappingSource.getClass().getName() );
 			return;
 		}
 		boolean mappingIsInReference = false;

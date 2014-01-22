@@ -7,6 +7,7 @@ import java.util.List;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.ontology.Node;
 import am.extension.multiUserFeedback.experiment.MUExperiment;
@@ -161,6 +162,22 @@ public class UFLutility {
 		if (sim>1.0d) return 1;
 		if (sim<0.0d) return 0;
 		return sim;
+	}
+	
+	static public List<SimilarityMatrix> extractList(List<AbstractMatcher> lst, alignType type)
+	{
+		List<SimilarityMatrix> mList=new ArrayList<SimilarityMatrix>();
+		if (type.equals(alignType.aligningClasses))
+		{
+			for (int i=0;i<lst.size();i++)
+				mList.add(lst.get(i).getClassesMatrix());
+		}
+		else
+		{
+			for (int i=0;i<lst.size();i++)
+				mList.add(lst.get(i).getPropertiesMatrix());
+		}
+		return mList;
 	}
 	
 }

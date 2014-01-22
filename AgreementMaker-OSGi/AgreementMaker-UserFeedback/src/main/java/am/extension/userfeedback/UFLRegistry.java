@@ -65,7 +65,7 @@ public class UFLRegistry {
 	
 	
 	public enum CandidateSelectionRegistry {
-		ServerMultiStrategy (am.extension.multiUserFeedback.selection.ServerMultiStrategyCandidateSelection.class),
+		ServerMultiStrategy (am.extension.multiUserFeedback.selection.ParametricCandidateSelection.class),
 		ClientCandidateSelection (am.extension.multiUserFeedback.selection.ClientCandidateSelection.class),
 		ServerCandidateSelection (am.extension.multiUserFeedback.selection.ServerCandidateSelection.class),
 		MultiStrategyRanking (am.extension.userfeedback.clustering.disagreement.MultiStrategyRanking.class),
@@ -89,7 +89,7 @@ public class UFLRegistry {
 	}
 	
 	public enum UserValidationRegistry {
-		FakeClient (am.extension.multiUserFeedback.validation.BMAutomaticValidation.class),
+		FakeClient (am.extension.multiUserFeedback.validation.ProbabilisticErrorAutomaticValidation.class),
 		ClientFeedbackValidation (am.extension.multiUserFeedback.validation.ClientFeedbackValidation.class),
 		AutomaticReference ( am.extension.userfeedback.common.AutomaticUserValidation.class ),
 		Manual ( am.extension.userfeedback.common.ManualUserValidation.class );
