@@ -80,7 +80,7 @@ public class RevalidationRanking extends AbstractRankingStrategy {
 		List<Mapping> lst=new ArrayList<Mapping>();
 		//UserDisagrement ud=new UserDisagrement(mPos, mNeg);
 		ConsensusQuality cq=new ConsensusQuality(mPos, mNeg);
-		CrossCountQuality ccq=new CrossCountQuality(mtrx, forbidden);
+		CrossCountQuality ccq=new CrossCountQuality(mtrx);
 		PropagationImpactMetric pim=new PropagationImpactMetric(mPos, mNeg, maxValidation);
 		//MappingQualityMetric rr=new InverseOf(new RevalidationRate(mPos, mNeg));
 		if (toRank==null) return new ArrayList<Mapping>();

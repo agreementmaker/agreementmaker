@@ -63,9 +63,24 @@ public class MUDataInitialization  extends FeedbackLoopInizialization<MUExperime
 		am=exp.initialMatcher.getFinalMatcher().getPropertiesMatrix();
 		smProperty=prepare(smProperty, am);
 		
-		GVM_Clustering gvm=new GVM_Clustering(inputMatchers, count_vsv/5);
+		
+		List<SimilarityMatrix> lstC=new ArrayList<>();
+		List<SimilarityMatrix> lstP=new ArrayList<>();
+		
+		for (int i=0;i<inputMatchers.size();i++)
+		{
+			lstC.add(inputMatchers.get(i).getClassesMatrix());
+			lstP.add(inputMatchers.get(i).getPropertiesMatrix());
+		}
+		
+		
+		GVM_Clustering gvm=new GVM_Clustering(lstC.toArray(new SimilarityMatrix[0]), count_vsv/4);
 		gvm.cluster();
-		exp.cluster=gvm.getClusters();
+		exp.clusterC=gvm.getClusters();
+		
+		gvm=new GVM_Clustering(lstP.toArray(new SimilarityMatrix[0]), count_vsv/4);
+		gvm.cluster();
+		exp.clusterP=gvm.getClusters();
 		
 		exp.setComputedUFLMatrix(alignType.aligningClasses, smClass);
 		exp.setComputedUFLMatrix(alignType.aligningProperties, smProperty);
@@ -154,6 +169,7 @@ public class MUDataInitialization  extends FeedbackLoopInizialization<MUExperime
 
 	private SimilarityMatrix prepare(SimilarityMatrix sm, SimilarityMatrix am)
 	{
+		double sim=0;
 		Mapping mp;
 		Object[] ssv;
 		for(int i=0;i<sm.getRows();i++)
@@ -167,7 +183,10 @@ public class MUDataInitialization  extends FeedbackLoopInizialization<MUExperime
 				}
 				else
 				{
-					sm.setSimilarity(i, j, am.getSimilarity(i, j));
+					sim=am.getSimilarity(i, j);
+					if (sim==0)
+						System.out.println("ciao");
+					sm.setSimilarity(i, j, sim );
 					count_vsv++;
 				}
 			}

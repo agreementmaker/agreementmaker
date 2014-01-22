@@ -42,7 +42,7 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 	final double treshold_down=0.1;
 	final double penalize_ratio=0.9;
 	final double log_multiplier=1.2;
-	final double alpha=0.2;
+	final double alpha=0.7;
 	private MUExperiment experiment;
 	List<AbstractMatcher> inputMatchers = new ArrayList<AbstractMatcher>();
 	
@@ -350,9 +350,10 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 					distance=0;
 					for(int j=0;j<ssv.length;j++)
 					{
-						count++;
+						
 						distance+=Math.pow((double)ssv[j]-(double)trainingSet[i][j],2);
 					}
+					count++;
 					distance=Math.sqrt(distance);
 					avgDistance+=distance;
 					if (distance<minDistance)
@@ -442,6 +443,7 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 		
 		Mapping mp;
 		Object[] ssv;
+		Object[] cmSv=UFLutility.getSignatureVector(candidateMapping, inputMatchers);
 		double deltaSim=alpha;
 		double sim=0;
 		List<List<Mapping>> lst=UFLutility.getRelations(sm, experiment.initialMatcher.getComponentMatchers());
@@ -452,6 +454,8 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 			{
 				for (Mapping m :l)
 				{
+					if(forbidden_pos.getSimilarity(m.getSourceKey(), m.getTargetKey())==1)
+						continue;
 					if (!m.equals(candidateMapping))
 					{
 						if (val.equals(Validation.CORRECT))
@@ -472,45 +476,99 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 		}
 		
 		
-		List<Node> sourceClasses = experiment.initialMatcher.getFinalMatcher().getSourceOntology().getClassesList();
-		List<Node> targetClasses = experiment.initialMatcher.getFinalMatcher().getTargetOntology().getClassesList();
-		List<DblResult<List<double[]>>> clusters = experiment.cluster;
-		Alignment<Mapping> classesAlignment = experiment.initialMatcher.getFinalMatcher().getClassAlignmentSet();
-		//
-		List<ClusterData> clusterData = new ArrayList<ClusterData>();
-		//loop thru clusters, for each cluster, there is a cluster KEY [for each key we have a 
-		// row and column of mapping. keys is a list, of all of the mappings in the cluster
-		// and the mappings are identified by row and column stored in array of doubles. 
-		
-		// every mapping gets a number inside a NEW matrix 
-		for( int i = 0; i < clusters.size(); i++ ) {
-			DblResult<List<double[]>> currentCluster = clusters.get(i);
-			List<double[]> clusterKey = currentCluster.getKey();
-			
-			ClusterData cd = new ClusterData();
-			cd.clusterID = i;
-			cd.clusterSize = clusterKey.size();
-			cd.correctMappings = 0;
-			
-			for( int j = 0; j < clusterKey.size(); j++ ) {
-				double[] point = clusterKey.get(j);
+
+
+		DblResult<List<double[]>> x=getCluster(candidateMapping);
+		double maxDistance=getDistance(x, candidateMapping, sm);
+		for (double[] d : x.getKey())
+		{
+			mp=sm.get((int)d[0], (int)d[1]);
+			if(forbidden_pos.getSimilarity((int)d[0], (int)d[1])==1)
+				continue;
+			if (!mp.equals(candidateMapping))
+			{
+				ssv=UFLutility.getSignatureVector(mp, inputMatchers);
 				
-				Node sourceNode = sourceClasses.get((int)point[point.length-2]);
-				Node targetNode = targetClasses.get((int)point[point.length-1]);
-				
-				if( classesAlignment.contains( sourceNode, targetNode) != null )  {
-					cd.correctMappings++;
+				double distance=0;
+				for(int j=0;j<ssv.length;j++)
+				{
+					distance+=Math.pow((double)ssv[j]-(double)cmSv[j],2);
 				}
-				/*if( classesMatrix.getSimilarity( (int)point[point.length-2], (int)point[point.length-1]) > 0.0d )
-					cd.correctMappings++;*/
+				distance=Math.sqrt(distance);
+				distance/=maxDistance;
+				distance*=1.0/Math.sqrt(experiment.getIterationNumber()+1);
+				deltaSim=Math.log(2-distance) / Math.log(2);
+				if (val.equals(Validation.CORRECT))
+				{
+					sim=sm.getSimilarity((int)d[0], (int)d[1]);
+					sim=UFLutility.ammortizeSimilarity(sim, (deltaSim));
+					sm.setSimilarity((int)d[0], (int)d[1], sim);
+				}
+				if (val.equals(Validation.INCORRECT))
+				{
+					sim=sm.getSimilarity((int)d[0], (int)d[1]);
+					sim=UFLutility.ammortizeSimilarity(sim, (deltaSim)*(-1));
+					sm.setSimilarity((int)d[0], (int)d[1], sim);
+				}
 			}
-			
-			clusterData.add(cd);
 		}
 		
 		
 
 		return sm;
+	}
+	
+	
+	private double getDistance(DblResult<List<double[]>> cl, Mapping m, SimilarityMatrix sm)
+	{
+		
+		Mapping mp;
+		
+		double maxDistance=Double.MIN_VALUE;
+		Object[] cmSv=UFLutility.getSignatureVector(m, inputMatchers);
+		Object[] ssv;
+		for (double[] d : cl.getKey())
+		{
+			mp=sm.get((int)d[0], (int)d[1]);
+			if (!mp.equals(m))
+			{
+				ssv=UFLutility.getSignatureVector(mp, inputMatchers);
+				
+				double distance=0;
+				for(int j=0;j<ssv.length;j++)
+				{
+					distance+=Math.pow((double)ssv[j]-(double)cmSv[j],2);
+				}
+				distance=Math.sqrt(distance);
+				if (distance>maxDistance)
+					maxDistance=distance;
+			}
+		}
+		
+		
+		return maxDistance;
+	}
+	
+	private DblResult<List<double[]>> getCluster(Mapping mp)
+	{
+		List<double[]> item=new ArrayList<>();
+		double [] itm={mp.getSourceKey(),mp.getTargetKey()};
+		item.add(itm);
+		
+		List<DblResult<List<double[]>>> clusters = experiment.clusterC;
+		if (mp.getAlignmentType().equals(alignType.aligningProperties))
+			clusters = experiment.clusterP;
+
+		
+		for (DblResult<List<double[]>> s : clusters)
+		{
+			for(double[] d : s.getKey())
+			{
+				if ( ((int)d[0]==(int)itm[0]) && ((int)d[1]==(int)itm[1]) )
+					return s;
+			}
+		}
+		return null;
 	}
 
 

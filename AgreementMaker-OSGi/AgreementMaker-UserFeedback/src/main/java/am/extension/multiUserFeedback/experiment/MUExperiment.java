@@ -54,7 +54,8 @@ public Mapping selectedMapping;
 public int feedbackCount;
 public String feedback;
 
-public List<DblResult<List<double[]>>> cluster;
+public List<DblResult<List<double[]>>> clusterC;
+public List<DblResult<List<double[]>>> clusterP;
 public List<Mapping> alreadyEvaluated=new ArrayList<Mapping>();
 public List<Mapping> conflictualClass;
 public List<Mapping> conflictualProp;

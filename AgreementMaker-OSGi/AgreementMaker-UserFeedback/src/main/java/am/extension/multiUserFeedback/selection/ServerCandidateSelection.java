@@ -323,7 +323,7 @@ public class ServerCandidateSelection extends MUCandidateSelection<MUExperiment>
 		double maxValue=0.0;
 		int row=sm.getRows();
 		int col=sm.getColumns();
-		CrossCountQuality qm = new CrossCountQuality(sm, forbidden);
+		CrossCountQuality qm = new CrossCountQuality(sm);
 		for(int i=0;i<row;i++)
 		{
 			for(int j=0;j<col;j++)

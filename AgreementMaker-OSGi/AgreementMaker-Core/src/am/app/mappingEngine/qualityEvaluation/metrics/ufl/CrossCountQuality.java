@@ -18,13 +18,13 @@ public class CrossCountQuality extends AbstractQualityMetric {
 		
 	private int[] rowCounts;
 	private int[] colCounts;
-	SimilarityMatrix forbidden;
+	//SimilarityMatrix forbidden;
 	private int normalizationFactor;
 	
-	public CrossCountQuality(SimilarityMatrix matrix, SimilarityMatrix forbidden)
+	public CrossCountQuality(SimilarityMatrix matrix)
 	{
 		super();
-		this.forbidden=forbidden;
+		//this.forbidden=forbidden;
 		// row counts
 		rowCounts = new int[matrix.getRows()];
 		for( int i = 0; i < matrix.getRows(); i++ ) {
