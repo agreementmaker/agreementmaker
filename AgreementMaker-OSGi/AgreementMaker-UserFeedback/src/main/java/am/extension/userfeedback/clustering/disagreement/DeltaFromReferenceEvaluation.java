@@ -18,7 +18,7 @@ public class DeltaFromReferenceEvaluation extends PropagationEvaluation <UFLExpe
 	
 	public DeltaFromReferenceEvaluation() {
 		try {
-			FileWriter fstream = new FileWriter(Core.getInstance().getRoot() + "/settings/tmp/deltaPlot.dat", true);
+			FileWriter fstream = new FileWriter(Core.getInstance().getRoot() + "settings/tmp/deltaPlot.dat", true);
 			BufferedWriter bfr = new BufferedWriter(fstream);
 			fileWriter = bfr;
 		} catch (IOException e) {

@@ -41,6 +41,15 @@ public class ServerCandidateSelection extends MUCandidateSelection<MUExperiment>
 		//almostCertainMappingRetrieval();
 		disagreementRanking();
 		
+//		Mapping m;
+//		List<Mapping> mList=new ArrayList<Mapping>();
+		int users=experiment.usersGroup.size();
+		
+		HashSet<Integer> mpCheck=new HashSet<Integer>();
+		if (experiment.getIterationNumber()>0)
+			while(mpCheck.size()<overlapping)
+				mpCheck.add((int) (Math.random()*users));
+		
 		done();
 	}
 
@@ -54,24 +63,7 @@ public class ServerCandidateSelection extends MUCandidateSelection<MUExperiment>
 	public List<Mapping> getRankedMappings(String id) {
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-	@Override
-	public Mapping getCandidateMapping(String id) {
-//		Mapping m;
-//		List<Mapping> mList=new ArrayList<Mapping>();
-		int users=experiment.usersGroup.size();
-		
-		HashSet<Integer> mpCheck=new HashSet<Integer>();
-		if (experiment.getIterationNumber()>0)
-			while(mpCheck.size()<overlapping)
-				mpCheck.add((int) (Math.random()*users));
-		
-		
-		
-		return null;
-	}
-	
+	}	
 	
 	private Mapping getCandidateMapping(String id, List<Mapping> lst) 
 	{

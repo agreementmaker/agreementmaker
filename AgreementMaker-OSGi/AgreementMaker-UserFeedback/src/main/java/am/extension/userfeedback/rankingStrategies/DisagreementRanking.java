@@ -1,14 +1,19 @@
 package am.extension.userfeedback.rankingStrategies;
 
+import static am.extension.userfeedback.utility.UFLutility.extractList;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MappingSimilarityComparator;
 import am.app.mappingEngine.qualityEvaluation.metrics.ufl.VarianceMatcherDisagreement;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
+import am.extension.multiUserFeedback.experiment.MUExperiment;
+import am.extension.userfeedback.UserFeedback.Validation;
 
 public class DisagreementRanking extends AbstractRankingStrategy {
 
@@ -21,21 +26,25 @@ public class DisagreementRanking extends AbstractRankingStrategy {
 	private SimilarityMatrix refMatrixC;
 	private SimilarityMatrix refMatrixP;
 	
+	private MUExperiment experiment;
 	
-	public DisagreementRanking(List<SimilarityMatrix> clMatrix, List<SimilarityMatrix> prMatrix, SparseMatrix cp, SparseMatrix cn, SparseMatrix pp,SparseMatrix pn, SimilarityMatrix referenceMC, SimilarityMatrix referenceMP)
+	public DisagreementRanking(MUExperiment experiment)
 	{
-		this.classMatrices=clMatrix;
-		this.propMatrices=prMatrix;
-		this.classPos=cp;
-		this.classNeg=cn;
-		this.propPos=pp;
-		this.propNeg=pn;
-		this.refMatrixC=referenceMC;
-		this.refMatrixP=referenceMP;
+		super();
+		this.experiment = experiment;
 	}
 	
 	@Override
 	public void rank() {
+		classMatrices = extractList(experiment.initialMatcher.getComponentMatchers(), alignType.aligningClasses);
+		propMatrices = extractList(experiment.initialMatcher.getComponentMatchers(), alignType.aligningProperties); 
+		classPos = experiment.getFeedbackMatrix(alignType.aligningClasses, Validation.CORRECT);
+		classNeg = experiment.getFeedbackMatrix(alignType.aligningClasses, Validation.INCORRECT);
+		propPos = experiment.getFeedbackMatrix(alignType.aligningProperties, Validation.CORRECT);
+		propNeg = experiment.getFeedbackMatrix(alignType.aligningProperties, Validation.INCORRECT);
+		refMatrixC = experiment.getComputedUFLMatrix(alignType.aligningClasses); 
+		refMatrixP = experiment.getComputedUFLMatrix(alignType.aligningProperties);
+		
 		rankedList = linearCombination(classMatrices, classPos, classNeg, refMatrixC);
 		rankedList.addAll(linearCombination(propMatrices, propPos, propNeg,refMatrixP));
 		Collections.sort(rankedList, new MappingSimilarityComparator() );

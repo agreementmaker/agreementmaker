@@ -358,7 +358,7 @@ public class UIMenuListener implements ActionListener {
 				ontologyDetails();
 			} else if( obj == menu.ontologyProfiling ) {
 				if(!Core.getInstance().ontologiesLoaded() ) {
-					Utility.displayErrorPane("You have to load Source and Target ontologies before selecting an ontology profiling algorithm.\nClick on File Menu and select Open Ontology functions.", null);
+					UIUtility.displayErrorPane("You have to load Source and Target ontologies before selecting an ontology profiling algorithm.\nClick on File Menu and select Open Ontology functions.", null);
 					return;
 				}
 
@@ -373,7 +373,7 @@ public class UIMenuListener implements ActionListener {
 				int[] selectedRows =  m.getTable().getSelectedRows();
 
 				if(selectedRows.length != 2) {
-					Utility.displayErrorPane("You must select two matchers.", null);
+					UIUtility.displayErrorPane("You must select two matchers.", null);
 				}
 				else {
 
@@ -587,11 +587,11 @@ public class UIMenuListener implements ActionListener {
 				}
 			} else if( obj == menu.thresholdAnalysis ) {
 				// decide if we are running in a single mode or batch mode
-				if( Utility.displayConfirmPane("Are you running a batch mode?", "Batch mode?") ) {
+				if( UIUtility.displayConfirmPane("Are you running a batch mode?", "Batch mode?") ) {
 					String batchFile = JOptionPane.showInputDialog(null, "Batch File?");
 					String outputDirectory = JOptionPane.showInputDialog(null, "Output Directory?");
 					AbstractMatcher matcher = (new MatcherParametersDialog()).getMatcher();
-					if( Utility.displayConfirmPane("Using matcher: " + matcher, "Ok?") ) {
+					if( UIUtility.displayConfirmPane("Using matcher: " + matcher, "Ok?") ) {
 						MatcherParametersDialog dialog = new MatcherParametersDialog(matcher, false, false);
 						if( dialog.getParameters() == null ) return;
 						ThresholdAnalysis than = new ThresholdAnalysis(matcher, true, dialog.getParameters());
@@ -606,9 +606,9 @@ public class UIMenuListener implements ActionListener {
 					String prefix = JOptionPane.showInputDialog(null, "File name? (leave empty to use matcher name)");
 					if( prefix != null ) prefix.trim();
 					int[] rowsIndex = UICore.getUI().getControlPanel().getTablePanel().getTable().getSelectedRows();
-					if( rowsIndex.length == 0 ) { Utility.displayErrorPane("You must select a matcher from the control panel when running in single mode.", "Error"); return; }
+					if( rowsIndex.length == 0 ) { UIUtility.displayErrorPane("You must select a matcher from the control panel when running in single mode.", "Error"); return; }
 					AbstractMatcher matcherToBeAnalyzed = Core.getInstance().getMatcherInstances().get(rowsIndex[0]);
-					if( Utility.displayConfirmPane("Using matcher: " + matcherToBeAnalyzed.getRegistryEntry().getMatcherName(), "Ok?") ) {
+					if( UIUtility.displayConfirmPane("Using matcher: " + matcherToBeAnalyzed.getRegistryEntry().getMatcherName(), "Ok?") ) {
 						ThresholdAnalysis than = new ThresholdAnalysis(matcherToBeAnalyzed);
 						than.setReferenceAlignment(referenceAlignment);
 						than.setOutputDirectory(outputDirectory);
@@ -630,10 +630,10 @@ public class UIMenuListener implements ActionListener {
 				List<AbstractMatcher> list = Core.getInstance().getMatcherInstances();
 				AbstractMatcher selectedMatcher;
 				int[] rowsIndex = UICore.getUI().getControlPanel().getTablePanel().getTable().getSelectedRows();
-				if( rowsIndex.length == 0 ) { Utility.displayErrorPane("No matcher is selected.", "Error"); return; }
+				if( rowsIndex.length == 0 ) { UIUtility.displayErrorPane("No matcher is selected.", "Error"); return; }
 				selectedMatcher = list.get(rowsIndex[0]); // we only care about the first matcher selected
 
-				if( selectedMatcher.getClassesMatrix() == null ) { Utility.displayErrorPane("The matcher has not computed a classes similarity matrix.", "Error"); return; }
+				if( selectedMatcher.getClassesMatrix() == null ) { UIUtility.displayErrorPane("The matcher has not computed a classes similarity matrix.", "Error"); return; }
 
 				MatrixPlotPanel mp = new MatrixPlotPanel( selectedMatcher, selectedMatcher.getClassesMatrix(), null);
 				mp.getPlot().draw(false);
@@ -645,10 +645,10 @@ public class UIMenuListener implements ActionListener {
 				List<AbstractMatcher> list = Core.getInstance().getMatcherInstances();
 				AbstractMatcher selectedMatcher;
 				int[] rowsIndex = UICore.getUI().getControlPanel().getTablePanel().getTable().getSelectedRows();
-				if( rowsIndex.length == 0 ) { Utility.displayErrorPane("No matcher is selected.", "Error"); return; }
+				if( rowsIndex.length == 0 ) { UIUtility.displayErrorPane("No matcher is selected.", "Error"); return; }
 				selectedMatcher = list.get(rowsIndex[0]); // we only care about the first matcher selected
 
-				if( selectedMatcher.getPropertiesMatrix() == null ) { Utility.displayErrorPane("The matcher has not computed a classes similarity matrix.", "Error"); return; }
+				if( selectedMatcher.getPropertiesMatrix() == null ) { UIUtility.displayErrorPane("The matcher has not computed a classes similarity matrix.", "Error"); return; }
 
 				MatrixPlotPanel mp = new MatrixPlotPanel( selectedMatcher, selectedMatcher.getPropertiesMatrix(), null);
 
@@ -685,7 +685,7 @@ public class UIMenuListener implements ActionListener {
 				d.setVisible(true);
 			} else if ( obj == menu.menuLexiconsClearAll ) {
 				// Lexicons -> Clear all ...
-				if( Utility.displayConfirmPane("Are you sure you want to clear the existing lexicons?\nYou will lose any parameters that were set.", "Clear lexicons?") )
+				if( UIUtility.displayConfirmPane("Are you sure you want to clear the existing lexicons?\nYou will lose any parameters that were set.", "Clear lexicons?") )
 					Core.getLexiconStore().clear();
 			} else if( obj == menu.ontologyViewEntityList ) {
 				Ontology sourceOntology = Core.getInstance().getSourceOntology();
@@ -855,7 +855,7 @@ public class UIMenuListener implements ActionListener {
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
-			Utility.displayErrorPane(ex.getMessage() + "\n\n" + Utility.UNEXPECTED_ERROR, null);
+			UIUtility.displayErrorPane(ex.getMessage() + "\n\n" + Utility.UNEXPECTED_ERROR, null);
 		}
 
 	}

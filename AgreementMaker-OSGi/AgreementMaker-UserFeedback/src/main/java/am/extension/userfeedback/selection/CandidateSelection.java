@@ -14,19 +14,22 @@ import am.extension.userfeedback.ui.UFLControlGUI;
 
 public abstract class CandidateSelection<T extends UFLExperiment> {
 
-	EventListenerList listeners;  // list of listeners for this class
-	public Mapping selectedMapping;
+	protected EventListenerList listeners;  // list of listeners for this class
+	
+	protected Mapping selectedMapping;
+	
 	public CandidateSelection() {
 		listeners = new EventListenerList();
 	}
 	
 	public abstract void rank( T exp );
 	
-	public abstract List<Mapping> getRankedMappings(alignType typeOfRanking);
 	public abstract List<Mapping> getRankedMappings();
+	public abstract List<Mapping> getRankedMappings(alignType typeOfRanking);
 	
-	public abstract Mapping getCandidateMapping();
-	public abstract Mapping getSelectedMapping();
+	public Mapping getSelectedMapping() {
+		return selectedMapping;
+	}
 	
 	public void addActionListener( ActionListener l ) {
 		listeners.add(ActionListener.class, l);

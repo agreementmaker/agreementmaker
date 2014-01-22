@@ -3,6 +3,9 @@ package am.app.ontology.profiling.ontologymetrics;
 import java.io.File;
 import java.util.List;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import am.app.Core;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
@@ -15,6 +18,9 @@ import edu.smu.tspell.wordnet.Synset;
 import edu.smu.tspell.wordnet.WordNetDatabase;
 
 public class OntologyEvaluation {
+	
+	private static final Logger LOG = LogManager.getLogger(OntologyEvaluation.class);
+	
 	Ontology sourceOntology;
 	Ontology targetOntology;
 	
@@ -337,7 +343,7 @@ public class OntologyEvaluation {
 		try {
 			WordNet = WordNetDatabase.getFileInstance();
 		} catch( Exception e ) {
-			am.Utility.displayErrorPane(e.getMessage(), "Cannot open WordNet files.\nWordNet should be in the following directory:\n" + wordnetdir);
+			LOG.error("Cannot open WordNet files.\nWordNet should be in the following directory:\n" + wordnetdir, e);
 		}		
 	}
 

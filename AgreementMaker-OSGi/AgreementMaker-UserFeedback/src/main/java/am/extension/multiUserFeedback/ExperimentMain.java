@@ -21,6 +21,7 @@ import am.extension.userfeedback.UFLRegistry.SaveFeedbackRegistry;
 import am.extension.userfeedback.UFLRegistry.UserValidationRegistry;
 import am.extension.userfeedback.experiments.UFLExperimentSetup;
 import am.extension.userfeedback.logic.UFLControlLogic;
+import am.ui.UIUtility;
 
 public class ExperimentMain {
 	final static int clientNumber=10;
@@ -95,7 +96,7 @@ public class ExperimentMain {
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
-			Utility.displayErrorPane(Utility.UNEXPECTED_ERROR + "\n\n" + ex.getMessage(), Utility.UNEXPECTED_ERROR_TITLE);
+			UIUtility.displayErrorPane(Utility.UNEXPECTED_ERROR + "\n\n" + ex.getMessage(), Utility.UNEXPECTED_ERROR_TITLE);
 		}
 	}
 	

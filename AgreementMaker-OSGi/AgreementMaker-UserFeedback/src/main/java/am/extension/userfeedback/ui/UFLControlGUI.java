@@ -27,6 +27,7 @@ import am.extension.userfeedback.experiments.UFLExperiment;
 import am.extension.userfeedback.experiments.UFLExperimentSetup;
 import am.extension.userfeedback.logic.UFLControlLogic;
 import am.ui.UI;
+import am.ui.UIUtility;
 import am.ui.api.impl.AMTabSupportPanel;
 
 public class UFLControlGUI extends AMTabSupportPanel implements ActionListener, UFLProgressDisplay {
@@ -168,7 +169,7 @@ public class UFLControlGUI extends AMTabSupportPanel implements ActionListener, 
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
-			Utility.displayErrorPane(Utility.UNEXPECTED_ERROR + "\n\n" + ex.getMessage(), Utility.UNEXPECTED_ERROR_TITLE);
+			UIUtility.displayErrorPane(Utility.UNEXPECTED_ERROR + "\n\n" + ex.getMessage(), Utility.UNEXPECTED_ERROR_TITLE);
 		}
 	}
 

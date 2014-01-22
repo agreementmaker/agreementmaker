@@ -49,7 +49,7 @@ public abstract class PersistentControlLogic<T extends UFLExperiment> extends UF
 			}
 			startThread(new Runnable() {
 				@Override public void run() {
-					experiment.candidateSelection.rank(experiment);	
+					experiment.candidateSelection.rank(experiment);
 				}
 			});
 		} catch (InstantiationException | IllegalAccessException e) {
@@ -57,7 +57,7 @@ public abstract class PersistentControlLogic<T extends UFLExperiment> extends UF
 		}
 	}
 	
-
+	@Override
 	protected void runCandidateSelectionEvaluation() {
 		try {
 			if( experiment.csEvaluation == null ) {
@@ -75,6 +75,7 @@ public abstract class PersistentControlLogic<T extends UFLExperiment> extends UF
 		}
 	}
 	
+	@Override
 	protected void runUserValidation() {
 		try {
 			if( experiment.userFeedback == null ) {
@@ -92,6 +93,7 @@ public abstract class PersistentControlLogic<T extends UFLExperiment> extends UF
 		}
 	}
 	
+	@Override
 	protected void runFeedbackAggregation() {
 		try {
 			if( experiment.feedbackAggregation == null ) {
@@ -109,6 +111,7 @@ public abstract class PersistentControlLogic<T extends UFLExperiment> extends UF
 		}
 	}
 	
+	@Override
 	protected void runFeedbackPropagation() {
 		try {
 			if( experiment.feedbackPropagation == null ) {
@@ -126,6 +129,7 @@ public abstract class PersistentControlLogic<T extends UFLExperiment> extends UF
 		}
 	}
 	
+	@Override
 	protected void runPropagationEvaluation() {
 		try {
 			if( experiment.propagationEvaluation == null ) {
@@ -144,6 +148,7 @@ public abstract class PersistentControlLogic<T extends UFLExperiment> extends UF
 		}
 	}
 	
+	@Override
 	protected void runSaveFeedback() {
 		try {
 			if( experiment.saveFeedback == null ) {

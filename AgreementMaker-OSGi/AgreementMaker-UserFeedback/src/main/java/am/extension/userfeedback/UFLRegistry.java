@@ -19,9 +19,9 @@ public class UFLRegistry {
 
 	/* Different experimental setups (Ontologies + Reference alignment) */
 	public enum ExperimentRegistry {
-		SingleUser( am.extension.userfeedback.experiments.SUExperiment.class),
-		ClientExperiment ( am.extension.userfeedback.experiments.MLFExperiment.class),
 		ServerExperiment ( am.extension.multiUserFeedback.experiment.MUExperiment.class ),
+		ClientExperiment ( am.extension.userfeedback.experiments.MLFExperiment.class),
+		SingleUser( am.extension.userfeedback.experiments.SUExperiment.class),
 		Manual ( am.extension.userfeedback.common.ManualExperimentSetup.class );
 		/* *********************** DO NOT EDIT BELOW THIS LINE **************************** */
 		Class<? extends UFLExperiment> clazz;
@@ -65,7 +65,7 @@ public class UFLRegistry {
 	
 	
 	public enum CandidateSelectionRegistry {
-		ServerMultiStrategy (am.extension.multiUserFeedback.selection.ParametricCandidateSelection.class),
+		ServerMultiStrategy (am.extension.multiUserFeedback.selection.MultiStrategyCandidateSelection.class),
 		ClientCandidateSelection (am.extension.multiUserFeedback.selection.ClientCandidateSelection.class),
 		ServerCandidateSelection (am.extension.multiUserFeedback.selection.ServerCandidateSelection.class),
 		MultiStrategyRanking (am.extension.userfeedback.clustering.disagreement.MultiStrategyRanking.class),
@@ -91,7 +91,7 @@ public class UFLRegistry {
 	public enum UserValidationRegistry {
 		FakeClient (am.extension.multiUserFeedback.validation.ProbabilisticErrorAutomaticValidation.class),
 		ClientFeedbackValidation (am.extension.multiUserFeedback.validation.ClientFeedbackValidation.class),
-		AutomaticReference ( am.extension.userfeedback.common.AutomaticUserValidation.class ),
+		AutomaticReference ( am.extension.userfeedback.common.AutomaticValidation.class ),
 		Manual ( am.extension.userfeedback.common.ManualUserValidation.class );
 		
 		/* *********************** DO NOT EDIT BELOW THIS LINE **************************** */
@@ -113,9 +113,9 @@ public class UFLRegistry {
 	
 	
 	public enum FeedbackPropagationRegistry {
-		SUFeedbackPropagation (am.extension.userfeedback.propagation.SUFeedbcackPropagation.class),
-		ClientFeedbackPropagation (am.extension.userfeedback.propagation.MLFeedbackPropagation.class),
 		ServerFeedbackPropagation (am.extension.multiUserFeedback.propagation.ServerFeedbackPropagation.class),
+		ClientFeedbackPropagation (am.extension.userfeedback.propagation.MLFeedbackPropagation.class),
+		SUFeedbackPropagation (am.extension.userfeedback.propagation.SUFeedbcackPropagation.class),
 		ClusterBoost ( am.extension.userfeedback.clustering.disagreement.ClusterBoostPropagation.class );
 		
 		/* *********************** DO NOT EDIT BELOW THIS LINE **************************** */

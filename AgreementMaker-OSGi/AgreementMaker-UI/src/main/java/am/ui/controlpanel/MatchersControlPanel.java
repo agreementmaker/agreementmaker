@@ -49,6 +49,7 @@ import am.ui.MatcherProgressDialog;
 import am.ui.MatchingProgressDisplay;
 import am.ui.QualityEvaluationDialog;
 import am.ui.UICore;
+import am.ui.UIUtility;
 import am.ui.controlpanel.table.MatchersControlPanelTableModel;
 import am.ui.controlpanel.table.MatchersTablePanel;
 import am.ui.matchingtask.MatchingTaskCreatorDialog;
@@ -170,19 +171,19 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
-			Utility.displayErrorPane(Utility.UNEXPECTED_ERROR + "\n" + ex.getMessage() , null);
+			UIUtility.displayErrorPane(Utility.UNEXPECTED_ERROR + "\n" + ex.getMessage() , null);
 		}
 	}
 	
 	private void qualityEvaluation() throws Exception {
 		if(!Core.getInstance().ontologiesLoaded() ) {
-			Utility.displayErrorPane("You have to load Source and Target ontologies before quality evaluation.\nClick on File Menu and select Open Ontology functions ", null);
+			UIUtility.displayErrorPane("You have to load Source and Target ontologies before quality evaluation.\nClick on File Menu and select Open Ontology functions ", null);
 			return;
 		}
 		
 		int[] rowsIndex = matchersTablePanel.getTable().getSelectedRows();
 		if(rowsIndex.length == 0) {
-			Utility.displayErrorPane("No matchers selected", null);
+			UIUtility.displayErrorPane("No matchers selected", null);
 		}
 		else {
 			QualityEvaluationDialog qDialog = new QualityEvaluationDialog();
@@ -292,9 +293,9 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 	public void btnDeleteClick() throws Exception {
 		int[] rowsIndex = matchersTablePanel.getTable().getSelectedRows();
 		if(rowsIndex.length == 0) {
-			Utility.displayErrorPane("No matchers selected", null);
+			UIUtility.displayErrorPane("No matchers selected", null);
 		}
-		else if(Utility.displayConfirmPane(rowsIndex.length+" matchers will be deleted.\n Do you want to continue?", null)) {
+		else if(UIUtility.displayConfirmPane(rowsIndex.length+" matchers will be deleted.\n Do you want to continue?", null)) {
 			Core core = Core.getInstance();
 			LinkedList<MatchingTask> deleteList = new LinkedList<MatchingTask>();
 			for(int i = 0; i < rowsIndex.length; i++) {// I need to build a list because indexes will be modified so i can't access them using the rowsindex structures
@@ -311,7 +312,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 						matchersTablePanel.updatedRows(0, 0);
 					}
 					catch(Exception ex) {
-						Utility.displayErrorPane(ex.getMessage(), null);
+						UIUtility.displayErrorPane(ex.getMessage(), null);
 					}
 				}
 				else {
@@ -326,13 +327,13 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 
 	public void export() {
 		if(!Core.getInstance().ontologiesLoaded() ) {
-			Utility.displayErrorPane("You have to load Source and Target ontologies before exporting alignments.\nClick on File Menu and select Open Ontology functions ", null);
+			UIUtility.displayErrorPane("You have to load Source and Target ontologies before exporting alignments.\nClick on File Menu and select Open Ontology functions ", null);
 			return;
 		}
 		
 		int[] rowsIndex = matchersTablePanel.getTable().getSelectedRows();
 		if(rowsIndex.length == 0) {
-			Utility.displayErrorPane("No matchers selected", null);
+			UIUtility.displayErrorPane("No matchers selected", null);
 		}
 		else 	new ExportDialog(UICore.getUI().getUIFrame()); //demand control to the savefile dialog which since is modal will take care of everything
 	}
@@ -340,7 +341,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 	public void btnImportClick() throws Exception {
 		
 		if(!Core.getInstance().ontologiesLoaded() ) {
-			Utility.displayErrorPane("You have to load Source and Target ontologies before importing alignments.\nClick on File Menu and select Open Ontology functions ", null);
+			UIUtility.displayErrorPane("You have to load Source and Target ontologies before importing alignments.\nClick on File Menu and select Open Ontology functions ", null);
 			return;
 		}
 		
@@ -351,7 +352,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 		//TODO TO BE CORRECTED, IT SHOULD BE A REAL COPY OF THE MATCHER, like a clone; shoulnd't invoke copymatcher while matcher.clone();
 		int[] rowsIndex = matchersTablePanel.getTable().getSelectedRows();
 		if(rowsIndex.length == 0) {
-			Utility.displayErrorPane("No matchers selected", null);
+			UIUtility.displayErrorPane("No matchers selected", null);
 		}
 		else {
 			AbstractMatcher toBeCopied;
@@ -369,13 +370,13 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 	
 	public void btnEvaluateClick() throws Exception{
 		if(!Core.getInstance().ontologiesLoaded() ) {
-			Utility.displayErrorPane("You have to load Source and Target ontologies before reference evaluation.\nClick on File Menu and select Open Ontology functions ", null);
+			UIUtility.displayErrorPane("You have to load Source and Target ontologies before reference evaluation.\nClick on File Menu and select Open Ontology functions ", null);
 			return;
 		}
 		
 		int[] rowsIndex = matchersTablePanel.getTable().getSelectedRows();
 		if(rowsIndex.length == 0) {
-			Utility.displayErrorPane("No matchers selected from the control panel table.", null);
+			UIUtility.displayErrorPane("No matchers selected from the control panel table.", null);
 		}
 		else {
 			//Run the reference alignment matcher to get the list of alignments in reference file, we are not going to add it in the table list
@@ -445,7 +446,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 		
 		// 1. Make sure ontologies are loaded.
 		if(!Core.getInstance().ontologiesLoaded() ) {
-			Utility.displayErrorPane("You have to load Source and Target ontologies before running any matcher\nClick on File Menu and select Open Ontology functions ", null);
+			UIUtility.displayErrorPane("You have to load Source and Target ontologies before running any matcher\nClick on File Menu and select Open Ontology functions ", null);
 			return;
 		}
 		
@@ -487,13 +488,13 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 
 	public void tuning() throws Exception{
 		if(!Core.getInstance().ontologiesLoaded() ) {
-			Utility.displayErrorPane("You have to load Source and Target ontologies before tuning.\nClick on File Menu and select Open Ontology functions ", null);
+			UIUtility.displayErrorPane("You have to load Source and Target ontologies before tuning.\nClick on File Menu and select Open Ontology functions ", null);
 			return;
 		}
 		
 		int[] rowsIndex = matchersTablePanel.getTable().getSelectedRows();
 		if(rowsIndex.length == 0) {
-			Utility.displayErrorPane("No matchers selected", null);
+			UIUtility.displayErrorPane("No matchers selected", null);
 		}
 		else {
 			//Run the reference alignment matcher to get the list of alignments in reference file, we are not going to add it in the table list
@@ -613,7 +614,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 				}
 			}
 		} catch(Exception e) {
-			Utility.displayErrorPane("There was a problem in creating the mapping.\n\n"+e.getMessage(), "Cannot create mapping");
+			UIUtility.displayErrorPane("There was a problem in creating the mapping.\n\n"+e.getMessage(), "Cannot create mapping");
 			e.printStackTrace();
 		}
 	}
@@ -643,7 +644,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 	
 	public boolean clearAll() {
 		//don't put this code into resetMatchings because resetMatching is used by the system also in other situation when the confirmation is not required by the user.
-		boolean ok = Utility.displayConfirmPane("This operation will remove all matching tasks.\nDo you want to continue?", null);
+		boolean ok = UIUtility.displayConfirmPane("This operation will remove all matching tasks.\nDo you want to continue?", null);
 		if(ok) {
 			resetMatchings();
 			return true;
@@ -683,7 +684,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
-			Utility.displayErrorPane(Utility.UNEXPECTED_ERROR+ex.getMessage(), null);
+			UIUtility.displayErrorPane(Utility.UNEXPECTED_ERROR+ex.getMessage(), null);
 		}
 	}
 	

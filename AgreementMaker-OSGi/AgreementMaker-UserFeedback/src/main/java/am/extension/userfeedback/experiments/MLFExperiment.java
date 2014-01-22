@@ -33,6 +33,7 @@ import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
 import am.extension.userfeedback.logic.IndependentSequentialLogicML;
 import am.extension.userfeedback.logic.UFLControlLogic;
 import am.ui.UICore;
+import am.ui.UIUtility;
 
 public class MLFExperiment extends UFLExperiment {
 
@@ -181,7 +182,7 @@ public void setMLAlignment(Alignment<Mapping> mLAlignment) {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			am.Utility.displayErrorPane("<html><p>Permission error:</p><p>Log file can not be created!</p><p>Please make the AgreementMaker directory writable or the UFLlog.txt will not be created.</p></html>", "Error");
+			UIUtility.displayErrorPane("<html><p>Permission error:</p><p>Log file can not be created!</p><p>Please make the AgreementMaker directory writable or the UFLlog.txt will not be created.</p></html>", "Error");
 		}
 		
 		connection();

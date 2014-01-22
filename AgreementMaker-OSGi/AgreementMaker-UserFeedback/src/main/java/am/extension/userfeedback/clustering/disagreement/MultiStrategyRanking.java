@@ -36,24 +36,8 @@ public class MultiStrategyRanking extends CandidateSelection<MUExperiment>{
 		//every time ranking methods
 		almostCertainMappingRetrieval();
 		disagreementRanking();
-		//end
-		done();
-	}
-
-	@Override
-	public List<Mapping> getRankedMappings(alignType typeOfRanking) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<Mapping> getRankedMappings() {
-		return experiment.alreadyEvaluated;
-	}
-
-	@Override
-	public Mapping getCandidateMapping() {
 		
+		// select the candidate mapping
 		Mapping[] ranked=new Mapping[3];
 		if (experiment.disRanked!=null)
 			ranked[0]=notEvaluated(experiment.disRanked);
@@ -78,9 +62,22 @@ public class MultiStrategyRanking extends CandidateSelection<MUExperiment>{
 		//experiment.almostRanking.remove(cMapping);
 		selectedMapping=cMapping;
 		experiment.alreadyEvaluated.add(cMapping);
-		return cMapping;
+		
+		//end
+		done();
 	}
-	
+
+	@Override
+	public List<Mapping> getRankedMappings(alignType typeOfRanking) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Mapping> getRankedMappings() {
+		return experiment.alreadyEvaluated;
+	}
+
 	private Mapping notEvaluated(List<Mapping> lst)
 	{
 		if (experiment.alreadyEvaluated.isEmpty())

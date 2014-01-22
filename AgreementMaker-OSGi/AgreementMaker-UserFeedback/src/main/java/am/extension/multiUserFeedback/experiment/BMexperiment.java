@@ -19,9 +19,10 @@ import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.extension.multiUserFeedback.logic.BMlogic;
 import am.extension.userfeedback.UserFeedback.Validation;
 import am.extension.userfeedback.experiments.UFLExperiment;
-import am.extension.userfeedback.experiments.UFLExperimentSetup;
 import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
+import am.extension.userfeedback.experiments.UFLExperimentSetup;
 import am.extension.userfeedback.logic.UFLControlLogic;
+import am.ui.UIUtility;
 
 public class BMexperiment extends UFLExperiment {
 
@@ -73,7 +74,7 @@ private alignCardinality alignCardinalityType=alignCardinality.cn_m;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			am.Utility.displayErrorPane("Permission error: Log file can not be created", "Error");
+			UIUtility.displayErrorPane("Permission error: Log file can not be created", "Error");
 		}
 	}
 

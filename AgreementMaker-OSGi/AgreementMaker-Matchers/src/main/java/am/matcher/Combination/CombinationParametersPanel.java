@@ -209,8 +209,8 @@ public class CombinationParametersPanel extends AbstractMatcherParametersPanel i
 		if(qualityWeightsRadio.isSelected() || bothWeightsRadio.isSelected()) {
 			parameters.qualityEvaluation = true;
 			if( !(qualityCombo.getSelectedItem() instanceof QualityMetricRegistry) ) {
-				Utility.displayErrorPane("Cannot determine which quality metric is selected.", "Error");
-				return null;
+				throw new RuntimeException("Cannot determine which quality metric is selected.");
+				//return null;
 			} else {
 				parameters.quality = (QualityMetricRegistry) qualityCombo.getSelectedItem();
 			}

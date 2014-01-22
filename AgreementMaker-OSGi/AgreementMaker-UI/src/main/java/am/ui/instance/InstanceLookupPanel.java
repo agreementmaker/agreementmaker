@@ -6,11 +6,9 @@ import java.awt.event.ActionListener;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
-import java.util.List;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -22,7 +20,7 @@ import javax.swing.JTextField;
 import am.AMException;
 import am.app.ontology.instance.Instance;
 import am.app.ontology.instance.InstanceDataset;
-import am.ui.api.AMTab;
+import am.ui.UIUtility;
 import am.ui.api.impl.AMTabSupportPanel;
 
 public class InstanceLookupPanel extends AMTabSupportPanel {
@@ -163,7 +161,7 @@ public class InstanceLookupPanel extends AMTabSupportPanel {
 				try {
 					doLookup( (String) comboboxes[0].getSelectedItem() );
 				} catch( AMException e ) {
-					am.Utility.displayErrorPane(e.getMessage(), "Lookup Error");
+					UIUtility.displayErrorPane(e.getMessage(), "Lookup Error");
 				}
 			}
 		}
@@ -269,7 +267,7 @@ public class InstanceLookupPanel extends AMTabSupportPanel {
 				try {
 					doLookup( textfields[0].getText() , textfields[1].getText() );
 				} catch( AMException e ) {
-					am.Utility.displayErrorPane(e.getMessage(), "Lookup Error");
+					UIUtility.displayErrorPane(e.getMessage(), "Lookup Error");
 				}
 			}
 		}

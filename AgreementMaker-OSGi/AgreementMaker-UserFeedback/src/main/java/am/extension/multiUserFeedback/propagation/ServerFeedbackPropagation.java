@@ -14,6 +14,7 @@ import java.util.List;
 
 import com.tomgibara.cluster.gvm.dbl.DblResult;
 
+import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
@@ -21,7 +22,6 @@ import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.app.ontology.Node;
-
 import am.extension.multiUserFeedback.experiment.MUExperiment;
 import am.extension.userfeedback.MLutility.WekaUtility;
 import am.extension.userfeedback.UserFeedback.Validation;
@@ -391,7 +391,10 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 	
 	private void writeSimilarityMatrix(SimilarityMatrix sm, int iteration, String type) throws IOException
 	{
-		File file = new File("/home/frank/Documents/SimilarityMatrix"+type+"/similarityMatrix_"+iteration+".txt");
+		File dir = new File(Core.getInstance().getRoot() + "settings/tmp/SimilarityMatrix"+type);
+		if( !dir.exists() )
+			dir.mkdirs();
+		File file = new File(dir.getAbsolutePath() + "/similarityMatrix_"+iteration+".txt");
 		// if file doesnt exists, then create it
 		if (!file.exists()) 
 			file.createNewFile();

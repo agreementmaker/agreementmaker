@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import am.app.mappingEngine.AbstractMatcher.alignType;
-import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MappingSimilarityComparator;
+import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.evaluation.disagreement.variance.VarianceDisagreement;
 import am.evaluation.disagreement.variance.VarianceDisagreementParameters;
 import am.extension.multiUserFeedback.experiment.BMexperiment;
@@ -27,16 +27,44 @@ public class BMCandidateSelection extends CandidateSelection<BMexperiment>{
 	@Override
 	public void rank(BMexperiment exp) {
 		this.experiment=exp;
+
 		//Inizialization
-		inizialization();
+		classesMatrix = experiment.getUflClassMatrix();
+		propertiesMatrix = experiment.getUflPropertyMatrix();
+		
 		//one time ranking methods
-		if(exp.getIterationNumber()==1)
+		if(exp.getIterationNumber() == 1)
 		{
 			uncertainMappingRetrieval();
 		}
 		//every time ranking methods
 		almostCertainMappingRetrieval();
 		disagreementRanking();
+				
+		String id = Integer.toString(experiment.currentUser);
+		Mapping m;
+		switch (experiment.usersGroup.get(id)) 
+		{
+    	case 0:  
+    		m = getCandidateMapping(id, allRanked);
+    		if( m != null ) {
+    			selectedMapping = m;
+    			break;
+    		};
+        case 1:  
+        	m = getCandidateMapping(id, experiment.uncertainRanking);
+            if( m != null ) {
+            	selectedMapping = m;
+            	break;
+            }
+        case 2:  
+            m = getCandidateMapping(id, experiment.almostRanking);
+            if( m != null ) {
+            	selectedMapping = m;
+            	break;
+            }
+		}
+		
 		//end
 		done();
 	}
@@ -50,28 +78,6 @@ public class BMCandidateSelection extends CandidateSelection<BMexperiment>{
 	@Override
 	public List<Mapping> getRankedMappings() {
 		return experiment.alreadyEvaluated;
-	}
-
-	@Override
-	public Mapping getCandidateMapping() {
-		
-		Mapping m;
-		id=Integer.toString(experiment.currentUser);
-
-		switch (experiment.usersGroup.get(id)) 
-		{
-	    	case 0:  
-	    		m=getCandidateMapping(id, allRanked);
-	    		if (m!=null) return m;
-	        case 1:  
-	        	m=getCandidateMapping(id, experiment.uncertainRanking);
-	            if (m!=null) return m;
-	        case 2:  
-	            m=getCandidateMapping(id, experiment.almostRanking);
-	            if (m!=null) return m;
-	        
-		}
-		return null;
 	}
 	
 	private Mapping getCandidateMapping(String id, List<Mapping> lst) 
@@ -108,12 +114,6 @@ public class BMCandidateSelection extends CandidateSelection<BMexperiment>{
 	@Override
 	public Mapping getSelectedMapping() {
 		return selectedMapping;
-	}
-	
-	private void inizialization()
-	{
-		classesMatrix=experiment.getUflClassMatrix();
-		propertiesMatrix=experiment.getUflPropertyMatrix();
 	}
 	
 	//one time strategy

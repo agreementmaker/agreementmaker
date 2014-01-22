@@ -9,12 +9,12 @@ import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 
-import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.evaluation.clustering.gvm.GVM_Clustering_Panel;
 import am.ui.UICore;
 import am.ui.UIMenu;
+import am.ui.UIUtility;
 import am.ui.api.AMMenuItem;
 import am.ui.controlpanel.MatchersControlPanel;
 import am.ui.controlpanel.table.MatchersTablePanel;
@@ -47,7 +47,7 @@ public class GVMClusterMenuItem extends JMenuItem implements AMMenuItem {
 		int[] selectedRows =  m.getTable().getSelectedRows();
 
 		if(selectedRows.length < 2) {
-			Utility.displayErrorPane("You must select at least two matchers in the Matchers Control Panel.", null);
+			UIUtility.displayErrorPane("You must select at least two matchers in the Matchers Control Panel.", null);
 			return;
 		}
 

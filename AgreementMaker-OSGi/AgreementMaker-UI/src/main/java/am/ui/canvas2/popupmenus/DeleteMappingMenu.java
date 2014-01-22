@@ -11,7 +11,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 
-import am.Utility;
 import am.app.Core;
 import am.app.lexicon.Lexicon;
 import am.app.mappingEngine.AbstractMatcher;
@@ -23,6 +22,7 @@ import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.tools.LexiconLookup.LexiconLookupPanel;
 import am.ui.UICore;
+import am.ui.UIUtility;
 import am.ui.canvas2.Canvas2;
 import am.ui.canvas2.graphical.MappingData;
 import am.ui.canvas2.graphical.MappingData.MappingType;
@@ -156,7 +156,7 @@ public class DeleteMappingMenu extends JPopupMenu implements ActionListener {
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
-					Utility.displayErrorPane("Could not delete mapping.\n\n"+e1.getMessage(), "Error");
+					UIUtility.displayErrorPane("Could not delete mapping.\n\n"+e1.getMessage(), "Error");
 				}
 			}
 		} else if ( actionCommand.equals("VIEW_LEXICON") && node != null ) {
@@ -172,7 +172,7 @@ public class DeleteMappingMenu extends JPopupMenu implements ActionListener {
 				UICore.getUI().getTabbedPane().setSelectedComponent(lookupPanel);
 			} catch (Exception e1) {
 				e1.printStackTrace();
-				Utility.displayErrorPane("Could not display lexicon lookup panel.\n\n"+e1.getMessage(), "Error");
+				UIUtility.displayErrorPane("Could not display lexicon lookup panel.\n\n"+e1.getMessage(), "Error");
 			}
 			
 		} else if( actionCommand.length() > DELETE.length() && 
@@ -188,7 +188,7 @@ public class DeleteMappingMenu extends JPopupMenu implements ActionListener {
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
-				Utility.displayErrorPane("Could not delete mapping.\n\n"+e1.getMessage(), "Error");
+				UIUtility.displayErrorPane("Could not delete mapping.\n\n"+e1.getMessage(), "Error");
 			}
 			
 		} else if( actionCommand.length() > SET_PROVENANCE.length() && 

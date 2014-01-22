@@ -12,7 +12,7 @@ import am.extension.userfeedback.selection.CandidateSelection;
 
 public class ClientCandidateSelection extends CandidateSelection<MLFExperiment>{
 	
-	MLFExperiment experiment;
+	protected MLFExperiment experiment;
 	
 	public ClientCandidateSelection(){
 		super();
@@ -21,42 +21,28 @@ public class ClientCandidateSelection extends CandidateSelection<MLFExperiment>{
 	@Override
 	public void rank(MLFExperiment exp) {
 		this.experiment=exp;
+		
+		CollaborationCandidateMapping a = experiment.server.getCandidateMapping(experiment.clientID);
+		experiment.candidateMapping = a;
+		if( a == null ) {
+			selectedMapping = null;
+		}
+		else {
+			Node source=experiment.getSourceOntology().getNodeByURI(a.getSourceURI());
+			Node target=experiment.getTargetOntology().getNodeByURI(a.getTargetURI());
+			selectedMapping = new Mapping(source,target,0.0,MappingRelation.EQUIVALENCE);
+		}
+		
 		done();
 	}
 
 	@Override
 	public List<Mapping> getRankedMappings(alignType typeOfRanking) {
-		// TODO Auto-generated method stub
-		return null;
+		throw new RuntimeException("Not implemented.");
 	}
 
 	@Override
 	public List<Mapping> getRankedMappings() {
-		// TODO Auto-generated method stub
-		return null;
+		throw new RuntimeException("Not implemented.");
 	}
-
-	@Override
-	public Mapping getCandidateMapping() {
-		CollaborationCandidateMapping a=experiment.server.getCandidateMapping(experiment.clientID);
-		experiment.candidateMapping = a;
-		if (a==null)
-		{
-			selectedMapping=null;
-			return null;
-		}
-		Node source=experiment.getSourceOntology().getNodeByURI(a.getSourceURI());
-		Node target=experiment.getTargetOntology().getNodeByURI(a.getTargetURI());
-		selectedMapping=new Mapping(source,target,0.0,MappingRelation.EQUIVALENCE);
-		return selectedMapping;
-	}
-
-	@Override
-	public Mapping getSelectedMapping() {
-		// TODO Auto-generated method stub
-		return selectedMapping;
-	}
-
-
-
 }
