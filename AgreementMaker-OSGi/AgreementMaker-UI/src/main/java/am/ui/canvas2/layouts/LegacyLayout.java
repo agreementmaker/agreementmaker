@@ -34,6 +34,7 @@ import am.app.mappingEngine.MatchingTask;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.ui.UICore;
+import am.ui.UIUtility;
 import am.ui.canvas2.Canvas2;
 import am.ui.canvas2.graphical.GraphicalData;
 import am.ui.canvas2.graphical.GraphicalData.NodeType;
@@ -1659,7 +1660,7 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 					n1 = o1.getNodefromOntResource( ln.getGraphicalData().r, type );
 				} catch (Exception e1) {
 					// an exception usually happens when users try to match classes with properties, which is not allowed (it makes no logical sense)
-					Utility.displayErrorPane( "Cannot create this mapping.  \nYou may be trying to match incompatible concepts (e.g. classes with properties).\n\n" 
+					UIUtility.displayErrorPane( "Cannot create this mapping.  \nYou may be trying to match incompatible concepts (e.g. classes with properties).\n\n" 
 											  + e1.getMessage() , "Cannot create mapping");
 					//e1.printStackTrace();
 					return;

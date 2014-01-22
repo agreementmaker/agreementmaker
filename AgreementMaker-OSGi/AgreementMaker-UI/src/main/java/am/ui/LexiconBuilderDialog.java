@@ -440,7 +440,7 @@ public class LexiconBuilderDialog extends JDialog implements ListSelectionListen
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
-				Utility.displayErrorPane("Unexpected error while building lexicons.\n" + e1.getMessage(), "Runtime Exception");
+				UIUtility.displayErrorPane("Unexpected error while building lexicons.\n" + e1.getMessage(), "Runtime Exception");
 			}
 		}
 		

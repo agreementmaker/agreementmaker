@@ -5,7 +5,7 @@ import am.app.mappingEngine.Mapping;
 import am.extension.userfeedback.UserFeedback;
 import am.extension.userfeedback.experiments.UFLExperiment;
 
-public class AutomaticUserValidation extends UserFeedback {
+public class AutomaticValidation<T extends UFLExperiment> extends UserFeedback<T> {
 
 	Validation userValidation;
 	Mapping candidateMapping;
@@ -23,7 +23,7 @@ public class AutomaticUserValidation extends UserFeedback {
 	}
 
 	@Override
-	public void validate(UFLExperiment experiment) {
+	public void validate(T experiment) {
 		
 		//Logger log = Logger.getLogger(this.getClass());
 		UFLExperiment log = experiment;

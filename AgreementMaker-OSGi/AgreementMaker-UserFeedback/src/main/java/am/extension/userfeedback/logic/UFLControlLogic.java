@@ -1,6 +1,7 @@
 package am.extension.userfeedback.logic;
 
 import java.awt.event.ActionListener;
+import java.lang.Thread.UncaughtExceptionHandler;
 
 import am.extension.userfeedback.experiments.UFLExperiment;
 
@@ -16,6 +17,12 @@ public abstract class UFLControlLogic<T extends UFLExperiment>  implements Actio
 	 */
 	protected void startThread(Runnable runnable) {
 		Thread initialMatchersThread = new Thread(runnable);
+		initialMatchersThread.setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+			@Override
+			public void uncaughtException(Thread t, Throwable e) {
+				e.printStackTrace();
+			}
+		});
 		initialMatchersThread.start();
 	}
 	

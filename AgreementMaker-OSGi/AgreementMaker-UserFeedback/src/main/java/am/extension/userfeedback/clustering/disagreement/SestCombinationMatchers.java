@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import am.Utility;
 import am.app.Core;
 import am.app.lexicon.LexiconBuilderParameters;
 import am.app.mappingEngine.AbstractMatcher;
@@ -33,6 +32,7 @@ import am.matcher.parametricStringMatcher.ParametricStringMatcher;
 import am.matcher.parametricStringMatcher.ParametricStringParameters;
 import am.matcher.ssc.SiblingsSimilarityContributionMatcher;
 import am.matcher.ssc.SiblingsSimilarityContributionParameters;
+import am.ui.UIUtility;
 
 /**
  * The SemanticStructural combination matcher.  Used as the first step in the new
@@ -94,7 +94,7 @@ public class SestCombinationMatchers extends ExecutionSemantics {
 	public void run(UFLExperiment experiment) {
 				
 		if( experiment.getSourceOntology() == null || experiment.getTargetOntology() == null ) {
-			Utility.displayErrorPane("The experiment must define a pair of ontologies before the matching can start.", "Ontologies not loaded");
+			UIUtility.displayErrorPane("The experiment must define a pair of ontologies before the matching can start.", "Ontologies not loaded");
 			return;
 		}
 		

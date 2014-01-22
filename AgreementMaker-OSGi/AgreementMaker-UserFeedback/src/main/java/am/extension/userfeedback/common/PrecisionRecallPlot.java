@@ -27,7 +27,7 @@ public class PrecisionRecallPlot extends CandidateSelectionEvaluation {
 		
 		Alignment<Mapping> referenceAlignment = exp.getReferenceAlignment();
 		
-		Mapping candidateMapping = exp.candidateSelection.getCandidateMapping();
+		Mapping candidateMapping = exp.candidateSelection.getSelectedMapping();
 		if(candidateMapping == null) {
 			log.info( "Candidate Selection presented null mapping. Mapping source: " + ((MUExperiment)exp).data.mappingSource.getClass().getName() );
 			return;

@@ -35,15 +35,13 @@ public class ClientFeedbackValidation extends UserFeedback{
 	@Override
 	public void validate(UFLExperiment exp) {
 		this.experiment = exp;
-		candidateMapping = exp.candidateSelection.getCandidateMapping();
+		candidateMapping = exp.candidateSelection.getSelectedMapping();
 		if (candidateMapping!=null)
 		{
 			ManualUserValidationPanel validationPanel = new ManualUserValidationPanel(candidateMapping, exp);
 			exp.gui.displayPanel(validationPanel);
-		}
-		
+		}	
 	}
-	
 	
 	/**
 	 * Send the feedback back to the server.

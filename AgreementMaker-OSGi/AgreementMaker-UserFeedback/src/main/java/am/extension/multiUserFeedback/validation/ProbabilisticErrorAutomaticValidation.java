@@ -6,7 +6,7 @@ import am.extension.userfeedback.UserFeedback;
 import am.extension.userfeedback.experiments.UFLExperiment;
 import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
 
-public class ProbabilisticErrorAutomaticValidation extends UserFeedback {
+public class ProbabilisticErrorAutomaticValidation<T extends UFLExperiment> extends UserFeedback<T> {
 	
 	//double errorThreshold=0.3;
 	Validation userValidation;
@@ -33,7 +33,7 @@ public class ProbabilisticErrorAutomaticValidation extends UserFeedback {
 	}
 
 	@Override
-	public void validate(UFLExperiment experiment) {
+	public void validate(T experiment) {
 		
 		UFLExperiment log = experiment;
 		
@@ -105,6 +105,8 @@ public class ProbabilisticErrorAutomaticValidation extends UserFeedback {
 	}
 
 	@Override
-	public void setUserFeedback(Validation feedback) { /* not implemented */ }
+	public void setUserFeedback(Validation feedback) {
+		throw new RuntimeException("Not implemented.");
+	}
 
 }

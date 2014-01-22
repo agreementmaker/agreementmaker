@@ -19,19 +19,16 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import am.Utility;
 import am.app.Core;
 import am.app.lexicon.LexiconBuilderParameters;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.MatcherFactory;
-import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.app.ontology.profiling.classification.ClassifierRegistry;
 import am.app.ontology.profiling.classification.OntologyClassifier;
 import am.app.ontology.profiling.classification.TestSet;
-import am.app.ontology.profiling.manual.ManualOntologyProfiler;
 import am.utility.LocalnameComparator;
 
 import com.hp.hpl.jena.rdf.model.Property;
@@ -835,9 +832,7 @@ public static void testClassified() {
 			Core.getLexiconStore().buildAll();
 			//setVisible(false);
 		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-			Utility.displayErrorPane("Unexpected error while building lexicons.\n" + e1.getMessage(), "Runtime Exception");
+			sLog.error("Unexpected error while building lexicons.\n" + e1.getMessage(), e1);
 		}
 	}
 	

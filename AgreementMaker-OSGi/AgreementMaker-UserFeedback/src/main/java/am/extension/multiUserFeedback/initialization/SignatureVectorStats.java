@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
+import am.app.Core;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
@@ -24,28 +25,27 @@ public class SignatureVectorStats {
 	
 	public void printSV(SimilarityMatrix sm, alignType type) throws IOException
 	{
+		
+		File directory = new File(Core.getInstance().getRoot() + "settings/tmp/SignatureVector");
+		// if file doesnt exists, then create it
+		if (!directory.exists()) directory.mkdirs();
+		
+		File file = new File( directory.getAbsolutePath() + "/similarityMatrix"+type.toString()+".txt");
+		if( !file.exists() ) {
+			file.createNewFile();
+		}
+
+		FileWriter fw = new FileWriter(file.getAbsoluteFile());
+		BufferedWriter bw = new BufferedWriter(fw);
+
 		int row=sm.getRows();
 		int col=sm.getColumns();
-		Mapping mp;
-		Object[] sv;
-		BufferedWriter bw=null;
-		File file = new File("/home/frank/Documents/SignatureVector/similarityMatrix"+type.toString()+".txt");
-		// if file doesnt exists, then create it
-		if (!file.exists())
-			file.createNewFile();
-		FileWriter fw=null;
-
-		fw = new FileWriter(file.getAbsoluteFile());
-
-		bw = new BufferedWriter(fw);
-
-		
 		for (int i=0;i<row;i++)
 		{
 			for(int j=0;j<col;j++)
 			{
-				mp=sm.get(i, j);
-				sv=UFLutility.getSignatureVector(mp, experiment.initialMatcher.getComponentMatchers());
+				Mapping mp = sm.get(i, j);
+				Object[] sv = UFLutility.getSignatureVector(mp, experiment.initialMatcher.getComponentMatchers());
 				if (UFLutility.validSsv(sv))
 				{
 
@@ -66,7 +66,7 @@ public class SignatureVectorStats {
 		}
 
 		bw.close();
-
+		fw.close();
 	}
 	
 	private void clusterize()

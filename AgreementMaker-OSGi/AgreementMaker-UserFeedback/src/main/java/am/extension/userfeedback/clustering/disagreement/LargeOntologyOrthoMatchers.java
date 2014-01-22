@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import am.Utility;
 import am.app.Core;
 import am.app.lexicon.LexiconBuilderParameters;
 import am.app.mappingEngine.AbstractMatcher;
@@ -30,6 +29,7 @@ import am.matcher.multiWords.MultiWordsMatcher;
 import am.matcher.multiWords.MultiWordsParameters;
 import am.matcher.parametricStringMatcher.ParametricStringMatcher;
 import am.matcher.parametricStringMatcher.ParametricStringParameters;
+import am.ui.UIUtility;
 
 public class LargeOntologyOrthoMatchers extends ExecutionSemantics {
 private static final Logger LOG = Logger.getLogger(OrthoCombinationMatchers.class);
@@ -75,7 +75,7 @@ private static final Logger LOG = Logger.getLogger(OrthoCombinationMatchers.clas
 	public void run(UFLExperiment experiment) {
 				
 		if( experiment.getSourceOntology() == null || experiment.getTargetOntology() == null ) {
-			Utility.displayErrorPane("The experiment must define a pair of ontologies before the matching can start.", "Ontologies not loaded");
+			UIUtility.displayErrorPane("The experiment must define a pair of ontologies before the matching can start.", "Ontologies not loaded");
 			return;
 		}
 		

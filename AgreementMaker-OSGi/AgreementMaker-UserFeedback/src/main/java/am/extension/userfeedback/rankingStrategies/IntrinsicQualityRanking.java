@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MappingSimilarityComparator;
 import am.app.mappingEngine.qualityEvaluation.metrics.ufl.CrossCountQuality;
 import am.app.mappingEngine.qualityEvaluation.metrics.ufl.SimilarityScoreHardness;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
+import am.extension.multiUserFeedback.experiment.MUExperiment;
 
 public class IntrinsicQualityRanking extends AbstractRankingStrategy {
 
@@ -18,18 +20,21 @@ public class IntrinsicQualityRanking extends AbstractRankingStrategy {
 	private SimilarityMatrix forbiddnProp;
 	private double alpha=1.0;
 	private double beta=1.0;
+	private MUExperiment experiment;
 	
 	
-	public IntrinsicQualityRanking(SimilarityMatrix clMatrix, SimilarityMatrix prMatrix, SimilarityMatrix forbiddenClass, SimilarityMatrix forbiddenProp)
+	public IntrinsicQualityRanking(MUExperiment experiment)
 	{
-		this.classMatrix=clMatrix;
-		this.propMatrix=prMatrix;
-		this.forbiddenClass=forbiddenClass;
-		this.forbiddnProp=forbiddenProp;
+		this.experiment = experiment;
 	}
 	
 	@Override
 	public void rank() {
+		classMatrix = experiment.getComputedUFLMatrix(alignType.aligningClasses);
+		propMatrix = experiment.getComputedUFLMatrix(alignType.aligningProperties);
+		forbiddenClass = experiment.getForbiddenPositions(alignType.aligningClasses);
+		forbiddnProp = experiment.getForbiddenPositions(alignType.aligningProperties);
+		
 		rankedList=linearCombination(classMatrix, forbiddenClass);
 		rankedList.addAll(linearCombination(propMatrix,forbiddnProp));
 		Collections.sort(rankedList, new MappingSimilarityComparator() );

@@ -5,20 +5,14 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcher.alignType;
-import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.MappingSimilarityComparator;
-import am.app.mappingEngine.qualityEvaluation.metrics.ufl.CrossCountQuality;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
-import am.evaluation.disagreement.variance.VarianceDisagreement;
-import am.evaluation.disagreement.variance.VarianceDisagreementParameters;
 import am.extension.userfeedback.experiments.SUExperiment;
 import am.extension.userfeedback.selection.CandidateSelection;
 
@@ -46,21 +40,6 @@ public class MaxInformationRanking extends CandidateSelection<SUExperiment> {
 		}
 
 		return null;
-	}
-	
-	@Override
-	public Mapping getCandidateMapping() 
-	{
-
-//		if (experiment.getAlignCardinalityType()==alignCardinality.c1_1)
-//			selectedMapping=getCandidateMapping_1_1();
-		selectedMapping=getCandidateMapping_m_n();
-		if (flag){
-			saveSV();
-			flag=false;
-		}
-		
-		return selectedMapping;
 	}
 	
 	public Mapping getCandidateMapping_1_1() 
@@ -132,6 +111,15 @@ public class MaxInformationRanking extends CandidateSelection<SUExperiment> {
 		//else
 		//	allRanked=ex.allRanked;
 		saveRankList(ex.getIterationNumber());
+		
+//		if (experiment.getAlignCardinalityType()==alignCardinality.c1_1)
+//		selectedMapping=getCandidateMapping_1_1();
+		selectedMapping=getCandidateMapping_m_n();
+		if (flag){
+			saveSV();
+			flag=false;
+		}
+		
 		done();
 	}
 	

@@ -21,9 +21,10 @@ import am.extension.userfeedback.UserFeedback.Validation;
 import am.extension.userfeedback.experiments.UFLExperiment;
 import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
 import am.extension.userfeedback.experiments.UFLExperimentSetup;
-import am.extension.userfeedback.logic.IndependentSequentialLogicPaper;
+import am.extension.userfeedback.logic.PersistentSequentialControlLogic;
 import am.extension.userfeedback.logic.UFLControlLogic;
 import am.extension.userfeedback.rankingStrategies.StrategyInterface;
+import am.ui.UIUtility;
 
 import com.tomgibara.cluster.gvm.dbl.DblResult;
 
@@ -87,7 +88,7 @@ private alignCardinality alignCardinalityType=alignCardinality.cn_m;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			am.Utility.displayErrorPane("Permission error: Log file can not be created", "Error");
+			UIUtility.displayErrorPane("Permission error: Log file can not be created", "Error");
 		}
 	}
 
@@ -253,9 +254,8 @@ public void setMLAlignment(Alignment<Mapping> mLAlignment) {
 	}
 
 	@Override
-	public UFLControlLogic getControlLogic() {
-		return new IndependentSequentialLogicPaper();
-		//return new IndependentSequentialLogic();
+	public UFLControlLogic<MUExperiment> getControlLogic() {
+		return new PersistentSequentialControlLogic();
 	}
 	
 	@Override

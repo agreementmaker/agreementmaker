@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
-import am.Utility;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import am.app.Core;
 import am.app.lexicon.GeneralLexicon;
 import am.app.lexicon.GeneralLexiconSynSet;
@@ -28,6 +30,8 @@ import edu.smu.tspell.wordnet.WordNetDatabase;
  */
 public class WordNetLexiconBuilder implements LexiconBuilder {
 
+	private static final Logger LOG = LogManager.getLogger(WordNetLexiconBuilder.class);
+	
 	Lexicon wordnetLexicon;
 	Lexicon ontologyLexicon; // depends on the ontology lexicon
 	
@@ -54,7 +58,7 @@ public class WordNetLexiconBuilder implements LexiconBuilder {
 		try {
 			WordNet = WordNetDatabase.getFileInstance();
 		} catch( Exception e ) {
-			Utility.displayErrorPane(e.getMessage(), "Cannot open WordNet files.\nWordNet should be in the following directory:\n" + wordnetdir);
+			LOG.error("Cannot open WordNet files.\nWordNet should be in the following directory:\n" + wordnetdir, e);
 		}
 	}
 	
