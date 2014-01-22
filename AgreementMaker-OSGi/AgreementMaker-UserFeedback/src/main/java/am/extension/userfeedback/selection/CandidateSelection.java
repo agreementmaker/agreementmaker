@@ -22,11 +22,20 @@ public abstract class CandidateSelection<T extends UFLExperiment> {
 		listeners = new EventListenerList();
 	}
 	
+	/**
+	 * Rank and select a candidate mapping.
+	 */
 	public abstract void rank( T exp );
 	
 	public abstract List<Mapping> getRankedMappings();
 	public abstract List<Mapping> getRankedMappings(alignType typeOfRanking);
 	
+	/**
+	 * @return The mapping that was selected by the candidate selection by the
+	 *         last call to {@link #rank(UFLExperiment)}. Multiple calls to this
+	 *         method (without any calls to {@link #rank(UFLExperiment)}) should
+	 *         return the same mapping.
+	 */
 	public Mapping getSelectedMapping() {
 		return selectedMapping;
 	}
