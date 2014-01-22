@@ -1,14 +1,11 @@
 package am.extension.userfeedback.logic;
 
-import java.awt.event.ActionEvent;
-
 import am.extension.userfeedback.experiments.UFLExperiment;
-import am.extension.userfeedback.ui.UFLControlGUI.ActionCommands;
 
-public class IndependentSequentialLogic extends UFLControlLogic<UFLExperiment> {
-	
+public class PersistentSequentialLogic<T extends UFLExperiment> extends PersistentControlLogic<T> {
+
 	@Override
-	public void runExperiment(UFLExperiment exp) {
+	public void runExperiment(T exp) {
 		this.experiment = exp;
 		runInitialMatchers();
 	}

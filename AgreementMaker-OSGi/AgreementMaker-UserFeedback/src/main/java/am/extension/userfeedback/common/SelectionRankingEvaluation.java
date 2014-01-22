@@ -11,10 +11,10 @@ import am.app.mappingEngine.Mapping;
 import am.evaluation.alignment.AlignmentMetrics;
 import am.evaluation.alignment.DeltaFromReference;
 import am.extension.multiUserFeedback.experiment.MUExperiment;
-import am.extension.multiUserFeedback.experiment.MUExperiment.csData.MappingSource;
-import am.extension.multiUserFeedback.selection.ServerMultiStrategyCandidateSelection;
+import am.extension.multiUserFeedback.selection.ParametricCandidateSelection;
 import am.extension.userfeedback.evaluation.PropagationEvaluation;
 import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
+import am.extension.userfeedback.rankingStrategies.StrategyInterface;
 import am.extension.userfeedback.selection.CandidateSelection;
 import am.utility.Pair;
 
@@ -27,7 +27,7 @@ public class SelectionRankingEvaluation extends PropagationEvaluation<MUExperime
 			.toString() + "_EVALUATION_DATA";
 
 	public class EvaluationData {
-		List<Pair<MappingSource, Mapping>> validatedMappings = new LinkedList<>();
+		List<Pair<StrategyInterface, Mapping>> validatedMappings = new LinkedList<>();
 		double cumulativeRecall = 0;
 	}
 
@@ -56,7 +56,7 @@ public class SelectionRankingEvaluation extends PropagationEvaluation<MUExperime
 				+ metrics.getFMeasurePercent());
 		exp.info("");
 		
-		if (((CandidateSelection) exp.candidateSelection) instanceof ServerMultiStrategyCandidateSelection) {
+		if (((CandidateSelection) exp.candidateSelection) instanceof ParametricCandidateSelection) {
 			// do the special stuff for ServerMultiStrategyCandidateSelection
 			int currentIteration = exp.getIterationNumber();
 			int numIterations = exp.setup.parameters
@@ -64,7 +64,7 @@ public class SelectionRankingEvaluation extends PropagationEvaluation<MUExperime
 			int iterationsLeft = numIterations - currentIteration;
 
 			// save the validated mapping
-			data.validatedMappings.add(new Pair<MappingSource, Mapping>(
+			data.validatedMappings.add(new Pair<StrategyInterface, Mapping>(
 					exp.data.mappingSource, exp.candidateSelection
 							.getSelectedMapping()));
 

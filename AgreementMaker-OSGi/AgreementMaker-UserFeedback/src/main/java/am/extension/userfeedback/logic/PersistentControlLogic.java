@@ -1,29 +1,17 @@
 package am.extension.userfeedback.logic;
 
-import java.awt.event.ActionListener;
-
 import am.extension.userfeedback.experiments.UFLExperiment;
 
-public abstract class UFLControlLogic<T extends UFLExperiment>  implements ActionListener {
+public abstract class PersistentControlLogic<T extends UFLExperiment> extends UFLControlLogic<T> {
 	
-	protected T experiment;
-	
-	
-	public abstract void runExperiment(T experiment);
-	
-	/**
-	 * Starts a separate thread for running a piece of the experiment.
-	 */
-	protected void startThread(Runnable runnable) {
-		Thread initialMatchersThread = new Thread(runnable);
-		initialMatchersThread.start();
-	}
-	
+	@Override
 	protected void runInitialMatchers() {
 		// Run the initial matchers in a separate thread.
 		try {
-			experiment.initialMatcher = experiment.setup.im.getEntryClass().newInstance();
-			experiment.initialMatcher.addActionListener(this);
+			if( experiment.initialMatcher == null ) {
+				experiment.initialMatcher = experiment.setup.im.getEntryClass().newInstance();
+				experiment.initialMatcher.addActionListener(this);
+			}
 			startThread(new Runnable(){
 				@Override public void run() {
 					experiment.initialMatcher.run(experiment);	
@@ -34,11 +22,14 @@ public abstract class UFLControlLogic<T extends UFLExperiment>  implements Actio
 		}
 	}
 	
+	@Override
 	protected void runInizialization() {
 		// Run the initial matchers in a separate thread.
 		try {
-			experiment.dataInizialization = experiment.setup.fli.getEntryClass().newInstance();
-			experiment.dataInizialization.addActionListener(this);
+			if( experiment.dataInizialization == null ) {
+				experiment.dataInizialization = experiment.setup.fli.getEntryClass().newInstance();
+				experiment.dataInizialization.addActionListener(this);
+			}
 			startThread(new Runnable(){
 				@Override public void run() {
 					experiment.dataInizialization.inizialize(experiment);	
@@ -49,11 +40,13 @@ public abstract class UFLControlLogic<T extends UFLExperiment>  implements Actio
 		}
 	}
 	
+	@Override
 	protected void runCandidateSelection() {
 		try {
-			experiment.candidateSelection = experiment.setup.cs.getEntryClass().newInstance();
-			experiment.candidateSelection.addActionListener(this);
-			
+			if( experiment.candidateSelection == null ) {
+				experiment.candidateSelection = experiment.setup.cs.getEntryClass().newInstance();
+				experiment.candidateSelection.addActionListener(this);
+			}
 			startThread(new Runnable() {
 				@Override public void run() {
 					experiment.candidateSelection.rank(experiment);	
@@ -67,8 +60,10 @@ public abstract class UFLControlLogic<T extends UFLExperiment>  implements Actio
 
 	protected void runCandidateSelectionEvaluation() {
 		try {
-			experiment.csEvaluation = experiment.setup.cse.getEntryClass().newInstance();
-			experiment.csEvaluation.addActionListener(this);
+			if( experiment.csEvaluation == null ) {
+				experiment.csEvaluation = experiment.setup.cse.getEntryClass().newInstance();
+				experiment.csEvaluation.addActionListener(this);
+			}
 
 			startThread(new Runnable() {
 				@Override public void run() {
@@ -82,10 +77,11 @@ public abstract class UFLControlLogic<T extends UFLExperiment>  implements Actio
 	
 	protected void runUserValidation() {
 		try {
-			// have the user validate the candidate mapping
-			experiment.userFeedback = experiment.setup.uv.getEntryClass().newInstance();
-
-			experiment.userFeedback.addActionListener(this);
+			if( experiment.userFeedback == null ) {
+				// have the user validate the candidate mapping
+				experiment.userFeedback = experiment.setup.uv.getEntryClass().newInstance();
+				experiment.userFeedback.addActionListener(this);
+			}
 			startThread(new Runnable() {
 				@Override public void run() {
 					experiment.userFeedback.validate(experiment);
@@ -98,9 +94,10 @@ public abstract class UFLControlLogic<T extends UFLExperiment>  implements Actio
 	
 	protected void runFeedbackAggregation() {
 		try {
-			experiment.feedbackAggregation = experiment.setup.fa.getEntryClass().newInstance();
-			experiment.feedbackAggregation.addActionListener(this);
-
+			if( experiment.feedbackAggregation == null ) {
+				experiment.feedbackAggregation = experiment.setup.fa.getEntryClass().newInstance();
+				experiment.feedbackAggregation.addActionListener(this);
+			}
 			startThread(new Runnable() {
 				@Override
 				public void run() {
@@ -114,9 +111,10 @@ public abstract class UFLControlLogic<T extends UFLExperiment>  implements Actio
 	
 	protected void runFeedbackPropagation() {
 		try {
-			experiment.feedbackPropagation = experiment.setup.fp.getEntryClass().newInstance();
-			experiment.feedbackPropagation.addActionListener(this);
-
+			if( experiment.feedbackPropagation == null ) {
+				experiment.feedbackPropagation = experiment.setup.fp.getEntryClass().newInstance();
+				experiment.feedbackPropagation.addActionListener(this);
+			}
 			startThread(new Runnable() {
 				@Override
 				public void run() {
@@ -130,10 +128,11 @@ public abstract class UFLControlLogic<T extends UFLExperiment>  implements Actio
 	
 	protected void runPropagationEvaluation() {
 		try {
-			// evaluate the propagation!
-			experiment.propagationEvaluation = experiment.setup.pe.getEntryClass().newInstance();
-			experiment.propagationEvaluation.addActionListener(this);
-
+			if( experiment.propagationEvaluation == null ) {
+				// evaluate the propagation!
+				experiment.propagationEvaluation = experiment.setup.pe.getEntryClass().newInstance();
+				experiment.propagationEvaluation.addActionListener(this);
+			}
 			startThread(new Runnable() {
 				@Override
 				public void run() {
@@ -147,9 +146,10 @@ public abstract class UFLControlLogic<T extends UFLExperiment>  implements Actio
 	
 	protected void runSaveFeedback() {
 		try {
-			experiment.saveFeedback=experiment.setup.sf.getEntryClass().newInstance();
-			experiment.candidateSelection.addActionListener(this);
-			
+			if( experiment.saveFeedback == null ) {
+				experiment.saveFeedback = experiment.setup.sf.getEntryClass().newInstance();
+				experiment.candidateSelection.addActionListener(this);
+			}
 			startThread(new Runnable() {
 				@Override public void run() {
 					experiment.saveFeedback.save(experiment);	

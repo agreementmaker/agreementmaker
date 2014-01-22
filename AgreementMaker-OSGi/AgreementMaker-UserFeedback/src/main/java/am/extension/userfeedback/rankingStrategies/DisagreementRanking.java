@@ -6,12 +6,11 @@ import java.util.List;
 
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MappingSimilarityComparator;
-import am.app.mappingEngine.qualityEvaluation.metrics.ufl.UserDisagrement;
 import am.app.mappingEngine.qualityEvaluation.metrics.ufl.VarianceMatcherDisagreement;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 
-public class DisagreementRanking implements StrategyInterface{
+public class DisagreementRanking extends AbstractRankingStrategy {
 
 	private List<SimilarityMatrix> classMatrices=new ArrayList<SimilarityMatrix>();
 	private List<SimilarityMatrix> propMatrices=new ArrayList<SimilarityMatrix>();
@@ -36,13 +35,11 @@ public class DisagreementRanking implements StrategyInterface{
 	}
 	
 	@Override
-	public List<Mapping> rank() {
-		List<Mapping> rankList=linearCombination(classMatrices, classPos, classNeg, refMatrixC);
-		rankList.addAll(linearCombination(propMatrices, propPos, propNeg,refMatrixP));
-		Collections.sort(rankList, new MappingSimilarityComparator() );
-		Collections.reverse(rankList);
-		
-		return rankList;
+	public void rank() {
+		rankedList = linearCombination(classMatrices, classPos, classNeg, refMatrixC);
+		rankedList.addAll(linearCombination(propMatrices, propPos, propNeg,refMatrixP));
+		Collections.sort(rankedList, new MappingSimilarityComparator() );
+		Collections.reverse(rankedList);
 	}
 	
 	
