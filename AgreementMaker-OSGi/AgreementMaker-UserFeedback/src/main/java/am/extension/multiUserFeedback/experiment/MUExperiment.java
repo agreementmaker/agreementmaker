@@ -11,8 +11,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import com.tomgibara.cluster.gvm.dbl.DblResult;
-
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Alignment;
@@ -25,7 +23,13 @@ import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
 import am.extension.userfeedback.experiments.UFLExperimentSetup;
 import am.extension.userfeedback.logic.IndependentSequentialLogicPaper;
 import am.extension.userfeedback.logic.UFLControlLogic;
+import am.extension.userfeedback.rankingStrategies.StrategyInterface;
 
+import com.tomgibara.cluster.gvm.dbl.DblResult;
+
+/**
+ * Multi-User UFL Experiment.
+ */
 public class MUExperiment extends UFLExperiment {
 
 
@@ -59,13 +63,12 @@ public HashMap<String, SimilarityMatrix> usersClass=new HashMap<String, Similari
 public HashMap<String, SimilarityMatrix> usersProp=new HashMap<String, SimilarityMatrix>();
 
 	public static class csData{
-		public static enum MappingSource { DisagreementRanking, MappingQuality, RevalidationRanking };
 		public int[] count={0,0,0};
 		public int total=0;
 		public List<Mapping> mqList;
 		public List<Mapping> drList;
 		public List<Mapping> rrList;
-		public MappingSource mappingSource;
+		public StrategyInterface mappingSource;
 	}
 public csData data=new csData();
 
