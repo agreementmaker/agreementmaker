@@ -26,6 +26,7 @@ public class IntrinsicQualityRanking extends AbstractRankingStrategy {
 	public IntrinsicQualityRanking(MUExperiment experiment)
 	{
 		this.experiment = experiment;
+		rank();
 	}
 	
 	@Override
