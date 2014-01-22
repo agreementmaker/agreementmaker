@@ -7,10 +7,9 @@ import java.util.List;
 import javax.swing.SwingUtilities;
 import javax.swing.event.EventListenerList;
 
-import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.mappingEngine.Mapping;
 import am.extension.multiUserFeedback.experiment.MUExperiment;
-import am.extension.userfeedback.experiments.UFLExperiment;
 import am.extension.userfeedback.selection.CandidateSelection;
 import am.extension.userfeedback.ui.UFLControlGUI;
 
@@ -23,6 +22,11 @@ public abstract class MUCandidateSelection<T extends MUExperiment> extends Candi
 	}
 	
 	public abstract void rank( T exp, String id );
+	
+	@Override
+	public void rank( T exp ) {
+		throw new RuntimeException("Use rank(experiment, id).");
+	}
 	
 	public abstract List<Mapping> getRankedMappings(alignType typeOfRanking, String id);
 	public abstract List<Mapping> getRankedMappings(String id);
