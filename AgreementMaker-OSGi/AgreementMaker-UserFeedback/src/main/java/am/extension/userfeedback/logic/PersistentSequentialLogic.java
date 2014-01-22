@@ -1,6 +1,9 @@
 package am.extension.userfeedback.logic;
 
+import java.awt.event.ActionEvent;
+
 import am.extension.userfeedback.experiments.UFLExperiment;
+import am.extension.userfeedback.ui.UFLControlGUI.ActionCommands;
 
 public class PersistentSequentialLogic<T extends UFLExperiment> extends PersistentControlLogic<T> {
 
