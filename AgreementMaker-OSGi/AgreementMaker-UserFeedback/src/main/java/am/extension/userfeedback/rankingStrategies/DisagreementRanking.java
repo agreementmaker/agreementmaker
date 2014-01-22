@@ -32,6 +32,7 @@ public class DisagreementRanking extends AbstractRankingStrategy {
 	{
 		super();
 		this.experiment = experiment;
+		rank();
 	}
 	
 	@Override

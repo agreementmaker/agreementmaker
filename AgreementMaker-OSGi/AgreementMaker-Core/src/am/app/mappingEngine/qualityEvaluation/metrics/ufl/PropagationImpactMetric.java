@@ -39,6 +39,14 @@ public class PropagationImpactMetric extends  AbstractQualityMetric {
 	public double getQuality(alignType type, int i, int j) 
 	{		
 
-		return Math.abs(positiveMatrix.getSimilarity(i, j)-negativeMatrix.getSimilarity(i, j))/maxConsensus;
+		return 1-Math.max(positiveMatrix.getSimilarity(i, j),negativeMatrix.getSimilarity(i, j))/maxConsensus;
 	}
+	
+	//OLD
+//	@Override
+//	public double getQuality(alignType type, int i, int j) 
+//	{		
+//
+//		return Math.abs(positiveMatrix.getSimilarity(i, j)-negativeMatrix.getSimilarity(i, j))/maxConsensus;
+//	}
 }

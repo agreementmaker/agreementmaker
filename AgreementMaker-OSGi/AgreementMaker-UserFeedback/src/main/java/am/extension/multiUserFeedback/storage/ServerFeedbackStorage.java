@@ -12,6 +12,7 @@ import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.qualityEvaluation.metrics.ufl.ExpandedConsensus;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.app.ontology.Node;
@@ -89,7 +90,10 @@ public class ServerFeedbackStorage extends FeedbackAgregation<MUExperiment>{
 		List<Object[]> trainingSet = new ArrayList<Object[]>();
 		SparseMatrix positiveFeedback = experiment.getFeedbackMatrix(type, Validation.CORRECT);
 		SparseMatrix negativeFeedback = experiment.getFeedbackMatrix(type, Validation.INCORRECT);
-		
+		ExpandedConsensus ec=new ExpandedConsensus(experiment.getFeedbackMatrix(alignType.aligningClasses, Validation.CORRECT),
+				experiment.getFeedbackMatrix(alignType.aligningClasses, Validation.INCORRECT),
+				experiment.initialMatcher.getFinalMatcher().getClassesMatrix(),
+				experiment.initialMatcher.getFinalMatcher().getPropertiesMatrix(), 3);
 		for(int i=0;i < positiveFeedback.getRows();i++)
 		{
 			for(int j=0;j < positiveFeedback.getColumns();j++)
@@ -97,7 +101,8 @@ public class ServerFeedbackStorage extends FeedbackAgregation<MUExperiment>{
 				int sum = (int)positiveFeedback.getSimilarity(i, j) - (int)negativeFeedback.getSimilarity(i, j);
 				if (sum != 0) {
 					Mapping m = positiveFeedback.get(i, j) == null ? negativeFeedback.get(i, j) : positiveFeedback.get(i, j);
-					trainingSet.add(getLabeledMapping(m,sum));
+					if (ec.getQuality(m.getAlignmentType(), i, j)>0.5d)
+						trainingSet.add(getLabeledMapping(m,sum));
 				}
 			}
 		}

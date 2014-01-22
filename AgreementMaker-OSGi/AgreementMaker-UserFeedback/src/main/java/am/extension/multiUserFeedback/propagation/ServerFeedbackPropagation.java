@@ -141,36 +141,36 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 	
 
 	private SimilarityMatrix runPropagation(alignType type, String metric) {
-//		switch(metric) {
-//		case PROPAGATION_NONE:
-//			return experiment.getComputedUFLMatrix(type);
-//		case PROPAGATION_EUCLIDEAN:
-//			return euclideanDistance(
-//					experiment.getForbiddenPositions(type), 
-//					experiment.getComputedUFLMatrix(type),
-//					experiment.getTrainingSet(type),
-//					type);
-//		case PROPAGATION_LOG:
-//			return logDistance(
-//					experiment.getForbiddenPositions(type), 
-//					experiment.getComputedUFLMatrix(type),
-//					experiment.getTrainingSet(type),
-//					type);
-//		case PROPAGATION_REGRESSION:
-//			return wekaRegression(
-//					experiment.getForbiddenPositions(type),
-//					experiment.getComputedUFLMatrix(type),
-//					experiment.getTrainingSet(type));
-//		case PROPAGATION_CRC:
-//			return clusterRowColumnPropagation(experiment.getForbiddenPositions(type), 
-//					experiment.getComputedUFLMatrix(type),experiment.userFeedback.getCandidateMapping(),
-//					experiment.userFeedback.getUserFeedback(), type);
-//		default:
-//			throw new RuntimeException("Propagation method was not correctly specificied.");
-//		}
-		return clusterRowColumnPropagation(experiment.getForbiddenPositions(type), 
-				experiment.getComputedUFLMatrix(type),experiment.userFeedback.getCandidateMapping(),
-				experiment.userFeedback.getUserFeedback(), type);
+		switch(metric) {
+		case PROPAGATION_NONE:
+			return experiment.getComputedUFLMatrix(type);
+		case PROPAGATION_EUCLIDEAN:
+			return euclideanDistance(
+					experiment.getForbiddenPositions(type), 
+					experiment.getComputedUFLMatrix(type),
+					experiment.getTrainingSet(type),
+					type);
+		case PROPAGATION_LOG:
+			return logDistance(
+					experiment.getForbiddenPositions(type), 
+					experiment.getComputedUFLMatrix(type),
+					experiment.getTrainingSet(type),
+					type);
+		case PROPAGATION_REGRESSION:
+			return wekaRegression(
+					experiment.getForbiddenPositions(type),
+					experiment.getComputedUFLMatrix(type),
+					experiment.getTrainingSet(type));
+		case PROPAGATION_CRC:
+			return clusterRowColumnPropagation(experiment.getForbiddenPositions(type), 
+					experiment.getComputedUFLMatrix(type),experiment.userFeedback.getCandidateMapping(),
+					experiment.userFeedback.getUserFeedback(), type);
+		default:
+			throw new RuntimeException("Propagation method was not correctly specificied.");
+		}
+//		return clusterRowColumnPropagation(experiment.getForbiddenPositions(type), 
+//				experiment.getComputedUFLMatrix(type),experiment.userFeedback.getCandidateMapping(),
+//				experiment.userFeedback.getUserFeedback(), type);
 	}
 
 	
