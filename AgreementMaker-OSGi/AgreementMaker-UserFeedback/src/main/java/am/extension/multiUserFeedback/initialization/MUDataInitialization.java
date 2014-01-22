@@ -1,25 +1,27 @@
 package am.extension.multiUserFeedback.initialization;
 
+import static am.extension.userfeedback.utility.UFLutility.extractList;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.tomgibara.cluster.gvm.dbl.DblResult;
-
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcher.alignType;
-import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
-import am.app.ontology.Node;
 import am.evaluation.clustering.gvm.GVM_Clustering;
 import am.extension.multiUserFeedback.experiment.MUExperiment;
+import am.extension.userfeedback.UserFeedback.Validation;
 import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
 import am.extension.userfeedback.inizialization.FeedbackLoopInizialization;
+import am.extension.userfeedback.rankingStrategies.DisagreementRanking;
+import am.extension.userfeedback.rankingStrategies.IntrinsicQualityRanking;
+import am.extension.userfeedback.rankingStrategies.RevalidationRanking;
 import am.extension.userfeedback.utility.UFLutility;
 import am.matcher.Combination.CombinationMatcher;
 
@@ -98,7 +100,7 @@ public class MUDataInitialization  extends FeedbackLoopInizialization<MUExperime
 		// set the UFL matrices for properties
 		SparseMatrix sparsePropPos = new SparseMatrix(
 				Core.getInstance().getSourceOntology(),
-				Core.getInstance().getTargetOntology(), 
+				Core.getInstance().getTargetOntology(),
 				alignType.aligningProperties);
 		
 		SparseMatrix sparsePropNeg = new SparseMatrix(
@@ -146,12 +148,10 @@ public class MUDataInitialization  extends FeedbackLoopInizialization<MUExperime
 		
 		exp.info(d.toString());
 		LOG.info(d.toString());
-		
+
 		done();
 	}
 
-
-	
 	private SimilarityMatrix prepare(SimilarityMatrix sm, SimilarityMatrix am)
 	{
 		Mapping mp;
