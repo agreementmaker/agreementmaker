@@ -22,10 +22,10 @@ public class ArraySimilarityMatrix extends AbstractSimilarityMatrix {
 
 	private static final long serialVersionUID = 7152244093634002737L;
 	
-	protected List<Node> rowNodes;
-	protected List<Node> colNodes;
+	protected transient List<Node> rowNodes;
+	protected transient List<Node> colNodes;
 
-	protected class SimRel implements Serializable{
+	protected class SimRel implements Serializable {
 		private static final long serialVersionUID = 3340618624390143439L;
 		
 		public double similarity;

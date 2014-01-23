@@ -1,19 +1,28 @@
 package am.app.mappingEngine;
 
+import java.io.Serializable;
+
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 
-public class MatcherResult {
+public class MatcherResult implements Serializable {
 	
-	private boolean modifiedbyUser;
-	private long executionTime;
-	private SimilarityMatrix classesMatrix;
-	private SimilarityMatrix propMatrix;
-	private Ontology sourceOntology;
-	private Ontology targetOntology;
+	private static final long serialVersionUID = -3777252152922774451L;
 
-	private MatchingTask task;
+	private boolean modifiedbyUser;
+	
+	private long executionTime;
+	
+	private SimilarityMatrix classesMatrix;
+	
+	private SimilarityMatrix propMatrix;
+	
+	private transient Ontology sourceOntology;
+	
+	private transient Ontology targetOntology;
+
+	private transient MatchingTask task;
 	
 	private int id;
 	

@@ -26,6 +26,12 @@ public class UFLExperimentParameters extends Properties {
 		STATIC_CANDIDATE_SELECTION("false"), // whether our CS is static (only computed before experiment) or dynamic (computed every new itertation).
 		LOGFILE, // the name of the logfile
 		IM_THRESHOLD("0.6"), // the initial matchers threshold
+		
+		IM_BSM_SAVEFILE, // If this parameter is specified, we will save the BSM results to this file.
+		IM_ASM_SAVEFILE, // If this parameter is specified, we will save the ASM results to this file.
+		IM_PSM_SAVEFILE, // If this parameter is specified, we will save the PSM results to this file.
+		IM_VMM_SAVEFILE, // If this parameter is specified, we will save the VMM results to this file.
+		IM_LSM_SAVEFILE, // If this parameter is specified, we will save the LSM results to this file.
 		;
 		
 		private String defaultValue;

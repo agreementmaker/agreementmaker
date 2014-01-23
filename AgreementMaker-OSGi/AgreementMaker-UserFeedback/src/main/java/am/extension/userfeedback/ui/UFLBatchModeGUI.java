@@ -108,7 +108,7 @@ public class UFLBatchModeGUI extends AMTabSupportPanel implements UFLProgressDis
 	public void nextRun() {
 		runStatus = 1; // running
 		
-		if( runNumber < runs.size() ) {
+		if( runs != null && runNumber < runs.size() ) {
 			Runnable nextRun = new Runnable() {
 				@Override public void run() {
 					final Pair<MatchingTaskPreset,ExperimentPreset> currentRun = runs.get(runNumber);
@@ -196,10 +196,16 @@ public class UFLBatchModeGUI extends AMTabSupportPanel implements UFLProgressDis
 			runNumber = 0;
 			runStatus = 0;
 			btnRun.setEnabled(true);
-			proBar.setValue(runs.size());
-			proBar.setMaximum(runs.size());
+			if( runs != null ) {
+				proBar.setValue(runs.size());
+				proBar.setMaximum(runs.size());
+				LOG.info("Completed " + runs.size() + " runs in " + timer);
+			}
+			else {
+				LOG.info("No runs selected.");
+			}
 			timer.stop();
-			LOG.info("Completed " + runs.size() + " runs in " + timer);
+			
 		}
 		
 		
