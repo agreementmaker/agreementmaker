@@ -1,10 +1,13 @@
 package am.app.mappingEngine.persistance;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -39,6 +42,33 @@ public class PersistanceUtility {
 			LOG.error(e);
 		}
 		
+	}
+	
+	public static MatcherResult loadMatcherResult(String file) {
+		if( !file.startsWith(File.separator) ) {
+			file = Core.getInstance().getRoot() + file;
+		}
+		
+		File inputFile = new File(file);
+		
+		try {
+			FileInputStream fileIn = new FileInputStream(inputFile);
+			BZip2CompressorInputStream bzIn = new BZip2CompressorInputStream(fileIn);
+			ObjectInputStream in = new ObjectInputStream(bzIn);
+			
+			MatcherResult res = (MatcherResult) in.readObject();
+			
+			in.close();
+			bzIn.close();
+			fileIn.close();
+			
+			LOG.info("Deserialized matcher result from: " + inputFile);
+			return res;
+		} 
+		catch (IOException | ClassNotFoundException e) {
+			LOG.error(e);
+			return null;
+		}
 	}
 	
 }

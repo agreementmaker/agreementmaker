@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
-import java.util.Set;
 
 /**
  * Unified experiment parameters.
@@ -27,11 +26,13 @@ public class UFLExperimentParameters extends Properties {
 		LOGFILE, // the name of the logfile
 		IM_THRESHOLD("0.6"), // the initial matchers threshold
 		
-		IM_BSM_SAVEFILE, // If this parameter is specified, we will save the BSM results to this file.
-		IM_ASM_SAVEFILE, // If this parameter is specified, we will save the ASM results to this file.
-		IM_PSM_SAVEFILE, // If this parameter is specified, we will save the PSM results to this file.
-		IM_VMM_SAVEFILE, // If this parameter is specified, we will save the VMM results to this file.
-		IM_LSM_SAVEFILE, // If this parameter is specified, we will save the LSM results to this file.
+		// LOADFILE = A file from which to load a previously computed result.
+		// SAVEFILE = A file to which to save the result of the matcher.
+		IM_BSM_SAVEFILE, IM_BSM_LOADFILE, 
+		IM_ASM_SAVEFILE, IM_ASM_LOADFILE,
+		IM_PSM_SAVEFILE, IM_PSM_LOADFILE,
+		IM_VMM_SAVEFILE, IM_VMM_LOADFILE,
+		IM_LSM_SAVEFILE, IM_LSM_LOADFILE,
 		;
 		
 		private String defaultValue;
