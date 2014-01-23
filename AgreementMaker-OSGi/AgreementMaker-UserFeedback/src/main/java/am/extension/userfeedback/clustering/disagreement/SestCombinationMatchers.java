@@ -10,6 +10,7 @@ import am.app.lexicon.LexiconBuilderParameters;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.MatcherResult;
 import am.app.mappingEngine.MatchingProgressListener;
 import am.app.mappingEngine.persistance.PersistanceUtility;
 import am.app.mappingEngine.utility.OAEI_Track;
@@ -113,10 +114,10 @@ public class SestCombinationMatchers extends ExecutionSemantics {
 			if( progressDisplay != null ) p = true;	
 			if(p) progressDisplay.ignoreComplete(true);
 			
-			runMatcher(m_bsm, Parameter.IM_BSM_SAVEFILE);
-			runMatcher(m_asm, Parameter.IM_ASM_SAVEFILE);
-			runMatcher(m_psm, Parameter.IM_PSM_SAVEFILE);
-			runMatcher(m_vmm, Parameter.IM_VMM_SAVEFILE);
+			runMatcher(m_bsm, Parameter.IM_BSM_LOADFILE, Parameter.IM_BSM_SAVEFILE);
+			runMatcher(m_asm, Parameter.IM_ASM_LOADFILE, Parameter.IM_ASM_SAVEFILE);
+			runMatcher(m_psm, Parameter.IM_PSM_LOADFILE, Parameter.IM_PSM_SAVEFILE);
+			runMatcher(m_vmm, Parameter.IM_VMM_LOADFILE, Parameter.IM_VMM_SAVEFILE);
 			runMatcher(m_lsm);
 				
 			m_lwc.addInputMatcher(m_bsm);
@@ -153,25 +154,39 @@ public class SestCombinationMatchers extends ExecutionSemantics {
 	}
 	
 	private void runMatcher(AbstractMatcher matcher) throws Exception {
-		runMatcher(matcher, null);
+		runMatcher(matcher, null, null);
 	}
 	
-	private void runMatcher(AbstractMatcher matcher, Parameter saveFileParameter) throws Exception {
+	private void runMatcher(AbstractMatcher matcher, Parameter loadFileParameter, Parameter saveFileParameter) throws Exception {
 		exp.info("Running " + matcher.getName() + "...");
 		LOG.info("Running " + matcher.getName() + "...");
 		if(p) progressDisplay.setProgressLabel(matcher.getName());
 
+		if( loadFileParameter != null ) {
+			String matcherLoadFile = exp.setup.parameters.getParameter(loadFileParameter);
+			if( matcherLoadFile != null ) {
+				MatcherResult result = PersistanceUtility.loadMatcherResult(matcherLoadFile);
+				result.setSourceOntology(matcher.getSourceOntology());
+				result.setTargetOntology(matcher.getTargetOntology());
+				matcher.setResult(result);
+			}
+			// if we loaded the result, we don't need to match or save the result.
+			exp.info("Loaded " + matcher.getName() + " result from: " + matcherLoadFile);
+			LOG.info("Loaded " + matcher.getName() + " result from: " + matcherLoadFile);
+			return;
+		}
+		
+		// we have no result, match
 		matcher.match();
 
-		String matcherSaveFile = null;
-		
-		if( saveFileParameter != null )
-			matcherSaveFile = exp.setup.parameters.getParameter(saveFileParameter);
-		
-		if( matcherSaveFile != null ) {
-			exp.info("Saving " + matcher.getName() + " result to: " + matcherSaveFile);
-			LOG.info("Saving " + matcher.getName() + " result to: " + matcherSaveFile);
-			PersistanceUtility.saveMatcherResult(matcher.getResult(), matcherSaveFile);
+		// save the result.		
+		if( saveFileParameter != null ) {
+			String matcherSaveFile = exp.setup.parameters.getParameter(saveFileParameter);
+			if( matcherSaveFile != null ) {
+				exp.info("Saving " + matcher.getName() + " result to: " + matcherSaveFile);
+				LOG.info("Saving " + matcher.getName() + " result to: " + matcherSaveFile);
+				PersistanceUtility.saveMatcherResult(matcher.getResult(), matcherSaveFile);
+			}
 		}
 	}
 	

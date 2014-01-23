@@ -55,7 +55,9 @@ public class MatcherResult implements Serializable {
 	public SimilarityMatrix getPropertiesMatrix() {return propMatrix;}
 
 	public Ontology getSourceOntology() { return sourceOntology; }
+	public void setSourceOntology(Ontology ont) { this.sourceOntology = ont; }
 	public Ontology getTargetOntology() { return targetOntology; }
+	public void setTargetOntology(Ontology ont) { this.targetOntology = ont; }
 
 	public void setID(int id) {
 		this.id = id;

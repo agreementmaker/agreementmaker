@@ -1771,6 +1771,13 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	 protected List<MatcherFeature> supportedFeatures = null;
 
 	 /**
+	  * The result of this matcher.
+	  * 
+	  * @see {@link #getResult()}, {@link #setResult(MatcherResult)}.
+	  */
+	 protected MatcherResult matcherResult;
+
+	 /**
 	  * Determine if a feature is supported by a specific matcher.
 	  * These features must be setup in the constructor.
 	  * @param f Feature to check for.
@@ -1803,10 +1810,17 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 
 	 @Override
 	 public MatcherResult getResult() {
-		 // TODO: Fix this to use the correct constructor from MatcherResult.
-		 return new MatcherResult(this);
+		 if( this.matcherResult == null ) {
+			 // TODO: Fix this to use the correct constructor from MatcherResult.
+			 this.matcherResult = new MatcherResult(this);
+		 }
+		 return matcherResult;
 	 }
 
+	 @Override
+	 public void setResult(MatcherResult result) {
+		 this.matcherResult = result;
+	 }
 
 	 public String getProperty(PropertyKey key) {
 		 return matcherProperties.getProperty(key.name());
