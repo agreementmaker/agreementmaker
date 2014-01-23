@@ -325,5 +325,11 @@
 			<artifactId>sesame-sail-rdbms</artifactId>
 			<version>2.6.8</version>
 		</dependency>
+		<dependency>
+			<!-- Sparse Matrix implementation -->
+			<groupId>colt</groupId>
+			<artifactId>colt</artifactId>
+			<version>1.2.0</version>
+		</dependency>
 	</dependencies>
 </project>

@@ -4,6 +4,7 @@ import java.util.List;
 
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
+import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 
 public interface SimilarityMatrix {
@@ -56,6 +57,8 @@ public interface SimilarityMatrix {
 	public SimilarityMatrix clone();
 
 	public double getRowSum(int i);
+	
+	public double getColSum(int j);
 
 	
 	// used by GroupFinderMatcher
@@ -85,6 +88,6 @@ public interface SimilarityMatrix {
 	// Used by AgreementMaker-UserFeedback:DisagreementRanking
 	public List<Mapping> toList() throws Exception ;
 
-	
+	public void fillMatrix(double sim, List<Node> sourceList, List<Node> targetList);
 
 }

@@ -4,6 +4,7 @@ import java.io.FileWriter;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
 
@@ -40,7 +41,7 @@ public abstract class AbstractSimilarityMatrix implements SimilarityMatrix, Seri
     
 	//public MappingRelation getRelation() { return relation; };	// relation of the matrix? is this required? No -- Cosmin, Sept 17, 2011.
 	@Override
-	public abstract alignType getAlignType();
+	public alignType getAlignType() { return typeOfMatrix; }
 	
 	public AbstractSimilarityMatrix(Ontology sourceOntology, Ontology targetOntology, alignType typeOfMatrix) {
 		this.sourceOntology = sourceOntology;
@@ -113,14 +114,75 @@ public abstract class AbstractSimilarityMatrix implements SimilarityMatrix, Seri
 	}
 	
 	@Override
-	public abstract Mapping[] getColMaxValues(int col, int numMaxValues);
+	public Mapping[] getColMaxValues(int col, int numMaxValues) {
+		LinkedList<Mapping> list = new LinkedList<>();
+		for(int i = 0; i < getRows(); i++) {
+			list.add(get(i, col));
+		}
+		
+		Collections.sort(list, new MappingSimilarityComparator());
+		
+		while(list.size() > numMaxValues) {
+			list.removeFirst();
+		}
+		
+		return list.toArray(new Mapping[0]);
+	}
 	
-	public abstract Mapping[] getRowMaxValues(int row, int numMaxValues);
-	public abstract double[][] getCopiedSimilarityMatrix();
-	public abstract double getRowSum(int row);
-	public abstract double getColSum(int col);
+	@Override
+	public Mapping[] getRowMaxValues(int row, int numMaxValues) {
+		LinkedList<Mapping> list = new LinkedList<>();
+		for(int j = 0; j < getColumns(); j++) {
+			list.add(get(row, j));
+		}
+		
+		Collections.sort(list, new MappingSimilarityComparator());
+		
+		while(list.size() > numMaxValues) {
+			list.removeFirst();
+		}
+		
+		return list.toArray(new Mapping[0]);
+	}
 	
-	public abstract void fillMatrix(double d, List<Node> sourceList, List<Node> targetList);
+	@Override
+	public double[][] getCopiedSimilarityMatrix() {
+		double[][] mtx = new double[getRows()][getColumns()];
+		for( int i = 0; i < getRows(); i++ ) {
+			for( int j = 0; j < getColumns(); j++ ) {
+				mtx[i][j] = getSimilarity(i, j);
+			}
+		}
+		
+		return mtx;
+	}
+	
+	@Override
+	public double getRowSum(int row) {
+		double sum = 0d;
+		for(int j = 0; j < getColumns(); j++) {
+			sum += getSimilarity(row, j);
+		}
+		return sum;
+	}
+	
+	@Override
+	public double getColSum(int col) {
+		double sum = 0d;
+		for(int i = 0; i < getRows(); i++) {
+			sum += getSimilarity(i, col);
+		}
+		return sum;
+	}
+	
+	@Override
+	public void fillMatrix(double sim, List<Node> sourceList, List<Node> targetList) {
+		for( Node sN : sourceList ) {
+			for( Node tN : targetList ) {
+				setSimilarity(sN.getIndex(), tN.getIndex(), sim);
+			}
+		}
+	};
 	
 	/* Mapping retrieval methods */
 	
