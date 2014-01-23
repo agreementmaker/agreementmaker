@@ -62,9 +62,6 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 	public AdvancedSimilarityMatcher() {
 		super();
 		initializeVariables();
-		
-		setName("Advanced Similarity Matcher");
-		setCategory(MatcherCategory.SYNTACTIC);
 	}
 
 	/**
@@ -566,6 +563,9 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 
 		needsParam = true;
 
+		setName("Advanced Similarity Matcher");
+		setCategory(MatcherCategory.SYNTACTIC);
+		
 		// features supported
 		addFeature(MatcherFeature.ONTOLOGY_PROFILING);
 		addFeature(MatcherFeature.ONTOLOGY_PROFILING_CLASS_ANNOTATION_FIELDS);

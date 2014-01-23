@@ -11,11 +11,13 @@ import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatchingProgressListener;
+import am.app.mappingEngine.persistance.PersistanceUtility;
 import am.app.mappingEngine.utility.OAEI_Track;
 import am.app.ontology.Ontology;
 import am.app.ontology.profiling.manual.ManualOntologyProfiler;
 import am.extension.userfeedback.ExecutionSemantics;
 import am.extension.userfeedback.experiments.UFLExperiment;
+import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
 import am.matcher.Combination.CombinationMatcher;
 import am.matcher.Combination.CombinationParameters;
 import am.matcher.LexicalSynonymMatcher.LexicalSynonymMatcher;
@@ -90,6 +92,8 @@ public class SestCombinationMatchers extends ExecutionSemantics {
 	
 	private UFLExperiment exp;
 	
+	private boolean p = false;
+	
 	@Override
 	public void run(UFLExperiment experiment) {
 				
@@ -101,96 +105,44 @@ public class SestCombinationMatchers extends ExecutionSemantics {
 		this.exp = experiment;
 		
 		try {
-			
 			progressDisplay = experiment.gui;
 			initializeVariables(experiment.getSourceOntology(), experiment.getTargetOntology());
 			
-			// TODO: Run Multiple Threads.
-			// run matchers.
-			if( progressDisplay != null ) {	
-				progressDisplay.ignoreComplete(true);
+			// Run Matchers.  TODO: Run Multiple Threads.
+			p = false;
+			if( progressDisplay != null ) p = true;	
+			if(p) progressDisplay.ignoreComplete(true);
+			
+			runMatcher(m_bsm, Parameter.IM_BSM_SAVEFILE);
+			runMatcher(m_asm, Parameter.IM_ASM_SAVEFILE);
+			runMatcher(m_psm, Parameter.IM_PSM_SAVEFILE);
+			runMatcher(m_vmm, Parameter.IM_VMM_SAVEFILE);
+			runMatcher(m_lsm);
 				
-				progressDisplay.setProgressLabel("BSM (1/5)");
-				exp.info("Running BSM..."); LOG.info("Running BSM...");
-				m_bsm.match();
+			m_lwc.addInputMatcher(m_bsm);
+			m_lwc.addInputMatcher(m_asm);
+			m_lwc.addInputMatcher(m_psm);
+			m_lwc.addInputMatcher(m_vmm);
+			m_lwc.addInputMatcher(m_lsm);
+			runMatcher(m_lwc);
+			
+			m_dsi.addInputMatcher(m_lwc);
+			runMatcher(m_dsi);
+			
+			m_ssc.addInputMatcher(m_lwc);
+			runMatcher(m_ssc);
 				
-				progressDisplay.setProgressLabel("ASM (2/5)");
-				exp.info("Running ASM..."); LOG.info("Running ASM...");
-				m_asm.match();
+//			exp.info("Running LWC..."); LOG.info("Running LWC...");
+//			progressDisplay.setProgressLabel("LWC (5/5)");
+//			m_lwc2.addInputMatcher(m_lwc);
+//			m_lwc2.addInputMatcher(m_dsi);
+//			m_lwc2.addInputMatcher(m_ssc);
+//			m_lwc2.match();
+			
+//			m_iism.addInputMatcher(m_lwc);
+//			m_iism.match();
 				
-				exp.info("Running PSM..."); LOG.info("Running PSM...");
-				progressDisplay.setProgressLabel("PSM (3/5)");
-				m_psm.match();
-				
-				exp.info("Running VMM..."); LOG.info("Running VMM...");
-				progressDisplay.setProgressLabel("VMM (4/5)");
-				m_vmm.match();
-				
-				exp.info("Running LSM..."); LOG.info("Running LSM...");
-				progressDisplay.setProgressLabel("LSM");
-				m_lsm.match();
-				
-				exp.info("Running LWC..."); LOG.info("Running LWC...");
-				progressDisplay.setProgressLabel("LWC (5/5)");
-				m_lwc.addInputMatcher(m_bsm);
-				m_lwc.addInputMatcher(m_asm);
-				m_lwc.addInputMatcher(m_psm);
-				m_lwc.addInputMatcher(m_vmm);
-				m_lwc.addInputMatcher(m_lsm);
-				m_lwc.match();
-				
-				exp.info("Running DSI..."); LOG.info("Running DSI...");
-				m_dsi.addInputMatcher(m_lwc);
-				progressDisplay.setProgressLabel("DSI");
-				m_dsi.match();
-				
-				exp.info("Running SSC..."); LOG.info("Running SSC...");
-				m_ssc.addInputMatcher(m_lwc);
-				progressDisplay.setProgressLabel("SSC");
-				m_ssc.match();
-				
-				
-//				exp.info("Running LWC..."); LOG.info("Running LWC...");
-//				progressDisplay.setProgressLabel("LWC (5/5)");
-//				m_lwc2.addInputMatcher(m_lwc);
-//				m_lwc2.addInputMatcher(m_dsi);
-//				m_lwc2.addInputMatcher(m_ssc);
-//				m_lwc2.match();
-				
-//				m_iism.addInputMatcher(m_lwc);
-//				m_iism.match();
-				
-				progressDisplay.ignoreComplete(false);
-			} else {
-				m_bsm.match();
-				m_asm.match();
-				m_psm.match();
-				m_vmm.match();
-				m_lsm.match();
-				
-				
-				m_lwc.addInputMatcher(m_bsm);
-				m_lwc.addInputMatcher(m_asm);
-				m_lwc.addInputMatcher(m_psm);
-				m_lwc.addInputMatcher(m_vmm);
-				m_lwc.addInputMatcher(m_lsm);
-				m_lwc.match();
-				
-
-				
-				m_dsi.addInputMatcher(m_lwc);
-				m_dsi.match();
-				
-				m_ssc.addInputMatcher(m_lwc);
-				m_ssc.match();
-				
-//				m_lwc2.addInputMatcher(m_lwc);
-//				m_lwc2.addInputMatcher(m_dsi);
-//				m_lwc2.addInputMatcher(m_ssc);
-//				m_lwc2.match();
-//				m_iism.addInputMatcher(m_lwc);
-//				m_iism.match();
-			}
+			if(p) progressDisplay.ignoreComplete(false);
 			
 			done();
 			
@@ -198,6 +150,29 @@ public class SestCombinationMatchers extends ExecutionSemantics {
 			e.printStackTrace();
 		}
 				
+	}
+	
+	private void runMatcher(AbstractMatcher matcher) throws Exception {
+		runMatcher(matcher, null);
+	}
+	
+	private void runMatcher(AbstractMatcher matcher, Parameter saveFileParameter) throws Exception {
+		exp.info("Running " + matcher.getName() + "...");
+		LOG.info("Running " + matcher.getName() + "...");
+		if(p) progressDisplay.setProgressLabel(matcher.getName());
+
+		matcher.match();
+
+		String matcherSaveFile = null;
+		
+		if( saveFileParameter != null )
+			matcherSaveFile = exp.setup.parameters.getParameter(saveFileParameter);
+		
+		if( matcherSaveFile != null ) {
+			exp.info("Saving " + matcher.getName() + " result to: " + matcherSaveFile);
+			LOG.info("Saving " + matcher.getName() + " result to: " + matcherSaveFile);
+			PersistanceUtility.saveMatcherResult(matcher.getResult(), matcherSaveFile);
+		}
 	}
 	
 	private void initializeVariables( Ontology sourceOntology, Ontology targetOntology ) {
