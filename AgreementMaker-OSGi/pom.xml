@@ -28,7 +28,7 @@
 		<!-- <module>AgreementMaker-Tests</module> -->
 		<module>Matcher-IMEI2013</module>
 		<!-- <module>AM_ROOT</module> -->
-		<module>AgreementMaker-Distribution</module>
+		<!-- <module>AgreementMaker-Distribution</module> -->
 	</modules>
 
 	<name>AgreementMaker OSGi</name>
