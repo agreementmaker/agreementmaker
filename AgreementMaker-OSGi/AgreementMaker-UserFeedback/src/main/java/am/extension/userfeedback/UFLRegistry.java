@@ -79,6 +79,7 @@ public class UFLRegistry {
 	}
 	
 	public enum CSEvaluationRegistry {
+		Multiplex (am.extension.userfeedback.evaluation.MultiplexCandidateSelectionEvaluation.class),
 		RankingAccuracy (am.extension.userfeedback.evaluation.RankingAccuracy.class),
 		PrecisionRecallEval ( am.extension.userfeedback.common.PrecisionRecallPlot.class );
 		
