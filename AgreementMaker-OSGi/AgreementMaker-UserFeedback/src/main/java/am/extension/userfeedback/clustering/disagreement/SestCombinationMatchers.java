@@ -169,11 +169,11 @@ public class SestCombinationMatchers extends ExecutionSemantics {
 				result.setSourceOntology(matcher.getSourceOntology());
 				result.setTargetOntology(matcher.getTargetOntology());
 				matcher.setResult(result);
+				// if we loaded the result, we don't need to match or save the result.
+				exp.info("Loaded " + matcher.getName() + " result from: " + matcherLoadFile);
+				LOG.info("Loaded " + matcher.getName() + " result from: " + matcherLoadFile);
+				return;
 			}
-			// if we loaded the result, we don't need to match or save the result.
-			exp.info("Loaded " + matcher.getName() + " result from: " + matcherLoadFile);
-			LOG.info("Loaded " + matcher.getName() + " result from: " + matcherLoadFile);
-			return;
 		}
 		
 		// we have no result, match
