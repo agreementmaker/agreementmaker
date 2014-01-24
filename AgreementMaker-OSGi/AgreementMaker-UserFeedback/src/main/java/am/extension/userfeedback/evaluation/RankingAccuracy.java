@@ -20,33 +20,10 @@ public class RankingAccuracy extends CandidateSelectionEvaluation{
 	
 	@Override
 	public void evaluate(UFLExperiment exp) {
-		// TODO Auto-generated method stub
-		
-UFLExperiment log = exp;
-		
+
 		Alignment<Mapping> referenceAlignment = exp.getReferenceAlignment();
 		
 		Mapping candidateMapping = exp.candidateSelection.getSelectedMapping();
-		if(candidateMapping == null) {
-			log.info( "Candidate Selection presented null mapping. Mapping source: " + ((MUExperiment)exp).data.mappingSource.getClass().getName() );
-			return;
-		}
-		boolean mappingIsInReference = false;
-		if( referenceAlignment.contains(candidateMapping) ) mappingIsInReference = true;
-		
-		Alignment<Mapping> finalAlignment = exp.getFinalAlignment();
-		boolean mappingIsInAlignment = false;
-		if( finalAlignment.contains(candidateMapping) ) mappingIsInAlignment = true;
-		
-		
-		String annotationString = "(in reference: no)";
-		if( mappingIsInReference ) annotationString = "(in reference: yes)";
-		
-		String annotationString2 = "(in alignment: no)";
-		if( mappingIsInAlignment ) annotationString2 = "(in alignment: yes)";
-		
-		log.info("Candidate selection mapping: " + annotationString + " " + annotationString2 + " " + candidateMapping );
-		log.info("");
 		
 		this.experiment=exp;
 
