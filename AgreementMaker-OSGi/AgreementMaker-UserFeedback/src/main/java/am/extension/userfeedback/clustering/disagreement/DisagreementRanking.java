@@ -12,10 +12,10 @@ import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.ontology.Ontology;
 import am.evaluation.disagreement.variance.VarianceDisagreement;
 import am.evaluation.disagreement.variance.VarianceDisagreementParameters;
-import am.extension.userfeedback.CandidateSelection;
-import am.extension.userfeedback.UFLExperiment;
+import am.extension.userfeedback.experiments.UFLExperiment;
+import am.extension.userfeedback.selection.CandidateSelection;
 
-public class DisagreementRanking extends CandidateSelection {
+public class DisagreementRanking<T extends UFLExperiment> extends CandidateSelection<T> {
 
 	private List<Mapping> rankedClassMappings;
 	private List<Mapping> rankedPropertyMappings;
@@ -26,35 +26,9 @@ public class DisagreementRanking extends CandidateSelection {
 	@Override public List<Mapping> getRankedMappings(alignType t) { 
 		if( t == alignType.aligningClasses ) { return rankedClassMappings; }
 		if( t == alignType.aligningProperties ) { return rankedPropertyMappings; }
-
 		return null;
 	}
 	
-	@Override
-	public Mapping getCandidateMapping() {
-		
-		for( int i = 0; i < allRanked.size(); i++ ){
-			if( experiment.correctMappings == null && experiment.incorrectMappings == null )
-			{
-				selectedMapping=allRanked.get(i);
-				return selectedMapping;
-			}
-			Mapping m = allRanked.get(i);
-			if( experiment.correctMappings != null && (experiment.correctMappings.contains(m.getEntity1(),Ontology.SOURCE) != null ||
-				experiment.correctMappings.contains(m.getEntity2(),Ontology.TARGET) != null) ) {
-				// assume 1-1 mapping, skip already validated mappings.
-				continue;
-			}
-			if( experiment.incorrectMappings != null && experiment.incorrectMappings.contains(m) ) 
-				continue; // we've validated this mapping already.
-			
-			selectedMapping=m;
-			return m;
-		}
-		
-		return null;
-	}
-
 	@Override
 	public List<Mapping> getRankedMappings() {
 		return allRanked;
@@ -72,6 +46,34 @@ public class DisagreementRanking extends CandidateSelection {
 	
 	public void rank(List<AbstractMatcher> matchers) {
 				
+		if( allRanked == null ) {
+			initializeRankedList(matchers);
+		}
+		
+		for( int i = 0; i < allRanked.size(); i++ ){
+			if( experiment.correctMappings == null && experiment.incorrectMappings == null )
+			{
+				selectedMapping = allRanked.get(i);
+				break;
+			}
+			
+			Mapping m = allRanked.get(i);
+			if( experiment.correctMappings != null && (experiment.correctMappings.contains(m.getEntity1(),Ontology.SOURCE) != null ||
+				experiment.correctMappings.contains(m.getEntity2(),Ontology.TARGET) != null) ) {
+				// assume 1-1 mapping, skip already validated mappings.
+				continue;
+			}
+			if( experiment.incorrectMappings != null && experiment.incorrectMappings.contains(m) ) 
+				continue; // we've validated this mapping already.
+			
+			selectedMapping=m;
+			break;
+		}
+		
+		done();
+	}
+
+	private void initializeRankedList(List<AbstractMatcher> matchers) {
 		// setup the variance disagreement calculation
 		VarianceDisagreementParameters disagreementParams = new VarianceDisagreementParameters();
 		disagreementParams.setMatchers(matchers);
@@ -101,22 +103,11 @@ public class DisagreementRanking extends CandidateSelection {
 		}
 		propertyDisagreement = null;
 		
-		
 		allRanked = new ArrayList<Mapping>();
 		
 		allRanked.addAll(rankedClassMappings);
 		allRanked.addAll(rankedPropertyMappings);
 		Collections.sort(allRanked, new MappingSimilarityComparator() );
 		Collections.reverse(allRanked);
-		
-		
-		done();
 	}
-
-	@Override
-	public Mapping getSelectedMapping() {
-		// TODO Auto-generated method stub
-		return selectedMapping;
-	}
-
 }

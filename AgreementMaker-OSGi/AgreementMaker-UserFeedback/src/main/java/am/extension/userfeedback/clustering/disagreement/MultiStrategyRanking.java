@@ -4,19 +4,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.panayotis.gnuplot.terminal.ExpandableTerminal;
-
-import am.app.mappingEngine.AbstractMatcher.alignType;
-import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MappingSimilarityComparator;
+import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.evaluation.disagreement.variance.VarianceDisagreement;
 import am.evaluation.disagreement.variance.VarianceDisagreementParameters;
-import am.extension.multiUserFeedback.MUExperiment;
-import am.extension.userfeedback.CandidateSelection;
-import am.extension.userfeedback.MLFeedback.MLFExperiment;
+import am.extension.multiUserFeedback.experiment.MUExperiment;
+import am.extension.userfeedback.selection.CandidateSelection;
 
 public class MultiStrategyRanking extends CandidateSelection<MUExperiment>{
 
@@ -39,24 +36,8 @@ public class MultiStrategyRanking extends CandidateSelection<MUExperiment>{
 		//every time ranking methods
 		almostCertainMappingRetrieval();
 		disagreementRanking();
-		//end
-		done();
-	}
-
-	@Override
-	public List<Mapping> getRankedMappings(alignType typeOfRanking) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<Mapping> getRankedMappings() {
-		return experiment.alreadyEvaluated;
-	}
-
-	@Override
-	public Mapping getCandidateMapping() {
 		
+		// select the candidate mapping
 		Mapping[] ranked=new Mapping[3];
 		if (experiment.disRanked!=null)
 			ranked[0]=notEvaluated(experiment.disRanked);
@@ -81,9 +62,22 @@ public class MultiStrategyRanking extends CandidateSelection<MUExperiment>{
 		//experiment.almostRanking.remove(cMapping);
 		selectedMapping=cMapping;
 		experiment.alreadyEvaluated.add(cMapping);
-		return cMapping;
+		
+		//end
+		done();
 	}
-	
+
+	@Override
+	public List<Mapping> getRankedMappings(alignType typeOfRanking) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Mapping> getRankedMappings() {
+		return experiment.alreadyEvaluated;
+	}
+
 	private Mapping notEvaluated(List<Mapping> lst)
 	{
 		if (experiment.alreadyEvaluated.isEmpty())
@@ -103,8 +97,8 @@ public class MultiStrategyRanking extends CandidateSelection<MUExperiment>{
 	
 	private void inizialization()
 	{
-		classesMatrix=experiment.getUflClassMatrix();
-		propertiesMatrix=experiment.getUflPropertyMatrix();
+		classesMatrix=experiment.getComputedUFLMatrix(alignType.aligningClasses);
+		propertiesMatrix=experiment.getComputedUFLMatrix(alignType.aligningProperties);
 	}
 	
 	//one time strategy
@@ -288,7 +282,6 @@ public class MultiStrategyRanking extends CandidateSelection<MUExperiment>{
 	private void disagreementRanking()
 	{
 		List<AbstractMatcher> matchers = experiment.initialMatcher.getComponentMatchers();
-		Alignment<Mapping> mappings= experiment.getFinalAlignment();
 		List<Mapping> rankedClassMappings=null;
 		List<Mapping> rankedPropertyMappings=null;
 		
@@ -297,7 +290,7 @@ public class MultiStrategyRanking extends CandidateSelection<MUExperiment>{
 		disagreementParams.setMatchers(matchers);
 		
 		VarianceDisagreement disagreementMetric = new VarianceDisagreement();
-		disagreementMetric.setParameters(disagreementParams, mappings);
+		disagreementMetric.setParameters(disagreementParams);
 		
 		// run the disagreement calculations
 		SimilarityMatrix classDisagreement = disagreementMetric.getDisagreementMatrix(alignType.aligningClasses);

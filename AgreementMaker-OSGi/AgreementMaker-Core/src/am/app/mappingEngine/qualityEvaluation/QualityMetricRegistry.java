@@ -50,14 +50,14 @@ public enum QualityMetricRegistry {
 	/* ------- Do not edit below this line -------- */
 	
 	private String name;
-	private Class<? extends QualityMetric> className;
+	private Class<? extends MappingQualityMetric> className;
 	
-	private QualityMetricRegistry(String name, Class<? extends QualityMetric> cls) {
+	private QualityMetricRegistry(String name, Class<? extends MappingQualityMetric> cls) {
 		this.name = name;
 		this.className = cls;
 	}
 	
-	public Class<? extends QualityMetric> getQMClass() { return className; }
+	public Class<? extends MappingQualityMetric> getQMClass() { return className; }
 	public String toString() { return name; } 
 	
 	public QualityMetricRegistry getRegistryEntry(String name) {

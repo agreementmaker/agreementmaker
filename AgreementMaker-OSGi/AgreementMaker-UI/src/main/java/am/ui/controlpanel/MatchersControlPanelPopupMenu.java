@@ -10,7 +10,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 
-import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
@@ -20,6 +19,7 @@ import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.MatchingTaskChangeEvent;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.ui.UICore;
+import am.ui.UIUtility;
 import am.ui.canvas2.Canvas2;
 import am.ui.canvas2.graphical.MappingData;
 import am.ui.canvas2.utility.Canvas2Edge;
@@ -362,7 +362,7 @@ public class MatchersControlPanelPopupMenu extends JPopupMenu implements ActionL
 			}
 				
 			if( lowerBound > upperBound ) {
-				Utility.displayErrorPane("The lower bound is greater than the upper bound.", "Invalid range");
+				UIUtility.displayErrorPane("The lower bound is greater than the upper bound.", "Invalid range");
 				return;
 			}
 			
@@ -434,7 +434,7 @@ public class MatchersControlPanelPopupMenu extends JPopupMenu implements ActionL
 			}
 				
 			if( lowerBound > upperBound ) {
-				Utility.displayErrorPane("The lower bound is greater than the upper bound.", "Invalid range");
+				UIUtility.displayErrorPane("The lower bound is greater than the upper bound.", "Invalid range");
 				return;
 			}
 			
@@ -471,11 +471,11 @@ public class MatchersControlPanelPopupMenu extends JPopupMenu implements ActionL
 		
 		
 		if( e.getActionCommand().equals("FILTER_CLASS_BY_MAPPINGTYPE")) {
-			Utility.displayErrorPane("Not yet implemented.", "Not implemented.");
+			UIUtility.displayErrorPane("Not yet implemented.", "Not implemented.");
 		}
 		
 		if( e.getActionCommand().equals("FILTER_PROPERTY_BY_MAPPINGTYPE")) {
-			Utility.displayErrorPane("Not yet implemented.", "Not implemented.");
+			UIUtility.displayErrorPane("Not yet implemented.", "Not implemented.");
 		}
 		
 		if( e.getActionCommand().equals("DELETE_HIDDEN_CLASS_MAPPINGS") ) {

@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import am.app.mappingEngine.threaded.AbstractMatcherRunner;
+
 import com.hp.hpl.jena.ontology.OntModel;
 
 /**

@@ -6,8 +6,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-import am.Utility;
 import am.app.Core;
+import am.ui.UIUtility;
 import edu.smu.tspell.wordnet.AdjectiveSynset;
 import edu.smu.tspell.wordnet.AdverbSynset;
 import edu.smu.tspell.wordnet.NounSynset;
@@ -36,7 +36,7 @@ public class WordNetUtils {
 			wordNet = WordNetDatabase.getFileInstance();
 		}
 		catch( Exception e ) {
-			Utility.displayErrorPane(e.getMessage(), "Cannot open WordNet files.\nWordNet should be in the following directory:\n" + wordnetdir);
+			UIUtility.displayErrorPane(e.getMessage(), "Cannot open WordNet files.\nWordNet should be in the following directory:\n" + wordnetdir);
 		}
 	}
 

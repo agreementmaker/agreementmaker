@@ -6,12 +6,13 @@ import java.io.IOException;
 
 import am.evaluation.alignment.AlignmentMetrics;
 import am.evaluation.alignment.DeltaFromReference;
-import am.extension.multiUserFeedback.MUExperiment;
-import am.extension.userfeedback.PropagationEvaluation;
-import am.extension.userfeedback.UFLExperiment;
-import am.extension.userfeedback.MLFeedback.MLFExperiment;
+import am.extension.multiUserFeedback.experiment.MUExperiment;
+import am.extension.userfeedback.evaluation.PropagationEvaluation;
+import am.extension.userfeedback.experiments.MLFExperiment;
+import am.extension.userfeedback.experiments.SUExperiment;
+import am.extension.userfeedback.experiments.UFLExperiment;
 
-public class SMatrixDeltaEvaluetion extends PropagationEvaluation<MLFExperiment>  {
+public class SMatrixDeltaEvaluetion extends PropagationEvaluation<SUExperiment>  {
 	
 	private DeltaFromReference deltaFromReference;
 	
@@ -30,7 +31,7 @@ public class SMatrixDeltaEvaluetion extends PropagationEvaluation<MLFExperiment>
 	}
 	
 	@Override
-	public void evaluate(MLFExperiment exp) {
+	public void evaluate(SUExperiment exp) {
 
 		deltaFromReference = new DeltaFromReference(exp.getReferenceAlignment());
 		

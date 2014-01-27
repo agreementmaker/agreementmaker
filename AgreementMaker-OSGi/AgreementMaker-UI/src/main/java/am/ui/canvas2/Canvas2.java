@@ -85,7 +85,7 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 	public int Xpadding = 20;
 	public int Ypadding = 20;
 
-
+	private final Object synchronizedPaintingObject = new Object();
 	private boolean painting = false;
 	
 	/* ************************************************* CONSTRUCTORS ********************************* */
@@ -227,8 +227,10 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 	*/
 	@Override
 	public void paintComponent(Graphics g ) {
-		if( painting ) return;  // avoid concurrent paintings
-		painting = true;
+		synchronized(synchronizedPaintingObject) {
+			if( painting ) return;  // avoid concurrent paintings
+			painting = true;
+		}
 		super.paintComponent(g);
 		
 		Rectangle currentView = viewport.getViewRect();

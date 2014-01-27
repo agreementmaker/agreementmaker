@@ -224,37 +224,6 @@ public class Utility {
 		JOptionPane.showMessageDialog(null, sp, title, JOptionPane.PLAIN_MESSAGE);
 	}
 
-	/**
-	 * @deprecated Must be moved to AgreementMaker-UI bundle.
-	 */
-	@Deprecated
-	public static void displayErrorPane(String desc, String title) {
-		if(title == null)
-			title = "Error";
-		try {
-			JOptionPane.showMessageDialog(null, desc,title, JOptionPane.ERROR_MESSAGE);
-		} catch( HeadlessException ex ) {
-			Logger log = Logger.getLogger(Utility.class);
-			log.error(desc);
-		}
-	}
-
-	/**
-	 * @deprecated Must be moved to AgreementMaker-UI bundle.
-	 */
-	@Deprecated
-	public static boolean displayConfirmPane(String desc, String title) {
-		if(title == null)
-			title = "Confirmation required";
-		int res =  JOptionPane.showConfirmDialog(null,
-				desc,
-				title,
-				JOptionPane.YES_NO_OPTION);	
-		if(res == JOptionPane.YES_OPTION)
-			return true;
-		else return false;
-	}
-
 
 	//********************************************MATH UTILITIES**************************************************************
 
@@ -603,5 +572,15 @@ public class Utility {
 		}
 		reader.close();
 		return fileData.toString();
+	}
+	
+	public static class IntArray {
+		public static int getMaxValue(int[] array) {
+			int value = Integer.MIN_VALUE;
+			for( int i : array) {
+				if( value < i ) value = i;
+			}
+			return value;
+		}
 	}
 }

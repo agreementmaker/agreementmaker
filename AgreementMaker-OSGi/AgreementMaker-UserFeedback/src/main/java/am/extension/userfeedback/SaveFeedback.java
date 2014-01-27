@@ -12,6 +12,7 @@ import javax.swing.event.EventListenerList;
 
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
+import am.extension.userfeedback.experiments.UFLExperiment;
 import am.extension.userfeedback.ui.UFLControlGUI;
 
 public abstract class SaveFeedback<T extends UFLExperiment> {

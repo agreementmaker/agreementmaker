@@ -352,6 +352,15 @@ public class AMNode extends AbstractNode implements Serializable {
 		return false;
 	}
 	
+	@Override
+	public boolean equals(Object obj) {
+		if( obj instanceof Node ) {
+			return equals((Node)obj);
+		}
+		else 
+			return false;
+	}
+	
 	// equality checker --- VERY IMPORTANT
 	public boolean equals( Node o) {
 

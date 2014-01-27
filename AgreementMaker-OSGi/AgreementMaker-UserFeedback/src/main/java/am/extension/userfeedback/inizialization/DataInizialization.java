@@ -3,18 +3,23 @@ package am.extension.userfeedback.inizialization;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+import org.openjena.atlas.logging.Log;
+
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.app.ontology.Node;
-import am.extension.multiUserFeedback.MUExperiment;
-import am.extension.userfeedback.FeedbackLoopInizialization;
-import am.extension.userfeedback.MLFeedback.MLFExperiment;
+import am.extension.userfeedback.experiments.SUExperiment;
+import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
 
-public class DataInizialization extends FeedbackLoopInizialization<MLFExperiment> {
+public class DataInizialization extends FeedbackLoopInizialization<SUExperiment> {
+	
+	private static final Logger LOG = Logger.getLogger(DataInizialization.class);
+	
 	List<AbstractMatcher> inputMatchers = new ArrayList<AbstractMatcher>();
 	public DataInizialization()
 	{
@@ -22,20 +27,25 @@ public class DataInizialization extends FeedbackLoopInizialization<MLFExperiment
 	}
 	
 	@Override
-	public void inizialize(MLFExperiment exp) {
+	public void inizialize(SUExperiment exp) {
 		// TODO Auto-generated method stub
 		inputMatchers=exp.initialMatcher.getComponentMatchers();
 		SimilarityMatrix smClass=exp.initialMatcher.getFinalMatcher().getClassesMatrix().clone();
 		SimilarityMatrix smProperty=exp.initialMatcher.getFinalMatcher().getPropertiesMatrix().clone();
-		for(int i=0;i<smClass.getRows();i++)
-			for(int j=0;j<smClass.getColumns();j++)
-				smClass.setSimilarity(i, j, 0.5);
-		for(int i=0;i<smProperty.getRows();i++)
-			for(int j=0;j<smProperty.getColumns();j++)
-				smProperty.setSimilarity(i, j, 0.5);
-		smClass=prepareSMforNB(smClass);
-		smProperty=prepareSMforNB(smProperty);
 		
+		
+//		for(int i=0;i<smClass.getRows();i++)
+//			for(int j=0;j<smClass.getColumns();j++)
+//				smClass.setSimilarity(i, j, 0.5);
+//		for(int i=0;i<smProperty.getRows();i++)
+//			for(int j=0;j<smProperty.getColumns();j++)
+//				smProperty.setSimilarity(i, j, 0.5);
+		
+		SimilarityMatrix am=exp.initialMatcher.getFinalMatcher().getClassesMatrix();
+		smClass=prepareSMforNB(smClass, am);
+		am=exp.initialMatcher.getFinalMatcher().getPropertiesMatrix();
+		smProperty=prepareSMforNB(smProperty, am);
+		am=null;
 		exp.setUflClassMatrix(smClass);
 		exp.setUflPropertyMatrix(smProperty);
 		
@@ -52,10 +62,42 @@ public class DataInizialization extends FeedbackLoopInizialization<MLFExperiment
 						Core.getInstance().getTargetOntology(), 
 						alignType.aligningProperties);
 		
+		
+		// output the experiment description
+		StringBuilder d = new StringBuilder();
+		
+		d.append("============================ Running UFL Experiment: =================================\n");
+		d.append("         NUM_USERS:" + exp.setup.parameters.getIntParameter(Parameter.NUM_USERS) + "\n");
+		d.append("    NUM_ITERATIONS:" + exp.setup.parameters.getIntParameter(Parameter.NUM_ITERATIONS) + "\n");
+		d.append("        ERROR_RATE:" + exp.setup.parameters.getDoubleParameter(Parameter.ERROR_RATE) + "\n");
+		d.append(" REVALIDATION_RATE:" + exp.setup.parameters.getParameter(Parameter.REVALIDATION_RATE) + "\n");
+		d.append("         STATIC_CS:" + exp.setup.parameters.getBooleanParameter(Parameter.STATIC_CANDIDATE_SELECTION) + "\n");
+		d.append("PROPAGATION_METHOD:" + exp.setup.parameters.getParameter(Parameter.PROPAGATION_METHOD) + "\n");
+		d.append("======================================================================================\n");
+		
+		String sourceFile = Core.getInstance().getSourceOntology().getFilename();
+		if( sourceFile.length() >= 51 ) {
+			d.append("Source Ont: ..." + sourceFile.substring(sourceFile.length()-50-1, sourceFile.length()-1) + "\n");
+		}
+		else {
+			d.append("Source Ont: " + sourceFile + "\n");
+		}
+		
+		String targetFile = Core.getInstance().getTargetOntology().getFilename();
+		if( targetFile.length() >= 51 ) {
+			d.append("Target Ont: ..." + targetFile.substring(targetFile.length()-50-1, targetFile.length()-1) + "\n");
+		}
+		else {
+			d.append("Target Ont: " + targetFile + "\n");
+		}
+		
+		exp.info(d.toString());
+		LOG.info(d.toString());
+		
 		done();
 	}
 
-	private SimilarityMatrix prepareSMforNB(SimilarityMatrix sm)
+	private SimilarityMatrix prepareSMforNB(SimilarityMatrix sm, SimilarityMatrix am)
 	{
 		Mapping mp;
 		Object[] ssv;
@@ -67,6 +109,14 @@ public class DataInizialization extends FeedbackLoopInizialization<MLFExperiment
 				if (!validSsv(ssv))
 				{ 
 					sm.setSimilarity(i, j, 0.0);
+				}
+				else
+				{
+//					if (am.get(i, j).getSimilarity()>0.6)
+//						sm.setSimilarity(i, j, 1.0);
+//					else
+//						sm.setSimilarity(i, j, 0.5);
+					sm.setSimilarity(i, j, am.getSimilarity(i, j));
 				}
 			}
 		

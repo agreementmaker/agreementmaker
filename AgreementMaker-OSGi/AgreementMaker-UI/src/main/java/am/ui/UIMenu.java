@@ -14,7 +14,6 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 
-import am.Utility;
 import am.app.Core;
 import am.app.lexicon.Lexicon;
 import am.app.mappingEngine.LexiconStore.LexiconRegistry;
@@ -525,10 +524,10 @@ public class UIMenu {
 				return lexPanel;
 			} catch (Exception e) {
 				e.printStackTrace();
-				Utility.displayErrorPane("Could not display lexicon lookup panel.\n\n"+e.getMessage(), "Error");
+				UIUtility.displayErrorPane("Could not display lexicon lookup panel.\n\n"+e.getMessage(), "Error");
 			}
 		} else {
-			Utility.displayErrorPane("The ontology cannot be null.", "Error");
+			UIUtility.displayErrorPane("The ontology cannot be null.", "Error");
 		}	
 		return null;
 	}
