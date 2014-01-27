@@ -81,13 +81,20 @@
 							!simmetrics.tokenisers.*,
 							!simmetrics.wordhandlers.*,
 							!sun.io.*,
+							!org.w3c.dom.ranges.*,
+							!org.w3c.dom.traversal.*,
 							org.osgi.*,
 							com.hp.hpl.*,
 							org.apache.log4j.*,
 							*
 						</Import-Package>
 						
-						<_exportcontents>*</_exportcontents>
+						<_exportcontents>
+							!javax.xml.bind.*,
+							!javax.xml.stream.util.*,
+							!javax.xml.stream.*,
+							*
+						</_exportcontents>
 						<Bundle-Activator>${bundle.namespace}.app.osgi.AMActivator</Bundle-Activator>
 						<Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
 						<Embed-Directory>target/dependency</Embed-Directory>
