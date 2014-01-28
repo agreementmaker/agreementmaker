@@ -583,4 +583,9 @@ public class Utility {
 			return value;
 		}
 	}
+	
+	public static boolean fileExists(String file) {
+		File f = new File(file);
+		return f.exists();
+	}
 }
