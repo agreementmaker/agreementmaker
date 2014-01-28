@@ -18,6 +18,7 @@ import am.app.ontology.Ontology;
 import am.app.ontology.profiling.manual.ManualOntologyProfiler;
 import am.extension.userfeedback.ExecutionSemantics;
 import am.extension.userfeedback.experiments.UFLExperiment;
+import am.extension.userfeedback.experiments.UFLExperimentParameters;
 import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
 import am.matcher.Combination.CombinationMatcher;
 import am.matcher.Combination.CombinationParameters;
@@ -38,11 +39,33 @@ import am.matcher.ssc.SiblingsSimilarityContributionParameters;
 import am.ui.UIUtility;
 
 /**
- * The SemanticStructural combination matcher.  Used as the first step in the new
+ * The SemanticStructural combination matcher. Used as the first step in the new
  * User Feedback Loop.
  * 
- * @author Cosmin Stroe - Jan 29th, 2011.
- *
+ * <p>
+ * Relevant parameters to this module:
+ * <ul>
+ * 
+ * <li>{@link Parameter#IM_THRESHOLD}: The threshold used for the selection step
+ * of the matchers.</li>
+ * 
+ * <li>IM_XXX_LOADFILE: The file from which to load a previously computed XXX
+ * result. Leave empty to compute the result instead of loading from a file. If
+ * the file does not exist, it's the same as if the parameter is empty. <br>
+ * {@link Parameter#IM_BSM_LOADFILE}, {@link Parameter#IM_ASM_LOADFILE},
+ * {@link Parameter#IM_PSM_LOADFILE}, {@link Parameter#IM_PSM_LOADFILE}</li>
+ * 
+ * <li>IM_XXX_SAVEFILE: The file which to save a computed result to. This is
+ * used for saving the result of a matcher, so that it may be loaded later.
+ * Leave empty if you do not want the matching result to be saved. <br>
+ * {@link Parameter#IM_BSM_SAVEFILE}, {@link Parameter#IM_ASM_SAVEFILE},
+ * {@link Parameter#IM_PSM_SAVEFILE}, {@link Parameter#IM_PSM_SAVEFILE}</li>
+ * </ul>
+ * </p>
+ * 
+ * @author Francesco Loprete @date Jan 17th, 2014.
+ * @author Cosmin Stroe (cstroe@gmail.com) @date Jan 28th, 2014.
+ * 
  */
 public class SestCombinationMatchers extends ExecutionSemantics {
 
@@ -93,6 +116,8 @@ public class SestCombinationMatchers extends ExecutionSemantics {
 	
 	private UFLExperiment exp;
 	
+	private UFLExperimentParameters eparam;
+	
 	private boolean p = false;
 	
 	@Override
@@ -104,6 +129,7 @@ public class SestCombinationMatchers extends ExecutionSemantics {
 		}
 		
 		this.exp = experiment;
+		this.eparam = experiment.setup.parameters;
 		
 		try {
 			progressDisplay = experiment.gui;
@@ -162,18 +188,16 @@ public class SestCombinationMatchers extends ExecutionSemantics {
 		LOG.info("Running " + matcher.getName() + "...");
 		if(p) progressDisplay.setProgressLabel(matcher.getName());
 
-		if( loadFileParameter != null ) {
-			String matcherLoadFile = exp.setup.parameters.getParameter(loadFileParameter);
-			if( matcherLoadFile != null ) {
-				MatcherResult result = PersistanceUtility.loadMatcherResult(matcherLoadFile);
-				result.setSourceOntology(matcher.getSourceOntology());
-				result.setTargetOntology(matcher.getTargetOntology());
-				matcher.setResult(result);
-				// if we loaded the result, we don't need to match or save the result.
-				exp.info("Loaded " + matcher.getName() + " result from: " + matcherLoadFile);
-				LOG.info("Loaded " + matcher.getName() + " result from: " + matcherLoadFile);
-				return;
-			}
+		String matcherLoadFile = eparam.getParameter(loadFileParameter);
+		MatcherResult result = PersistanceUtility.loadMatcherResult(matcherLoadFile);
+		if( result != null ) { 
+			result.setSourceOntology(matcher.getSourceOntology());
+			result.setTargetOntology(matcher.getTargetOntology());
+			matcher.setResult(result);
+			
+			exp.info("Loaded " + matcher.getName() + " result from: " + matcherLoadFile);
+			LOG.info("Loaded " + matcher.getName() + " result from: " + matcherLoadFile);
+			return; // if we loaded the result, we don't need to match or save the result.
 		}
 		
 		// we have no result, match
@@ -181,7 +205,7 @@ public class SestCombinationMatchers extends ExecutionSemantics {
 
 		// save the result.		
 		if( saveFileParameter != null ) {
-			String matcherSaveFile = exp.setup.parameters.getParameter(saveFileParameter);
+			String matcherSaveFile = eparam.getParameter(saveFileParameter);
 			if( matcherSaveFile != null ) {
 				exp.info("Saving " + matcher.getName() + " result to: " + matcherSaveFile);
 				LOG.info("Saving " + matcher.getName() + " result to: " + matcherSaveFile);
@@ -211,7 +235,7 @@ public class SestCombinationMatchers extends ExecutionSemantics {
 		param_lsm.threshold =
 		param_lwc.threshold = 
 		param_dsi.threshold =
-		param_ssc.threshold = 0.4;
+		param_ssc.threshold = eparam.getDoubleParameter(Parameter.IM_THRESHOLD);
 		
 		
 		// BSM

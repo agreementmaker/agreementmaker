@@ -1,5 +1,7 @@
 package am.extension.userfeedback.preset;
 
+import static am.Utility.fileExists;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileNotFoundException;
@@ -26,29 +28,25 @@ import am.extension.userfeedback.experiments.UFLExperimentParameters;
 import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
 import am.extension.userfeedback.experiments.UFLExperimentSetup;
 import am.utility.Pair;
-
+/**
+ * This class is for creating UFL experiment batch files.
+ * 
+ * @author Cosmin Stroe (cstroe@gmail.com)
+ *
+ */
 public class PresetUtilities {
-
-	public final static String BENCHMARKS_DIR = "OAEI/2013/benchmarks";
-	public final static String BENCHMARKS_FILTERED_RA = "UFL/FilteredAlignments";
-	public final static String ANATOMY_DIR = "OAEI/2013/anatomy";
-
-	public final static String ANATOMY_TASK_NAME = "Anatomy";
 	
-	// the number of the target ontology will be appened to this name.
-	// for example, Task 101-304 will be called BENCHMARK_TASK_BASENAME + "304".
-	public final static String BENCHMARK_TASK_BASENAME = "Benchmark ";
-	
-	public static String[] EXPERIMENT2 = new String[42]; 
-	
-	public static void createAllMatchingTasks() {
-		//createAnatomyTask();
-		//createBenchmarkTasksAll();
-		createBenchmarkTasks30xFileredRA();
-	}
+	public static final String ANATOMY_DIR            = "OAEI/2013/anatomy";
+	public static final String BENCHMARKS_DIR         = "OAEI/2013/benchmarks";
+	public static final String BENCHMARKS_FILTERED_RA = "UFL/FilteredAlignments";
 
+	/**
+	 * @return The OAEI 2013 Anatomy Track (stored in AM_ROOT).
+	 */
 	public static List<MatchingTaskPreset> createAnatomyTask() {
 		final String root = Core.getInstance().getRoot();
+		final String ANATOMY_TASK_NAME = "Anatomy";
+		
 		MatchingTaskPreset anatomy = 
 				new MatchingTaskPreset(
 						ANATOMY_TASK_NAME, 
@@ -61,10 +59,39 @@ public class PresetUtilities {
 		return tasks;
 	}
 	
-	public static List<MatchingTaskPreset> createBenchmarkTasksAll() {
-		final String root = Core.getInstance().getRoot();
+	/**
+	 * @param basename
+	 *            The base name for the experiment names. The number of the
+	 *            target ontology will be appended to this name. For example,
+	 *            Task 101-304 will be called basename + "304".
+	 * @return The set of the OAEI 2013 Benchmarks tasks.
+	 */
+	public static List<MatchingTaskPreset> createBenchmarkTasksAll(String basename) {
+		return createBenchmarkTasksAll(basename, BENCHMARKS_DIR, BENCHMARKS_DIR, null);
+	}
+	
+	/**
+	 * @param basename
+	 *            The base name for the experiment names. The number of the
+	 *            target ontology will be appended to this name. For example,
+	 *            Task 101-304 will be called basename + "304".
+	 * @return The 301 - 304 Benchmarks test cases from OAEI 2013, using a
+	 *         filtered reference alignment (subclass mappings removed).
+	 */
+	public static List<MatchingTaskPreset> createBenchmarkTasks30xFileredRA(String basename) {
+		// which directories we accept
+		final Set<String> whiteList = new HashSet<>();
+		whiteList.add("301");
+		whiteList.add("302");
+		whiteList.add("303");
+		whiteList.add("304");
 		
-		File benchmarksDir = new File(root + BENCHMARKS_DIR);
+		return createBenchmarkTasksAll(basename, BENCHMARKS_DIR, BENCHMARKS_FILTERED_RA, whiteList);
+	}
+	
+	private static List<MatchingTaskPreset> createBenchmarkTasksAll(String basename, String BENCHMARKS_DIR, String REFERENCE_DIR, final Set<String> directoryWhiteList) {
+		final String root = Core.getInstance().getRoot();
+		final File benchmarksDir = new File(root + BENCHMARKS_DIR);
 		
 		if( !benchmarksDir.exists() ) {
 			throw new AssertionError("Directory does not exist.", new FileNotFoundException(benchmarksDir.toString()));
@@ -73,68 +100,50 @@ public class PresetUtilities {
 		// List all subdirectories in the benchmarks directory.
 		File[] benchmarkTestCases =  benchmarksDir.listFiles(new FileFilter() {
 			@Override public boolean accept(File pathname) {
-				return pathname.isDirectory();
+				boolean isDir = pathname.isDirectory();
+				
+				if( isDir && directoryWhiteList == null ) 
+					return true; 
+				
+				if( isDir && directoryWhiteList.contains(pathname.getName()) )
+					return true;
+				
+				return false;
 			}			
+		});
+		
+		// sort by name
+		Arrays.sort(benchmarkTestCases, new Comparator<File>() {
+			@Override public int compare(File o1, File o2) {
+				return o1.getAbsolutePath().compareTo(o2.getAbsolutePath());
+			}
 		});
 		
 		List<MatchingTaskPreset> tasks = new LinkedList<>();
 		
-		for( File testCase : benchmarkTestCases ) {
+		String sourceFile = root + BENCHMARKS_DIR + File.separator + "101" + File.separator + "onto.rdf";
+		if( !fileExists(sourceFile) ) 
+			throw new AssertionError("Source ontology does not exist.", new FileNotFoundException(sourceFile));
+		
+		for( File testCase : benchmarkTestCases ) 
+		{
+			String targetFile = root + BENCHMARKS_DIR + File.separator + testCase.getName() + File.separator + "onto.rdf";
+			if( !fileExists(targetFile) ) 
+				throw new AssertionError("Target ontology does not exist.", new FileNotFoundException(targetFile));
+			
+			String referenceAlignment = root + REFERENCE_DIR + File.separator + testCase.getName() + File.separator + "refalign.rdf";
+			if( !fileExists(referenceAlignment) ) 
+				throw new AssertionError("Reference alignment does not exist.", new FileNotFoundException(referenceAlignment));
+
 			MatchingTaskPreset currentTask = new MatchingTaskPreset(
-					BENCHMARK_TASK_BASENAME + testCase.getName(),
-					root + BENCHMARKS_DIR + File.separator + "101" + File.separator + "onto.rdf",
-					root + BENCHMARKS_DIR + File.separator + testCase.getName() + File.separator + "onto.rdf",
-					root + BENCHMARKS_FILTERED_RA + File.separator + testCase.getName() + File.separator + "refalign.rdf");
+					basename + testCase.getName(),
+					sourceFile,
+					targetFile,
+					referenceAlignment);
 			
 			tasks.add(currentTask);
 		}
 		return tasks;
-	}
-	
-	private static List<MatchingTaskPreset> createBenchmarkTasks30xFileredRA() {
-		final String root = Core.getInstance().getRoot();
-		
-		File benchmarksDir = new File(root + BENCHMARKS_DIR);
-		
-		if( !benchmarksDir.exists() ) {
-			throw new AssertionError("Directory does not exist.", new FileNotFoundException(benchmarksDir.toString()));
-		}
-		
-		// which directories we accept
-		final Set<String> whiteList = new HashSet<>();
-		whiteList.add("301");
-		whiteList.add("302");
-		whiteList.add("303");
-		whiteList.add("304");
-		
-		// List all sub-directories in the benchmarks directory.
-		File[] benchmarkTestCases =  benchmarksDir.listFiles(new FileFilter() {
-			@Override public boolean accept(File pathname) {
-				return pathname.isDirectory() && whiteList.contains(pathname.getName());
-			}			
-		});
-		
-		Arrays.sort(benchmarkTestCases, new Comparator<File>() {
-
-			@Override
-			public int compare(File o1, File o2) {
-				return o1.getAbsolutePath().compareTo(o2.getAbsolutePath());
-			}
-			
-		});
-		
-		List<MatchingTaskPreset> presets = new LinkedList<>();
-		for( File testCase : benchmarkTestCases ) {
-			MatchingTaskPreset currentTask = new MatchingTaskPreset(
-					BENCHMARK_TASK_BASENAME + testCase.getName(),
-					benchmarksDir + File.separator + "101" + File.separator + "onto.rdf",
-					benchmarksDir + File.separator + testCase.getName() + File.separator + "onto.rdf",
-					root + BENCHMARKS_FILTERED_RA + File.separator + testCase.getName() + File.separator + "refalign.rdf");
-			
-			presets.add(currentTask);
-		}
-		
-		return presets;
 	}
 	
 	public static List<ExperimentPreset> createExperiments2() {
@@ -328,11 +337,11 @@ public class PresetUtilities {
 		
 		setup.exp = ExperimentRegistry.ServerExperiment;
 		
-		setup.im  = InitialMatcherRegistry.OrthoCombination;
+		setup.im  = InitialMatcherRegistry.SemanticStructuralCombination;
 		setup.fli = LoopInizializationRegistry.ServerDataInizialization;
 		setup.cs  = CandidateSelectionRegistry.ServerMultiStrategy;
-		setup.cse = CSEvaluationRegistry.PrecisionRecallEval;
-		setup.uv  = UserValidationRegistry.FakeClient;
+		setup.cse = CSEvaluationRegistry.MultiplexCSE;
+		setup.uv  = UserValidationRegistry.PESimulatedClient;
 		setup.fa  = FeedbackAggregationRegistry.ServerFeedbackAggregation;
 		setup.fp  = FeedbackPropagationRegistry.ServerFeedbackPropagation;
 		setup.pe  = PropagationEvaluationRegistry.ServerPropagationEvaluation;
@@ -343,6 +352,7 @@ public class PresetUtilities {
 		// default parameters
 		setup.parameters.setIntParameter(		Parameter.NUM_USERS, 10);
 		setup.parameters.setIntParameter(		Parameter.NUM_ITERATIONS, 100);
+		setup.parameters.setDoubleParameter(    Parameter.IM_THRESHOLD, 0.4);
 		
 		return setup;
 	}
@@ -351,7 +361,7 @@ public class PresetUtilities {
 	/**
 	 * Create the batch mode runs from a list of tasks and experiments.
 	 */
-	private static List<Pair<MatchingTaskPreset,ExperimentPreset>> createRuns(List<MatchingTaskPreset> tasks, List<ExperimentPreset> experiments) {
+	public static List<Pair<MatchingTaskPreset,ExperimentPreset>> createRuns(List<MatchingTaskPreset> tasks, List<ExperimentPreset> experiments) {
 		List<Pair<MatchingTaskPreset,ExperimentPreset>> runs = new LinkedList<>();
 			
 		for( MatchingTaskPreset mtp : tasks ) {
@@ -362,7 +372,6 @@ public class PresetUtilities {
 					exp.getExperimentSetup().parameters.setParameter(Parameter.LOGFILE, logFile);
 					runs.add( new Pair<MatchingTaskPreset, ExperimentPreset>(mtp.clone(), exp) );
 				} catch (CloneNotSupportedException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 			}
@@ -376,7 +385,7 @@ public class PresetUtilities {
 	
 	public static void main(String[] args) {
 		// create the matching tasks
-		List<MatchingTaskPreset> tasks = createBenchmarkTasks30xFileredRA();
+		List<MatchingTaskPreset> tasks = createBenchmarkTasks30xFileredRA("Benchmark ");
 		List<ExperimentPreset> experiments = createExperimentsBaseline();
 		List<Pair<MatchingTaskPreset,ExperimentPreset>> runs = createRuns(tasks,experiments);
 		

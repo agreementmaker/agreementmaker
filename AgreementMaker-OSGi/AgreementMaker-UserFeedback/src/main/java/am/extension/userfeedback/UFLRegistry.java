@@ -79,7 +79,7 @@ public class UFLRegistry {
 	}
 	
 	public enum CSEvaluationRegistry {
-		Multiplex (am.extension.userfeedback.evaluation.MultiplexCandidateSelectionEvaluation.class),
+		MultiplexCSE (am.extension.userfeedback.evaluation.MultiplexCandidateSelectionEvaluation.class),
 		RankingAccuracy (am.extension.userfeedback.evaluation.RankingAccuracy.class),
 		PrecisionRecallEval ( am.extension.userfeedback.common.PrecisionRecallPlot.class );
 		
@@ -91,7 +91,7 @@ public class UFLRegistry {
 	}
 	
 	public enum UserValidationRegistry {
-		FakeClient (am.extension.multiUserFeedback.validation.ProbabilisticErrorAutomaticValidation.class),
+		PESimulatedClient (am.extension.multiUserFeedback.validation.ProbabilisticErrorAutomaticValidation.class),
 		ClientFeedbackValidation (am.extension.multiUserFeedback.validation.ClientFeedbackValidation.class),
 		AutomaticReference ( am.extension.userfeedback.common.AutomaticValidation.class ),
 		Manual ( am.extension.userfeedback.common.ManualUserValidation.class );
