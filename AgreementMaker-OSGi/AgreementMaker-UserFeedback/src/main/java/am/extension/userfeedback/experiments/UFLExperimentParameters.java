@@ -82,6 +82,7 @@ public class UFLExperimentParameters extends Properties {
 	}
 	
 	public String getParameter(Parameter p) {
+		if( p == null ) return null;
 		return getProperty(p.name());
 	}
 	
