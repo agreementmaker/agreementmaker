@@ -1,5 +1,6 @@
 package am.extension.userfeedback.preset;
 
+import java.io.File;
 import java.io.Serializable;
 
 import am.app.Core;
@@ -24,27 +25,21 @@ public class MatchingTaskPreset implements Comparable<MatchingTaskPreset>, Seria
 	private String reference;
 	
 	/**
-	 * NOTE: We replace the AM_ROOT path with the string {@link #AM_ROOT}. This is
-	 * changed back when the get methods are called. This is to allow
+	 * NOTE: We replace the AM_ROOT path with the string {@link #AM_ROOT}. This
+	 * is changed back when the get methods are called. This is to allow
 	 * transfering of these settings across computers.
-	 */
-	public MatchingTaskPreset(String name, String sourceOnt, String targetOnt) {
-		this.name = name;
-		
-		String root = Core.getInstance().getRoot();
-		
-		if( sourceOnt.startsWith(root) ) {
-			sourceOnt = sourceOnt.replaceFirst(root, AM_ROOT);
-		}
-		
-		if( targetOnt.startsWith(root) ) {
-			targetOnt = targetOnt.replaceFirst(root, AM_ROOT);
-		}
-		
-		this.sourceOnt = sourceOnt;
-		this.targetOnt = targetOnt;
-	}
-	
+	 * 
+	 * @param sourceOnt
+	 *            Path to the source ontology file. Expecting OWL in RDF/XML. If
+	 *            the path is relative, it will be relative to AM_ROOT.
+	 * @param targetOnt
+	 *            Path to the target ontology file. Expecting OWL in RDF/XML. If
+	 *            the path is relative, it will be relative to AM_ROOT.
+	 * @param reference
+	 *            Path to the reference alignment file. Expecting OAEI RDF
+	 *            format. If the path is relative, it will be relative to
+	 *            AM_ROOT.
+	 */	
 	public MatchingTaskPreset(String name, String sourceOnt, String targetOnt, String reference) {
 		this.name = name;
 		
@@ -52,23 +47,31 @@ public class MatchingTaskPreset implements Comparable<MatchingTaskPreset>, Seria
 		
 		if( sourceOnt.startsWith(root) ) {
 			sourceOnt = sourceOnt.replaceFirst(root, AM_ROOT);
+		} else if( !sourceOnt.startsWith(File.separator) ) {
+			sourceOnt = AM_ROOT + sourceOnt;
 		}
 		
 		if( targetOnt.startsWith(root) ) {
 			targetOnt = targetOnt.replaceFirst(root, AM_ROOT);
+		} else if( !targetOnt.startsWith(File.separator) ) {
+			targetOnt = AM_ROOT + targetOnt;
 		}
 		
 		this.sourceOnt = sourceOnt;
 		this.targetOnt = targetOnt;
 		
 		// set the reference
-		this.hasReference = true;
-		
-		if( reference.startsWith(root) ) {
-			reference = reference.replaceFirst(root, AM_ROOT);
+		if( reference != null ) {
+			this.hasReference = true;
+			
+			if( reference.startsWith(root) ) {
+				reference = reference.replaceFirst(root, AM_ROOT);
+			} else if( !reference.startsWith(File.separator) ) {
+				reference = AM_ROOT + reference;
+			}
+			
+			this.reference = reference;
 		}
-		
-		this.reference = reference;
 	}
 	
 	/** Cloning constructor */
