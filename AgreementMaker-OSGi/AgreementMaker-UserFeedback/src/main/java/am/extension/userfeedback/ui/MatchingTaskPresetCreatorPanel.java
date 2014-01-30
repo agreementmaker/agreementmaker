@@ -187,7 +187,7 @@ public class MatchingTaskPresetCreatorPanel extends SettingsPanel implements Act
 			return new MatchingTaskPreset(name, sourceOnt, targetOnt, reference);
 		}
 		else {
-			return new MatchingTaskPreset(name, sourceOnt, targetOnt);
+			return new MatchingTaskPreset(name, sourceOnt, targetOnt, null);
 		}
 	}
 	
