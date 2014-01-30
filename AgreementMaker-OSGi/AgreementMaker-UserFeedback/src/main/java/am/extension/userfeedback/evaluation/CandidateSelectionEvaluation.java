@@ -20,6 +20,8 @@ public abstract class CandidateSelectionEvaluation {
 
 	protected EventListenerList listeners;  // list of listeners for this class
 	
+	protected boolean ignoreDone = false;
+	
 	public CandidateSelectionEvaluation() {
 		listeners = new EventListenerList();
 	}
@@ -48,7 +50,20 @@ public abstract class CandidateSelectionEvaluation {
 		
 	}
 	
+	/**
+	 * This is used when nesting CandidateSelectionEvaluation objects. The
+	 * nested objects should not send a done event.
+	 * 
+	 * @param ignore
+	 *            If true, this candidate selection evaluation object will
+	 *            <b>NOT</b> fire a
+	 *            {@link UFLControlGUI.ActionCommands#CANDIDATE_SELECTION_DONE}
+	 *            event. The default is false.
+	 */
+	public void setIgnoreDone(boolean ignore) { this.ignoreDone = ignore; }
+	
 	protected void done() {
+		if(ignoreDone) return;
 		ActionEvent e = new ActionEvent(this, 0, UFLControlGUI.ActionCommands.CS_EVALUATION_DONE.name() );
 		fireEvent(e);
 	}
