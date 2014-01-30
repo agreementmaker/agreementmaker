@@ -21,6 +21,9 @@ public class MultiplexCandidateSelectionEvaluation extends CandidateSelectionEva
 		evaluations = new CandidateSelectionEvaluation[2];
 		evaluations[0] = new PrecisionRecallPlot();
 		evaluations[1] = new RankingAccuracy();
+		
+		evaluations[0].setIgnoreDone(true);
+		evaluations[1].setIgnoreDone(true);
 	}
 	
 	@Override
@@ -28,6 +31,7 @@ public class MultiplexCandidateSelectionEvaluation extends CandidateSelectionEva
 		for( CandidateSelectionEvaluation eval : evaluations ) {
 			eval.evaluate(exp);
 		}
+		done();
 	}
 	
 }
