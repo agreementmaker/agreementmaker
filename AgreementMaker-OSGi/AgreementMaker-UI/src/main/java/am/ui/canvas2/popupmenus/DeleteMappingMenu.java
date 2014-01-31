@@ -161,7 +161,8 @@ public class DeleteMappingMenu extends JPopupMenu implements ActionListener {
 			}
 		} else if ( actionCommand.equals("VIEW_LEXICON") && node != null ) {
 			try {
-				Lexicon lex = Core.getLexiconStore().getLexicon(node.getObject().ontologyID, LexiconRegistry.ONTOLOGY_LEXICON);
+				Ontology ont = Core.getInstance().getOntologyByID(node.getObject().ontologyID);
+				Lexicon lex = Core.getLexiconStore().getLexicon(ont, LexiconRegistry.ONTOLOGY_LEXICON);
 				LexiconLookupPanel lookupPanel = lex.getLookupPanel();
 				if( lookupPanel == null ) {
 					// we have to create and display it

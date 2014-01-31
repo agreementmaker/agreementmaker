@@ -24,10 +24,14 @@ public class UFLExperimentParameters extends Properties {
 		PROPAGATION_METHOD, // the propagation method we will use in Feedback Propagation.
 		STATIC_CANDIDATE_SELECTION("false"), // whether our CS is static (only computed before experiment) or dynamic (computed every new itertation).
 		LOGFILE, // the name of the logfile
+		
+		
+		/* ************* INITIAL MATCHERS PARAMETERS ************************* */
+		
 		IM_THRESHOLD("0.6"), // the initial matchers threshold
 		
 		// LOADFILE = A file from which to load a previously computed result.
-		// SAVEFILE = A file to which to save the result of the matcher.
+		// SAVEFILE = A file to which to save the result of the matcher (when a previous result was not loaded).
 		IM_BSM_SAVEFILE, IM_BSM_LOADFILE, 
 		IM_ASM_SAVEFILE, IM_ASM_LOADFILE,
 		IM_PSM_SAVEFILE, IM_PSM_LOADFILE,
@@ -78,6 +82,7 @@ public class UFLExperimentParameters extends Properties {
 	}
 	
 	public String getParameter(Parameter p) {
+		if( p == null ) return null;
 		return getProperty(p.name());
 	}
 	

@@ -45,11 +45,15 @@ public class PersistanceUtility {
 	}
 	
 	public static MatcherResult loadMatcherResult(String file) {
+		if( file == null ) return null;
+		
 		if( !file.startsWith(File.separator) ) {
 			file = Core.getInstance().getRoot() + file;
 		}
 		
 		File inputFile = new File(file);
+		
+		if( !inputFile.exists() ) return null;
 		
 		try {
 			FileInputStream fileIn = new FileInputStream(inputFile);

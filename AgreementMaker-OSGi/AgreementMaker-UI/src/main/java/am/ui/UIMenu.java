@@ -507,7 +507,7 @@ public class UIMenu {
 			tabTitle += reg.getShortName() + " Lexicon";
 
 			try {
-				final Lexicon lex = Core.getLexiconStore().getLexicon(o.getID(), reg);
+				final Lexicon lex = Core.getLexiconStore().getLexicon(o, reg);
 				final LexiconLookupPanel lexPanel;
 				if( lex.getLookupPanel() == null ) {
 					lexPanel = new LexiconLookupPanel(lex);

@@ -28,6 +28,7 @@ public class MultiplexCandidateSelectionEvaluation extends CandidateSelectionEva
 		for( CandidateSelectionEvaluation eval : evaluations ) {
 			eval.evaluate(exp);
 		}
+		done();
 	}
 	
 }

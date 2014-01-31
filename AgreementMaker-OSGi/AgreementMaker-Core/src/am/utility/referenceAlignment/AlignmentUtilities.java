@@ -15,10 +15,20 @@ import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.ReferenceEvaluationData;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
+import am.app.mappingEngine.referenceAlignment.ReferenceEvaluator;
 import am.app.mappingEngine.utility.MatchingPair;
 import am.app.ontology.Ontology;
 import am.app.ontology.instance.Instance;
 
+/**
+ * Utilities for alignments.  (they need to be unit tested)
+ * 
+ * See {@link ReferenceEvaluator#compare(Alignment, Alignment)} for evaluating a
+ * computed alignment against a reference alignment.
+ * 
+ * @author <a href="http://cstroe.com">Cosmin Stroe</a>
+ * 
+ */
 public class AlignmentUtilities {
 
 	public static AlignmentsComparison diff(List<MatchingPair> sourceList, List<MatchingPair> targetList){

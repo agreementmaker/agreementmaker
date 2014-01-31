@@ -3,6 +3,7 @@ package am.extension.userfeedback.experiments;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import am.app.mappingEngine.Alignment;
@@ -25,7 +26,7 @@ import am.extension.userfeedback.ui.UFLProgressDisplay;
 
 public abstract class UFLExperiment {
 
-	private static final Logger LOG = Logger.getLogger(UFLExperiment.class);
+	private static final Logger LOG = LogManager.getLogger(UFLExperiment.class);
 	
 	public final UFLExperimentSetup							setup;  
 	
