@@ -81,15 +81,14 @@ private alignCardinality alignCardinalityType=alignCardinality.cn_m;
 	{
 		super(setup);
 		
+		String log = setup.parameters.getParameter(Parameter.LOGFILE);
+		String root = Core.getInstance().getRoot();
 		try {
-			String log = setup.parameters.getParameter(Parameter.LOGFILE);
-			String root = Core.getInstance().getRoot();
 			FileWriter fw = new FileWriter(root + log, false);
 			logFile = new BufferedWriter(fw);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
-			UIUtility.displayErrorPane("Permission error: Log file can not be created", "Error");
+			UIUtility.displayErrorPane("Permission error: Log file can not be created.\n" + root + log, "Error");
 		}
 	}
 
