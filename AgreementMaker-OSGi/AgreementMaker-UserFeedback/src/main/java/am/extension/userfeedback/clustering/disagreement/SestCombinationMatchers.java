@@ -69,7 +69,7 @@ import am.ui.UIUtility;
  */
 public class SestCombinationMatchers extends ExecutionSemantics {
 
-	private static final Logger LOG = Logger.getLogger(OrthoCombinationMatchers.class);
+	private static final Logger LOG = Logger.getLogger(SestCombinationMatchers.class);
 	
 	public SestCombinationMatchers() { super(); }
 	
