@@ -90,19 +90,19 @@ public class ParametricStringMatcher extends AbstractMatcher {
 			for( MatchingProgressListener mpd : progressDisplays ) mpd.setProgressLabel("Building Ontology Lexicon (1/2)");
 			sourceOntologyLexicon = 
 					Core.getLexiconStore().getLexicon(
-							sourceOntology.getID(), LexiconRegistry.ONTOLOGY_LEXICON);
+							sourceOntology, LexiconRegistry.ONTOLOGY_LEXICON);
 			targetOntologyLexicon = 
 					Core.getLexiconStore().getLexicon(
-							targetOntology.getID(), LexiconRegistry.ONTOLOGY_LEXICON);
+							targetOntology, LexiconRegistry.ONTOLOGY_LEXICON);
 			
 			for( MatchingProgressListener mpd : progressDisplays ) mpd.setProgressLabel("Building WordNet Lexicon (2/2)");
 			
 			sourceWordNetLexicon = 
 					Core.getLexiconStore().getLexicon(
-							sourceOntology.getID(), LexiconRegistry.WORDNET_LEXICON);
+							sourceOntology, LexiconRegistry.WORDNET_LEXICON);
 			targetWordNetLexicon = 
 					Core.getLexiconStore().getLexicon(
-							targetOntology.getID(), LexiconRegistry.WORDNET_LEXICON);
+							targetOntology, LexiconRegistry.WORDNET_LEXICON);
 			
 			for( MatchingProgressListener mpd : progressDisplays ) mpd.setProgressLabel(null);
 		}

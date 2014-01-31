@@ -67,10 +67,10 @@ public class LexicalSynonymMatcherWeighted extends AbstractMatcher {
 	protected void beforeAlignOperations() throws Exception {
 		super.beforeAlignOperations();
 
-		sourceLexicon = Core.getLexiconStore().getLexicon(sourceOntology.getID(), LexiconRegistry.ONTOLOGY_LEXICON);			
-		targetLexicon = Core.getLexiconStore().getLexicon(targetOntology.getID(), LexiconRegistry.ONTOLOGY_LEXICON);			
-		//Lexicon sourceWordNetLexicon = Core.getLexiconStore().getLexicon(sourceOntology.getID(), LexiconRegistry.WORDNET_LEXICON);
-		//Lexicon targetWordNetLexicon = Core.getLexiconStore().getLexicon(targetOntology.getID(), LexiconRegistry.WORDNET_LEXICON);
+		sourceLexicon = Core.getLexiconStore().getLexicon(sourceOntology, LexiconRegistry.ONTOLOGY_LEXICON);			
+		targetLexicon = Core.getLexiconStore().getLexicon(targetOntology, LexiconRegistry.ONTOLOGY_LEXICON);			
+		//Lexicon sourceWordNetLexicon = Core.getLexiconStore().getLexicon(sourceOntology, LexiconRegistry.WORDNET_LEXICON);
+		//Lexicon targetWordNetLexicon = Core.getLexiconStore().getLexicon(targetOntology, LexiconRegistry.WORDNET_LEXICON);
 
 	}	
 
