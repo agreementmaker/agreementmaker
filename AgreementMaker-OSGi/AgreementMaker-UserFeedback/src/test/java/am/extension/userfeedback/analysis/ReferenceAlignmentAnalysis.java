@@ -20,9 +20,9 @@ import am.utility.referenceAlignment.AlignmentUtilities;
  * @author cosmin
  *
  */
-public class ExperimentAnalysis {
+public class ReferenceAlignmentAnalysis {
 	
-	private static final Logger LOG = LogManager.getLogger(ExperimentAnalysis.class);
+	private static final Logger LOG = LogManager.getLogger(ReferenceAlignmentAnalysis.class);
 
 	/**
 	 * How many mappings in the reference alignments, and what kind of mappings are they?
