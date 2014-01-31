@@ -30,6 +30,15 @@ public class ExperimentAnalysis {
 	@Test
 	public void analyzeReferenceAlignments() {
 		LOG.info("Analysis of the mappings in the various reference alignments.");
+		LOG.info("clsEQ  : Number of equivalent class mappings.");
+		LOG.info("clsSC  : Number of subclass/superclass mappings.");
+		LOG.info("clsO   : Number of class mappings other than equivalent, subclass, and superclass.");
+		LOG.info("clsTot : Total number of class mappings.");
+		LOG.info("propEQ : Number of equivalent properties mappings.");
+		LOG.info("propSC : Number of subproperty/superproperty mappings.");
+		LOG.info("propO  : Number of property mappings other than equivalent, subproperty, and superproperty.");
+		LOG.info("propTot: Total number of property mappings.");
+		LOG.info("totEq  : Total number of equivalent mappings.");
 		LOG.info("Experiment\t\t\t" + 
 					"clsEQ\tclsSC\tclsO\tclsTot\t" +
 					"propEQ\tpropSP\tpropO\tpropTot\ttotEQ");
