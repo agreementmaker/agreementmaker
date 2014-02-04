@@ -1,10 +1,14 @@
 package am.extension.userfeedback.analysis;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.hp.hpl.jena.rdf.model.impl.RDFDefaultErrorHandler;
+
+import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
@@ -29,17 +33,23 @@ public class ReferenceAlignmentAnalysis {
 	 */
 	@Test
 	public void analyzeReferenceAlignments() {
-		LOG.info("Analysis of the mappings in the various reference alignments.");
-		LOG.info("clsEQ  : Number of equivalent class mappings.");
-		LOG.info("clsSC  : Number of subclass/superclass mappings.");
-		LOG.info("clsO   : Number of class mappings other than equivalent, subclass, and superclass.");
-		LOG.info("clsTot : Total number of class mappings.");
-		LOG.info("propEQ : Number of equivalent properties mappings.");
-		LOG.info("propSC : Number of subproperty/superproperty mappings.");
-		LOG.info("propO  : Number of property mappings other than equivalent, subproperty, and superproperty.");
-		LOG.info("propTot: Total number of property mappings.");
-		LOG.info("totEq  : Total number of equivalent mappings.");
-		LOG.info("Experiment\t\t\t" + 
+		// silence all the other loggers
+		Logger coreLog = LogManager.getLogger(Core.class);
+		coreLog.setLevel(Level.OFF);
+		RDFDefaultErrorHandler.silent = true;
+		
+		LOG.info(" Analysis of the mappings in the various reference alignments.");
+		LOG.info(" clsEQ  : Number of equivalent class mappings.");
+		LOG.info(" clsSC  : Number of subclass/superclass mappings.");
+		LOG.info(" clsO   : Number of class mappings other than equivalent, subclass, and superclass.");
+		LOG.info(" clsTot : Total number of class mappings.");
+		LOG.info(" propEQ : Number of equivalent properties mappings.");
+		LOG.info(" propSC : Number of subproperty/superproperty mappings.");
+		LOG.info(" propO  : Number of property mappings other than equivalent, subproperty, and superproperty.");
+		LOG.info(" propTot: Total number of property mappings.");
+		LOG.info(" totEq  : Total number of equivalent mappings.");
+		LOG.info("");
+		LOG.info(" Experiment\t\t\t" + 
 					"clsEQ\tclsSC\tclsO\tclsTot\t" +
 					"propEQ\tpropSP\tpropO\tpropTot\ttotEQ");
 		
