@@ -6,8 +6,6 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -16,20 +14,14 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.apache.log4j.Logger;
 
 import am.Utility;
-import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.Alignment;
-import am.app.mappingEngine.Mapping;
-import am.app.ontology.Ontology;
-import am.app.ontology.ontologyParser.OntoTreeBuilder;
-import am.extension.userfeedback.UFLRegistry.ExperimentRegistry;
-import am.extension.userfeedback.experiments.UFLExperiment;
-import am.extension.userfeedback.experiments.UFLExperimentSetup;
-import am.extension.userfeedback.logic.UFLControlLogic;
+import am.extension.userfeedback.common.UFLExperimentRunner;
 import am.extension.userfeedback.preset.ExperimentPreset;
 import am.extension.userfeedback.preset.MatchingTaskPreset;
 import am.ui.UICore;
@@ -37,9 +29,8 @@ import am.ui.api.impl.AMTabSupportPanel;
 import am.ui.utility.SettingsDialog;
 import am.utility.Pair;
 import am.utility.RunTimer;
-import am.utility.referenceAlignment.AlignmentUtilities;
 
-public class UFLBatchModeGUI extends AMTabSupportPanel implements UFLProgressDisplay, ActionListener {
+public class UFLBatchModeGUI extends AMTabSupportPanel implements UFLProgressDisplay, ActionListener, ChangeListener {
 
 	private static final long serialVersionUID = 5505967642655168076L;
 
@@ -109,78 +100,9 @@ public class UFLBatchModeGUI extends AMTabSupportPanel implements UFLProgressDis
 		runStatus = 1; // running
 		
 		if( runs != null && runNumber < runs.size() ) {
-			Runnable nextRun = new Runnable() {
-				@Override public void run() {
-					final Pair<MatchingTaskPreset,ExperimentPreset> currentRun = runs.get(runNumber);
-					runNumber++;
-										
-					UFLExperimentSetup newSetup = currentRun.getRight().getExperimentSetup();
-					
-					// instantiate the experiment
-					ExperimentRegistry experimentRegistryEntry = newSetup.exp;
-					UFLExperiment newExperiment = null;
-					try {
-						Constructor<? extends UFLExperiment> constructor = 
-								experimentRegistryEntry.getEntryClass().getConstructor(new Class<?>[] { UFLExperimentSetup.class });
-						newExperiment = constructor.newInstance(newSetup);
-					} catch (InstantiationException | IllegalAccessException e) {
-						// exceptions caught, skip this run
-						e.printStackTrace();
-						UFLBatchModeGUI.this.nextRun();
-						return;
-					} catch (NoSuchMethodException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (SecurityException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (IllegalArgumentException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (InvocationTargetException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					
-					// set experiment variables
-					final MatchingTaskPreset task = currentRun.getLeft();
-					
-					final Ontology sourceOntology = OntoTreeBuilder.loadOWLOntology(task.getSourceOntology());
-					final Ontology targetOntology = OntoTreeBuilder.loadOWLOntology(task.getTargetOntology());
-					
-					newExperiment.setSourceOntology(sourceOntology);
-					newExperiment.setTargetOntology(targetOntology);
-					
-					Core.getInstance().setSourceOntology(sourceOntology);
-					Core.getInstance().setTargetOntology(targetOntology);
-					
-					if( task.hasReference() ) {
-						Alignment<Mapping> alignment = AlignmentUtilities.getOAEIAlignment(
-								task.getReference(), sourceOntology, targetOntology);
-						newExperiment.setReferenceAlignment(alignment);
-					}
-					
-					newExperiment.gui = UFLBatchModeGUI.this;
-
-					// Step 1.  experiment is starting.  Initialize the experiment setup.
-					final UFLControlLogic logic = newExperiment.getControlLogic();
-					logic.runExperiment(newExperiment);
-					
-					while(!newExperiment.experimentHasCompleted()) {
-						try {
-							Thread.sleep(1000);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-							break;
-						}
-					}
-					
-					Core.getInstance().removeOntology(sourceOntology);
-					Core.getInstance().removeOntology(targetOntology);
-					
-					UFLBatchModeGUI.this.nextRun();
-				}				
-			};
+			final Pair<MatchingTaskPreset,ExperimentPreset> currentRun = runs.get(runNumber);
+			UFLExperimentRunner runner = new UFLExperimentRunner(currentRun);
+			runner.addChangeListener(this);
 			
 			String run = (runNumber+1) + " of " + runs.size();
 			LOG.info("Starting run " + run);
@@ -189,7 +111,7 @@ public class UFLBatchModeGUI extends AMTabSupportPanel implements UFLProgressDis
 			proBar.setMaximum(runs.size());
 			proBar.setValue(runNumber);
 			
-			Thread thread = new Thread(nextRun);
+			Thread thread = new Thread(runner);
 			thread.start();
 		}
 		else {
@@ -209,6 +131,13 @@ public class UFLBatchModeGUI extends AMTabSupportPanel implements UFLProgressDis
 		}
 		
 		
+	}
+	
+	@Override
+	public void stateChanged(ChangeEvent e) {
+		// these events are only sent by the ExperimentRunner
+		// it means it's time for the next run.
+		nextRun();
 	}
 	
 	@Override public void matchingStarted(AbstractMatcher matcher) {

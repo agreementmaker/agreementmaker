@@ -386,11 +386,13 @@ public class PresetUtilities {
 	public static void main(String[] args) {
 		// create the matching tasks
 		List<MatchingTaskPreset> tasks = createBenchmarkTasks30xFileredRA("Benchmark ");
+		List<MatchingTaskPreset> oneTask = new LinkedList<>();
+		oneTask.add(tasks.get(0));
 		List<ExperimentPreset> experiments = createExperimentsBaseline();
-		List<Pair<MatchingTaskPreset,ExperimentPreset>> runs = createRuns(tasks,experiments);
+		List<ExperimentPreset> oneExp = new LinkedList<>();
+		oneExp.add(experiments.get(0));
+		List<Pair<MatchingTaskPreset,ExperimentPreset>> runs = createRuns(oneTask,oneExp);
 		
-		PresetStorage.saveBatchModeRunsToXML(runs, "UFL/experiments/baseline.xml");
-		runs = PresetStorage.loadBatchModeRunsFromXML("UFL/experiments/baseline.xml");
-		PresetStorage.saveBatchModeRunsToXML(runs, "UFL/experiments/baseline-copy.xml");
+		PresetStorage.saveBatchModeRunsToXML(runs, "UFL/experiments/301-static-cs.xml");
 	}
 }
