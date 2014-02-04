@@ -1,0 +1,36 @@
+<linked-list>
+  <pair>
+    <left class="am.extension.userfeedback.preset.MatchingTaskPreset">
+      <name>Benchmark 301</name>
+      <sourceOnt>AM_ROOT/OAEI/2013/benchmarks/101/onto.rdf</sourceOnt>
+      <targetOnt>AM_ROOT/OAEI/2013/benchmarks/301/onto.rdf</targetOnt>
+      <hasReference>true</hasReference>
+      <reference>AM_ROOT/UFL/FilteredAlignments/301/refalign.rdf</reference>
+    </left>
+    <right class="am.extension.userfeedback.preset.ExperimentPreset">
+      <name>0</name>
+      <setup>
+        <exp>ServerExperiment</exp>
+        <im>SemanticStructuralCombination</im>
+        <fli>ServerDataInizialization</fli>
+        <cs>ServerMultiStrategy</cs>
+        <cse>MultiplexCSE</cse>
+        <uv>PESimulatedClient</uv>
+        <fp>ServerFeedbackPropagation</fp>
+        <pe>ServerPropagationEvaluation</pe>
+        <sf>MultiUserSaveFeedback</sf>
+        <fa>ServerFeedbackAggregation</fa>
+        <parameters>
+          <ERROR__RATE>0.0</ERROR__RATE>
+          <IM__THRESHOLD>0.4</IM__THRESHOLD>
+          <LOGFILE>settings/tmp/uflLog.Benchmark 301.0.txt</LOGFILE>
+          <NUM__ITERATIONS>100</NUM__ITERATIONS>
+          <NUM__USERS>10</NUM__USERS>
+          <PROPAGATION__METHOD>none</PROPAGATION__METHOD>
+          <REVALIDATION__RATE>0.0</REVALIDATION__RATE>
+          <STATIC__CANDIDATE__SELECTION>true</STATIC__CANDIDATE__SELECTION>
+        </parameters>
+      </setup>
+    </right>
+  </pair>
+</linked-list>

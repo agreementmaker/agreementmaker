@@ -81,7 +81,7 @@ public class UFLRegistry {
 	public enum CSEvaluationRegistry {
 		MultiplexCSE (am.extension.userfeedback.evaluation.MultiplexCandidateSelectionEvaluation.class),
 		RankingAccuracy (am.extension.userfeedback.evaluation.RankingAccuracy.class),
-		PrecisionRecallEval ( am.extension.userfeedback.common.PrecisionRecallPlot.class );
+		PrecisionRecallEval ( am.extension.userfeedback.common.CandidateMappingEvaluation.class );
 		
 		/* *********************** DO NOT EDIT BELOW THIS LINE **************************** */
 		Class<? extends CandidateSelectionEvaluation> clazz;
@@ -128,9 +128,9 @@ public class UFLRegistry {
 	}
 	
 	public enum PropagationEvaluationRegistry {
+		ServerPropagationEvaluation (am.extension.multiUserFeedback.evaluation.ServerFeedbackEvaluation.class),
 		SelectionRankingEvaluation ( am.extension.userfeedback.common.SelectionRankingEvaluation.class ),
 		SMatrixDeltaEvaluetion (am.extension.userfeedback.clustering.disagreement.SMatrixDeltaEvaluetion.class),
-		ServerPropagationEvaluation (am.extension.multiUserFeedback.evaluation.ServerFeedbackEvaluation.class),
 		DeltaFromRef ( am.extension.userfeedback.clustering.disagreement.DeltaFromReferenceEvaluation.class ),
 		ClusterBoost ( am.extension.userfeedback.clustering.disagreement.ClusterBoostEvaluation.class );
 		

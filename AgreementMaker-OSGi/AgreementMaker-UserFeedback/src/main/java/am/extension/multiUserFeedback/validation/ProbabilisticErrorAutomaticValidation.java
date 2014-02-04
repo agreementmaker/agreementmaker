@@ -41,7 +41,7 @@ public class ProbabilisticErrorAutomaticValidation<T extends UFLExperiment> exte
 		
 		// end of the experiment?
 		final int numIterations = experiment.setup.parameters.getIntParameter(Parameter.NUM_ITERATIONS);
-		if( candidateMapping == null || experiment.getIterationNumber() > numIterations ) {
+		if( candidateMapping == null || experiment.getIterationNumber() == (numIterations - 1) ) {
 			userValidation = Validation.END_EXPERIMENT;
 			log.info("Automatic Evaliation: End of experiment.");
 			log.info("");

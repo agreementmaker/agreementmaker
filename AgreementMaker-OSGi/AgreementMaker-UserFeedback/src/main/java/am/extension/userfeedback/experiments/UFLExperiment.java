@@ -35,11 +35,11 @@ public abstract class UFLExperiment {
 	public CandidateSelection<UFLExperiment> 				candidateSelection;
 	public CandidateSelectionEvaluation 					csEvaluation;
 	public UserFeedback										userFeedback;
-	public FeedbackPropagation< UFLExperiment>				feedbackPropagation;
-	public PropagationEvaluation< UFLExperiment>			propagationEvaluation;
+	public FeedbackPropagation<UFLExperiment>				feedbackPropagation;
+	public PropagationEvaluation<UFLExperiment>				propagationEvaluation;
 	public UFLProgressDisplay								gui;
 	public SaveFeedback< UFLExperiment>						saveFeedback;
-	public 	FeedbackAgregation<UFLExperiment>					feedbackAggregation;
+	public FeedbackAgregation<UFLExperiment>				feedbackAggregation;
 	
 	/**
 	 * Keep count of how many incorrect validations were generated for a
