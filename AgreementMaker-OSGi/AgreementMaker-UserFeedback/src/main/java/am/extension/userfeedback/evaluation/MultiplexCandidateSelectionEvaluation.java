@@ -23,6 +23,15 @@ public class MultiplexCandidateSelectionEvaluation extends CandidateSelectionEva
 		evaluations[1] = new RankingAccuracy();
 	}
 	
+	public CandidateSelectionEvaluation getEvaluation(Class cls) {
+		for(CandidateSelectionEvaluation cse : evaluations) {
+			if( cse.getClass().equals(cls) ) return cse;
+		}
+		return null;
+	}
+	
+	
+	
 	@Override
 	public void evaluate(UFLExperiment exp) {
 		for( CandidateSelectionEvaluation eval : evaluations ) {

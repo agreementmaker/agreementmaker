@@ -38,6 +38,13 @@ public class UFLExperimentParameters extends Properties {
 		 */
 		CS_METRICS_LIST,
 		PRINT_FORBIDDEN_POSITIONS("false"), // whether to print out the forbidden matrices every time
+		
+		/**
+		 * 	none 	: no propagation
+		 *  euzero 	: euclidean distance
+		 *  logdist	: euclidean distance + log radius
+		 *  regression : use weka linear regression
+		 */
 		PROPAGATION_METHOD, // the propagation method we will use in Feedback Propagation.
 		STATIC_CANDIDATE_SELECTION("false"), // whether our CS is static (only computed before experiment) or dynamic (computed every new itertation).
 		LOGFILE, // the name of the logfile

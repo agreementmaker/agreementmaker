@@ -1,5 +1,6 @@
 package am.extension.userfeedback.logic;
 
+import am.extension.userfeedback.UFLRegistry.UFLStatisticRegistry;
 import am.extension.userfeedback.experiments.UFLExperiment;
 
 public abstract class PersistentControlLogic<T extends UFLExperiment> extends UFLControlLogic<T> {
@@ -153,11 +154,28 @@ public abstract class PersistentControlLogic<T extends UFLExperiment> extends UF
 		try {
 			if( experiment.saveFeedback == null ) {
 				experiment.saveFeedback = experiment.setup.sf.getEntryClass().newInstance();
-				experiment.candidateSelection.addActionListener(this);
+				experiment.saveFeedback.addActionListener(this);
 			}
 			startThread(new Runnable() {
 				@Override public void run() {
 					experiment.saveFeedback.save(experiment);	
+				}
+			});
+		} catch (InstantiationException | IllegalAccessException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Override
+	protected void runStatistic() {
+		try {
+			if( experiment.uflStatistics == null ) {
+				experiment.uflStatistics = UFLStatisticRegistry.ServerStatistics.getEntryClass().newInstance();
+				experiment.uflStatistics.addActionListener(this);
+			}
+			startThread(new Runnable() {
+				@Override public void run() {
+					experiment.uflStatistics.compute(experiment);	
 				}
 			});
 		} catch (InstantiationException | IllegalAccessException e) {

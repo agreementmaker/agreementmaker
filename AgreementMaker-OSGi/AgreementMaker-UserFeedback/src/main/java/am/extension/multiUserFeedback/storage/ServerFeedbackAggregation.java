@@ -20,7 +20,7 @@ import am.extension.multiUserFeedback.experiment.MUExperiment;
 import am.extension.userfeedback.UserFeedback.Validation;
 import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
 
-public class ServerFeedbackStorage extends FeedbackAgregation<MUExperiment>{
+public class ServerFeedbackAggregation extends FeedbackAgregation<MUExperiment>{
 	
 	private MUExperiment experiment;
 	

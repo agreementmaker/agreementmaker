@@ -104,7 +104,7 @@ public class UFLRegistry {
 	}
 	
 	public enum FeedbackAggregationRegistry {
-		ServerFeedbackAggregation (am.extension.multiUserFeedback.storage.ServerFeedbackStorage.class);
+		ServerFeedbackAggregation (am.extension.multiUserFeedback.storage.ServerFeedbackAggregation.class);
 		
 		/* *********************** DO NOT EDIT BELOW THIS LINE **************************** */
 		Class<? extends FeedbackAgregation> clazz;
@@ -149,5 +149,15 @@ public class UFLRegistry {
 		
 		SaveFeedbackRegistry( Class<? extends SaveFeedback> cs ) { clazz = cs; }
 		public Class<? extends SaveFeedback> getEntryClass() { return clazz; }
+	}
+	
+	public enum UFLStatisticRegistry {
+		ServerStatistics (am.extension.userfeedback.ServerStatistics.class);
+		
+		/* *********************** DO NOT EDIT BELOW THIS LINE **************************** */
+		Class<? extends UFLStatistics> clazz;
+		
+		UFLStatisticRegistry( Class<? extends UFLStatistics> us ) { clazz = us; }
+		public Class<? extends UFLStatistics> getEntryClass() { return clazz; }
 	}
 }
