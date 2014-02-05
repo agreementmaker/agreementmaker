@@ -12,11 +12,7 @@ import java.util.List;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Alignment;
-import am.app.mappingEngine.DefaultSelectionParameters;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.MatcherResult;
-import am.app.mappingEngine.MatchingTask;
-import am.app.mappingEngine.oneToOneSelection.MwbmSelection;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.app.ontology.Node;
@@ -43,7 +39,7 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 	final double log_multiplier=1.2;
 	final double alpha=0.7;
 	private MUExperiment experiment;
-	List<AbstractMatcher> inputMatchers = new ArrayList<AbstractMatcher>();
+	private List<AbstractMatcher> inputMatchers;
 	
 	public static final String PROPAGATION_NONE 		= "none";
 	public static final String PROPAGATION_EUCLIDEAN 	= "euzero";
@@ -84,68 +80,45 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 	public void propagate(MUExperiment exp) 
 	{
 		this.experiment=exp;
+
+		if( inputMatchers == null ) 
+			inputMatchers = experiment.initialMatcher.getComponentMatchers();
 		
 		Mapping candidateMapping = experiment.userFeedback.getCandidateMapping();
-		inputMatchers=experiment.initialMatcher.getComponentMatchers();
-
 		SimilarityMatrix feedbackClassMatrix = experiment.getComputedUFLMatrix(alignType.aligningClasses);
 		SimilarityMatrix feedbackPropertyMatrix = experiment.getComputedUFLMatrix(alignType.aligningProperties);
 		
+		// save the current matrices for debugging
 		try {
 			writeSimilarityMatrix(feedbackClassMatrix,exp.getIterationNumber(),"Classes");
 			writeSimilarityMatrix(feedbackPropertyMatrix,exp.getIterationNumber(),"Properties");
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
 		final String metric = experiment.setup.parameters.getParameter(Parameter.PROPAGATION_METHOD);
-		
-		if( candidateMapping.getAlignmentType() == alignType.aligningClasses )
-		{
+
+		// run the propagation and store the new matrices
+		if( candidateMapping.getAlignmentType() == alignType.aligningClasses ) {
 			feedbackClassMatrix = runPropagation(candidateMapping.getAlignmentType(), metric);
-			feedbackPropertyMatrix = experiment.getComputedUFLMatrix(alignType.aligningProperties);
-			/*feedbackClassMatrix=euclideanDistance(
-					experiment.getForbiddenPositions(alignType.aligningClasses),
-					feedbackClassMatrix,
-					trainingSet,
-					alignType.aligningClasses);*/
+			experiment.setComputedUFLMatrix(alignType.aligningClasses, feedbackClassMatrix);
 		}
-		else if( candidateMapping.getAlignmentType() == alignType.aligningProperties ) 
-		{
-			feedbackClassMatrix = experiment.getComputedUFLMatrix(alignType.aligningClasses);
+		else if( candidateMapping.getAlignmentType() == alignType.aligningProperties ) { 
 			feedbackPropertyMatrix = runPropagation(candidateMapping.getAlignmentType(), metric);
-//			feedbackPropertyMatrix=euclideanDistance(
-//					experiment.getForbiddenPositions(alignType.aligningProperties),
-//					feedbackPropertyMatrix,
-//					trainingSet,
-//					alignType.aligningProperties);
+			experiment.setComputedUFLMatrix(alignType.aligningProperties, feedbackPropertyMatrix);
 		}
+						
+		// create the new alignment
+		Alignment<Mapping> alignment = UFLutility.computeAlignment(
+				experiment.getSourceOntology(),
+				experiment.getTargetOntology(), 
+				feedbackClassMatrix,
+				feedbackPropertyMatrix, 
+				experiment.setup.parameters.getDoubleParameter(Parameter.IM_THRESHOLD),
+				experiment.initialMatcher.getFinalMatcher().getParam().maxSourceAlign,
+				experiment.initialMatcher.getFinalMatcher().getParam().maxTargetAlign);
 		
-		
-		MatcherResult mr = new MatcherResult((MatchingTask)null);
-		mr.setClassesMatrix(feedbackClassMatrix);
-		mr.setPropertiesMatrix(feedbackPropertyMatrix);
-		mr.setSourceOntology(experiment.getSourceOntology());
-		mr.setTargetOntology(experiment.getTargetOntology());
-		
-		DefaultSelectionParameters selParam = new DefaultSelectionParameters();
-		selParam.threshold = experiment.setup.parameters.getDoubleParameter(Parameter.IM_THRESHOLD);
-		selParam.maxSourceAlign = experiment.initialMatcher.getFinalMatcher().getParam().maxSourceAlign;
-		selParam.maxTargetAlign = experiment.initialMatcher.getFinalMatcher().getParam().maxTargetAlign;
-		selParam.inputResult = mr;
-		
-		MwbmSelection selection = new MwbmSelection();
-		selection.setParameters(selParam);
-		
-		selection.select();
-		
-		experiment.setMLAlignment(selection.getResult().getAlignment());
-		
-		experiment.setComputedUFLMatrix(alignType.aligningClasses, feedbackClassMatrix);
-		experiment.setComputedUFLMatrix(alignType.aligningProperties, feedbackPropertyMatrix);
-		
-		
+		experiment.setMLAlignment(alignment);
 		
 		done();
 	}
