@@ -16,9 +16,14 @@ import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.DefaultSelectionParameters;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.MatcherResult;
+import am.app.mappingEngine.MatchingTask;
+import am.app.mappingEngine.oneToOneSelection.MwbmSelection;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.ontology.Node;
+import am.app.ontology.Ontology;
 import am.extension.userfeedback.experiments.UFLExperiment;
 
 public class UFLutility {
@@ -240,5 +245,45 @@ public class UFLutility {
 			LOG.error(ioex);
 			return;
 		}
+	}
+	
+	/**
+	 * Runs the MwbmSelection algorithm to select the mappings from the
+	 * similarity matrices.
+	 * 
+	 * @param sourceOntology
+	 * @param targetOntology
+	 * @param classMatrix
+	 * @param propertyMatrix
+	 * @param threshold
+	 * @param maxSourceAlign
+	 *            Source cardinality.
+	 * @param maxTargetAlign
+	 *            Target cardinality.
+	 * @return The computed alignment.
+	 */
+	public static Alignment<Mapping> computeAlignment(
+			Ontology sourceOntology, Ontology targetOntology,
+			SimilarityMatrix classMatrix, SimilarityMatrix propertyMatrix,
+			double threshold, int maxSourceAlign, int maxTargetAlign) {
+		
+		MatcherResult mr = new MatcherResult((MatchingTask)null);
+		mr.setClassesMatrix(classMatrix);
+		mr.setPropertiesMatrix(propertyMatrix);
+		mr.setSourceOntology(sourceOntology);
+		mr.setTargetOntology(targetOntology);
+		
+		DefaultSelectionParameters selParam = new DefaultSelectionParameters();
+		selParam.threshold = threshold;
+		selParam.maxSourceAlign = maxSourceAlign;
+		selParam.maxTargetAlign = maxTargetAlign;
+		selParam.inputResult = mr;
+		
+		MwbmSelection selection = new MwbmSelection();
+		selection.setParameters(selParam);
+		
+		selection.select();
+		
+		return selection.getResult().getAlignment();
 	}
 }
