@@ -8,7 +8,7 @@ import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MappingSimilarityComparator;
 import am.app.mappingEngine.qualityEvaluation.metrics.ufl.CrossCountQuality;
-import am.app.mappingEngine.qualityEvaluation.metrics.ufl.SimilarityScoreHardness;
+import am.app.mappingEngine.qualityEvaluation.metrics.ufl.SimilarityScoreDefinitness;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.extension.multiUserFeedback.experiment.MUExperiment;
 
@@ -50,11 +50,13 @@ public class IntrinsicQualityRanking extends AbstractRankingStrategy {
 		double sim=0;
 		List<Mapping> lst=new ArrayList<Mapping>();
 		CrossCountQuality ccq=new CrossCountQuality(mtrx);
-		SimilarityScoreHardness ssh=new SimilarityScoreHardness(mtrx);
+		SimilarityScoreDefinitness ssh=new SimilarityScoreDefinitness(mtrx);
 		for(int i=0;i<mtrx.getRows();i++)
 		{
 			for(int j=0;j<mtrx.getColumns();j++)
 			{
+				if (forbidden.getSimilarity(i, j)==1.0)
+					continue;
 				mp=mtrx.get(i, j);
 				sim=alpha*ccq.getQuality(null, i, j)+beta*(1-ssh.getQuality(null, i, j));
 				mp.setSimilarity(sim);

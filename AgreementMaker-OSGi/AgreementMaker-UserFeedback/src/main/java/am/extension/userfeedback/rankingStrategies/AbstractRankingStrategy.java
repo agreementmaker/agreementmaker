@@ -54,4 +54,35 @@ public abstract class AbstractRankingStrategy implements StrategyInterface {
 	public List<Mapping> getRankedList() {
 		return rankedList;
 	}
+	
+	public int getBestMappingNumber(double threshold)
+	{
+		int count=0;
+		for (Mapping m : rankedList)
+		{
+			if (m.getSimilarity()<threshold)
+				count++;
+		}
+		return count;
+	}
+	
+	public int getBestMappingNumber(double threshold, boolean revert)
+	{
+		int count=0;
+		for (Mapping m : rankedList)
+		{
+			if (revert)
+			{
+				if (m.getSimilarity()>1-threshold)
+					count++;
+			}
+			else
+			{
+				if (m.getSimilarity()<threshold)
+					count++;
+			}
+		}
+		return count;
+	}
+	
 }

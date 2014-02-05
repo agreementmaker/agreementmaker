@@ -1,6 +1,8 @@
 package am.extension.multiUserFeedback.selection;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
 
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
@@ -9,7 +11,9 @@ import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
 import am.extension.userfeedback.logic.PersistentSequentialControlLogic;
 import am.extension.userfeedback.rankingStrategies.DisagreementRanking;
 import am.extension.userfeedback.rankingStrategies.IntrinsicQualityRanking;
+import am.extension.userfeedback.rankingStrategies.MultiSelectedRanking;
 import am.extension.userfeedback.rankingStrategies.RevalidationRanking;
+import am.extension.userfeedback.rankingStrategies.SingleSelectedRanking;
 import am.extension.userfeedback.rankingStrategies.StrategyInterface;
 
 /**
@@ -32,28 +36,42 @@ public class MultiStrategyCandidateSelection extends MUCandidateSelection<MUExpe
 		pcs = new ParametricCandidateSelection();
 		
 		StrategyInterface[] strategies;
-		if( staticCS )
-			strategies = new StrategyInterface[2];
-		else
-			strategies = new StrategyInterface[3];
 		
-		DisagreementRanking dr = new DisagreementRanking(experiment);
-		IntrinsicQualityRanking mqr = new IntrinsicQualityRanking(experiment);
-		RevalidationRanking rr = new RevalidationRanking(experiment);
-		
-		 dr.setPriority(0);
-		mqr.setPriority(1);
-		 rr.setPriority(2);
-		
-		strategies[0] = dr;
-		strategies[1] = mqr;
-		if( !staticCS ) {
-			double revRate = experiment.setup.parameters.getDoubleParameter(Parameter.REVALIDATION_RATE);
-			rr.setPercentage(revRate);
-			strategies[2] = rr;
+		String[] metric=experiment.setup.parameters.getArrayParameter(Parameter.CS_METRICS_LIST);
+		if (metric!=null)
+		{
+			strategies=new StrategyInterface[1];
+			String combinationMethod=experiment.setup.parameters.getParameter(Parameter.CS_COMBINATION_METHOD);
+			double[] weights={0.4,0.2,0.4};
+			MultiSelectedRanking msr=new MultiSelectedRanking(experiment, metric, combinationMethod, weights);
+			strategies[0] = msr;
 		}
-
-		pcs.setStrategies(strategies);
+		else
+		{
+			if( staticCS )
+				strategies = new StrategyInterface[2];
+			else
+				strategies = new StrategyInterface[3];
+			
+			DisagreementRanking dr = new DisagreementRanking(experiment);
+			IntrinsicQualityRanking mqr = new IntrinsicQualityRanking(experiment);
+			RevalidationRanking rr = new RevalidationRanking(experiment);
+			
+			 dr.setPriority(0);
+			mqr.setPriority(1);
+			 rr.setPriority(2);
+			
+			strategies[0] = dr;
+			strategies[1] = mqr;
+			if( !staticCS ) 
+			{
+				double revRate = experiment.setup.parameters.getDoubleParameter(Parameter.REVALIDATION_RATE);
+				rr.setPercentage(revRate);
+				strategies[2] = rr;
+			}
+		
+		}
+			pcs.setStrategies(strategies);
 	}
 
 	@Override

@@ -11,14 +11,14 @@ public class MultiMatcherConfidence extends AbstractQualityMetric{
 		
 	private List<AbstractMatcher> initialMatcher;
 	private double[] matchersWeight;
-	private final double threshold=0.4;
+	private double threshold;
 	
-	public MultiMatcherConfidence(List<AbstractMatcher> am, double[] weights)
+	public MultiMatcherConfidence(List<AbstractMatcher> am, double[] weights, double threshold)
 	{
 		super();
 		this.initialMatcher=am;
 		this.matchersWeight=weights;
-
+		this.threshold=threshold;
 	}
 	
 	/**
@@ -28,13 +28,17 @@ public class MultiMatcherConfidence extends AbstractQualityMetric{
 	@Override
 	public double getQuality(alignType type, int i, int j) 
 	{		
+		double min=Double.MAX_VALUE;
 		double q=0;
 		for(int k=0;k<initialMatcher.size();k++)
 		{
 			SimilarityMatrix sm=type.equals(alignType.aligningClasses)?initialMatcher.get(k).getClassesMatrix():initialMatcher.get(k).getPropertiesMatrix();
-			q+=matchersWeight[k]*Math.abs(threshold-sm.getSimilarity(i, j));
+			//q+=matchersWeight[k]*Math.abs(threshold-sm.getSimilarity(i, j));
+			q=Math.abs(threshold-sm.getSimilarity(i, j));
+			if (q<min)
+				min=q;
 		}
-		return q;
+		return min;
 		
 	}
 }

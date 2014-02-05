@@ -42,7 +42,7 @@ public class RankingAccuracy extends CandidateSelectionEvaluation{
 		double accuracy=((double)(falseNegative+falsePositive))/(double)count;
 		
 		try {
-			writeAccuracy(accuracy);
+			writeAccuracy(accuracy, candidateMapping);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -53,14 +53,14 @@ public class RankingAccuracy extends CandidateSelectionEvaluation{
 	}
 	
 	
-	private void writeAccuracy(double accuracy) throws Exception
+	private void writeAccuracy(double accuracy, Mapping mp) throws Exception
 	{
 		String currentLog = experiment.setup.parameters.getParameter(Parameter.LOGFILE);
 		File file = new File(Core.getInstance().getRoot() + currentLog + "-accuracy.txt");
 
 		FileWriter fw = new FileWriter(file.getAbsoluteFile(), true);
 		BufferedWriter bw = new BufferedWriter(fw);
-		bw.write(accuracy+"\n");
+		bw.write(accuracy+" "+falsePositive+" "+falseNegative+" "+count+" "+mp.toString()+"\n");
 		bw.close();
 	}
 	

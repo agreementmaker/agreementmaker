@@ -12,23 +12,26 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.tomgibara.cluster.gvm.dbl.DblResult;
-
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.Alignment;
-import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.DefaultSelectionParameters;
+import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.MatcherResult;
+import am.app.mappingEngine.MatchingTask;
+import am.app.mappingEngine.oneToOneSelection.MwbmSelection;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.app.ontology.Node;
 import am.extension.multiUserFeedback.experiment.MUExperiment;
-import am.extension.userfeedback.MLutility.WekaUtility;
 import am.extension.userfeedback.UserFeedback.Validation;
+import am.extension.userfeedback.MLutility.WekaUtility;
 import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
 import am.extension.userfeedback.propagation.FeedbackPropagation;
 import am.extension.userfeedback.utility.UFLutility;
-import am.matcher.Combination.CombinationMatcher;
+
+import com.tomgibara.cluster.gvm.dbl.DblResult;
 
 public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>{
 
@@ -88,7 +91,6 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 		
 		Mapping candidateMapping = experiment.userFeedback.getCandidateMapping();
 		inputMatchers=experiment.initialMatcher.getComponentMatchers();
-		experiment.getFinalAlignment();
 
 		SimilarityMatrix feedbackClassMatrix = experiment.getComputedUFLMatrix(alignType.aligningClasses);
 		SimilarityMatrix feedbackPropertyMatrix = experiment.getComputedUFLMatrix(alignType.aligningProperties);
@@ -124,12 +126,25 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 //					alignType.aligningProperties);
 		}
 		
-		AbstractMatcher ufl=new CombinationMatcher();
-		ufl.setClassesMatrix(feedbackClassMatrix);
-		ufl.setPropertiesMatrix(feedbackPropertyMatrix);
-		ufl.select();
-
-		experiment.setMLAlignment(combineResults(ufl, experiment));
+		
+		MatcherResult mr = new MatcherResult((MatchingTask)null);
+		mr.setClassesMatrix(feedbackClassMatrix);
+		mr.setPropertiesMatrix(feedbackPropertyMatrix);
+		mr.setSourceOntology(experiment.getSourceOntology());
+		mr.setTargetOntology(experiment.getTargetOntology());
+		
+		DefaultSelectionParameters selParam = new DefaultSelectionParameters();
+		selParam.threshold = experiment.setup.parameters.getDoubleParameter(Parameter.IM_THRESHOLD);
+		selParam.maxSourceAlign = experiment.initialMatcher.getFinalMatcher().getParam().maxSourceAlign;
+		selParam.maxTargetAlign = experiment.initialMatcher.getFinalMatcher().getParam().maxTargetAlign;
+		selParam.inputResult = mr;
+		
+		MwbmSelection selection = new MwbmSelection();
+		selection.setParameters(selParam);
+		
+		selection.select();
+		
+		experiment.setMLAlignment(selection.getResult().getAlignment());
 		
 		experiment.setComputedUFLMatrix(alignType.aligningClasses, feedbackClassMatrix);
 		experiment.setComputedUFLMatrix(alignType.aligningProperties, feedbackPropertyMatrix);
