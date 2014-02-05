@@ -41,6 +41,9 @@ public class CandidateMappingEvaluation extends CandidateSelectionEvaluation {
 				candidateMapping );
 		log.info("");
 		
+		if (mappingIsInReference!=mappingIsInAlignment)
+			System.out.println("");
+		
 		done();
 	}
 }

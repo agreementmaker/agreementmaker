@@ -13,6 +13,7 @@ import am.extension.multiUserFeedback.storage.FeedbackAgregation;
 import am.extension.multiUserFeedback.validation.ProbabilisticErrorAutomaticValidation;
 import am.extension.userfeedback.ExecutionSemantics;
 import am.extension.userfeedback.SaveFeedback;
+import am.extension.userfeedback.UFLStatistics;
 import am.extension.userfeedback.UserFeedback;
 import am.extension.userfeedback.UserFeedback.Validation;
 import am.extension.userfeedback.evaluation.CandidateSelectionEvaluation;
@@ -40,6 +41,7 @@ public abstract class UFLExperiment {
 	public UFLProgressDisplay								gui;
 	public SaveFeedback< UFLExperiment>						saveFeedback;
 	public FeedbackAgregation<UFLExperiment>				feedbackAggregation;
+	public UFLStatistics<UFLExperiment>						uflStatistics; 
 	
 	/**
 	 * Keep count of how many incorrect validations were generated for a
@@ -108,7 +110,10 @@ public abstract class UFLExperiment {
 	
 	public abstract boolean 			experimentHasCompleted();  // return true if the experiment is done, false otherwise.
 	
-	public int getIterationNumber() { return iterationNumber; }
+	public int getIterationNumber() 
+	{ 
+		return iterationNumber; 
+	}
 	
 	public void	newIteration() {
 		if( userFeedback.getUserFeedback() == Validation.CORRECT ) {

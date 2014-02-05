@@ -29,13 +29,9 @@ public class PersistentSequentialControlLogic extends PersistentControlLogic<MUE
 		if( experiment != null && experiment.experimentHasCompleted() ) { // check stop condition
 			//runSaveFeedback();
 			System.out.println("Experiment has completed.  Ignoring further actions.");
+				
+			runStatistic();
 			
-			try {				
-				experiment.logFile.close();
-				//am.Utility.displayMessagePane("<html><p>Your logfile has been saved to:</p><p>"+ experiment.logFileFile.getAbsolutePath() + "</p></html>", "LOG File Location");
-			} catch (IOException e1) {
-				LOG.error(e1);
-			}
 			return;
 		}
 		

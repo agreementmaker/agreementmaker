@@ -12,7 +12,9 @@ import am.extension.userfeedback.UFLRegistry.InitialMatcherRegistry;
 import am.extension.userfeedback.UFLRegistry.LoopInizializationRegistry;
 import am.extension.userfeedback.UFLRegistry.PropagationEvaluationRegistry;
 import am.extension.userfeedback.UFLRegistry.SaveFeedbackRegistry;
+import am.extension.userfeedback.UFLRegistry.UFLStatisticRegistry;
 import am.extension.userfeedback.UFLRegistry.UserValidationRegistry;
+import am.extension.userfeedback.UFLStatistics;
 
 public class UFLExperimentSetup implements Serializable {
 
@@ -30,6 +32,7 @@ public class UFLExperimentSetup implements Serializable {
 	public PropagationEvaluationRegistry	pe;
 	public SaveFeedbackRegistry				sf;
 	public FeedbackAggregationRegistry		fa;
+	public UFLStatisticRegistry				us;
 	
 	/**
 	 * Experiment-wide parameters.

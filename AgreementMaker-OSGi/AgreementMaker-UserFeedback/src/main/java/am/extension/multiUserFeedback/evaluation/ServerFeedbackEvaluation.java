@@ -20,7 +20,7 @@ public class ServerFeedbackEvaluation extends PropagationEvaluation<MUExperiment
 		// initialization
 		if( data == null) {
 			int numIterations = exp.setup.parameters.getIntParameter(Parameter.NUM_ITERATIONS);
-			data = new ServerFeedbackEvaluationData(numIterations-1);
+			data = new ServerFeedbackEvaluationData(numIterations);
 		}
 		
 		// compute the delta from reference
@@ -37,7 +37,7 @@ public class ServerFeedbackEvaluation extends PropagationEvaluation<MUExperiment
 		data.fmeasureArray [currentIteration] = metrics.getFMeasure();
 		data.deltaArray    [currentIteration] = delta;
 		
-		exp.info("Iteration: " + exp.getIterationNumber() + 
+		exp.info("Iteration: " + (exp.getIterationNumber()) + 
 				", Delta from reference: " + delta + 
 				", Precision: " + metrics.getPrecisionPercent() + 
 				", Recall: " + metrics.getRecallPercent() + 
