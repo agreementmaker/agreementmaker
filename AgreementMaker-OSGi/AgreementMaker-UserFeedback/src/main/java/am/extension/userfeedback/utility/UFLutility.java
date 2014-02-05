@@ -1,19 +1,29 @@
 package am.extension.userfeedback.utility;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.ontology.Node;
-import am.extension.multiUserFeedback.experiment.MUExperiment;
 import am.extension.userfeedback.experiments.UFLExperiment;
 
 public class UFLutility {
+	
+	public static final Logger LOG = LogManager.getLogger(UFLutility.class);
 	
 	static public Object[] getSignatureVector(Mapping mp, List<AbstractMatcher> inputMatchers)
 	{
@@ -180,4 +190,55 @@ public class UFLutility {
 		return mList;
 	}
 	
+	
+	/**
+	 * Save a similarity matrix to a file.
+	 * 
+	 * @param fileName
+	 *            The name of the file for saving the matrix. If the path is
+	 *            relative (no leading slash), AM_ROOT will be prepended to the
+	 *            path.
+	 * @param sm
+	 *            The similarity matrix that will be saved to the file.
+	 */
+	static public void saveSimilarityMatrix(String fileName, SimilarityMatrix sm)
+	{
+		if( !fileName.startsWith(File.separator) )
+			fileName = Core.getInstance().getRoot() + fileName;
+		
+		File file = new File(fileName);
+		if( !file.getParentFile().exists() ) file.getParentFile().mkdirs();
+		
+		Writer bw;
+		try {
+			FileWriter fw = new FileWriter(file.getAbsoluteFile());
+			bw = new BufferedWriter(fw);
+			
+			for(int i=-1;i<sm.getRows();i++)
+			{
+				bw.write(i+"\t");
+				for (int j=0;j<sm.getColumns();j++)
+				{
+					if (i==-1)
+					{
+						bw.write(j+"\t");
+					}
+					else
+					{
+						bw.write(round(sm.getSimilarity(i, j),2)+"");
+						if (j<sm.getColumns()-1)
+							bw.write("\t");
+					}
+					
+				}
+				bw.write("\n");
+			}
+
+			bw.close();
+		}
+		catch( IOException ioex ) {
+			LOG.error(ioex);
+			return;
+		}
+	}
 }
