@@ -1,7 +1,5 @@
 package am.extension.multiUserFeedback.initialization;
 
-import static am.extension.userfeedback.utility.UFLutility.extractList;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,26 +8,22 @@ import org.apache.log4j.Logger;
 
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.DefaultSelectionParameters;
+import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherResult;
 import am.app.mappingEngine.MatchingTask;
-import am.app.mappingEngine.AbstractMatcher.alignType;
-import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.oneToOneSelection.MwbmSelection;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.evaluation.alignment.AlignmentMetrics;
 import am.evaluation.alignment.DeltaFromReference;
-import am.evaluation.clustering.gvm.GVM_Clustering;
+import am.extension.multiUserFeedback.evaluation.ServerFeedbackEvaluation;
+import am.extension.multiUserFeedback.evaluation.ServerFeedbackEvaluation.ServerFeedbackEvaluationData;
 import am.extension.multiUserFeedback.experiment.MUExperiment;
-import am.extension.userfeedback.UserFeedback.Validation;
+import am.extension.userfeedback.evaluation.PropagationEvaluation;
 import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
 import am.extension.userfeedback.inizialization.FeedbackLoopInizialization;
-import am.extension.userfeedback.rankingStrategies.DisagreementRanking;
-import am.extension.userfeedback.rankingStrategies.IntrinsicQualityRanking;
-import am.extension.userfeedback.rankingStrategies.RevalidationRanking;
-import am.extension.userfeedback.utility.UFLutility;
-import am.matcher.Combination.CombinationMatcher;
 
 public class MUDataInitialization  extends FeedbackLoopInizialization<MUExperiment> {
 	
@@ -249,11 +243,32 @@ public class MUDataInitialization  extends FeedbackLoopInizialization<MUExperime
 		int initialDelta = deltaFromReference.getDelta(experiment.getFinalAlignment());
 		AlignmentMetrics initialMetrics= new AlignmentMetrics(experiment.getReferenceAlignment(), experiment.getFinalAlignment());
 		
+		int currentIteration = experiment.getIterationNumber();
 		
-		experiment.info("Iteration: " + experiment.getIterationNumber() + ", Delta from reference: " + initialDelta + 
-					", Precision: " + initialMetrics.getPrecisionPercent() + ", Recall: " + initialMetrics.getRecallPercent() + ", FMeasure: " + initialMetrics.getFMeasurePercent());
+		if( currentIteration != 0 )
+			throw new AssertionError("Data initialization can only run at iteration 0.");
+		
+		experiment.info("Iteration: " + currentIteration + 
+				", Delta from reference: " + initialDelta + 
+				", Precision: " + initialMetrics.getPrecisionPercent() + 
+				", Recall: " + initialMetrics.getRecallPercent() + 
+				", FMeasure: " + initialMetrics.getFMeasurePercent());
 		experiment.info("");
 		
+		// save the initial values into the propagation evaluation
+		// TODO: Fix this.  It should not be hardcoded.  Move to message passing UFL loop.
+		PropagationEvaluation pe = experiment.propagationEvaluation;
+		if( pe instanceof ServerFeedbackEvaluation ) {
+			ServerFeedbackEvaluation sfe = (ServerFeedbackEvaluation) pe;
+			ServerFeedbackEvaluationData data = sfe.getData();
+			data.precisionArray[0] = initialMetrics.getPrecision(); 
+			data.recallArray[0]    = initialMetrics.getRecall();
+			data.fmeasureArray[0]  = initialMetrics.getFMeasure();
+			data.deltaArray[0]     = initialDelta;			
+		}
+		
+		// set the iteration number.
+		experiment.setIterationNumber(1);
 	}
 
 
