@@ -111,6 +111,7 @@ public class UFLBatchModeGUI extends AMTabSupportPanel implements UFLProgressDis
 			proBar.setMaximum(runs.size());
 			proBar.setValue(runNumber);
 			
+			runNumber++;
 			Thread thread = new Thread(runner);
 			thread.start();
 		}
