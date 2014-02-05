@@ -36,6 +36,15 @@ import am.utility.parameters.AMParameterSet;
 public abstract class AbstractQualityMetric implements MappingQualityMetric {
 
 	protected AMParameterSet params = new AMParameterSet();
+	protected String metricID;
+
+	public String getMetricID() {
+		return metricID;
+	}
+
+	public void setMetricID(String metricID) {
+		this.metricID = metricID;
+	}
 
 	@Override 
 	public void setParameter(AMParameter param) { 

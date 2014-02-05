@@ -10,10 +10,16 @@ import org.apache.log4j.Logger;
 
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.DefaultSelectionParameters;
+import am.app.mappingEngine.MatcherResult;
+import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.oneToOneSelection.MwbmSelection;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
+import am.evaluation.alignment.AlignmentMetrics;
+import am.evaluation.alignment.DeltaFromReference;
 import am.evaluation.clustering.gvm.GVM_Clustering;
 import am.extension.multiUserFeedback.experiment.MUExperiment;
 import am.extension.userfeedback.UserFeedback.Validation;
@@ -55,13 +61,14 @@ public class MUDataInitialization  extends FeedbackLoopInizialization<MUExperime
 		
 		SimilarityMatrix smClass=exp.initialMatcher.getFinalMatcher().getClassesMatrix().clone();
 		SimilarityMatrix smProperty=exp.initialMatcher.getFinalMatcher().getPropertiesMatrix().clone();
-
-
-		SimilarityMatrix am=exp.initialMatcher.getFinalMatcher().getClassesMatrix();
-		smClass=prepare(smClass, am);
 		
-		am=exp.initialMatcher.getFinalMatcher().getPropertiesMatrix();
-		smProperty=prepare(smProperty, am);
+		//SimilarityMatrix am=exp.initialMatcher.getFinalMatcher().getClassesMatrix();
+		smClass=prepare(smClass);
+		
+		//am=exp.initialMatcher.getFinalMatcher().getPropertiesMatrix();
+		smProperty=prepare(smProperty);
+		computeAlignment(smClass, smProperty);
+
 		
 		
 		List<SimilarityMatrix> lstC=new ArrayList<>();
@@ -74,13 +81,13 @@ public class MUDataInitialization  extends FeedbackLoopInizialization<MUExperime
 		}
 		
 		
-		GVM_Clustering gvm=new GVM_Clustering(lstC.toArray(new SimilarityMatrix[0]), count_vsv/4);
-		gvm.cluster();
-		exp.clusterC=gvm.getClusters();
-		
-		gvm=new GVM_Clustering(lstP.toArray(new SimilarityMatrix[0]), count_vsv/4);
-		gvm.cluster();
-		exp.clusterP=gvm.getClusters();
+//		GVM_Clustering gvm=new GVM_Clustering(lstC.toArray(new SimilarityMatrix[0]), count_vsv/4);
+//		gvm.cluster();
+//		exp.clusterC=gvm.getClusters();
+//		
+//		gvm=new GVM_Clustering(lstP.toArray(new SimilarityMatrix[0]), count_vsv/4);
+//		gvm.cluster();
+//		exp.clusterP=gvm.getClusters();
 		
 		exp.setComputedUFLMatrix(alignType.aligningClasses, smClass);
 		exp.setComputedUFLMatrix(alignType.aligningProperties, smProperty);
@@ -126,13 +133,6 @@ public class MUDataInitialization  extends FeedbackLoopInizialization<MUExperime
 		exp.setUflStoragePropertyPos(sparsePropPos);
 		exp.setUflStorageProperty_neg(sparsePropNeg);
 		
-		AbstractMatcher ufl=new CombinationMatcher();
-		ufl.setClassesMatrix(smClass);
-		ufl.setPropertiesMatrix(smProperty);
-		ufl.select();
-
-		exp.setMLAlignment(UFLutility.combineResults(ufl, exp));
-		
 		// output the experiment description
 		StringBuilder d = new StringBuilder();
 		
@@ -167,31 +167,93 @@ public class MUDataInitialization  extends FeedbackLoopInizialization<MUExperime
 		done();
 	}
 
-	private SimilarityMatrix prepare(SimilarityMatrix sm, SimilarityMatrix am)
+//	private SimilarityMatrix prepare(SimilarityMatrix sm, SimilarityMatrix am)
+//	{
+//		double sim=0;
+//		Mapping mp;
+//		Object[] ssv;
+//		for(int i=0;i<sm.getRows();i++)
+//			for(int j=0;j<sm.getColumns();j++)
+//			{
+//				mp = sm.get(i, j);
+//				ssv=UFLutility.getSignatureVector(mp,experiment.initialMatcher.getComponentMatchers());
+//				if (!UFLutility.validSsv(ssv))
+//				{ 
+//					sm.setSimilarity(i, j, 0.0);
+//				}
+//				else
+//				{
+//					sim=am.getSimilarity(i, j);
+//					if (sim==0)
+//						System.out.println("ciao");
+//					sm.setSimilarity(i, j, sim );
+//					count_vsv++;
+//				}
+//			}
+//		
+//		return sm;
+//	}
+	
+	private SimilarityMatrix prepare(SimilarityMatrix sm)
 	{
 		double sim=0;
 		Mapping mp;
-		Object[] ssv;
+		//Object[] ssv;
 		for(int i=0;i<sm.getRows();i++)
 			for(int j=0;j<sm.getColumns();j++)
 			{
 				mp = sm.get(i, j);
-				ssv=UFLutility.getSignatureVector(mp,experiment.initialMatcher.getComponentMatchers());
-				if (!UFLutility.validSsv(ssv))
+				//ssv=UFLutility.getSignatureVector(mp,experiment.initialMatcher.getComponentMatchers());
+				if (!experiment.initialMatcher.getFinalMatcher().getAlignment().contains(mp))
 				{ 
 					sm.setSimilarity(i, j, 0.0);
 				}
-				else
-				{
-					sim=am.getSimilarity(i, j);
-					if (sim==0)
-						System.out.println("ciao");
-					sm.setSimilarity(i, j, sim );
-					count_vsv++;
-				}
+//				else
+//				{
+//					sim=am.getSimilarity(i, j);
+//					sm.setSimilarity(i, j, sim );
+//					count_vsv++;
+//				}
 			}
 		
 		return sm;
+	}
+	
+	private void computeAlignment(SimilarityMatrix classMatrix, SimilarityMatrix propMatrix)
+	{
+
+		MatcherResult mr = new MatcherResult((MatchingTask)null);
+		mr.setClassesMatrix(classMatrix);
+		mr.setPropertiesMatrix(propMatrix);
+		mr.setSourceOntology(experiment.getSourceOntology());
+		mr.setTargetOntology(experiment.getTargetOntology());
+		
+		DefaultSelectionParameters selParam = new DefaultSelectionParameters();
+		selParam.threshold = experiment.setup.parameters.getDoubleParameter(Parameter.IM_THRESHOLD);
+		selParam.maxSourceAlign = experiment.initialMatcher.getFinalMatcher().getParam().maxSourceAlign;
+		selParam.maxTargetAlign = experiment.initialMatcher.getFinalMatcher().getParam().maxTargetAlign;
+		selParam.inputResult = mr;
+		
+		MwbmSelection selection = new MwbmSelection();
+		selection.setParameters(selParam);
+		
+		selection.select();
+		
+		experiment.setMLAlignment(selection.getResult().getAlignment());
+		
+		
+		DeltaFromReference deltaFromReference = new DeltaFromReference(experiment.getReferenceAlignment());
+		
+		experiment.info(experiment.getReferenceAlignment().toString());
+		
+		int initialDelta = deltaFromReference.getDelta(experiment.getFinalAlignment());
+		AlignmentMetrics initialMetrics= new AlignmentMetrics(experiment.getReferenceAlignment(), experiment.getFinalAlignment());
+		
+		
+		experiment.info("Iteration: " + experiment.getIterationNumber() + ", Delta from reference: " + initialDelta + 
+					", Precision: " + initialMetrics.getPrecisionPercent() + ", Recall: " + initialMetrics.getRecallPercent() + ", FMeasure: " + initialMetrics.getFMeasurePercent());
+		experiment.info("");
+		
 	}
 
 

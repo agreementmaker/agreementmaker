@@ -30,7 +30,7 @@ public abstract class PersistentControlLogic<T extends UFLExperiment> extends UF
 				experiment.dataInizialization = experiment.setup.fli.getEntryClass().newInstance();
 				experiment.dataInizialization.addActionListener(this);
 			}
-			startThread(new Runnable(){
+			startThread(new Runnable(){ 
 				@Override public void run() {
 					experiment.dataInizialization.inizialize(experiment);	
 				}
