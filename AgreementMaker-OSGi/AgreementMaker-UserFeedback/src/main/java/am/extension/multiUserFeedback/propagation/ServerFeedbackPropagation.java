@@ -405,43 +405,11 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 		return sm;
 	}
 	
+	/** Save the similarity matrices for debugging. */
 	private void writeSimilarityMatrix(SimilarityMatrix sm, int iteration, String type) throws IOException
 	{
-		File dir = new File(Core.getInstance().getRoot() + "settings/tmp/SimilarityMatrix"+type);
-		if( !dir.exists() )
-			dir.mkdirs();
-		File file = new File(dir.getAbsolutePath() + "/similarityMatrix_"+iteration+".txt");
-		// if file doesnt exists, then create it
-		if (!file.exists()) 
-			file.createNewFile();
-		FileWriter fw=null;
-
-		fw = new FileWriter(file.getAbsoluteFile());
-
-		BufferedWriter bw = new BufferedWriter(fw);
-
-		for(int i=-1;i<sm.getRows();i++)
-		{
-
-			bw.write(i+"\t");
-			for (int j=0;j<sm.getColumns();j++)
-			{
-				if (i==-1)
-				{
-					bw.write(j+"\t");
-				}
-				else
-				{
-					bw.write(round(sm.getSimilarity(i, j),2)+"");
-					if (j<sm.getColumns()-1)
-						bw.write("\t");
-				}
-				
-			}
-			bw.write("\n");
-		}
-
-		bw.close();
+		String fileName = "settings/tmp/SimilarityMatrix" + type + "/similarityMatrix_" + iteration + ".txt";
+		UFLutility.saveSimilarityMatrix(fileName, sm);
 	}
 	
 	private double round(double value, int places) {
