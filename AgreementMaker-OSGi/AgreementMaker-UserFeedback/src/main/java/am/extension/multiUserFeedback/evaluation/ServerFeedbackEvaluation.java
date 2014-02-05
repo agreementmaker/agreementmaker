@@ -62,10 +62,11 @@ public class ServerFeedbackEvaluation extends PropagationEvaluation<MUExperiment
 		public int[] deltaArray;        // the delta from reference for each iteration
 		
 		public ServerFeedbackEvaluationData(int numIterations) {
-			precisionArray = new double[numIterations]; 
-			recallArray    = new double[numIterations];
-			fmeasureArray  = new double[numIterations];
-			deltaArray     = new int[numIterations];
+			// +1 because we will store the initial matchers data also.
+			precisionArray = new double[numIterations+1]; 
+			recallArray    = new double[numIterations+1];
+			fmeasureArray  = new double[numIterations+1];
+			deltaArray     = new int[numIterations+1];
 		}
 		
 		@Override
