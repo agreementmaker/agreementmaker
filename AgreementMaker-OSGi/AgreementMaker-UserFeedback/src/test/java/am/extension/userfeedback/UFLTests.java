@@ -42,7 +42,7 @@ public class UFLTests {
 	private static final String BM303_CS_STATIC_DATA = "UFL/experiments/UnitTestData/303-static-cs.data.xml";
 	private static final String BM304_CS_STATIC_DATA = "UFL/experiments/UnitTestData/304-static-cs.data.xml";
 	
-	private static final boolean CREATE_FILES = true;
+	private static final boolean CREATE_FILES = false;
 	
 	@Test
 	public void testBenchmarks301() {
