@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
@@ -16,7 +15,7 @@ import org.junit.Test;
 
 import am.app.Core;
 import am.extension.multiUserFeedback.evaluation.ServerFeedbackEvaluation;
-import am.extension.multiUserFeedback.evaluation.ServerFeedbackEvaluation.ServerFeedbackEvaluationData;
+import am.extension.userfeedback.common.ServerFeedbackEvaluationData;
 import am.extension.userfeedback.common.UFLExperimentRunner;
 import am.extension.userfeedback.evaluation.PropagationEvaluation;
 import am.extension.userfeedback.preset.ExperimentPreset;
@@ -87,12 +86,7 @@ public class UFLTests {
 		UFLExperimentRunner runner = new UFLExperimentRunner(run);
 		runner.run();
 		
-		@SuppressWarnings("rawtypes")
-		PropagationEvaluation pe = runner.getExperiment().propagationEvaluation;
-		
-		assertTrue( (pe instanceof ServerFeedbackEvaluation) );
-		
-		ServerFeedbackEvaluationData data = ((ServerFeedbackEvaluation) pe).getData();
+		ServerFeedbackEvaluationData data = runner.getExperiment().feedbackEvaluationData;
 		
 		XStream xs = new XStream();
 		
@@ -120,12 +114,7 @@ public class UFLTests {
 		UFLExperimentRunner runner = new UFLExperimentRunner(run);
 		runner.run();
 		
-		@SuppressWarnings("rawtypes")
-		PropagationEvaluation pe = runner.getExperiment().propagationEvaluation;
-		
-		assertTrue( (pe instanceof ServerFeedbackEvaluation) );
-		
-		ServerFeedbackEvaluationData data = ((ServerFeedbackEvaluation) pe).getData();
+		ServerFeedbackEvaluationData data = runner.getExperiment().feedbackEvaluationData;
 		
 		XStream xs = new XStream();
 		

@@ -2,9 +2,8 @@ package am.extension.userfeedback;
 
 import java.io.IOException;
 
-import am.extension.multiUserFeedback.evaluation.ServerFeedbackEvaluation;
-import am.extension.multiUserFeedback.evaluation.ServerFeedbackEvaluation.ServerFeedbackEvaluationData;
 import am.extension.multiUserFeedback.experiment.MUExperiment;
+import am.extension.userfeedback.common.ServerFeedbackEvaluationData;
 import am.extension.userfeedback.evaluation.CandidateSelectionEvaluation;
 import am.extension.userfeedback.evaluation.MultiplexCandidateSelectionEvaluation;
 import am.extension.userfeedback.evaluation.PropagationEvaluation;
@@ -19,17 +18,7 @@ public class ServerStatistics extends UFLStatistics<MUExperiment>{
 	{
 		this.experiment=exp;
 		// TODO Auto-generated method stub
-		PropagationEvaluation pe = exp.propagationEvaluation;
-		ServerFeedbackEvaluationData dataPE=null;
-		if( pe instanceof ServerFeedbackEvaluation ) 
-		{
-			ServerFeedbackEvaluation sfe = (ServerFeedbackEvaluation) pe;
-			dataPE = sfe.getData();
-		}
-		else
-		{
-			throw new RuntimeException("Expecting server feedback evalution data");
-		}
+		ServerFeedbackEvaluationData dataPE = exp.feedbackEvaluationData;
 		
 		CandidateSelectionEvaluation cse=exp.csEvaluation;
 		ServerCSEvaluationData dataCS=null;

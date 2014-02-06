@@ -19,8 +19,8 @@ import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.evaluation.alignment.AlignmentMetrics;
 import am.evaluation.alignment.DeltaFromReference;
 import am.extension.multiUserFeedback.evaluation.ServerFeedbackEvaluation;
-import am.extension.multiUserFeedback.evaluation.ServerFeedbackEvaluation.ServerFeedbackEvaluationData;
 import am.extension.multiUserFeedback.experiment.MUExperiment;
+import am.extension.userfeedback.common.ServerFeedbackEvaluationData;
 import am.extension.userfeedback.evaluation.PropagationEvaluation;
 import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
 import am.extension.userfeedback.inizialization.FeedbackLoopInizialization;
@@ -255,17 +255,10 @@ public class MUDataInitialization  extends FeedbackLoopInizialization<MUExperime
 				", FMeasure: " + initialMetrics.getFMeasurePercent());
 		experiment.info("");
 		
-		// save the initial values into the propagation evaluation
-		// TODO: Fix this.  It should not be hardcoded.  Move to message passing UFL loop.
-		PropagationEvaluation pe = experiment.propagationEvaluation;
-		if( pe instanceof ServerFeedbackEvaluation ) {
-			ServerFeedbackEvaluation sfe = (ServerFeedbackEvaluation) pe;
-			ServerFeedbackEvaluationData data = sfe.getData();
-			data.precisionArray[0] = initialMetrics.getPrecision(); 
-			data.recallArray[0]    = initialMetrics.getRecall();
-			data.fmeasureArray[0]  = initialMetrics.getFMeasure();
-			data.deltaArray[0]     = initialDelta;			
-		}
+		experiment.feedbackEvaluationData.precisionArray[0] = initialMetrics.getPrecision(); 
+		experiment.feedbackEvaluationData.recallArray[0]    = initialMetrics.getRecall();
+		experiment.feedbackEvaluationData.fmeasureArray[0]  = initialMetrics.getFMeasure();
+		experiment.feedbackEvaluationData.deltaArray[0]     = initialDelta;	
 		
 		// set the iteration number.
 		experiment.setIterationNumber(1);
