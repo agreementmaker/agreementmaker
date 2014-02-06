@@ -18,6 +18,7 @@ import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.extension.userfeedback.UserFeedback.Validation;
+import am.extension.userfeedback.common.ServerFeedbackEvaluationData;
 import am.extension.userfeedback.experiments.UFLExperiment;
 import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
 import am.extension.userfeedback.experiments.UFLExperimentSetup;
@@ -255,7 +256,7 @@ public void setMLAlignment(Alignment<Mapping> mLAlignment) {
 
 	@Override
 	public UFLControlLogic<MUExperiment> getControlLogic() {
-		return new PersistentSequentialControlLogic(this);
+		return new PersistentSequentialControlLogic();
 	}
 	
 	@Override
@@ -324,5 +325,3 @@ public void setMLAlignment(Alignment<Mapping> mLAlignment) {
 		return size%3;
 	}
 }
-
-

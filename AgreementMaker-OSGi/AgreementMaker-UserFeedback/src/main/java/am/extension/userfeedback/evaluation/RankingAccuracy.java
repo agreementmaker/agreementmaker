@@ -9,10 +9,6 @@ import java.util.Arrays;
 import am.app.Core;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
-import am.evaluation.alignment.AlignmentMetrics;
-import am.evaluation.alignment.DeltaFromReference;
-import am.extension.multiUserFeedback.evaluation.ServerFeedbackEvaluation.ServerFeedbackEvaluationData;
-import am.extension.multiUserFeedback.experiment.MUExperiment;
 import am.extension.userfeedback.experiments.UFLExperiment;
 import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
 

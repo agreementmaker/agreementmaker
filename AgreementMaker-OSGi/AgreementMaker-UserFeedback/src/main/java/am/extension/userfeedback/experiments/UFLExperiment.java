@@ -16,6 +16,7 @@ import am.extension.userfeedback.SaveFeedback;
 import am.extension.userfeedback.UFLStatistics;
 import am.extension.userfeedback.UserFeedback;
 import am.extension.userfeedback.UserFeedback.Validation;
+import am.extension.userfeedback.common.ServerFeedbackEvaluationData;
 import am.extension.userfeedback.evaluation.CandidateSelectionEvaluation;
 import am.extension.userfeedback.evaluation.PropagationEvaluation;
 import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
@@ -81,6 +82,8 @@ public abstract class UFLExperiment {
     
     private int iterationNumber = 0;
 
+    public ServerFeedbackEvaluationData feedbackEvaluationData;
+    
     public UFLExperiment(UFLExperimentSetup setup) {
 		this.setup = setup;
 		
@@ -92,6 +95,9 @@ public abstract class UFLExperiment {
 		}
 		
 		sharedObjectStore = new HashMap<>();
+		
+		int numIterations = setup.parameters.getIntParameter(Parameter.NUM_ITERATIONS);
+		feedbackEvaluationData = new ServerFeedbackEvaluationData(numIterations);
 	}
     
 	public Ontology getSourceOntology()             { return sourceOntology; }
