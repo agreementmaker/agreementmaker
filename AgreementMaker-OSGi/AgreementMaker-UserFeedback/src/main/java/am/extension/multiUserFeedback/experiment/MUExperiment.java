@@ -255,7 +255,7 @@ public void setMLAlignment(Alignment<Mapping> mLAlignment) {
 
 	@Override
 	public UFLControlLogic<MUExperiment> getControlLogic() {
-		return new PersistentSequentialControlLogic();
+		return new PersistentSequentialControlLogic(this);
 	}
 	
 	@Override

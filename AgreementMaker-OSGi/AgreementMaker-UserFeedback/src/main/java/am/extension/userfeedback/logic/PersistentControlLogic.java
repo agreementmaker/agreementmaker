@@ -5,8 +5,10 @@ import am.extension.userfeedback.experiments.UFLExperiment;
 
 public abstract class PersistentControlLogic<T extends UFLExperiment> extends UFLControlLogic<T> {
 	
-	public PersistentControlLogic() {
+	public PersistentControlLogic(T experiment) {
 		super();
+		
+		this.experiment = experiment;
 		
 		try {
 			experiment.initialMatcher = experiment.setup.im.getEntryClass().newInstance();
