@@ -1,7 +1,6 @@
 package am.extension.userfeedback.logic;
 
 import java.awt.event.ActionEvent;
-import java.io.IOException;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -13,6 +12,10 @@ import am.extension.userfeedback.ui.UFLControlGUI.ActionCommands;
 public class PersistentSequentialControlLogic extends PersistentControlLogic<MUExperiment> {
 
 	private static final Logger LOG = LogManager.getLogger(PersistentSequentialControlLogic.class);
+	
+	public PersistentSequentialControlLogic(MUExperiment experiment) {
+		super(experiment);
+	}
 	
 	@Override
 	public void runExperiment(MUExperiment exp) {
