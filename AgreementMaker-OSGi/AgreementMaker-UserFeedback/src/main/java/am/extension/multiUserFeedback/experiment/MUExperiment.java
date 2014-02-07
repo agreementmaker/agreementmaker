@@ -152,23 +152,40 @@ public void setAlignCardinalityType(alignCardinality alignCardinalityType) {
 			throw new RuntimeException(type + " is not accepted");
 		}
 	}
-
-
-public void setUflStorageClass_neg(SparseMatrix uflStorageClass_neg) {
-	this.uflStorageClass_neg = uflStorageClass_neg;
+	
+public void setFeedBackMatrix(SparseMatrix mtrx, alignType type, Validation validation)
+{
+	switch(type) {
+	case aligningClasses:
+		switch(validation) {
+		case CORRECT:
+			uflStorageClass_pos=mtrx;
+			break;
+		case INCORRECT:
+			uflStorageClass_neg=mtrx;
+			break;
+		default:
+			throw new RuntimeException(validation + " is not accepted");
+		}
+		break;
+	case aligningProperties:
+		switch(validation) {
+		case CORRECT:
+			uflStorageProperty_pos=mtrx;
+			break;
+		case INCORRECT:
+			uflStorageProperty_neg=mtrx;
+			break;
+		default:
+			throw new RuntimeException(validation + " is not accepted");
+		}
+		break;
+	default:
+		throw new RuntimeException(type + " is not accepted");
+	}
 }
 
-public void setUflStorageProperty_neg(SparseMatrix uflStorageProperty_neg) {
-	this.uflStorageProperty_neg = uflStorageProperty_neg;
-}
 
-public void setUflStorageClassPos(SparseMatrix uflStorageClass) {
-	this.uflStorageClass_pos = uflStorageClass;
-}
-
-public void setUflStoragePropertyPos(SparseMatrix uflStorageProperty) {
-	this.uflStorageProperty_pos = uflStorageProperty;
-}
 
 	public Object[][] getTrainingSet(alignType type) {
 		switch(type) {

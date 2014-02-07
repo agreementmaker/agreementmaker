@@ -20,6 +20,7 @@ import am.evaluation.alignment.AlignmentMetrics;
 import am.evaluation.alignment.DeltaFromReference;
 import am.extension.multiUserFeedback.evaluation.ServerFeedbackEvaluation;
 import am.extension.multiUserFeedback.experiment.MUExperiment;
+import am.extension.userfeedback.UserFeedback.Validation;
 import am.extension.userfeedback.common.ServerFeedbackEvaluationData;
 import am.extension.userfeedback.evaluation.PropagationEvaluation;
 import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
@@ -110,8 +111,10 @@ public class MUDataInitialization  extends FeedbackLoopInizialization<MUExperime
 				Core.getInstance().getTargetOntology(), 
 				alignType.aligningClasses);
 		
-		exp.setUflStorageClassPos(sparseClassPos);
-		exp.setUflStorageClass_neg(sparseClassNeg);
+
+		exp.setFeedBackMatrix(sparseClassPos, alignType.aligningClasses, Validation.CORRECT);
+		exp.setFeedBackMatrix(sparseClassNeg, alignType.aligningClasses, Validation.INCORRECT);
+		
 		
 		// set the UFL matrices for properties
 		SparseMatrix sparsePropPos = new SparseMatrix(
@@ -124,8 +127,8 @@ public class MUDataInitialization  extends FeedbackLoopInizialization<MUExperime
 				Core.getInstance().getTargetOntology(), 
 				alignType.aligningProperties);
 		
-		exp.setUflStoragePropertyPos(sparsePropPos);
-		exp.setUflStorageProperty_neg(sparsePropNeg);
+		exp.setFeedBackMatrix(sparsePropPos, alignType.aligningProperties, Validation.CORRECT);
+		exp.setFeedBackMatrix(sparsePropNeg, alignType.aligningProperties, Validation.INCORRECT);
 		
 		// output the experiment description
 		StringBuilder d = new StringBuilder();

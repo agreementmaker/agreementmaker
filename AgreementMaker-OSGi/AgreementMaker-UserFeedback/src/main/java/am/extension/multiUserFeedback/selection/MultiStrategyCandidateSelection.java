@@ -42,7 +42,7 @@ public class MultiStrategyCandidateSelection extends MUCandidateSelection<MUExpe
 		{
 			strategies=new StrategyInterface[1];
 			String combinationMethod=experiment.setup.parameters.getParameter(Parameter.CS_COMBINATION_METHOD);
-			double[] weights={0.4,0.2,0.4};
+			double[] weights={0.5,0.2,0.4};
 			MultiSelectedRanking msr=new MultiSelectedRanking(experiment, metric, combinationMethod, weights);
 			strategies[0] = msr;
 		}
