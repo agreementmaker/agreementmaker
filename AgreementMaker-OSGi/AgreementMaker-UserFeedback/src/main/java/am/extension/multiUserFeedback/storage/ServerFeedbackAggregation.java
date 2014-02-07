@@ -46,7 +46,10 @@ public class ServerFeedbackAggregation extends FeedbackAgregation<MUExperiment>{
 		SparseMatrix validationMatrix = exp.getFeedbackMatrix(candidateMapping.getAlignmentType(), userFeedback);
 		int count = (int) validationMatrix.getSimilarity(mappingRow, mappingCol);
 		count++;
+
 		validationMatrix.setSimilarity(mappingRow, mappingCol, (double)count);
+
+		exp.setFeedBackMatrix(validationMatrix, candidateMapping.getAlignmentType(), userFeedback);
 		
 		// update the forbidden positions
 		updateForbiddenPositions(candidateMapping, userFeedback);
@@ -87,18 +90,20 @@ public class ServerFeedbackAggregation extends FeedbackAgregation<MUExperiment>{
 
 	@Override
 	public Object[][] getTrainingSet(alignType type) {
+		int sum=0;
 		List<Object[]> trainingSet = new ArrayList<Object[]>();
 		SparseMatrix positiveFeedback = experiment.getFeedbackMatrix(type, Validation.CORRECT);
 		SparseMatrix negativeFeedback = experiment.getFeedbackMatrix(type, Validation.INCORRECT);
-		ExpandedConsensus ec=new ExpandedConsensus(experiment.getFeedbackMatrix(alignType.aligningClasses, Validation.CORRECT),
-				experiment.getFeedbackMatrix(alignType.aligningClasses, Validation.INCORRECT),
+		ExpandedConsensus ec=new ExpandedConsensus(experiment.getFeedbackMatrix(type, Validation.CORRECT),
+				experiment.getFeedbackMatrix(type, Validation.INCORRECT),
 				experiment.initialMatcher.getFinalMatcher().getClassesMatrix(),
-				experiment.initialMatcher.getFinalMatcher().getPropertiesMatrix(), 3);
+				experiment.initialMatcher.getFinalMatcher().getPropertiesMatrix(), 3, experiment.setup.parameters.getDoubleParameter(Parameter.IM_THRESHOLD));
 		for(int i=0;i < positiveFeedback.getRows();i++)
 		{
 			for(int j=0;j < positiveFeedback.getColumns();j++)
 			{
-				int sum = (int)positiveFeedback.getSimilarity(i, j) - (int)negativeFeedback.getSimilarity(i, j);
+				sum = (int)positiveFeedback.getSimilarity(i, j);
+				sum-= (int)negativeFeedback.getSimilarity(i, j);
 				if (sum != 0) {
 					Mapping m = positiveFeedback.get(i, j) == null ? negativeFeedback.get(i, j) : positiveFeedback.get(i, j);
 					if (ec.getQuality(m.getAlignmentType(), i, j)>0.5d)
@@ -106,12 +111,12 @@ public class ServerFeedbackAggregation extends FeedbackAgregation<MUExperiment>{
 				}
 			}
 		}
-		List<Object[]> tt =addAMconfidentMapping();
+		List<Object[]> tt =addAMconfidentMapping(type);
 		trainingSet.addAll(tt);
 		return trainingSet.toArray(new Object[0][0]);
 	}
 	
-	private List<Object[]> addAMconfidentMapping()
+	private List<Object[]> addAMconfidentMapping(alignType type)
 	{
 		int count=0;
 		Alignment<Mapping> amFinal=experiment.initialMatcher.getFinalMatcher().getAlignment();
@@ -119,7 +124,7 @@ public class ServerFeedbackAggregation extends FeedbackAgregation<MUExperiment>{
 		for(Mapping m : amFinal)
 		{
 			
-			if (m.getSimilarity()>0.89)
+			if ((m.getSimilarity()>0.89)&&(m.getAlignmentType().equals(type)))
 			{
 				trainingSet.add(getLabeledMapping(m,1));
 				count++;
@@ -129,7 +134,7 @@ public class ServerFeedbackAggregation extends FeedbackAgregation<MUExperiment>{
 		for(Mapping m : amFinal)
 		{
 			
-			if (m.getSimilarity()<0.1)
+			if ((m.getSimilarity()<0.1)&&(m.getAlignmentType().equals(type)))
 			{
 				trainingSet.add(getLabeledMapping(m,0));
 				count--;

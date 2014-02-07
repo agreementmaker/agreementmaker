@@ -47,12 +47,12 @@ public class ServerStatistics extends UFLStatistics<MUExperiment>{
 	
 	private double computeDelta(double[] array)
 	{
-		return array[0]-array[array.length-1];
+		return array[array.length-1]-array[0];
 	}
 	
 	private int computeDelta(int[] array)
 	{
-		return array[array.length-1]-array[0];
+		return array[0]-array[array.length-1];
 	}
 	
 	private double computeAUC(double[] array)
@@ -74,9 +74,9 @@ public class ServerStatistics extends UFLStatistics<MUExperiment>{
 	private void writeLog(ServerFeedbackEvaluationData dataFPE, ServerCSEvaluationData dataCSE)
 	{
 		double dDelta=computeDelta(dataFPE.deltaArray);
-		double dRecall=computeDelta(dataFPE.recallArray);
-		double dPrecision = computeDelta(dataFPE.precisionArray);
-		double dFMeasure= computeDelta(dataFPE.fmeasureArray);
+		double dRecall=computeDelta(dataFPE.recallArray)*100;
+		double dPrecision = computeDelta(dataFPE.precisionArray)*100;
+		double dFMeasure= computeDelta(dataFPE.fmeasureArray)*100;
 		
 		double auc=computeAUC(dataCSE.accuracy);
 		int falsePositive=getFeedbackNumber(dataCSE.falsePositive);

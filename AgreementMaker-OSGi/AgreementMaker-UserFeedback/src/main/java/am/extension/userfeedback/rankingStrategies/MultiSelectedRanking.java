@@ -27,14 +27,12 @@ public class MultiSelectedRanking extends AbstractRankingStrategy{
 	AbstractQualityMetric[] aqmV_classes;
 	AbstractQualityMetric[] aqmV_properties;
 	String combinationType;
-	double[] weights;
 	
 	
 	public MultiSelectedRanking(MUExperiment exp, String[] strategies, String combinationType, double[] weights )
 	{
 		this.experiment =exp;
 		this.strategies=strategies;
-		this.weights=weights;
 		this.combinationType=combinationType;
 		aqmV_classes=new AbstractQualityMetric[strategies.length];
 		aqmV_properties=new AbstractQualityMetric[strategies.length];
@@ -44,17 +42,22 @@ public class MultiSelectedRanking extends AbstractRankingStrategy{
 			{
 				aqmV_classes[i]=new VarianceMatcherDisagreement(extractList(experiment.initialMatcher.getComponentMatchers(), alignType.aligningClasses));
 				aqmV_properties[i]=new VarianceMatcherDisagreement(extractList(experiment.initialMatcher.getComponentMatchers(), alignType.aligningProperties));
-
+				aqmV_classes[i].setWeight(0.5);
+				aqmV_properties[i].setWeight(0.5);
 			}
 			if (strategies[i].equals("ccq"))
 			{
 				aqmV_classes[i]=new CrossCountQuality(experiment.getComputedUFLMatrix(alignType.aligningClasses));
 				aqmV_properties[i]=new CrossCountQuality(experiment.getComputedUFLMatrix(alignType.aligningProperties));
+				aqmV_classes[i].setWeight(0.1);
+				aqmV_properties[i].setWeight(0.1);
 			}
 			if (strategies[i].equals("ssh"))
 			{
 				aqmV_classes[i]=new SimilarityScoreDefinitness(experiment.getComputedUFLMatrix(alignType.aligningClasses));
 				aqmV_properties[i]=new SimilarityScoreDefinitness(experiment.getComputedUFLMatrix(alignType.aligningProperties));
+				aqmV_classes[i].setWeight(0.4);
+				aqmV_properties[i].setWeight(0.4);
 			}
 			if (strategies[i].equals("con"))
 			{
@@ -94,7 +97,8 @@ public class MultiSelectedRanking extends AbstractRankingStrategy{
 	{
 		double sim=0;
 		List<Mapping> lst=new ArrayList<Mapping>();
-		
+		double[] w=new double[3];
+		int w_count=0;
 		Mapping mp;
 		for(int i=0;i<mtrx.getRows();i++)
 		{
@@ -104,12 +108,15 @@ public class MultiSelectedRanking extends AbstractRankingStrategy{
 //				if (forbidden.getSimilarity(i, j)==1.0)
 //					continue;
 				mp=mtrx.get(i, j);
+				w_count=0;
 				for(int k=0;k<strategies.length;k++)
 				{
 					if ((aqmV[k].getMetricID().equals("ssh")) || (aqmV[k].getMetricID().equals("mmc"))|| (aqmV[k].getMetricID().equals("sim")))
 						values.add(1-aqmV[k].getQuality(mp.getAlignmentType(), i, j));
 					else
 						values.add(aqmV[k].getQuality(mp.getAlignmentType(), i, j));
+					if (combinationType.equals("lwc"))
+						w[w_count++]=aqmV[k].getWeight();
 				}
 				
 				
@@ -125,7 +132,7 @@ public class MultiSelectedRanking extends AbstractRankingStrategy{
 						sim=minCombination(values);
 						break;
 					case("lwc"):
-						sim=linearWeightedCombination(values);
+						sim=linearWeightedCombination(values, w);
 						break;
 				}
 				
@@ -171,7 +178,7 @@ public class MultiSelectedRanking extends AbstractRankingStrategy{
 		return min;
 	}
 	
-	private double linearWeightedCombination(List<Double> ds)
+	private double linearWeightedCombination(List<Double> ds, double[] weights)
 	{
 		double sim=0.0;
 		for (int i=0;i<ds.size();i++)

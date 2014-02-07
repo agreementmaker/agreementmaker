@@ -22,10 +22,10 @@ public class ExpandedConsensus extends AbstractQualityMetric {
 	private SparseMatrix negativeMatrix;
 	private SimilarityMatrix amScoreClass;
 	private SimilarityMatrix amScoreProp;
-	private final double threshold=0.6;
+	private double threshold;
 	private int maxRevalidation;
 	
-	public ExpandedConsensus(SparseMatrix matrixPos, SparseMatrix matrixNeg, SimilarityMatrix amClass, SimilarityMatrix amProp  , int revalidation)
+	public ExpandedConsensus(SparseMatrix matrixPos, SparseMatrix matrixNeg, SimilarityMatrix amClass, SimilarityMatrix amProp  , int revalidation, double threshold)
 	{
 		super();
 		this.positiveMatrix = matrixPos;
@@ -33,6 +33,7 @@ public class ExpandedConsensus extends AbstractQualityMetric {
 		this.maxRevalidation=revalidation;
 		this.amScoreClass=amClass;
 		this.amScoreProp=amProp;
+		this.threshold=threshold;
 	}
 	
 	/**
