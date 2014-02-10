@@ -27,8 +27,8 @@ public class SimilarityDistance extends AbstractQualityMetric{
 		double min=Double.MAX_VALUE;
 		double tmp=0;
 		
-		if (sm.getSimilarity(i, j)==0.0d) 
-			return 0.0d;
+//		if (sm.getSimilarity(i, j)==0.0d) 
+//			return 0.0d;
 		
 		for (int k=0;k<sm.getRows();k++)
 		{
@@ -50,6 +50,10 @@ public class SimilarityDistance extends AbstractQualityMetric{
 					min=tmp;
 			}
 		}
+		
+		/*
+		 * we invert the output because the mapping with the smallest SD value is a more informative mapping
+		 */
 		
 		return 1-min;
 

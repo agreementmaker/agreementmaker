@@ -7,33 +7,33 @@ import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import static am.Utility.IntArray.getMaxValue;
 
 /**
- * A mapping quality metric that counts how many non-zero values are in the row
+ * A mapping quality metric that sum the similarity values in the row
  * and column of this mapping.
  * 
  * @author Francesco Loprete
  * @author Cosmin Stroe
  */
-public class CrossCountQuality extends AbstractQualityMetric {
+public class CrossSumQuality extends AbstractQualityMetric {
 		
-	private int[] rowCounts;
-	private int[] colCounts;
+	private double[] rowCounts;
+	private double[] colCounts;
 	//SimilarityMatrix forbidden;
-	private int normalizationFactor;
+	private double normalizationFactor;
 	
-	public CrossCountQuality(SimilarityMatrix matrix)
+	public CrossSumQuality(SimilarityMatrix matrix)
 	{
 		super();
 		//this.forbidden=forbidden;
 		// row counts
-		rowCounts = new int[matrix.getRows()];
+		rowCounts = new double[matrix.getRows()];
 		for( int i = 0; i < matrix.getRows(); i++ ) {
-			rowCounts[i] = countNonzeroMappings(matrix.getRowMaxValues(i, matrix.getColumns()));
+			rowCounts[i] = sumMappingsSimilarity(matrix.getRowMaxValues(i, matrix.getColumns()));
 		}
 		
 		// column counts
-		colCounts = new int[matrix.getColumns()];
+		colCounts = new double[matrix.getColumns()];
 		for( int j = 0; j < matrix.getColumns(); j++ ) {
-			colCounts[j] = countNonzeroMappings(matrix.getColMaxValues(j, matrix.getRows()));
+			colCounts[j] = sumMappingsSimilarity(matrix.getColMaxValues(j, matrix.getRows()));
 		}
 		
 		normalizationFactor = getMaxValue(rowCounts) + getMaxValue(colCounts);
@@ -46,18 +46,16 @@ public class CrossCountQuality extends AbstractQualityMetric {
 	@Override
 	public double getQuality(alignType type, int i, int j) 
 	{		
-		return (rowCounts[i] + colCounts[j]) / (double)normalizationFactor;
+		return (rowCounts[i] + colCounts[j]) / normalizationFactor;
 	}
 
-	private int countNonzeroMappings(Mapping[] map) 
+	private double sumMappingsSimilarity(Mapping[] map) 
 	{
-		int count = 0;
-		for(Mapping m : map){
-//			if (forbidden.getSimilarity(m.getSourceKey(), m.getTargetKey())==1)
-//				count++;
-//			else
-				if( m.getSimilarity() > 0.0 ) count++;
+		double sum = 0.0;
+		for(Mapping m : map)
+		{
+				sum+=m.getSimilarity();
 		}
-		return count;
+		return sum;
 	}
 }

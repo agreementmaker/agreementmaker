@@ -34,6 +34,12 @@ public class MultiMatcherConfidence extends AbstractQualityMetric{
 		{
 			SimilarityMatrix sm=type.equals(alignType.aligningClasses)?initialMatcher.get(k).getClassesMatrix():initialMatcher.get(k).getPropertiesMatrix();
 			//q+=matchersWeight[k]*Math.abs(threshold-sm.getSimilarity(i, j));
+			/*
+			 * The original metric is implemented in the paper "Actively Learning Ontology Matching via User Interaction" by Shi et Al.
+			 * in the original implementation every matcher have a weight assigned.
+			 * In our implementation we assume that all the metchers have the same weight (1.0).
+			 */
+			
 			q=Math.abs(threshold-sm.getSimilarity(i, j));
 			if (q<min)
 				min=q;
