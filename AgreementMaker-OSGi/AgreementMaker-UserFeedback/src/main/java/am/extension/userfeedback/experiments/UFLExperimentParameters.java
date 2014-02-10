@@ -136,7 +136,8 @@ public class UFLExperimentParameters extends Properties {
 		else if( value != null ) {
 			return Integer.parseInt(value);
 		}
-		throw new RuntimeException("The parameter has not been set and it does not have a default value.");
+		throw new RuntimeException("The parameter " + p.name() + 
+				" has not been set and it does not have a default value.");
 	}
 	
 	public double getDoubleParameter(Parameter p) {
