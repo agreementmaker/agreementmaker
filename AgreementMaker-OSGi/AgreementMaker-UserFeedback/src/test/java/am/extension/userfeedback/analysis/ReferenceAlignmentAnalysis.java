@@ -27,6 +27,9 @@ import am.utility.referenceAlignment.AlignmentUtilities;
 public class ReferenceAlignmentAnalysis {
 	
 	private static final Logger LOG = LogManager.getLogger(ReferenceAlignmentAnalysis.class);
+	
+	/** SEPARATOR */
+	private static final String S = "\t";
 
 	/**
 	 * How many mappings in the reference alignments, and what kind of mappings are they?
@@ -111,13 +114,13 @@ public class ReferenceAlignmentAnalysis {
 		Assert.assertEquals(classesTotalMappings, classesEquivalentMappings + classesSubClassMappings + classesOtherMappings);
 		Assert.assertEquals(propertiesTotalMappings, propertiesEquivalentMappings + propertiesSubPropertyMappings + propertiesOtherMappings);
 		
-		String initialTab = "\t";
-		if( p.getName().length() <= "ConferenceEkawIaste".length() ) initialTab = "\t\t";
+		String initialTab = S;
+		if( p.getName().length() <= "ConferenceEkawIaste".length() ) initialTab = S + S;
 
-		LOG.info(p.getName() + 
-				initialTab + classesEquivalentMappings + "\t" + classesSubClassMappings + "\t" + classesOtherMappings + "\t" + classesTotalMappings +
-				"\t" + propertiesEquivalentMappings + "\t" + propertiesSubPropertyMappings + "\t" + propertiesOtherMappings + "\t" + propertiesTotalMappings +
-				"\t" + (classesEquivalentMappings + propertiesEquivalentMappings));
+		LOG.info(p.getName() +
+				initialTab + classesEquivalentMappings + S + classesSubClassMappings + S + classesOtherMappings + S + classesTotalMappings +
+				S + propertiesEquivalentMappings + S + propertiesSubPropertyMappings + S + propertiesOtherMappings + S + propertiesTotalMappings +
+				S + (classesEquivalentMappings + propertiesEquivalentMappings));
 	}
 	
 }
