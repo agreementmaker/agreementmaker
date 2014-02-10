@@ -12,14 +12,15 @@ import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 
 public class ContentionPoint  extends AbstractQualityMetric{
 		
-	private final double threshold=0.4;
+	private double threshold;
 	List<Mapping> lst=new ArrayList<>();
 	SimilarityMatrix ufl;
 	List<AbstractMatcher> amInput=new ArrayList<>();
 	
-	public ContentionPoint(SimilarityMatrix am, List<AbstractMatcher> inputMatchers, alignType type)
+	public ContentionPoint(SimilarityMatrix am, List<AbstractMatcher> inputMatchers, alignType type, double threshold)
 	{
 		super();
+		this.threshold=threshold;
 		this.ufl=am;
 		this.amInput=inputMatchers;
 		double sim=0.0;
@@ -45,6 +46,7 @@ public class ContentionPoint  extends AbstractQualityMetric{
 				
 				if ((countP!=0) & (countN!=0))
 					lst.add(am.get(i, j));
+				
 			}
 		
 	}
@@ -57,24 +59,44 @@ public class ContentionPoint  extends AbstractQualityMetric{
 	public double getQuality(alignType type, int i, int j) 
 	{		
 
-		if (ufl.getSimilarity(i, j)==0.0d)
+		Mapping m=ufl.get(i, j);
+		if (!lst.contains(m))
 			return 0.0d;
-		double min=Double.MAX_VALUE;
-		for (int k=0;k<amInput.size()-1;k++)
-			for(int l=k+1;l<amInput.size();l++)
-			{
-				double tmp=0;
-				if(type.equals(alignType.aligningClasses))
-					tmp=Math.abs(Math.abs(amInput.get(k).getClassesMatrix().getSimilarity(i, j)-threshold)
-							-Math.abs(amInput.get(l).getClassesMatrix().getSimilarity(i, j)-threshold));
-				else
-					tmp=Math.abs(Math.abs(amInput.get(k).getPropertiesMatrix().getSimilarity(i, j)-threshold)
-							-Math.abs(amInput.get(l).getPropertiesMatrix().getSimilarity(i, j)-threshold));
-				if(tmp<min)
-					min=tmp;
-			}
 		
-		return 1-min;
+		
+		double min=Double.MAX_VALUE;
+		double max=Double.MIN_VALUE;
+		double p_max=Double.MIN_VALUE;
+		for (int k=0;k<amInput.size();k++)
+		{
+			double tmp=0;
+			if(type.equals(alignType.aligningClasses))
+				tmp=Math.abs(amInput.get(k).getClassesMatrix().getSimilarity(i, j)-threshold);
+			else
+				tmp=Math.abs(amInput.get(k).getPropertiesMatrix().getSimilarity(i, j)-threshold);
+			if(tmp>max)
+				max=tmp;
+			if((tmp<max)&&(tmp>p_max))
+				p_max=tmp;
+		}
+		
+		return 1-(Math.abs(max-p_max));
+		
+//		for (int k=0;k<amInput.size()-1;k++)
+//			for(int l=k+1;l<amInput.size();l++)
+//			{
+//				double tmp=0;
+//				if(type.equals(alignType.aligningClasses))
+//					tmp=Math.abs(Math.abs(amInput.get(k).getClassesMatrix().getSimilarity(i, j)-threshold)
+//							-Math.abs(amInput.get(l).getClassesMatrix().getSimilarity(i, j)-threshold));
+//				else
+//					tmp=Math.abs(Math.abs(amInput.get(k).getPropertiesMatrix().getSimilarity(i, j)-threshold)
+//							-Math.abs(amInput.get(l).getPropertiesMatrix().getSimilarity(i, j)-threshold));
+//				if(tmp<min)
+//					min=tmp;
+//			}
+//		
+//		return 1-min;
 		
 
 		

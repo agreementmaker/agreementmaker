@@ -11,6 +11,7 @@ import am.app.mappingEngine.MappingSimilarityComparator;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.qualityEvaluation.AbstractQualityMetric;
 import am.app.mappingEngine.qualityEvaluation.metrics.ufl.CrossCountQuality;
+import am.app.mappingEngine.qualityEvaluation.metrics.ufl.CrossSumQuality;
 import am.app.mappingEngine.qualityEvaluation.metrics.ufl.SimilarityScoreDefinitness;
 import am.app.mappingEngine.qualityEvaluation.metrics.ufl.VarianceMatcherDisagreement;
 import am.app.mappingEngine.qualityEvaluation.metrics.ufl.shi.ContentionPoint;
@@ -49,25 +50,38 @@ public class MultiSelectedRanking extends AbstractRankingStrategy{
 			{
 				aqmV_classes[i]=new CrossCountQuality(experiment.getComputedUFLMatrix(alignType.aligningClasses));
 				aqmV_properties[i]=new CrossCountQuality(experiment.getComputedUFLMatrix(alignType.aligningProperties));
-				aqmV_classes[i].setWeight(0.1);
-				aqmV_properties[i].setWeight(0.1);
+				aqmV_classes[i].setWeight(0.15);
+				aqmV_properties[i].setWeight(0.15);
+			}
+			if (strategies[i].equals("csq"))
+			{
+				aqmV_classes[i]=new CrossSumQuality(experiment.getComputedUFLMatrix(alignType.aligningClasses));
+				aqmV_properties[i]=new CrossSumQuality(experiment.getComputedUFLMatrix(alignType.aligningProperties));
+				aqmV_classes[i].setWeight(0.15);
+				aqmV_properties[i].setWeight(0.15);
 			}
 			if (strategies[i].equals("ssh"))
 			{
 				aqmV_classes[i]=new SimilarityScoreDefinitness(experiment.getComputedUFLMatrix(alignType.aligningClasses));
 				aqmV_properties[i]=new SimilarityScoreDefinitness(experiment.getComputedUFLMatrix(alignType.aligningProperties));
-				aqmV_classes[i].setWeight(0.4);
-				aqmV_properties[i].setWeight(0.4);
+				aqmV_classes[i].setWeight(0.35);
+				aqmV_properties[i].setWeight(0.35);
 			}
 			if (strategies[i].equals("con"))
 			{
-				aqmV_classes[i]=new ContentionPoint(exp.initialMatcher.getFinalMatcher().getClassesMatrix(),experiment.initialMatcher.getComponentMatchers(), alignType.aligningClasses);
-				aqmV_properties[i]=new ContentionPoint(exp.initialMatcher.getFinalMatcher().getPropertiesMatrix(),experiment.initialMatcher.getComponentMatchers(),alignType.aligningProperties);
+				aqmV_classes[i]=new ContentionPoint(exp.initialMatcher.getFinalMatcher().getClassesMatrix(),
+						experiment.initialMatcher.getComponentMatchers(), alignType.aligningClasses, 
+						exp.setup.parameters.getDoubleParameter(Parameter.IM_THRESHOLD));
+				aqmV_properties[i]=new ContentionPoint(exp.initialMatcher.getFinalMatcher().getPropertiesMatrix(),
+						experiment.initialMatcher.getComponentMatchers(),alignType.aligningProperties,
+						exp.setup.parameters.getDoubleParameter(Parameter.IM_THRESHOLD));
 			}
 			if (strategies[i].equals("mmc"))
 			{
-				aqmV_classes[i]=new MultiMatcherConfidence(experiment.initialMatcher.getComponentMatchers(), weights, exp.setup.parameters.getDoubleParameter(Parameter.IM_THRESHOLD));
-				aqmV_properties[i]=new MultiMatcherConfidence(experiment.initialMatcher.getComponentMatchers(), weights, exp.setup.parameters.getDoubleParameter(Parameter.IM_THRESHOLD));
+				aqmV_classes[i]=new MultiMatcherConfidence(experiment.initialMatcher.getComponentMatchers(), weights, 
+						exp.setup.parameters.getDoubleParameter(Parameter.IM_THRESHOLD));
+				aqmV_properties[i]=new MultiMatcherConfidence(experiment.initialMatcher.getComponentMatchers(), weights, 
+						exp.setup.parameters.getDoubleParameter(Parameter.IM_THRESHOLD));
 			}
 			if (strategies[i].equals("sim"))
 			{

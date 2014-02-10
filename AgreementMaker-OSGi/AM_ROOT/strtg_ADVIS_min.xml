@@ -8,7 +8,7 @@
       <reference>/home/frank/workspace/MultiUserFeedbackLoop/AgreementMaker-OSGi/AM_ROOT/OAEI/2013/benchmarks/301/refalign.rdf</reference>
     </left>
     <right class="am.extension.userfeedback.preset.ExperimentPreset">
-      <name>strtg_ADVIS_min</name>
+      <name>strtg_ADVIS_min_noProp</name>
       <setup>
         <exp>ServerExperiment</exp>
         <im>SemanticStructuralCombination</im>
@@ -27,7 +27,7 @@
           <IM__THRESHOLD>0.4</IM__THRESHOLD>
           <NUM__ITERATIONS>100</NUM__ITERATIONS>
           <NUM__USERS>10</NUM__USERS>
-          <PROPAGATION__METHOD>regression</PROPAGATION__METHOD>
+          <PROPAGATION__METHOD>none</PROPAGATION__METHOD>
           <REVALIDATION__RATE>0.0</REVALIDATION__RATE>
         </parameters>
       </setup>
@@ -42,7 +42,7 @@
       <reference>/home/frank/workspace/MultiUserFeedbackLoop/AgreementMaker-OSGi/AM_ROOT/OAEI/2013/benchmarks/302/refalign.rdf</reference>
     </left>
     <right class="am.extension.userfeedback.preset.ExperimentPreset">
-      <name>strtg_ADVIS_min</name>
+      <name>strtg_ADVIS_min_noProp</name>
       <setup>
         <exp>ServerExperiment</exp>
         <im>SemanticStructuralCombination</im>
@@ -61,7 +61,7 @@
           <IM__THRESHOLD>0.4</IM__THRESHOLD>
           <NUM__ITERATIONS>100</NUM__ITERATIONS>
           <NUM__USERS>10</NUM__USERS>
-          <PROPAGATION__METHOD>regression</PROPAGATION__METHOD>
+          <PROPAGATION__METHOD>none</PROPAGATION__METHOD>
           <REVALIDATION__RATE>0.0</REVALIDATION__RATE>
         </parameters>
       </setup>
@@ -76,7 +76,7 @@
       <reference>/home/frank/workspace/MultiUserFeedbackLoop/AgreementMaker-OSGi/AM_ROOT/OAEI/2013/benchmarks/303/refalign.rdf</reference>
     </left>
     <right class="am.extension.userfeedback.preset.ExperimentPreset">
-      <name>strtg_ADVIS_min</name>
+      <name>strtg_ADVIS_min_noProp</name>
       <setup>
         <exp>ServerExperiment</exp>
         <im>SemanticStructuralCombination</im>
@@ -95,7 +95,7 @@
           <IM__THRESHOLD>0.4</IM__THRESHOLD>
           <NUM__ITERATIONS>100</NUM__ITERATIONS>
           <NUM__USERS>10</NUM__USERS>
-          <PROPAGATION__METHOD>regression</PROPAGATION__METHOD>
+          <PROPAGATION__METHOD>none</PROPAGATION__METHOD>
           <REVALIDATION__RATE>0.0</REVALIDATION__RATE>
         </parameters>
       </setup>
@@ -110,7 +110,7 @@
       <reference>/home/frank/workspace/MultiUserFeedbackLoop/AgreementMaker-OSGi/AM_ROOT/OAEI/2013/benchmarks/304/refalign.rdf</reference>
     </left>
     <right class="am.extension.userfeedback.preset.ExperimentPreset">
-      <name>strtg_ADVIS_min</name>
+      <name>strtg_ADVIS_min_noProp</name>
       <setup>
         <exp>ServerExperiment</exp>
         <im>SemanticStructuralCombination</im>
@@ -129,7 +129,7 @@
           <IM__THRESHOLD>0.4</IM__THRESHOLD>
           <NUM__ITERATIONS>100</NUM__ITERATIONS>
           <NUM__USERS>10</NUM__USERS>
-          <PROPAGATION__METHOD>regression</PROPAGATION__METHOD>
+          <PROPAGATION__METHOD>none</PROPAGATION__METHOD>
           <REVALIDATION__RATE>0.0</REVALIDATION__RATE>
         </parameters>
       </setup>
