@@ -17,6 +17,7 @@ import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.extension.multiUserFeedback.experiment.MUExperiment;
 import am.extension.userfeedback.UserFeedback.Validation;
+import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
 
 public class RevalidationRanking extends AbstractRankingStrategy {
 
@@ -34,7 +35,7 @@ public class RevalidationRanking extends AbstractRankingStrategy {
 	private double alpha=1.0;
 	private double beta=1.0;
 	private double gamma=2.0;
-	private final int maxValidation=3;
+	private int maxValidation;
 
 	private MUExperiment experiment;
 	
@@ -54,7 +55,7 @@ public class RevalidationRanking extends AbstractRankingStrategy {
 		uflProp = experiment.getComputedUFLMatrix(alignType.aligningProperties);
 		forbiddenClass = experiment.getForbiddenPositions(alignType.aligningClasses);
 		forbiddenProp = experiment.getForbiddenPositions(alignType.aligningProperties);
-		
+		maxValidation = experiment.setup.parameters.getIntParameter(Parameter.MAX_VALIDATION);
 		toRank = new ArrayList<Mapping>();
 		if (experiment.correctMappings!=null)
 			toRank.addAll(experiment.correctMappings);
