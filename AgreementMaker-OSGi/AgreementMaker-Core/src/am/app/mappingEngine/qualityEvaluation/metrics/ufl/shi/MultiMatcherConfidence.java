@@ -1,5 +1,6 @@
 package am.app.mappingEngine.qualityEvaluation.metrics.ufl.shi;
 
+import java.util.Arrays;
 import java.util.List;
 
 import am.app.mappingEngine.AbstractMatcher;
@@ -12,6 +13,14 @@ public class MultiMatcherConfidence extends AbstractQualityMetric{
 	private List<AbstractMatcher> initialMatcher;
 	private double[] matchersWeight;
 	private double threshold;
+	
+	public MultiMatcherConfidence(List<AbstractMatcher> am, double threshold) {
+		super();
+		this.initialMatcher = am;
+		this.matchersWeight = new double[initialMatcher.size()];
+		Arrays.fill(matchersWeight, 1.0);
+		this.threshold = threshold;
+	}
 	
 	public MultiMatcherConfidence(List<AbstractMatcher> am, double[] weights, double threshold)
 	{
@@ -28,23 +37,15 @@ public class MultiMatcherConfidence extends AbstractQualityMetric{
 	@Override
 	public double getQuality(alignType type, int i, int j) 
 	{		
-		double min=Double.MAX_VALUE;
+		double sum=0.0;
 		double q=0;
 		for(int k=0;k<initialMatcher.size();k++)
 		{
 			SimilarityMatrix sm=type.equals(alignType.aligningClasses)?initialMatcher.get(k).getClassesMatrix():initialMatcher.get(k).getPropertiesMatrix();
-			//q+=matchersWeight[k]*Math.abs(threshold-sm.getSimilarity(i, j));
-			/*
-			 * The original metric is implemented in the paper "Actively Learning Ontology Matching via User Interaction" by Shi et Al.
-			 * in the original implementation every matcher have a weight assigned.
-			 * In our implementation we assume that all the metchers have the same weight (1.0).
-			 */
-			
-			q=Math.abs(threshold-sm.getSimilarity(i, j));
-			if (q<min)
-				min=q;
+		
+			sum+=matchersWeight[k]*Math.abs(threshold-sm.getSimilarity(i, j));
 		}
-		return min;
+		return (sum/initialMatcher.size());
 		
 	}
 }

@@ -78,9 +78,9 @@ public class MultiSelectedRanking extends AbstractRankingStrategy{
 			}
 			if (strategies[i].equals("mmc"))
 			{
-				aqmV_classes[i]=new MultiMatcherConfidence(experiment.initialMatcher.getComponentMatchers(), weights, 
+				aqmV_classes[i]=new MultiMatcherConfidence(experiment.initialMatcher.getComponentMatchers(),  
 						exp.setup.parameters.getDoubleParameter(Parameter.IM_THRESHOLD));
-				aqmV_properties[i]=new MultiMatcherConfidence(experiment.initialMatcher.getComponentMatchers(), weights, 
+				aqmV_properties[i]=new MultiMatcherConfidence(experiment.initialMatcher.getComponentMatchers(),  
 						exp.setup.parameters.getDoubleParameter(Parameter.IM_THRESHOLD));
 			}
 			if (strategies[i].equals("sim"))
@@ -125,7 +125,10 @@ public class MultiSelectedRanking extends AbstractRankingStrategy{
 				w_count=0;
 				for(int k=0;k<strategies.length;k++)
 				{
-					if ((aqmV[k].getMetricID().equals("ssh")) || (aqmV[k].getMetricID().equals("mmc"))|| (aqmV[k].getMetricID().equals("sim")))
+					if ((aqmV[k].getMetricID().equals("ssh")) 
+							|| (aqmV[k].getMetricID().equals("mmc"))
+							|| (aqmV[k].getMetricID().equals("sim"))
+							|| (aqmV[k].getMetricID().equals("con")))
 						values.add(1-aqmV[k].getQuality(mp.getAlignmentType(), i, j));
 					else
 						values.add(aqmV[k].getQuality(mp.getAlignmentType(), i, j));
