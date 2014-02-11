@@ -40,11 +40,23 @@ public class MultiStrategyCandidateSelection extends MUCandidateSelection<MUExpe
 		String[] metric=experiment.setup.parameters.getArrayParameter(Parameter.CS_METRICS_LIST);
 		if (metric!=null)
 		{
-			strategies=new StrategyInterface[1];
+			if( staticCS )
+				strategies = new StrategyInterface[1];
+			else
+				strategies=new StrategyInterface[2];
 			String combinationMethod=experiment.setup.parameters.getParameter(Parameter.CS_COMBINATION_METHOD);
-			double[] weights={0.5,0.2,0.4};
-			MultiSelectedRanking msr=new MultiSelectedRanking(experiment, metric, combinationMethod, weights);
+			//double[] weights={0.5,0.2,0.4};
+			MultiSelectedRanking msr=new MultiSelectedRanking(experiment, metric, combinationMethod, null);
+			RevalidationRanking rr = new RevalidationRanking(experiment);
+			msr.setPriority(0);
+			rr.setPriority(1);			
 			strategies[0] = msr;
+			if( !staticCS ) 
+			{
+				double revRate = experiment.setup.parameters.getDoubleParameter(Parameter.REVALIDATION_RATE);
+				rr.setPercentage(revRate);
+				strategies[1] = rr;
+			}
 		}
 		else
 		{
@@ -71,7 +83,7 @@ public class MultiStrategyCandidateSelection extends MUCandidateSelection<MUExpe
 			}
 		
 		}
-			pcs.setStrategies(strategies);
+		pcs.setStrategies(strategies);
 	}
 
 	@Override

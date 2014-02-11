@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.DefaultSelectionParameters;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherResult;
@@ -62,9 +63,9 @@ public class MUDataInitialization  extends FeedbackLoopInizialization<MUExperime
 		
 		//am=exp.initialMatcher.getFinalMatcher().getPropertiesMatrix();
 		smProperty=prepare(smProperty);
-		computeAlignment(smClass, smProperty);
-
 		
+
+		computeAlignment(smClass, smProperty);
 		
 		List<SimilarityMatrix> lstC=new ArrayList<>();
 		List<SimilarityMatrix> lstP=new ArrayList<>();
@@ -130,6 +131,9 @@ public class MUDataInitialization  extends FeedbackLoopInizialization<MUExperime
 		exp.setFeedBackMatrix(sparsePropPos, alignType.aligningProperties, Validation.CORRECT);
 		exp.setFeedBackMatrix(sparsePropNeg, alignType.aligningProperties, Validation.INCORRECT);
 		
+		//FP and FN count for the initial alignment
+		falseMappingCount();
+		
 		// output the experiment description
 		StringBuilder d = new StringBuilder();
 		
@@ -160,7 +164,8 @@ public class MUDataInitialization  extends FeedbackLoopInizialization<MUExperime
 		
 		exp.info(d.toString());
 		LOG.info(d.toString());
-
+		
+		
 		done();
 	}
 
@@ -265,6 +270,36 @@ public class MUDataInitialization  extends FeedbackLoopInizialization<MUExperime
 		
 		// set the iteration number.
 		experiment.setIterationNumber(1);
+	}
+	
+	private void falseMappingCount()
+	{
+		int falsePositive=0;
+		int falseNegative=0;
+		Alignment<Mapping> referenceAlignment = experiment.getReferenceAlignment();
+		
+		Alignment<Mapping> computedAlignment = experiment.getFinalAlignment();
+		
+		for(Mapping m : computedAlignment)
+		{
+			if (!referenceAlignment.contains(m))
+			{
+				falsePositive++;
+			}
+		}
+		for (Mapping m : referenceAlignment)
+		{
+			if (!computedAlignment.contains(m))
+			{
+				falseNegative++;
+			}
+		}
+		
+		experiment.info("Number of FalsePositive mapping in initial alignment: "+falsePositive);
+		experiment.info("");
+		experiment.info("Number of FalseNegative mapping in initial alignment: "+falseNegative);
+		experiment.info("");
+
 	}
 
 
