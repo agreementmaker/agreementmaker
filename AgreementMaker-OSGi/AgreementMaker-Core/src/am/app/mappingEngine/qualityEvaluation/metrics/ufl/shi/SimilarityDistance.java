@@ -7,12 +7,12 @@ import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 
 public class SimilarityDistance extends AbstractQualityMetric{
 		
-	private SimilarityMatrix amScoreClass;
+	private SimilarityMatrix amMtrx;
 	
-	public SimilarityDistance(SimilarityMatrix amClass)
+	public SimilarityDistance(SimilarityMatrix mtrx)
 	{
 		super();
-		this.amScoreClass=amClass;
+		this.amMtrx=mtrx;
 	}
 	
 	/**
@@ -23,7 +23,7 @@ public class SimilarityDistance extends AbstractQualityMetric{
 	public double getQuality(alignType type, int i, int j) 
 	{		
 		
-		SimilarityMatrix sm=amScoreClass;
+		SimilarityMatrix sm=amMtrx;
 		double min=Double.MAX_VALUE;
 		double tmp=0;
 		
@@ -33,7 +33,7 @@ public class SimilarityDistance extends AbstractQualityMetric{
 		for (int k=0;k<sm.getRows();k++)
 		{
 			double sim=sm.getSimilarity(k, j);
-			if ((sim>0.0d) && (k!=i))
+			if (k!=i)
 			{
 				tmp=Math.abs(sm.getSimilarity(i, j)-sim);
 				if (min>tmp)
@@ -43,7 +43,7 @@ public class SimilarityDistance extends AbstractQualityMetric{
 		for (int k=0;k<sm.getColumns();k++)
 		{
 			double sim=sm.getSimilarity(i, k);
-			if ((sim>0.0d) && (k!=j))
+			if (k!=j)
 			{
 				tmp=Math.abs(sm.getSimilarity(i, j)-sim);
 				if (min>tmp)
@@ -55,7 +55,7 @@ public class SimilarityDistance extends AbstractQualityMetric{
 		 * we invert the output because the mapping with the smallest SD value is a more informative mapping
 		 */
 		
-		return 1-min;
+		return min;
 
 		
 	}

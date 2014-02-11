@@ -61,10 +61,8 @@ public class ContentionPoint  extends AbstractQualityMetric{
 
 		Mapping m=ufl.get(i, j);
 		if (!lst.contains(m))
-			return 0.0d;
+			return 1.0d;
 		
-		
-		double min=Double.MAX_VALUE;
 		double max=Double.MIN_VALUE;
 		double p_max=Double.MIN_VALUE;
 		for (int k=0;k<amInput.size();k++)
@@ -80,7 +78,7 @@ public class ContentionPoint  extends AbstractQualityMetric{
 				p_max=tmp;
 		}
 		
-		return 1-(Math.abs(max-p_max));
+		return max-p_max;
 		
 //		for (int k=0;k<amInput.size()-1;k++)
 //			for(int l=k+1;l<amInput.size();l++)

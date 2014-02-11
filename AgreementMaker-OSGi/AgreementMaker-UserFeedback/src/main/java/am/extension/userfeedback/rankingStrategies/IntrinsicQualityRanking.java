@@ -7,6 +7,7 @@ import java.util.List;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MappingSimilarityComparator;
+import am.app.mappingEngine.qualityEvaluation.metrics.InverseOf;
 import am.app.mappingEngine.qualityEvaluation.metrics.ufl.CrossCountQuality;
 import am.app.mappingEngine.qualityEvaluation.metrics.ufl.SimilarityScoreDefinitness;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
@@ -51,6 +52,7 @@ public class IntrinsicQualityRanking extends AbstractRankingStrategy {
 		List<Mapping> lst=new ArrayList<Mapping>();
 		CrossCountQuality ccq=new CrossCountQuality(mtrx);
 		SimilarityScoreDefinitness ssh=new SimilarityScoreDefinitness(mtrx);
+		InverseOf invSSD=new InverseOf(ssh);
 		for(int i=0;i<mtrx.getRows();i++)
 		{
 			for(int j=0;j<mtrx.getColumns();j++)
@@ -58,7 +60,7 @@ public class IntrinsicQualityRanking extends AbstractRankingStrategy {
 				if (forbidden.getSimilarity(i, j)==1.0)
 					continue;
 				mp=mtrx.get(i, j);
-				sim=alpha*ccq.getQuality(null, i, j)+beta*(1-ssh.getQuality(null, i, j));
+				sim=alpha*ccq.getQuality(null, i, j)+beta*(invSSD.getQuality(null, i, j));
 				mp.setSimilarity(sim);
 				lst.add(mp);
 
