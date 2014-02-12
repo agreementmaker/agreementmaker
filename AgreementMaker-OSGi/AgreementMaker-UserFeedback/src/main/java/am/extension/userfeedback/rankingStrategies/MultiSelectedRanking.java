@@ -205,4 +205,30 @@ public class MultiSelectedRanking extends AbstractRankingStrategy{
 		return sim;
 	}
 	
+	public double getQuality(alignType type, int i, int j)
+	{
+		List<Double> values=new ArrayList<Double>();
+		double[] w=new double[3];
+		AbstractQualityMetric[] aqm=type.equals(alignType.aligningClasses)?aqmV_classes:aqmV_properties;
+		for (int k=0;k<aqm.length;k++)
+		{
+			values.add(aqm[k].getQuality(type, i, j));
+			if (combinationType.equals("lwc"))
+				w[k]=aqm[k].getWeight();
+		}
+		switch(combinationType)
+		{
+			case("max"):
+				return maxCombination(values);
+			case("avg"):
+				return avgCombination(values);
+			case("min"):
+				return minCombination(values);
+			case("lwc"):
+				return linearWeightedCombination(values, w);
+			default:
+				throw new RuntimeException("Invalid combination type");
+		}
+	}
+	
 }

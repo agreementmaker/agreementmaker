@@ -6,7 +6,6 @@ import am.extension.multiUserFeedback.experiment.MUExperiment;
 import am.extension.userfeedback.common.ServerFeedbackEvaluationData;
 import am.extension.userfeedback.evaluation.CandidateSelectionEvaluation;
 import am.extension.userfeedback.evaluation.MultiplexCandidateSelectionEvaluation;
-import am.extension.userfeedback.evaluation.PropagationEvaluation;
 import am.extension.userfeedback.evaluation.RankingAccuracy;
 import am.extension.userfeedback.evaluation.RankingAccuracy.ServerCSEvaluationData;
 
