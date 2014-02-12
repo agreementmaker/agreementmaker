@@ -1,8 +1,6 @@
 package am.extension.multiUserFeedback.selection;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
 
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
@@ -13,7 +11,6 @@ import am.extension.userfeedback.rankingStrategies.DisagreementRanking;
 import am.extension.userfeedback.rankingStrategies.IntrinsicQualityRanking;
 import am.extension.userfeedback.rankingStrategies.MultiSelectedRanking;
 import am.extension.userfeedback.rankingStrategies.RevalidationRanking;
-import am.extension.userfeedback.rankingStrategies.SingleSelectedRanking;
 import am.extension.userfeedback.rankingStrategies.StrategyInterface;
 
 /**
@@ -40,23 +37,23 @@ public class MultiStrategyCandidateSelection extends MUCandidateSelection<MUExpe
 		String[] metric=experiment.setup.parameters.getArrayParameter(Parameter.CS_METRICS_LIST);
 		if (metric!=null)
 		{
-			if( staticCS )
+			double revalidationRate= experiment.setup.parameters.getDoubleParameter(Parameter.REVALIDATION_RATE);
+			if( (staticCS) || (revalidationRate==0.0) )
 				strategies = new StrategyInterface[1];
 			else
-				strategies=new StrategyInterface[2];
-			String combinationMethod=experiment.setup.parameters.getParameter(Parameter.CS_COMBINATION_METHOD);
-			//double[] weights={0.5,0.2,0.4};
-			MultiSelectedRanking msr=new MultiSelectedRanking(experiment, metric, combinationMethod, null);
-			RevalidationRanking rr = new RevalidationRanking(experiment);
-			msr.setPriority(0);
-			rr.setPriority(1);			
-			strategies[0] = msr;
-			if( !staticCS ) 
 			{
+				RevalidationRanking rr = new RevalidationRanking(experiment);
+				rr.setPriority(1);		
+				strategies=new StrategyInterface[2];
 				double revRate = experiment.setup.parameters.getDoubleParameter(Parameter.REVALIDATION_RATE);
 				rr.setPercentage(revRate);
 				strategies[1] = rr;
 			}
+			String combinationMethod=experiment.setup.parameters.getParameter(Parameter.CS_COMBINATION_METHOD);
+			MultiSelectedRanking msr=new MultiSelectedRanking(experiment, metric, combinationMethod, null);
+			msr.setPriority(0);		
+			strategies[0] = msr;
+
 		}
 		else
 		{

@@ -32,9 +32,9 @@ public class RevalidationRanking extends AbstractRankingStrategy {
 	private SimilarityMatrix uflProp;
 	private SimilarityMatrix forbiddenClass;
 	private SimilarityMatrix forbiddenProp;
-	private double alpha=1.0;
-	private double beta=1.0;
-	private double gamma=2.0;
+	private double alpha=1.0/3.0;
+	private double beta=1.0/3.0;
+	private double gamma=1.0/3.0;
 	private int maxValidation;
 
 	private MUExperiment experiment;
@@ -72,18 +72,14 @@ public class RevalidationRanking extends AbstractRankingStrategy {
 	//Linear combination of UD and the inverse of AMD
 	private List<Mapping> linearCombination(alignType type, List<SimilarityMatrix>  lMtrx, SparseMatrix mPos, SparseMatrix mNeg, SimilarityMatrix mtrx, SimilarityMatrix forbidden)
 	{
-		//List<Double> ud_norm=new ArrayList<Double>();
 		List<Double> ccq_norm=new ArrayList<Double>();
 		List<Double> cq_norm=new ArrayList<Double>();
 		List<Double> pim_norm=new ArrayList<Double>();
-		//List<Double> rr_norm=new ArrayList<Double>();
 		double sim=0;
 		List<Mapping> lst=new ArrayList<Mapping>();
-		//UserDisagrement ud=new UserDisagrement(mPos, mNeg);
 		ConsensusQuality cq=new ConsensusQuality(mPos, mNeg, maxValidation);
 		CrossCountQuality ccq=new CrossCountQuality(mtrx);
 		PropagationImpactMetric pim=new PropagationImpactMetric(mPos, mNeg, maxValidation);
-		//MappingQualityMetric rr=new InverseOf(new RevalidationRate(mPos, mNeg));
 		if (toRank==null) return new ArrayList<Mapping>();
 		for (Mapping m : toRank)
 		{
@@ -98,16 +94,11 @@ public class RevalidationRanking extends AbstractRankingStrategy {
 			}
 			else
 			{
-				//ud_norm.add(ud.getQuality(null, i, j));
 				ccq_norm.add(ccq.getQuality(null, i, j));
 				cq_norm.add(cq.getQuality(null, i, j));
 				pim_norm.add(pim.getQuality(null, i, j));
-				//rr_norm.add(rr.getQuality(null, i, j));
 			}
 		}
-		//normalize(ud_norm);
-		//normalize(ccq_norm);
-		//normalize(rr_norm);
 		int count=0;
 		for (Mapping m : toRank)
 		{
@@ -123,25 +114,7 @@ public class RevalidationRanking extends AbstractRankingStrategy {
 		
 	}
 	
-	private void normalize(List<Double> lst)
-	{
-		double max=Double.MIN_VALUE;
-		double min=Double.MAX_VALUE;
-		
-		for(Double d :lst)
-		{
-			if (d<min)
-				min=d;
-			if (d>max) max=d;	
-		}
-		for(int i=0;i<lst.size();i++)
-		{
-			double tmp=lst.get(i);
-			tmp=(tmp-min)/(max-min);
-			lst.set(i, tmp);
-		}
-		
-	}
+
 
 
 }

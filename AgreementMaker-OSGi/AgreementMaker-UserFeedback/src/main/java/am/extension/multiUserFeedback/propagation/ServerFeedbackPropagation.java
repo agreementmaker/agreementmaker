@@ -5,14 +5,14 @@ package am.extension.multiUserFeedback.propagation;
 
 
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.qualityEvaluation.metrics.InverseOf;
+import am.app.mappingEngine.qualityEvaluation.metrics.ufl.PropagationImpactMetric;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.app.ontology.Node;
@@ -21,23 +21,16 @@ import am.extension.userfeedback.UserFeedback.Validation;
 import am.extension.userfeedback.MLutility.WekaUtility;
 import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
 import am.extension.userfeedback.propagation.FeedbackPropagation;
+import am.extension.userfeedback.rankingStrategies.MultiSelectedRanking;
 import am.extension.userfeedback.utility.UFLutility;
 
-import com.tomgibara.cluster.gvm.dbl.DblResult;
 
 public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>{
 
-	private class ClusterData {
-		int clusterID;
-		int clusterSize;
-		int correctMappings;
-	}
 
-	final double treshold_up=0.6;
-	final double treshold_down=0.1;
-	final double penalize_ratio=0.9;
 	final double log_multiplier=1.2;
-	final double alpha=0.7;
+	final double dist_perc=5.0;
+	
 	private MUExperiment experiment;
 	private List<AbstractMatcher> inputMatchers;
 	
@@ -45,6 +38,7 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 	public static final String PROPAGATION_EUCLIDEAN 	= "euzero";
 	public static final String PROPAGATION_LOG 			= "logdist";
 	public static final String PROPAGATION_REGRESSION 	= "regression";
+	public static final String PROPAGATION_QUALITY 		= "quality";
 	public static final String PROPAGATION_CRC 	= "crc";
 	
 	private Object[] getSignatureVector(Mapping mp)
@@ -125,6 +119,7 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 	
 
 	private SimilarityMatrix runPropagation(alignType type, String metric) {
+
 		switch(metric) {
 		case PROPAGATION_NONE:
 			return experiment.getComputedUFLMatrix(type);
@@ -132,68 +127,42 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 			return euclideanDistance(
 					experiment.getForbiddenPositions(type), 
 					experiment.getComputedUFLMatrix(type),
-					experiment.getTrainingSet(type),
+					experiment.feedbackAggregation.getTrainingSet(type, "single"),
 					type);
 		case PROPAGATION_LOG:
 			return logDistance(
 					experiment.getForbiddenPositions(type), 
 					experiment.getComputedUFLMatrix(type),
-					experiment.getTrainingSet(type),
+					experiment.feedbackAggregation.getTrainingSet(type, "single"),
 					type);
 		case PROPAGATION_REGRESSION:
 			return wekaRegression(
 					experiment.getForbiddenPositions(type),
 					experiment.getComputedUFLMatrix(type),
-					experiment.getTrainingSet(type));
-		case PROPAGATION_CRC:
-			return clusterRowColumnPropagation(experiment.getForbiddenPositions(type), 
-					experiment.getComputedUFLMatrix(type),experiment.userFeedback.getCandidateMapping(),
-					experiment.userFeedback.getUserFeedback(), type);
+					experiment.feedbackAggregation.getTrainingSet(type, "multi")
+					);
+		case PROPAGATION_QUALITY:
+			return qualityPropagation(
+					experiment.getForbiddenPositions(type), 
+					experiment.getComputedUFLMatrix(type),
+					experiment.feedbackAggregation.getTrainingSet(type, "single"),
+					type);
 		default:
 			throw new RuntimeException("Propagation method was not correctly specificied.");
 		}
-//		return clusterRowColumnPropagation(experiment.getForbiddenPositions(type), 
-//				experiment.getComputedUFLMatrix(type),experiment.userFeedback.getCandidateMapping(),
-//				experiment.userFeedback.getUserFeedback(), type);
+
 	}
 
 	
-	private Alignment<Mapping> combineResults(AbstractMatcher am, MUExperiment experiment)
-	{
-		Alignment<Mapping> alg=new Alignment<Mapping>(0,0);
-		int row=am.getClassesMatrix().getRows();
-		int col=am.getClassesMatrix().getColumns();
-		double ufl_sim=0;
-		for (int i=0;i<row;i++)
-		{
-			for(int j=0;j<col;j++)
-			{
-				ufl_sim=am.getClassesMatrix().getSimilarity(i, j);
-				if (ufl_sim!=0.0)
-					alg.add(experiment.initialMatcher.getFinalMatcher().getClassesMatrix().get(i, j));
-			}
-		}
-		row=am.getPropertiesMatrix().getRows();
-		col=am.getPropertiesMatrix().getColumns();
-		ufl_sim=0;
-		for (int i=0;i<row;i++)
-		{
-			for(int j=0;j<col;j++)
-			{
-				ufl_sim=am.getPropertiesMatrix().getSimilarity(i, j);
-				if (ufl_sim!=0.0)
-					alg.add(experiment.initialMatcher.getFinalMatcher().getPropertiesMatrix().get(i, j));
-			}
-		}
-		
-		return alg;
-	}
+
 	
 	private SimilarityMatrix euclideanDistance(SparseMatrix forbidden_pos, SimilarityMatrix sm,Object[][] trainingSet, alignType type)
 	{
+		if (trainingSet==null)
+			return sm;
 		Mapping mp;
 		Object[] ssv;
-
+		double threshold=(trainingSet.length-1)*0.0/100;
 		double distance=0;
 		double min=Double.MAX_VALUE;
 		int index=0;
@@ -224,14 +193,10 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 					}
 				}
 
-				if ((min==0.0))
+				if (min<=threshold)
 				{
 					sm.setSimilarity(k, h, (double)trainingSet[index][trainingSet[0].length-1]);
-//					if (type.equals(alignType.aligningClasses))
-//						experiment.forbiddenPositionsClasses.setSimilarity(k, h, 1);
-//					else
-//						experiment.forbiddenPositionsProperties.setSimilarity(k, h, 1);
-					
+				
 				}
 
 			}
@@ -242,6 +207,8 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 	
 	private SimilarityMatrix wekaRegression(SparseMatrix sparse,SimilarityMatrix sm,Object[][] trainingSet)
 	{
+		if (trainingSet==null)
+			return sm;
 		WekaUtility wk=new WekaUtility();
 		wk.setTrainingSet(trainingSet);
 		
@@ -275,47 +242,18 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 		return sm;
 	}
 	
-	private SimilarityMatrix wekaSVM(SparseMatrix sparse,SimilarityMatrix sm,Object[][] trainingSet)
-	{
-		WekaUtility wk=new WekaUtility();
-		wk.setTrainingSet(trainingSet);
-		
-		Mapping mp;
-		Object[] ssv;
-		double sim;
 
-		for(int k=0;k<sm.getRows();k++)
-		{
-			for(int h=0;h<sm.getColumns();h++)
-			{
-				if(sparse.getSimilarity(k, h)==1)
-					continue;
-				mp = sm.get(k, h);
-				ssv=getSignatureVector(mp);
-				if (!validSsv(ssv))
-					continue;
-				sim=wk.runKNN(ssv);
-				
-				if ((sim>0.0))
-				{
-					sm.setSimilarity(k, h, sim);
-					
-				}
-			}
-		}
-		
-		return sm;
-	}
 	
 	private SimilarityMatrix logDistance(SparseMatrix forbidden_pos, SimilarityMatrix sm,Object[][] trainingSet, alignType type)
 	{
+		if (trainingSet==null)
+			return sm;
 		Mapping mp;
 		Object[] ssv;
+		double threshold=(trainingSet.length-1)*dist_perc/100;
 		double sim=0;
 		double distance=0;
-		int count=0;
 		double minDistance=Double.MAX_VALUE;
-		double avgDistance=0;
 		int index=0;;
 		for(int k=0;k<sm.getRows();k++)
 		{
@@ -337,19 +275,15 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 						
 						distance+=Math.pow((double)ssv[j]-(double)trainingSet[i][j],2);
 					}
-					count++;
 					distance=Math.sqrt(distance);
-					avgDistance+=distance;
 					if (distance<minDistance)
 					{
 						minDistance=distance;
 						index=i;
 					}
 				}
-				avgDistance=avgDistance/count;
-//				System.out.println(mp.toString());
-//				System.out.println("AVG DISTANCE: "+avgDistance);
-				if ((minDistance<avgDistance))
+
+				if ((minDistance<=threshold))
 				{
 					sim=Math.log(2-minDistance) / Math.log(2);
 					sim*=log_multiplier;
@@ -363,10 +297,6 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 					
 					sm.setSimilarity(k, h, sim);
 					
-//					if (type.equals(alignType.aligningClasses))
-//						experiment.forbiddenPositionsClasses.setSimilarity(k, h, 1);
-//					else
-//						experiment.forbiddenPositionsProperties.setSimilarity(k, h, 1);
 				}
 			}
 		}
@@ -381,148 +311,99 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 		UFLutility.saveSimilarityMatrix(fileName, sm);
 	}
 	
-	private double round(double value, int places) {
-	    if (places < 0) throw new IllegalArgumentException();
 
-	    BigDecimal bd = new BigDecimal(value);
-	    bd = bd.setScale(places, BigDecimal.ROUND_HALF_UP);
-	    return bd.doubleValue();
-	}
 	
 	
-	private SimilarityMatrix clusterRowColumnPropagation(SimilarityMatrix forbidden_pos, SimilarityMatrix sm, Mapping candidateMapping, Validation val, alignType type)
+
+	private SimilarityMatrix qualityPropagation(SparseMatrix forbidden_pos, SimilarityMatrix sm,Object[][] trainingSet, alignType type)
 	{
-		
+		if (trainingSet==null)
+			return sm;
 		Mapping mp;
 		Object[] ssv;
-		Object[] cmSv=UFLutility.getSignatureVector(candidateMapping, inputMatchers);
-		double deltaSim=alpha;
-		double sim=0;
-		List<List<Mapping>> lst=UFLutility.getRelations(sm, experiment.initialMatcher.getComponentMatchers());
+		double threshold=(trainingSet.length-1)*dist_perc/100;
+		double distance=0;
+		double min=Double.MAX_VALUE;
+		int index=0;
 		
-		for (List<Mapping> l : lst)
+		double ts_quality=0.0;
+		double mp_quality=0.0;
+		
+		for(int k=0;k<sm.getRows();k++)
 		{
-			if (l.contains(candidateMapping))
+			for(int h=0;h<sm.getColumns();h++)
 			{
-				for (Mapping m :l)
+				if(forbidden_pos.getSimilarity(k, h)==1)
+					continue;
+				mp = sm.get(k, h);
+				ssv=getSignatureVector(mp);
+				if (!validSsv(ssv))
+					continue;
+				min=Double.MAX_VALUE;
+				for(int i=0;i<trainingSet.length;i++)
 				{
-					if(forbidden_pos.getSimilarity(m.getSourceKey(), m.getTargetKey())==1)
-						continue;
-					if (!m.equals(candidateMapping))
+					distance=0;
+					for(int j=0;j<ssv.length;j++)
 					{
-						if (val.equals(Validation.CORRECT))
-						{
-							sim=sm.getSimilarity(m.getSourceKey(), m.getTargetKey());
-							sim=UFLutility.ammortizeSimilarity(sim, (deltaSim)*(-1));
-							sm.setSimilarity(m.getSourceKey(), m.getTargetKey(), sim);
-						}
-						if (val.equals(Validation.INCORRECT))
-						{
-							sim=sm.getSimilarity(m.getSourceKey(), m.getTargetKey());
-							sim=UFLutility.ammortizeSimilarity(sim, (deltaSim));
-							sm.setSimilarity(m.getSourceKey(), m.getTargetKey(), sim);
-						}
+						distance+=Math.pow((double)ssv[j]-(double)trainingSet[i][j],2);
+					}
+					distance=Math.sqrt(distance);
+					if (distance<min)
+					{
+						min=distance;
+						index=i;
 					}
 				}
-			}
-		}
-		
-		
 
-
-		DblResult<List<double[]>> x=getCluster(candidateMapping);
-		double maxDistance=getDistance(x, candidateMapping, sm);
-		for (double[] d : x.getKey())
-		{
-			mp=sm.get((int)d[0], (int)d[1]);
-			if(forbidden_pos.getSimilarity((int)d[0], (int)d[1])==1)
-				continue;
-			if (!mp.equals(candidateMapping))
-			{
-				ssv=UFLutility.getSignatureVector(mp, inputMatchers);
+				if (min<=threshold)
+				{
+					ts_quality=getTSquality(experiment.feedbackAggregation.getCandidateMapping(),type);
+					mp_quality=getMquality(sm.get(k, h), type);
+					double label=trainingSet[index][trainingSet[0].length-1].equals(1.0)?1.0:-1.0;
+					
+					
+					double delta=ts_quality*(1-mp_quality)*label;
+					double sim=sm.getSimilarity(k, h);
+					sim+=delta;
+					if (sim>1.0)
+						sim=1.0;
+					if (sim<0.0)
+						sim=0.0;
+					sm.setSimilarity(k, h, sim);
 				
-				double distance=0;
-				for(int j=0;j<ssv.length;j++)
-				{
-					distance+=Math.pow((double)ssv[j]-(double)cmSv[j],2);
 				}
-				distance=Math.sqrt(distance);
-				distance/=maxDistance;
-				distance*=1.0/Math.sqrt(experiment.getIterationNumber()+1);
-				deltaSim=Math.log(2-distance) / Math.log(2);
-				if (val.equals(Validation.CORRECT))
-				{
-					sim=sm.getSimilarity((int)d[0], (int)d[1]);
-					sim=UFLutility.ammortizeSimilarity(sim, (deltaSim));
-					sm.setSimilarity((int)d[0], (int)d[1], sim);
-				}
-				if (val.equals(Validation.INCORRECT))
-				{
-					sim=sm.getSimilarity((int)d[0], (int)d[1]);
-					sim=UFLutility.ammortizeSimilarity(sim, (deltaSim)*(-1));
-					sm.setSimilarity((int)d[0], (int)d[1], sim);
-				}
+
 			}
 		}
-		
-		
 
+		
 		return sm;
 	}
 	
 	
-	private double getDistance(DblResult<List<double[]>> cl, Mapping m, SimilarityMatrix sm)
+	private double getTSquality(Mapping m, alignType type)
 	{
-		
-		Mapping mp;
-		
-		double maxDistance=Double.MIN_VALUE;
-		Object[] cmSv=UFLutility.getSignatureVector(m, inputMatchers);
-		Object[] ssv;
-		for (double[] d : cl.getKey())
-		{
-			mp=sm.get((int)d[0], (int)d[1]);
-			if (!mp.equals(m))
-			{
-				ssv=UFLutility.getSignatureVector(mp, inputMatchers);
-				
-				double distance=0;
-				for(int j=0;j<ssv.length;j++)
-				{
-					distance+=Math.pow((double)ssv[j]-(double)cmSv[j],2);
-				}
-				distance=Math.sqrt(distance);
-				if (distance>maxDistance)
-					maxDistance=distance;
-			}
-		}
-		
-		
-		return maxDistance;
+		double quality=0.0;
+		PropagationImpactMetric pi=new PropagationImpactMetric(experiment.getFeedbackMatrix(type, Validation.CORRECT),
+				experiment.getFeedbackMatrix(type, Validation.INCORRECT),
+				5);
+		InverseOf invPI=new InverseOf(pi);
+		quality=invPI.getQuality(type, m.getSourceKey(), m.getTargetKey());
+		return quality;
 	}
 	
-	private DblResult<List<double[]>> getCluster(Mapping mp)
+	private double getMquality(Mapping m, alignType type)
 	{
-		List<double[]> item=new ArrayList<>();
-		double [] itm={mp.getSourceKey(),mp.getTargetKey()};
-		item.add(itm);
-		
-		List<DblResult<List<double[]>>> clusters = experiment.clusterC;
-		if (mp.getAlignmentType().equals(alignType.aligningProperties))
-			clusters = experiment.clusterP;
-
-		
-		for (DblResult<List<double[]>> s : clusters)
-		{
-			for(double[] d : s.getKey())
-			{
-				if ( ((int)d[0]==(int)itm[0]) && ((int)d[1]==(int)itm[1]) )
-					return s;
-			}
-		}
-		return null;
+		double quality=0.0;
+		String[] metric=new String[3];
+		metric[0]="dis";
+		metric[1]="csq";
+		metric[2]="ssh";
+		String combinationMethod="lwc";
+		MultiSelectedRanking msr=new MultiSelectedRanking(experiment, metric, combinationMethod, null);
+		quality=msr.getQuality(type, m.getSourceKey(), m.getTargetKey());
+		return quality;
 	}
-
 
 
 

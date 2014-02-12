@@ -286,4 +286,81 @@ public class UFLutility {
 		
 		return selection.getResult().getAlignment();
 	}
+	
+	public static SimilarityMatrix zeroSim(SimilarityMatrix sm,int source_index,int target_index, int sourceCardinality, int targetCardinality)
+	{
+		ArrayList<Integer> sourceToKeep=new ArrayList<Integer>();
+		ArrayList<Integer> targetToKeep=new ArrayList<Integer>();
+		if (sourceCardinality!=1)
+		{
+			sourceToKeep=topN(sm,-1,target_index,sourceCardinality);
+		}
+		
+		if (targetCardinality!=1)
+		{
+			targetToKeep=topN(sm,source_index,-1,sourceCardinality);
+		}
+		sourceToKeep.add(source_index);
+		targetToKeep.add(target_index);
+
+		
+		for(int i=0;i<sm.getRows();i++)
+		{
+			if (sourceToKeep.contains(i)) 
+				continue;
+			sm.setSimilarity(i, target_index, 0.0);		
+		}
+		for(int j=0;j<sm.getColumns();j++)
+		{
+			if (targetToKeep.contains(j)) 
+				continue;
+			sm.setSimilarity(source_index, j, 0.0);	
+		}
+		return sm;
+	}
+	
+	public static ArrayList<Integer> topN (SimilarityMatrix sm, int sourceIndex, int targetIndex, int topNumber)
+	{
+		ArrayList<Integer> top=new ArrayList<Integer>();
+		Mapping[] tmp;
+		if (targetIndex==-1)
+		{
+			tmp=sm.getRowMaxValues(sourceIndex, topNumber);	
+			for (Mapping m : tmp)
+			{
+				top.add(m.getTargetKey());
+			}
+		}
+		else
+		{
+			tmp=sm.getColMaxValues(targetIndex, topNumber);
+			for (Mapping m : tmp)
+			{
+				top.add(m.getSourceKey());
+			}
+		}
+
+		return top;
+	}
+	
+	public static List<Double> normalize(List<Double> lst)
+	{
+		double max=Double.MIN_VALUE;
+		double min=Double.MAX_VALUE;
+		
+		for(Double d :lst)
+		{
+			if (d<min)
+				min=d;
+			if (d>max) max=d;	
+		}
+		for(int i=0;i<lst.size();i++)
+		{
+			double tmp=lst.get(i);
+			tmp=(tmp-min)/(max-min);
+			lst.set(i, tmp);
+		}
+		return lst;
+	}
+	
 }
