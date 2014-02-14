@@ -57,7 +57,7 @@ public class UIMenu {
 	JMenuItem menuLexiconsViewOntSource, menuLexiconsViewOntTarget, menuLexiconsViewWNSource, menuLexiconsViewWNTarget, 
 	menuLexiconsBuildOntSource, menuLexiconsBuildOntTarget, menuLexiconsBuildWNSource, menuLexiconsBuildWNTarget,
 	menuLexiconsBuildAll;
-
+	
 	// Ontology menu.
 	JMenuItem ontologyDetails, ontologyViewEntityList, ontologyProfiling, ontologyAlternateHierarchy;
 
@@ -70,7 +70,7 @@ public class UIMenu {
 	refEvaluateMatching,
 	thresholdAnalysis, TEMP_viewClassMatrix, TEMP_viewPropMatrix, TEMP_matcherAnalysisClasses, TEMP_matcherAnalysisProp,
 	clusteringClasses;
-
+	
 	//private JMenu	menuExport;
 	//private JMenuItem exportMatrixCSV;
 
