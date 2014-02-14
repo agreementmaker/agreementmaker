@@ -34,12 +34,12 @@ public class VASyncListener implements MatcherChangeListener {
 			 * Init the JavaFx framework
 			 */
 
-			SwingUtilities.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					VAPanel.initAndShowGUI();
-				}
-			});
+//			SwingUtilities.invokeLater(new Runnable() {
+//				@Override
+//				public void run() {
+//					VAPanel.initAndShowGUI();
+//				}
+//			});
 		}
 	}
 

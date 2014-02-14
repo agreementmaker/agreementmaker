@@ -64,6 +64,18 @@ public class VAPanel {
 	private static Tooltip pieTooltip;
 	private static VASearchBox searchBox;
 
+	public static void initButNotShow() {
+		fxPanel = new VATab();
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				InitFX();
+			}
+		});
+	}
+	
+	public static JFXPanel getFxPanel() { return fxPanel; }
+	
 	/**
 	 * Init Frame
 	 */
