@@ -4,6 +4,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
+/**
+ * VAGroup: the data structure that build up the pie chart
+ * For now I don't store each group in the memory
+ * @author Yiting
+ *
+ */
 public class VAGroup {
 	private static int nodeCount = 0;
 	private int groupID;

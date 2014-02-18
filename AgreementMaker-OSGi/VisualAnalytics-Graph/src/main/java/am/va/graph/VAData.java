@@ -2,6 +2,11 @@ package am.va.graph;
 
 import am.app.ontology.Node;
 
+/**
+ * VAData: the data structure that contains source node, target node and their similarity value
+ * @author Yiting
+ *
+ */
 public class VAData implements Comparable<VAData> {
 	private Node sourceNode;
 	private Node targetNode;

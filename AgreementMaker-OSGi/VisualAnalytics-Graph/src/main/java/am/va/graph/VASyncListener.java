@@ -8,6 +8,12 @@ import am.app.mappingEngine.MatchingTaskChangeEvent;
 import am.app.mappingEngine.manualMatcher.UserManualMatcher;
 import am.va.graph.VAVariables.nodeType;
 
+/**
+ * Implement the MatcherChangeListener to see if the ontologies have been matched or not
+ * For now I haven't use this class
+ * @author Yiting
+ *
+ */
 public class VASyncListener implements MatcherChangeListener {
 
 	private static VAGroup rootGroupLeft;

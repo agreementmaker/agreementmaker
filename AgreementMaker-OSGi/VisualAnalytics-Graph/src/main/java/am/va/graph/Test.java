@@ -12,9 +12,6 @@ public class Test {
 	private static final boolean START_AGREEMENTMAKER = false;
 
 	public static void main(String[] args) {
-		//VASyncListener vaSync = new VASyncListener();
-
-		
 		
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override

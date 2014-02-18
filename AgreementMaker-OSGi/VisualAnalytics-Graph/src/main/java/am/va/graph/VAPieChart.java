@@ -11,6 +11,11 @@ import javafx.scene.chart.PieChart;
 import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
 
+/**
+ * The main pie chart and its events
+ * @author Yiting
+ *
+ */
 public class VAPieChart {
 	private PieChart pieChart;
 	private ListView<String> listView;
@@ -35,6 +40,7 @@ public class VAPieChart {
 				pieCharDatalist.add(new PieChart.Data(key, slotsMap.get(key)));
 		}
 		pieChart = new PieChart(this.pieCharDatalist);
+		//pieChart.setPrefWidth(500);
 	}
 
 	/**
