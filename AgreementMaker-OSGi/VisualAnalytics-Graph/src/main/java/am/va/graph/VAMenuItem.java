@@ -27,7 +27,10 @@ public class VAMenuItem implements AMMenuItem, ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		//Init data
 		VASyncListener.InitData();
+		
+		//show chart panel
 		VAPanel.initButNotShow();
 		
 		JFXPanel fxp = VAPanel.getFxPanel();
