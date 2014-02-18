@@ -46,6 +46,10 @@ public class PropagationImpactMetric extends  AbstractQualityMetric {
 		 */
 		int pos=(int)positiveMatrix.getSimilarity(i, j);
 		int neg=(int)negativeMatrix.getSimilarity(i, j);
+		
+		if ((pos==maxConsensus) || (neg==maxConsensus))
+			return 0.0d;
+		
 		double numerator =Math.min(maxConsensus-pos, maxConsensus-neg);
 		double denominator=Math.max(maxConsensus-pos, maxConsensus-neg);
 		
