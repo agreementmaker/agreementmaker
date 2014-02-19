@@ -29,7 +29,7 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 
 
 	final double log_multiplier=1.2;
-	final double dist_perc=5.0;
+	final double dist_perc=3.0;
 	
 	private MUExperiment experiment;
 	private List<AbstractMatcher> inputMatchers;
@@ -321,7 +321,7 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 			return sm;
 		Mapping mp;
 		Object[] ssv;
-		double threshold=(trainingSet.length-1)*dist_perc/100;
+		double threshold=(trainingSet[0].length-1)*dist_perc/100;
 		double distance=0;
 		double min=Double.MAX_VALUE;
 		int index=0;
@@ -362,7 +362,7 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 					double label=trainingSet[index][trainingSet[0].length-1].equals(1.0)?1.0:-1.0;
 					
 					
-					double delta=ts_quality*(1-mp_quality)*label;
+					double delta=ts_quality*(1-(mp_quality)/2)*label;
 					double sim=sm.getSimilarity(k, h);
 					sim+=delta;
 					if (sim>1.0)
@@ -402,7 +402,7 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 		String combinationMethod="lwc";
 		MultiSelectedRanking msr=new MultiSelectedRanking(experiment, metric, combinationMethod, null);
 		quality=msr.getQuality(type, m.getSourceKey(), m.getTargetKey());
-		return quality;
+		return 1-quality;
 	}
 
 
