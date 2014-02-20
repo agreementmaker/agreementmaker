@@ -58,6 +58,7 @@ public class VAPanel {
 	private static Button btnRoot;
 	private static Button btnUp;
 	private static Button btnUFB;
+	private static Button btnPages[] = new Button[2];
 
 	private static ChoiceBox<String> cbOntology;
 
@@ -107,6 +108,8 @@ public class VAPanel {
 		chartLeft.updatePieChart(ontologyType.Source);
 		generateParentGroup();
 	}
+	
+	//==================================Graphic User Interface=======================================================
 
 	/**
 	 * Set the main panel layout, here we use BorderPane
@@ -209,7 +212,7 @@ public class VAPanel {
 		btnRoot = new Button("Top level");
 		btnUp = new Button("Go back");
 		btnUFB = new Button("User feedback");
-		setButtonActions();
+		setToolButtonActions();
 		buttonBar.getChildren().addAll(btnRoot, btnUp, btnUFB);
 	}
 
@@ -237,13 +240,13 @@ public class VAPanel {
 		flow.setHgap(4);
 		flow.setPrefWrapLength(170); // preferred width allows for two columns
 		flow.setStyle("-fx-background-color: DAE6F3;");
-		Button pages[] = new Button[5];
 		int size = 50;
-		for (int i = 0; i < pages.length; i++) {
-			pages[i] = new Button("btn");
-			pages[i].setStyle("-fx-font-size: " + size + "pt;");
-			flow.getChildren().add(pages[i]);
+		for (int i = 0; i < btnPages.length; i++) {
+			btnPages[i] = new Button("AL" + String.valueOf(i+1));
+			btnPages[i].setStyle("-fx-font-size: " + size + "pt;");
+			flow.getChildren().add(btnPages[i]);
 		}
+		setPageButtonActions();
 		return flow;
 	}
 
@@ -262,6 +265,8 @@ public class VAPanel {
 			Tooltip.install(currentData.getNode(), getPieTooltip());
 		}
 	}
+	
+	//=====================================Pie Chart related logic====================================================
 
 	/**
 	 * Generate new VAGroup according to user's click
@@ -506,6 +511,8 @@ public class VAPanel {
 		generateParentGroup();
 		chartLeft.clearList();
 	}
+	
+	//====================================Button & List Event=====================================================
 
 	/**
 	 * Add event for choice box
@@ -531,11 +538,29 @@ public class VAPanel {
 					}
 				});
 	}
+	
+	private static void setPageButtonActions(){
+		int num = btnPages.length;
+		for(int i=0; i<num; i++){
+			final int cur = i+1;
+			btnPages[i].setOnAction(new EventHandler<ActionEvent>(){
+
+				@Override
+				public void handle(ActionEvent arg0) {
+					// TODO Auto-generated method stub
+					VASyncData.setCurrentDisplayNum(cur);
+					VASyncListener.InitData();
+					updateAllWithNewGroup(rootGroupLeft);
+				}
+				
+			});
+		}
+	}
 
 	/**
 	 * Add event for buttons
 	 */
-	private static void setButtonActions() {
+	private static void setToolButtonActions() {
 		/**
 		 * Go to root panel
 		 */
