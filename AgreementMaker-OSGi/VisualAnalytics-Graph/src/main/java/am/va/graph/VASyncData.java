@@ -12,6 +12,9 @@ import am.app.ontology.Ontology;
 
 public class VASyncData {
 
+	private static int totalDisplayNum = 0;
+	private static int currentDisplayNum = 1;
+
 	/**
 	 * Get a node's parent node
 	 * 
@@ -23,6 +26,22 @@ public class VASyncData {
 			return n.getParents().get(0);
 		else
 			return null;
+	}
+
+	public static int getTotalDisplayNum() {
+		return totalDisplayNum;
+	}
+
+	public static void setTotalDisplayNum(int totalDisplayNum) {
+		VASyncData.totalDisplayNum = totalDisplayNum;
+	}
+
+	public static int getCurrentDisplayNum() {
+		return currentDisplayNum;
+	}
+
+	public static void setCurrentDisplayNum(int currentDisplayNum) {
+		VASyncData.currentDisplayNum = currentDisplayNum;
 	}
 
 	/**
@@ -52,9 +71,22 @@ public class VASyncData {
 	private static Node getRootNode(VAVariables.ontologyType ontologyType) {
 		Node rootNode = null;
 		List<MatchingTask> matchingTask = Core.getInstance().getMatchingTasks();
-		MatchingTask currentTask = matchingTask.get(0); // for now only select
-														// the first task
+		totalDisplayNum = matchingTask.size() - 1;
+		MatchingTask currentTask = null;
+		if (currentDisplayNum <= matchingTask.size())
+			currentTask = matchingTask.get(currentDisplayNum);
+		else {
+			// Error!
+			return null;
+		}
+
 		if (ontologyType == VAVariables.ontologyType.Source) {
+
+			// Testing...
+			String alg = currentTask.matchingAlgorithm.getName();
+			System.out.println("algorithm: " + alg);
+			System.out.println("report:" + currentTask.getMatchingReport());
+
 			Ontology sourceOntology = currentTask.matcherResult
 					.getSourceOntology();
 			if (VASyncListener.getNodeType() == VAVariables.nodeType.Class)
@@ -104,8 +136,8 @@ public class VASyncData {
 			VAVariables.ontologyType ontologyType) {
 		Node matchingNode = null;
 		double sim = 0.00;
-		MatchingTask matchingTask = Core.getInstance()
-				.getMatchingTasksWithoutUserManualMatcher().get(0);
+		MatchingTask matchingTask = Core.getInstance().getMatchingTasks()
+				.get(currentDisplayNum);
 		SimilarityMatrix smMatrix = null;
 		if (VASyncListener.getNodeType() == VAVariables.nodeType.Class)
 			smMatrix = matchingTask.matcherResult.getClassesMatrix();

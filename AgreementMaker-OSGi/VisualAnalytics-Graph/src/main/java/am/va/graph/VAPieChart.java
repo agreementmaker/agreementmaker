@@ -13,8 +13,9 @@ import javafx.scene.input.MouseEvent;
 
 /**
  * The main pie chart and its events
+ * 
  * @author Yiting
- *
+ * 
  */
 public class VAPieChart {
 	private PieChart pieChart;
@@ -40,7 +41,6 @@ public class VAPieChart {
 				pieCharDatalist.add(new PieChart.Data(key, slotsMap.get(key)));
 		}
 		pieChart = new PieChart(this.pieCharDatalist);
-		//pieChart.setPrefWidth(500);
 	}
 
 	/**
@@ -73,7 +73,8 @@ public class VAPieChart {
 			String newLabel = currentGroup.getRootNodeName() + ": "
 					+ currentGroup.getRootNode().getSimilarity();
 			if (currentGroup.getParent() == 0)
-				newLabel = "Source ontoloty";
+				newLabel = "Source ontoloty:"
+						+ String.valueOf(VASyncData.getCurrentDisplayNum());
 			if (currentGroup.hasChildren())
 				VAPanel.setSourceLabel(newLabel, 0);
 			else
@@ -216,7 +217,7 @@ public class VAPieChart {
 					// Still need to figure the color
 
 					VAPanel.generateNewGroup(ontologyType, getSelectedVAData());
-					//updatePieChart(ontologyType);
+					// updatePieChart(ontologyType);
 					listView.getSelectionModel().clearSelection();
 				} else {
 					System.out.println("- select empty!");
