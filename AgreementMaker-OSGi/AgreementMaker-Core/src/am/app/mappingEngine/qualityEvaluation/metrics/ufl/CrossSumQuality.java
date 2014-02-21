@@ -46,7 +46,8 @@ public class CrossSumQuality extends AbstractQualityMetric {
 	@Override
 	public double getQuality(alignType type, int i, int j) 
 	{		
-		return (rowCounts[i] + colCounts[j]) / normalizationFactor;
+		double tmp=(rowCounts[i] + colCounts[j]) / normalizationFactor;
+		return tmp;
 	}
 
 	private double sumMappingsSimilarity(Mapping[] map) 

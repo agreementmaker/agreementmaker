@@ -30,15 +30,20 @@ public class RankingAccuracy extends CandidateSelectionEvaluation{
 		this.experiment=exp;
 
 		Alignment<Mapping> computedAlignment=exp.getFinalAlignment();
-		if ((computedAlignment.contains(candidateMapping))&&(!referenceAlignment.contains(candidateMapping)))
-		{
-			falsePositive++;
+		try{
+			if ((computedAlignment.contains(candidateMapping))&&(!referenceAlignment.contains(candidateMapping)))
+			{
+				falsePositive++;
+			}
+			if ((!computedAlignment.contains(candidateMapping))&&(referenceAlignment.contains(candidateMapping)))
+			{
+				falseNegative++;
+			}
 		}
-		if ((!computedAlignment.contains(candidateMapping))&&(referenceAlignment.contains(candidateMapping)))
+		catch (Exception e)
 		{
-			falseNegative++;
+			System.out.println("bwhbow");
 		}
-		
 		count++;
 		
 		double accuracy=((double)(falseNegative+falsePositive))/(double)count;
@@ -71,13 +76,16 @@ public class RankingAccuracy extends CandidateSelectionEvaluation{
 	
 	private void writeAccuracy(double accuracy, Mapping mp) throws Exception
 	{
-		String currentLog = experiment.setup.parameters.getParameter(Parameter.LOGFILE);
-		File file = new File(Core.getInstance().getRoot() + currentLog + "-accuracy.txt");
-
-		FileWriter fw = new FileWriter(file.getAbsoluteFile(), true);
-		BufferedWriter bw = new BufferedWriter(fw);
-		bw.write(accuracy+" "+falsePositive+" "+falseNegative+" "+count+" "+mp.toString()+"\n");
-		bw.close();
+		if (mp!=null)
+		{
+			String currentLog = experiment.setup.parameters.getParameter(Parameter.LOGFILE);
+			File file = new File(Core.getInstance().getRoot() + currentLog + "-accuracy.txt");
+	
+			FileWriter fw = new FileWriter(file.getAbsoluteFile(), true);
+			BufferedWriter bw = new BufferedWriter(fw);
+			bw.write(accuracy+" "+falsePositive+" "+falseNegative+" "+count+" "+mp.toString()+"\n");
+			bw.close();
+		}
 	}
 	
 	
