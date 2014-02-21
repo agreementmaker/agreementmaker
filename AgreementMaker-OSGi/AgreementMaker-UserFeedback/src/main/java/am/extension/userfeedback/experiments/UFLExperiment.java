@@ -126,12 +126,14 @@ public abstract class UFLExperiment {
 			if( correctMappings == null ) {
 				correctMappings = new Alignment<Mapping>(getSourceOntology().getID(), getTargetOntology().getID());
 			}
-			correctMappings.add( userFeedback.getCandidateMapping() );
+			if (!correctMappings.contains(userFeedback.getCandidateMapping()))
+				correctMappings.add( userFeedback.getCandidateMapping() );
 		} else if( userFeedback.getUserFeedback() == Validation.INCORRECT ) {
 			if( incorrectMappings == null ) {
 				incorrectMappings = new Alignment<Mapping>(getSourceOntology().getID(), getTargetOntology().getID());
 			}
-			incorrectMappings.add( userFeedback.getCandidateMapping() );
+			if (!incorrectMappings.contains(userFeedback.getCandidateMapping()))
+				incorrectMappings.add( userFeedback.getCandidateMapping() );
 		}		
 		
 		setIterationNumber(getIterationNumber() + 1); 

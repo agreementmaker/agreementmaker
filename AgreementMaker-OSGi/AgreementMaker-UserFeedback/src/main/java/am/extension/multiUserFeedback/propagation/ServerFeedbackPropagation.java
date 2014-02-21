@@ -12,6 +12,7 @@ import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.qualityEvaluation.metrics.InverseOf;
+import am.app.mappingEngine.qualityEvaluation.metrics.ufl.ConsensusQuality;
 import am.app.mappingEngine.qualityEvaluation.metrics.ufl.PropagationImpactMetric;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
@@ -387,8 +388,11 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 		PropagationImpactMetric pi=new PropagationImpactMetric(experiment.getFeedbackMatrix(type, Validation.CORRECT),
 				experiment.getFeedbackMatrix(type, Validation.INCORRECT),
 				5);
+		ConsensusQuality cq=new ConsensusQuality(experiment.getFeedbackMatrix(type, Validation.CORRECT),
+				experiment.getFeedbackMatrix(type, Validation.INCORRECT),
+				5);
 		InverseOf invPI=new InverseOf(pi);
-		quality=invPI.getQuality(type, m.getSourceKey(), m.getTargetKey());
+		quality=(invPI.getQuality(type, m.getSourceKey(), m.getTargetKey())+cq.getQuality(type, m.getSourceKey(), m.getTargetKey()))/2;
 		return quality;
 	}
 	
