@@ -36,16 +36,6 @@ public class VASyncListener implements MatcherChangeListener {
 		if (!(e.getTask().matchingAlgorithm instanceof UserManualMatcher)) {
 			InitData();
 			Core.getInstance().removeMatcherChangeListener(this);
-			/**
-			 * Init the JavaFx framework
-			 */
-
-//			SwingUtilities.invokeLater(new Runnable() {
-//				@Override
-//				public void run() {
-//					VAPanel.initAndShowGUI();
-//				}
-//			});
 		}
 	}
 
