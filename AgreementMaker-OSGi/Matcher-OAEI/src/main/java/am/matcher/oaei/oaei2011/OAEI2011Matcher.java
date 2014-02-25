@@ -41,6 +41,7 @@ import am.app.ontology.profiling.manual.ManualOntologyProfiler;
 import am.app.ontology.profiling.manual.ManualProfilerMatchingParameters;
 import am.matcher.Combination.CombinationMatcher;
 import am.matcher.Combination.CombinationParameters;
+import am.matcher.FilterMatcher.FilterMatcher;
 import am.matcher.IterativeInstanceStructuralMatcher.IterativeInstanceStructuralMatcher;
 import am.matcher.IterativeInstanceStructuralMatcher.IterativeInstanceStructuralParameters;
 import am.matcher.LexicalSynonymMatcher.LexicalSynonymMatcher;
@@ -295,6 +296,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		
 		// LWC
 		AbstractMatcher lwc = null;
+		List<AbstractMatcher> filter_matcher_InputMatchers = new ArrayList<AbstractMatcher>();
 		if( !isCancelled() ) {
 			lwc = MatcherFactory.getMatcherInstance(CombinationMatcher.class);
 			
@@ -309,13 +311,28 @@ public class OAEI2011Matcher extends AbstractMatcher {
 			
 			setupSubMatcher(lwc, lwcParam);
 			runSubMatcher(lwc, "LWC 5/6");
-			
+			filter_matcher_InputMatchers.add(lwc);
+
+	
 		}
+
+		AbstractMatcher  fm=null;
+
+		if( !isCancelled() ) {
+			
+		
+			fm = MatcherFactory.getMatcherInstance(FilterMatcher.class);
+				
+			fm.setInputMatchers(lwcInputMatchers);
+			fm.match();
+		}
+		
+		
 		
 		if( !isCancelled() ) {
 			AbstractMatcher iism = MatcherFactory.getMatcherInstance(IterativeInstanceStructuralMatcher.class);
 			
-			iism.addInputMatcher(lwc);
+			iism.addInputMatcher(fm);
 			
 			IterativeInstanceStructuralParameters iismParam = 
 					new IterativeInstanceStructuralParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign);
