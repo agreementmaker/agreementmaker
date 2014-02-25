@@ -9,6 +9,7 @@ import org.osgi.framework.ServiceRegistration;
 
 import am.app.mappingEngine.AbstractMatcher;
 import am.matcher.Combination.CombinationMatcher;
+import am.matcher.FilterMatcher.FilterMatcher;
 import am.matcher.IterativeInstanceStructuralMatcher.IterativeInstanceStructuralMatcher;
 import am.matcher.LexicalSynonymMatcher.LexicalSynonymMatcher;
 import am.matcher.LexicalSynonymMatcher.LexicalSynonymMatcherWeighted;
@@ -32,6 +33,7 @@ public class MatchersActivator implements BundleActivator {
 	private ServiceRegistration<AbstractMatcher> regDsi;
 	private ServiceRegistration<AbstractMatcher> regIism;
 	private ServiceRegistration<AbstractMatcher> regGFM;
+	private ServiceRegistration<AbstractMatcher> regFilterMatcher;
 	/*
 	 * (non-Javadoc)
 	 * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
@@ -48,6 +50,7 @@ public class MatchersActivator implements BundleActivator {
 		regDsi = context.registerService(AbstractMatcher.class, new DescendantsSimilarityInheritanceMatcher(), new Hashtable<String,String>());
 		regIism = context.registerService(AbstractMatcher.class, new IterativeInstanceStructuralMatcher(), new Hashtable<String,String>());
 		regGFM = context.registerService(AbstractMatcher.class, new GroupFinderMatcher(), null);
+		regFilterMatcher = context.registerService(AbstractMatcher.class, new FilterMatcher(), null);
 	}
 
 	/*
@@ -65,6 +68,7 @@ public class MatchersActivator implements BundleActivator {
 		regDsi.unregister();
 		regIism.unregister();
 		regGFM.unregister();
+		regFilterMatcher.unregister();
 	}
 
 }
