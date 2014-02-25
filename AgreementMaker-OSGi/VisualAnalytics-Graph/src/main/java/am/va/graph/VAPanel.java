@@ -58,7 +58,7 @@ public class VAPanel {
 	private static Button btnRoot;
 	private static Button btnUp;
 	private static Button btnUFB;
-	private static Button btnPages[] = new Button[2];
+	private static Button btnPages[] = new Button[7];
 
 	private static ChoiceBox<String> cbOntology;
 
@@ -92,7 +92,6 @@ public class VAPanel {
 		return fxPanel;
 	}
 
-
 	/**
 	 * Init JavaFx panel, add mouse click Event handler
 	 */
@@ -108,8 +107,9 @@ public class VAPanel {
 		chartLeft.updatePieChart(ontologyType.Source);
 		generateParentGroup();
 	}
-	
-	//==================================Graphic User Interface=======================================================
+
+	// ==================================Graphic User
+	// Interface=======================================================
 
 	/**
 	 * Set the main panel layout, here we use BorderPane
@@ -117,9 +117,9 @@ public class VAPanel {
 	private static void setLayout() {
 		BorderPane borderPane = new BorderPane();
 		borderPane.setPrefSize(screenWidth, screenHeight);
-		initTopToolbar(borderPane); 		// tool bar panel
-		initCenterSplitPanel(borderPane); 	// pie chart & lists panel
-		initDownArrayPanel(borderPane); 	// preview panel
+		initTopToolbar(borderPane); // tool bar panel
+		initCenterSplitPanel(borderPane); // pie chart & lists panel
+		initDownArrayPanel(borderPane); // preview panel
 		root.getChildren().add(borderPane);
 	}
 
@@ -132,7 +132,7 @@ public class VAPanel {
 		SplitPane splitPane = new SplitPane();
 		splitPane.getItems().addAll(getSplitPane(), getCenterGroup());
 		splitPane.setOrientation(Orientation.HORIZONTAL);
-        splitPane.setDividerPosition(0, 0.7);
+		splitPane.setDividerPosition(0, 0.7);
 		borderPane.setCenter(splitPane);
 	}
 
@@ -166,17 +166,18 @@ public class VAPanel {
 
 	/**
 	 * Add listview and treeview to the TilePane
+	 * 
 	 * @return
 	 */
 	private static TreeView<String> getTreeView() {
 		listTreeLeft = new TreeView<String>();
 		return listTreeLeft;
 	}
-	
+
 	private static ListView<String> getListView() {
 		listViewLeft = new ListView<String>();
 		listViewLeft.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-		//tilePane.getChildren().add(listViewLeft);
+		// tilePane.getChildren().add(listViewLeft);
 		return listViewLeft;
 	}
 
@@ -242,8 +243,10 @@ public class VAPanel {
 		flow.setStyle("-fx-background-color: DAE6F3;");
 		int size = 50;
 		for (int i = 0; i < btnPages.length; i++) {
-			btnPages[i] = new Button("AL" + String.valueOf(i+1));
+			btnPages[i] = new Button("AL" + String.valueOf(i + 1));
 			btnPages[i].setStyle("-fx-font-size: " + size + "pt;");
+			if (i >= VASyncData.getTotalDisplayNum())//init visibility
+				btnPages[i].setVisible(false);
 			flow.getChildren().add(btnPages[i]);
 		}
 		setPageButtonActions();
@@ -256,7 +259,7 @@ public class VAPanel {
 	}
 
 	/**
-	 * Add tooltip to the chart. 
+	 * Add tooltip to the chart.
 	 */
 	private static void initTooltip() {
 		pieTooltip = new Tooltip("click to view more");
@@ -265,8 +268,9 @@ public class VAPanel {
 			Tooltip.install(currentData.getNode(), getPieTooltip());
 		}
 	}
-	
-	//=====================================Pie Chart related logic====================================================
+
+	// =====================================Pie Chart related
+	// logic====================================================
 
 	/**
 	 * Generate new VAGroup according to user's click
@@ -511,8 +515,18 @@ public class VAPanel {
 		generateParentGroup();
 		chartLeft.clearList();
 	}
-	
-	//====================================Button & List Event=====================================================
+
+	// ==============================Button & List
+	// Event=====================================================
+
+	/**
+	 * Haven't been used yet
+	 * @param n
+	 */
+	public static void setButtonVisible(int n) {
+		if (n < btnPages.length && btnPages!=null && btnPages[n]!=null)
+			btnPages[n].setVisible(true);
+	}
 
 	/**
 	 * Add event for choice box
@@ -538,12 +552,12 @@ public class VAPanel {
 					}
 				});
 	}
-	
-	private static void setPageButtonActions(){
+
+	private static void setPageButtonActions() {
 		int num = btnPages.length;
-		for(int i=0; i<num; i++){
-			final int cur = i+1;
-			btnPages[i].setOnAction(new EventHandler<ActionEvent>(){
+		for (int i = 0; i < num; i++) {
+			final int cur = i + 1;
+			btnPages[i].setOnAction(new EventHandler<ActionEvent>() {
 
 				@Override
 				public void handle(ActionEvent arg0) {
@@ -552,7 +566,7 @@ public class VAPanel {
 					VASyncListener.InitData();
 					updateAllWithNewGroup(rootGroupLeft);
 				}
-				
+
 			});
 		}
 	}

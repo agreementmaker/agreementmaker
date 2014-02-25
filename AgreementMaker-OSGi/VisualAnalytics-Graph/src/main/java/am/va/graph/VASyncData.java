@@ -71,7 +71,10 @@ public class VASyncData {
 	private static Node getRootNode(VAVariables.ontologyType ontologyType) {
 		Node rootNode = null;
 		List<MatchingTask> matchingTask = Core.getInstance().getMatchingTasks();
+		
+		//Set total number of difference matchings
 		totalDisplayNum = matchingTask.size() - 1;
+		
 		MatchingTask currentTask = null;
 		if (currentDisplayNum <= matchingTask.size())
 			currentTask = matchingTask.get(currentDisplayNum);
