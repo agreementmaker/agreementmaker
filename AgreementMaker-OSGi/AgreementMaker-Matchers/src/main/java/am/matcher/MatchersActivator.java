@@ -34,6 +34,7 @@ public class MatchersActivator implements BundleActivator {
 	private ServiceRegistration<AbstractMatcher> regIism;
 	private ServiceRegistration<AbstractMatcher> regGFM;
 	private ServiceRegistration<AbstractMatcher> regFilterMatcher;
+	private ServiceRegistration<AbstractMatcher> regGroupFinderMatcher;
 	/*
 	 * (non-Javadoc)
 	 * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
@@ -51,6 +52,7 @@ public class MatchersActivator implements BundleActivator {
 		regIism = context.registerService(AbstractMatcher.class, new IterativeInstanceStructuralMatcher(), new Hashtable<String,String>());
 		regGFM = context.registerService(AbstractMatcher.class, new GroupFinderMatcher(), null);
 		regFilterMatcher = context.registerService(AbstractMatcher.class, new FilterMatcher(), null);
+		regGroupFinderMatcher = context.registerService(AbstractMatcher.class, new GroupFinderMatcher(), null);
 	}
 
 	/*
@@ -69,6 +71,7 @@ public class MatchersActivator implements BundleActivator {
 		regIism.unregister();
 		regGFM.unregister();
 		regFilterMatcher.unregister();
+		regGroupFinderMatcher.unregister();
 	}
 
 }

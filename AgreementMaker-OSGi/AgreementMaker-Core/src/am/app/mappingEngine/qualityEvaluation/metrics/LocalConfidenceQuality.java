@@ -32,14 +32,14 @@ public class LocalConfidenceQuality extends AbstractQualityMetric {
 	public QualityEvaluationData getQuality(AbstractMatcher matcher) throws Exception {
 		
 		QualityEvaluationData q = new QualityEvaluationData();
-		q.setLocal(true);
+		q.setLocal(true); // this is a local quality metric
 		
 		int maxSourceRelations = matcher.getMaxSourceAlign();
 		int maxTargetRelations = matcher.getMaxTargetAlign();
 		int numOfRelations = maxSourceRelations;
-		q.setSourceOrTarget(true);
+		q.setSource(true);
 		if( maxSourceRelations > maxTargetRelations) {
-			q.setSourceOrTarget(false);
+			q.setSource(false);
 			numOfRelations = maxTargetRelations;
 		}
 		

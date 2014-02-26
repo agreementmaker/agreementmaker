@@ -8,6 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import am.AMException;
 import am.Utility;
 import am.app.Core;
@@ -20,12 +23,14 @@ import am.app.ontology.Ontology;
 
 public class ArraySimilarityMatrix extends AbstractSimilarityMatrix {
 
+	private static final Logger LOG = LogManager.getLogger(ArraySimilarityMatrix.class);
+	
 	private static final long serialVersionUID = 7152244093634002737L;
 	
-	protected List<Node> rowNodes;
-	protected List<Node> colNodes;
+	protected transient List<Node> rowNodes;
+	protected transient List<Node> colNodes;
 
-	protected class SimRel implements Serializable{
+	protected class SimRel implements Serializable {
 		private static final long serialVersionUID = 3340618624390143439L;
 		
 		public double similarity;
@@ -508,7 +513,7 @@ public class ArraySimilarityMatrix extends AbstractSimilarityMatrix {
 	public List<Mapping> chooseBestN(List<Integer> rowsIncludedList, List<Integer> colsIncludedList, boolean considerThreshold, double threshold) {
 
 		// FIXME: Fix this method.
-		System.err.println("Do not use chooseBestN from ArraySimilarityMatrix, it must be unit tested.");
+		LOG.error("Do not use chooseBestN from ArraySimilarityMatrix, it must be unit tested.");
 		
 		// Creation of the output ArrayList and a copy of the matrix
 		int arraySize = Math.min(rowsIncludedList.size(), colsIncludedList.size());

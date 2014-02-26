@@ -40,7 +40,7 @@ public class AlignmentMetrics {
 		
 		int numCorrect = 0;
 		for( Mapping computedMapping : computedAlignment ) {
-			if( referenceAlignment.contains(computedMapping.getEntity1(), computedMapping.getEntity2(), computedMapping.getRelation()) ) {
+			if( referenceAlignment.contains(computedMapping.getEntity1(), computedMapping.getEntity2())!=null ) {//, computedMapping.getRelation()) ) {
 				numCorrect++;
 			}
 		}
@@ -49,7 +49,7 @@ public class AlignmentMetrics {
 	
 	/** @return numCorrect / computedAlignment.size(). */
 	public double getPrecision() { 
-		return (new Integer(numCorrect)).doubleValue() / (new Integer(computedAlignment.size()).doubleValue()); 
+		return (new Integer(getNumCorrect())).doubleValue() / (new Integer(getNumFound()).doubleValue()); 
 	}
 	
 	public String getPrecisionPercent() {
@@ -61,7 +61,7 @@ public class AlignmentMetrics {
 	
 	/** @return numCorrect / referenceAlignment.size(). */
 	public double getRecall() { 
-		return (new Integer(numCorrect)).doubleValue() / (new Integer(referenceAlignment.size())).doubleValue(); 
+		return (new Integer(getNumCorrect())).doubleValue() / (new Integer(getNumInReference())).doubleValue(); 
 	}
 	
 	public String getRecallPercent() {
@@ -83,5 +83,17 @@ public class AlignmentMetrics {
 		NumberFormat numForm = NumberFormat.getPercentInstance();
 		numForm.setMaximumFractionDigits(2);
 		return numForm.format(fmeasure);
+	}
+	
+	public int getNumCorrect() {
+		return numCorrect;
+	}
+	
+	public int getNumFound() {
+		return computedAlignment.size();
+	}
+	
+	public int getNumInReference() {
+		return referenceAlignment.size();
 	}
 }

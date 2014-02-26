@@ -46,6 +46,7 @@ import am.extension.feedback.FeedbackLoop;
 import am.extension.feedback.FeedbackLoopParameters;
 import am.ui.MatcherParametersDialog;
 import am.ui.UI;
+import am.ui.UIUtility;
 
 public class SelectionPanel extends JPanel implements MatchingProgressListener, ActionListener {
 
@@ -130,7 +131,7 @@ public class SelectionPanel extends JPanel implements MatchingProgressListener, 
 					ufl.execute();
 			    }
 			    else{
-					Utility.displayErrorPane(control, null);
+			    	UIUtility.displayErrorPane(control, null);
 			    }
 			} else if( arg0.getActionCommand() == "screen2_cancel" ) {
 			 	ufl.cancel(true);
@@ -140,7 +141,7 @@ public class SelectionPanel extends JPanel implements MatchingProgressListener, 
 				selectedAction = cmbActions.getSelectedItem().toString();
 				if(selectedAction.equals(A_MAPPING_CORRECT) || selectedAction.equals(A_CONCEPT_WRONG)){
 					if(radios.getSelection() == null){
-						Utility.displayErrorPane("Select a candidate mapping.", null);
+						UIUtility.displayErrorPane("Select a candidate mapping.", null);
 					}
 					else{
 						String selectedAlignment = radios.getSelection().getActionCommand();
@@ -186,7 +187,7 @@ public class SelectionPanel extends JPanel implements MatchingProgressListener, 
 						//change TAB, find the mapping and color it
 					}
 					else{
-						Utility.displayErrorPane("Select a candidate mapping.", null);
+						UIUtility.displayErrorPane("Select a candidate mapping.", null);
 					}
 			 }
 			 else if( arg0.getActionCommand() == "btn_display_c") {
@@ -205,13 +206,13 @@ public class SelectionPanel extends JPanel implements MatchingProgressListener, 
 					//use selectedConcept.isType(alignType) to understand if it's source or target concept
 				}
 				else{
-					Utility.displayErrorPane("Select a candidate concept.", null);
+					UIUtility.displayErrorPane("Select a candidate concept.", null);
 				}
 			 }
 		}
 		catch(Exception ex) {
 			sLog.error("", ex);
-			Utility.displayErrorPane(Utility.UNEXPECTED_ERROR, null);
+			UIUtility.displayErrorPane(Utility.UNEXPECTED_ERROR, null);
 		}
 	}
 

@@ -10,7 +10,7 @@ import am.app.mappingEngine.AbstractMatcher;
  * @author frank
  * 
  */
-public interface InterMatcherQualityEvaluation extends QualityMetric {
+public interface InterMatcherQualityEvaluation extends MappingQualityMetric {
 	
 	public QualityEvaluationData getQuality( AbstractMatcher matcher, AbstractMatcher[] matcherList ) throws Exception;
 }

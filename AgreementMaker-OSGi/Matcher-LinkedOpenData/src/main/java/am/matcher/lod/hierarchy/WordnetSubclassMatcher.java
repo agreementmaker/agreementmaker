@@ -12,7 +12,6 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import simpack.measure.weightingscheme.StringTFIDF;
-import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping;
@@ -23,6 +22,7 @@ import am.app.mappingEngine.StringUtil.NormalizerParameter;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.mappingEngine.utility.MatchingPair;
 import am.app.ontology.Node;
+import am.ui.UIUtility;
 import am.visualization.graphviz.wordnet.ScoredSynset;
 import am.visualization.graphviz.wordnet.WordnetVisualizer;
 
@@ -266,7 +266,7 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 			WordNet = WordNetDatabase.getFileInstance();
 		}
 		catch( Exception e ){
-			Utility.displayErrorPane(e.getMessage(), "Cannot open WordNet files.\nWordNet should be in the following directory:\n" + wordnetdir);
+			UIUtility.displayErrorPane(e.getMessage(), "Cannot open WordNet files.\nWordNet should be in the following directory:\n" + wordnetdir);
 		}
 	}
 		

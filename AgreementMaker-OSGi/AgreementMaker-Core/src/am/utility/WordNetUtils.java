@@ -3,13 +3,16 @@ package am.utility;
 import java.io.File;
 import java.util.HashMap;
 
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import am.Utility;
 import edu.smu.tspell.wordnet.Synset;
 import edu.smu.tspell.wordnet.WordNetDatabase;
 
 public class WordNetUtils {
+	
+	private static final Logger LOG = LogManager.getLogger(WordNetUtils.class);
+	
 	private static WordNetDatabase wordNet; 
 	
 	HashMap<String, Boolean> isSynonym = new HashMap<String, Boolean>();
@@ -52,7 +55,7 @@ public class WordNetUtils {
 			wordNet = WordNetDatabase.getFileInstance();
 		}
 		catch( Exception e ) {
-			Utility.displayErrorPane(e.getMessage(), "Cannot open WordNet files.\nWordNet should be in the following directory:\n" + wordnetdir);
+			LOG.error("Cannot open WordNet files.\nWordNet should be in the following directory:\n" + wordnetdir, e);
 		}
 	}
 

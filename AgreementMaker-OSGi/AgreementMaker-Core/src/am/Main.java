@@ -32,6 +32,9 @@ import joptsimple.OptionSet;
  * @author ADVIS Research Laboratory
  * @version 11/27/2004
  * 
+ * Profiling VM Args
+ * -XX:-UseSplitVerifier -javaagent:/home/cosmin/Documents/profiler4j-1.0-beta2/agent.jar=waitconn
+ * 
  * @deprecated No longer necessary after conversion to OSGi.
  */
 public class Main

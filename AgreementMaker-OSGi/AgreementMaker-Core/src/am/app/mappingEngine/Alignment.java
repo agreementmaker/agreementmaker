@@ -6,7 +6,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.tools.JavaCompiler;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.ontology.Node;
@@ -20,6 +21,8 @@ import am.app.ontology.Ontology;
  */
 public class Alignment<E extends Mapping> extends ArrayList<E> implements OntologyAlignment, Serializable
 {
+	private static final Logger LOG = LogManager.getLogger(Alignment.class);
+	
 	private static final long serialVersionUID = -8090732896473529999L;
 	
 	private int sourceOntologyID;
@@ -50,6 +53,11 @@ public class Alignment<E extends Mapping> extends ArrayList<E> implements Ontolo
 
 	@Override
 	public boolean addAll(Collection<? extends E> c) {
+		if( c == null ) {
+			LOG.info("Cannot add alignments from null collection.");
+			return false;
+		}
+		
 		boolean retval = super.addAll(c);
 		
 		if( retval == false ) return retval;

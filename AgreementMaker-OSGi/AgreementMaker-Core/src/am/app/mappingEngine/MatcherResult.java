@@ -1,19 +1,28 @@
 package am.app.mappingEngine;
 
+import java.io.Serializable;
+
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 
-public class MatcherResult {
+public class MatcherResult implements Serializable {
 	
-	private boolean modifiedbyUser;
-	private long executionTime;
-	private SimilarityMatrix classesMatrix;
-	private SimilarityMatrix propMatrix;
-	private Ontology sourceOntology;
-	private Ontology targetOntology;
+	private static final long serialVersionUID = -3777252152922774451L;
 
-	private MatchingTask task;
+	private boolean modifiedbyUser = false;
+	
+	private long executionTime = 0;
+	
+	private SimilarityMatrix classesMatrix;
+	
+	private SimilarityMatrix propMatrix;
+	
+	private transient Ontology sourceOntology;
+	
+	private transient Ontology targetOntology;
+
+	private transient MatchingTask task;
 	
 	private int id;
 	
@@ -41,12 +50,20 @@ public class MatcherResult {
 
 	public long getExecutionTime() {return executionTime;}
 
+	public void setClassesMatrix(SimilarityMatrix mtx) {
+		this.classesMatrix = mtx;
+	}
 	public SimilarityMatrix getClassesMatrix() {return classesMatrix;}
 
+	public void setPropertiesMatrix(SimilarityMatrix mtx) {
+		this.propMatrix = mtx;
+	}
 	public SimilarityMatrix getPropertiesMatrix() {return propMatrix;}
 
 	public Ontology getSourceOntology() { return sourceOntology; }
+	public void setSourceOntology(Ontology ont) { this.sourceOntology = ont; }
 	public Ontology getTargetOntology() { return targetOntology; }
+	public void setTargetOntology(Ontology ont) { this.targetOntology = ont; }
 
 	public void setID(int id) {
 		this.id = id;

@@ -1,11 +1,11 @@
 package am.extension.userfeedback.common;
 
 import am.app.mappingEngine.Mapping;
-import am.extension.userfeedback.UFLExperiment;
 import am.extension.userfeedback.UserFeedback;
+import am.extension.userfeedback.experiments.UFLExperiment;
 import am.extension.userfeedback.ui.ManualUserValidationPanel;
 
-public class ManualUserValidation extends UserFeedback {
+public class ManualUserValidation<T extends UFLExperiment> extends UserFeedback<T> {
 	
 	private Validation userFeedback;
 	private Mapping candidateMapping;
@@ -28,7 +28,7 @@ public class ManualUserValidation extends UserFeedback {
 	
 	@Override
 	public void validate(UFLExperiment exp) {
-		candidateMapping = exp.candidateSelection.getCandidateMapping();
+		candidateMapping = exp.candidateSelection.getSelectedMapping();
 		
 		ManualUserValidationPanel validationPanel = new ManualUserValidationPanel(candidateMapping, exp);
 		

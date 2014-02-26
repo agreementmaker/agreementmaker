@@ -56,24 +56,12 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 	private static int min_word_distance = 3; // average number of words
 												// composing the two concepts
 
-	// public boolean useLabelInsteadOfLocalname = true; //TODO: REMOVE THIS!
-	// VERY BAD!
-
-	// private ArrayList<String> sourceWords;
-	// private ArrayList<String> targetWords;
-
-	// vars for provenance
-	private List<Mapping> bestMappings;
-
 	/**
 	 * Empty constructor
 	 */
 	public AdvancedSimilarityMatcher() {
 		super();
 		initializeVariables();
-		
-		setName("Advanced Similarity Matcher");
-		setCategory(MatcherCategory.SYNTACTIC);
 	}
 
 	/**
@@ -109,9 +97,11 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 		// by relevance
 		// prepare list of data
 
+		AdvancedSimilarityParameters parameters = (AdvancedSimilarityParameters) param;
+		
 		OntologyProfiler pro = Core.getInstance().getOntologyProfiler();
 
-		if (pro != null) {
+		if (pro != null && parameters.useProfiling ) {
 			// we are using ontology profiling
 			double highestSimilarity = 0.0d;
 			String provS = null, provT = null;
@@ -205,36 +195,31 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 
 	public Mapping alignWithoutProfiling(Node source, Node target,
 			alignType typeOfNodes) throws Exception {
-		String sLN, tLN;
+		String sLN = null;
+		String tLN = null;
 
 		AdvancedSimilarityParameters parameters = (AdvancedSimilarityParameters) param;
 
-		if (parameters.useLabels) {
-			sLN = super.treatString(source.getLabel()); // source LocalName
-														// (sLN)
-			tLN = super.treatString(target.getLabel()); // target LocalName
-														// (tLN)
-		} else {
-			sLN = super.treatString(source.getLocalName()); // source LocalName
-															// (sLN)
-			tLN = super.treatString(target.getLocalName()); // target LocalName
-															// (tLN)
+		if( parameters.useLabel ) {
+			sLN = super.treatString(source.getLabel()); // source LocalName (sLN)
+			tLN = super.treatString(target.getLabel()); // target LocalName (tLN)
+		}
+		
+		if (!parameters.useLabel || sLN == null || tLN == null || sLN.isEmpty() || tLN.isEmpty()) {			
+			sLN = super.treatString(source.getLocalName()); // source LocalName (sLN)
+			tLN = super.treatString(target.getLocalName()); // target LocalName (tLN)
 		}
 
-		String tokenized_sLN[] = sLN.split("\\s"); // token array of source
-													// LocalName (sLN)
-		String tokenized_tLN[] = tLN.split("\\s"); // token array of target
-													// LocalName (tLN)
+		String tokenized_sLN[] = sLN.split("\\s"); // token array of source LocalName (sLN)
+		String tokenized_tLN[] = tLN.split("\\s"); // token array of target LocalName (tLN)
 
 		// Step 1: similarity check between less "meaningful" words
 		// e.g. if one concept has "is" in the word and another one has "has", I
 		// assume they are not matchable, same thing with prepositions
 		double simValue = 0.0;
-		double simValueContribution = nonContentWordCheck(tokenized_sLN,
-				tokenized_tLN);
+		double simValueContribution = nonContentWordCheck(tokenized_sLN, tokenized_tLN);
 
-		if (simValueContribution == NO_MATCH) { // immediately discard those
-												// considered unmatchable
+		if (simValueContribution == NO_MATCH) { // immediately discard those considered unmatchable
 			return null; // no match
 		}
 		// Step 2: check out for similarity between meaningful words
@@ -247,29 +232,10 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 		}
 
 		if (simValue > 0.0d) {
-			String provenanceString = null;
-			if (param.storeProvenance) {
-				provenanceString = "\t********AdvancedSimilarityMatcher********\n";
-				provenanceString += "sim(\"" + sLN + "\", \"" + tLN + "\") = "
-						+ simValue + "\n";
-				provenanceString += "Best Mappings:\n";
-				for (int i = 0; i < bestMappings.size(); i++)
-					provenanceString += "\t" + bestMappings.get(i).toString()
-							+ "\n";
-			}
-			if (simValueContribution > 0.0d) {
-				Mapping pmapping = new Mapping(source, target, Math.min(1,
-						simValue * (1.0 + simValueContribution)));
-				if (param.storeProvenance)
-					pmapping.setProvenance(provenanceString);
-				return pmapping;
-			} else {
-				Mapping pmapping = new Mapping(source, target, Math.min(1,
-						simValue));
-				if (param.storeProvenance)
-					pmapping.setProvenance(provenanceString);
-				return pmapping;
-			}
+			if (simValueContribution > 0.0d)
+				return new Mapping(source, target, Math.min(1, simValue * (1.0 + simValueContribution)));
+			else
+				return new Mapping(source, target, Math.min(1, simValue));
 		}
 		return null;
 	}
@@ -345,8 +311,6 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 		/* ------------- END FOR #1 --------------- */
 
 		List<Mapping> localResult = localMatrix.chooseBestN();
-
-		bestMappings = localResult;
 
 		double simValue = 0;
 		for (int i = 0; i < localResult.size(); i++) {
@@ -599,6 +563,9 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 
 		needsParam = true;
 
+		setName("Advanced Similarity Matcher");
+		setCategory(MatcherCategory.SYNTACTIC);
+		
 		// features supported
 		addFeature(MatcherFeature.ONTOLOGY_PROFILING);
 		addFeature(MatcherFeature.ONTOLOGY_PROFILING_CLASS_ANNOTATION_FIELDS);

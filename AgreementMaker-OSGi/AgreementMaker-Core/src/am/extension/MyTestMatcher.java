@@ -40,7 +40,7 @@ public class MyTestMatcher extends AbstractMatcher {
 		
 		System.out.println("Source ontology:");
 		Lexicon sourceLexicon = 
-				Core.getLexiconStore().getLexicon( Core.getInstance().getSourceOntology().getID(), LexiconRegistry.ONTOLOGY_LEXICON);
+				Core.getLexiconStore().getLexicon( Core.getInstance().getSourceOntology(), LexiconRegistry.ONTOLOGY_LEXICON);
 		
 		printProfile( sourceClassList, sourceLexicon );
 		
@@ -48,7 +48,7 @@ public class MyTestMatcher extends AbstractMatcher {
 		
 		System.out.println("Target ontology:");
 		Lexicon targetLexicon = 
-				Core.getLexiconStore().getLexicon( Core.getInstance().getTargetOntology().getID(), LexiconRegistry.ONTOLOGY_LEXICON);
+				Core.getLexiconStore().getLexicon( Core.getInstance().getTargetOntology(), LexiconRegistry.ONTOLOGY_LEXICON);
 		
 		printProfile( targetClassList, targetLexicon );
 		

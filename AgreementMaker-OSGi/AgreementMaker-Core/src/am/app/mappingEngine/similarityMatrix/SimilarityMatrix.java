@@ -4,6 +4,7 @@ import java.util.List;
 
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
+import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 
 public interface SimilarityMatrix {
@@ -33,6 +34,20 @@ public interface SimilarityMatrix {
 	
 	public abstract alignType getAlignType();
 
+	/**
+	 * @param i
+	 *            The index of the row to be retrieved.
+	 * @return the i-th row of the matrix as an array.
+	 *//*
+	public Mapping[] getRow(int i);
+	
+	*//**
+	 * @param j
+	 *            The index of the column to be retrieved.
+	 * @return the j-th column of the matrix as an array.
+	 *//*
+	public Mapping[] getCol(int j);*/
+	
 	public Mapping[] getColMaxValues(int col, int numMaxValues);
 
 	public Mapping[] getRowMaxValues(int i, int numMaxValues);
@@ -42,6 +57,8 @@ public interface SimilarityMatrix {
 	public SimilarityMatrix clone();
 
 	public double getRowSum(int i);
+	
+	public double getColSum(int j);
 
 	
 	// used by GroupFinderMatcher
@@ -71,6 +88,6 @@ public interface SimilarityMatrix {
 	// Used by AgreementMaker-UserFeedback:DisagreementRanking
 	public List<Mapping> toList() throws Exception ;
 
-	
+	public void fillMatrix(double sim, List<Node> sourceList, List<Node> targetList);
 
 }
