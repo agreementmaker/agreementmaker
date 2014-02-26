@@ -13,8 +13,10 @@ import am.extension.multiUserFeedback.storage.FeedbackAgregation;
 import am.extension.multiUserFeedback.validation.ProbabilisticErrorAutomaticValidation;
 import am.extension.userfeedback.ExecutionSemantics;
 import am.extension.userfeedback.SaveFeedback;
+import am.extension.userfeedback.UFLStatistics;
 import am.extension.userfeedback.UserFeedback;
 import am.extension.userfeedback.UserFeedback.Validation;
+import am.extension.userfeedback.common.ServerFeedbackEvaluationData;
 import am.extension.userfeedback.evaluation.CandidateSelectionEvaluation;
 import am.extension.userfeedback.evaluation.PropagationEvaluation;
 import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
@@ -35,11 +37,12 @@ public abstract class UFLExperiment {
 	public CandidateSelection<UFLExperiment> 				candidateSelection;
 	public CandidateSelectionEvaluation 					csEvaluation;
 	public UserFeedback										userFeedback;
-	public FeedbackPropagation< UFLExperiment>				feedbackPropagation;
-	public PropagationEvaluation< UFLExperiment>			propagationEvaluation;
+	public FeedbackPropagation<UFLExperiment>				feedbackPropagation;
+	public PropagationEvaluation<UFLExperiment>				propagationEvaluation;
 	public UFLProgressDisplay								gui;
 	public SaveFeedback< UFLExperiment>						saveFeedback;
-	public 	FeedbackAgregation<UFLExperiment>					feedbackAggregation;
+	public FeedbackAgregation<UFLExperiment>				feedbackAggregation;
+	public UFLStatistics<UFLExperiment>						uflStatistics; 
 	
 	/**
 	 * Keep count of how many incorrect validations were generated for a
@@ -79,6 +82,8 @@ public abstract class UFLExperiment {
     
     private int iterationNumber = 0;
 
+    public ServerFeedbackEvaluationData feedbackEvaluationData;
+    
     public UFLExperiment(UFLExperimentSetup setup) {
 		this.setup = setup;
 		
@@ -90,6 +95,9 @@ public abstract class UFLExperiment {
 		}
 		
 		sharedObjectStore = new HashMap<>();
+		
+		int numIterations = setup.parameters.getIntParameter(Parameter.NUM_ITERATIONS);
+		feedbackEvaluationData = new ServerFeedbackEvaluationData(numIterations);
 	}
     
 	public Ontology getSourceOntology()             { return sourceOntology; }
@@ -108,19 +116,24 @@ public abstract class UFLExperiment {
 	
 	public abstract boolean 			experimentHasCompleted();  // return true if the experiment is done, false otherwise.
 	
-	public int getIterationNumber() { return iterationNumber; }
+	public int getIterationNumber() 
+	{ 
+		return iterationNumber; 
+	}
 	
 	public void	newIteration() {
 		if( userFeedback.getUserFeedback() == Validation.CORRECT ) {
 			if( correctMappings == null ) {
 				correctMappings = new Alignment<Mapping>(getSourceOntology().getID(), getTargetOntology().getID());
 			}
-			correctMappings.add( userFeedback.getCandidateMapping() );
+			if (!correctMappings.contains(userFeedback.getCandidateMapping()))
+				correctMappings.add( userFeedback.getCandidateMapping() );
 		} else if( userFeedback.getUserFeedback() == Validation.INCORRECT ) {
 			if( incorrectMappings == null ) {
 				incorrectMappings = new Alignment<Mapping>(getSourceOntology().getID(), getTargetOntology().getID());
 			}
-			incorrectMappings.add( userFeedback.getCandidateMapping() );
+			if (!incorrectMappings.contains(userFeedback.getCandidateMapping()))
+				incorrectMappings.add( userFeedback.getCandidateMapping() );
 		}		
 		
 		setIterationNumber(getIterationNumber() + 1); 

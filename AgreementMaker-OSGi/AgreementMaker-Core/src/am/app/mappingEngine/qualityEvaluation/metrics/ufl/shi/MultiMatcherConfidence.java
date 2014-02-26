@@ -1,5 +1,6 @@
 package am.app.mappingEngine.qualityEvaluation.metrics.ufl.shi;
 
+import java.util.Arrays;
 import java.util.List;
 
 import am.app.mappingEngine.AbstractMatcher;
@@ -11,14 +12,22 @@ public class MultiMatcherConfidence extends AbstractQualityMetric{
 		
 	private List<AbstractMatcher> initialMatcher;
 	private double[] matchersWeight;
-	private final double threshold=0.4;
+	private double threshold;
 	
-	public MultiMatcherConfidence(List<AbstractMatcher> am, double[] weights)
+	public MultiMatcherConfidence(List<AbstractMatcher> am, double threshold) {
+		super();
+		this.initialMatcher = am;
+		this.matchersWeight = new double[initialMatcher.size()];
+		Arrays.fill(matchersWeight, 1.0);
+		this.threshold = threshold;
+	}
+	
+	public MultiMatcherConfidence(List<AbstractMatcher> am, double[] weights, double threshold)
 	{
 		super();
 		this.initialMatcher=am;
 		this.matchersWeight=weights;
-
+		this.threshold=threshold;
 	}
 	
 	/**
@@ -28,13 +37,15 @@ public class MultiMatcherConfidence extends AbstractQualityMetric{
 	@Override
 	public double getQuality(alignType type, int i, int j) 
 	{		
+		double sum=0.0;
 		double q=0;
 		for(int k=0;k<initialMatcher.size();k++)
 		{
 			SimilarityMatrix sm=type.equals(alignType.aligningClasses)?initialMatcher.get(k).getClassesMatrix():initialMatcher.get(k).getPropertiesMatrix();
-			q+=matchersWeight[k]*Math.abs(threshold-sm.getSimilarity(i, j));
+		
+			sum+=matchersWeight[k]*Math.abs(threshold-sm.getSimilarity(i, j));
 		}
-		return q;
+		return (sum/initialMatcher.size());
 		
 	}
 }

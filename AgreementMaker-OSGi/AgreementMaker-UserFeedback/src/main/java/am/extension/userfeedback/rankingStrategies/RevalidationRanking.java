@@ -12,11 +12,13 @@ import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MappingSimilarityComparator;
 import am.app.mappingEngine.qualityEvaluation.metrics.ufl.ConsensusQuality;
 import am.app.mappingEngine.qualityEvaluation.metrics.ufl.CrossCountQuality;
+import am.app.mappingEngine.qualityEvaluation.metrics.ufl.CrossSumQuality;
 import am.app.mappingEngine.qualityEvaluation.metrics.ufl.PropagationImpactMetric;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.extension.multiUserFeedback.experiment.MUExperiment;
 import am.extension.userfeedback.UserFeedback.Validation;
+import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
 
 public class RevalidationRanking extends AbstractRankingStrategy {
 
@@ -31,10 +33,10 @@ public class RevalidationRanking extends AbstractRankingStrategy {
 	private SimilarityMatrix uflProp;
 	private SimilarityMatrix forbiddenClass;
 	private SimilarityMatrix forbiddenProp;
-	private double alpha=1.0;
-	private double beta=1.0;
-	private double gamma=2.0;
-	private final int maxValidation=3;
+	private final double alpha=0.4;
+	private final double beta=0.2;
+	private final double gamma=0.4;
+	private int maxValidation;
 
 	private MUExperiment experiment;
 	
@@ -54,12 +56,14 @@ public class RevalidationRanking extends AbstractRankingStrategy {
 		uflProp = experiment.getComputedUFLMatrix(alignType.aligningProperties);
 		forbiddenClass = experiment.getForbiddenPositions(alignType.aligningClasses);
 		forbiddenProp = experiment.getForbiddenPositions(alignType.aligningProperties);
-		
+		maxValidation = experiment.setup.parameters.getIntParameter(Parameter.MAX_VALIDATION);
 		toRank = new ArrayList<Mapping>();
 		if (experiment.correctMappings!=null)
 			toRank.addAll(experiment.correctMappings);
 		if (experiment.incorrectMappings!=null)
-			toRank.addAll(experiment.incorrectMappings);
+			for (Mapping m : experiment.incorrectMappings)
+				if (!toRank.contains(m))
+					toRank.add(m);
 		
 		rankedList = linearCombination(alignType.aligningClasses,classMatrices, classPos, classNeg, uflClass,forbiddenClass);
 		rankedList.addAll(linearCombination(alignType.aligningProperties,propMatrices, propPos, propNeg,uflProp,forbiddenProp));
@@ -71,50 +75,25 @@ public class RevalidationRanking extends AbstractRankingStrategy {
 	//Linear combination of UD and the inverse of AMD
 	private List<Mapping> linearCombination(alignType type, List<SimilarityMatrix>  lMtrx, SparseMatrix mPos, SparseMatrix mNeg, SimilarityMatrix mtrx, SimilarityMatrix forbidden)
 	{
-		//List<Double> ud_norm=new ArrayList<Double>();
-		List<Double> ccq_norm=new ArrayList<Double>();
-		List<Double> cq_norm=new ArrayList<Double>();
-		List<Double> pim_norm=new ArrayList<Double>();
-		//List<Double> rr_norm=new ArrayList<Double>();
 		double sim=0;
 		List<Mapping> lst=new ArrayList<Mapping>();
-		//UserDisagrement ud=new UserDisagrement(mPos, mNeg);
 		ConsensusQuality cq=new ConsensusQuality(mPos, mNeg, maxValidation);
-		CrossCountQuality ccq=new CrossCountQuality(mtrx);
+		CrossSumQuality csq=new CrossSumQuality(mtrx);
 		PropagationImpactMetric pim=new PropagationImpactMetric(mPos, mNeg, maxValidation);
-		//MappingQualityMetric rr=new InverseOf(new RevalidationRate(mPos, mNeg));
 		if (toRank==null) return new ArrayList<Mapping>();
 		for (Mapping m : toRank)
 		{
 			int i=m.getSourceKey();
 			int j=m.getTargetKey();
 			if(m.getAlignmentType() != type) continue;
-			if (mPos.getSimilarity(i, j)+mNeg.getSimilarity(i, j)>=maxValidation)
-			{
-				ccq_norm.add(0d);
-				cq_norm.add(0d);
-				pim_norm.add(0d);
-			}
-			else
-			{
-				//ud_norm.add(ud.getQuality(null, i, j));
-				ccq_norm.add(ccq.getQuality(null, i, j));
-				cq_norm.add(cq.getQuality(null, i, j));
-				pim_norm.add(pim.getQuality(null, i, j));
-				//rr_norm.add(rr.getQuality(null, i, j));
-			}
-		}
-		//normalize(ud_norm);
-		//normalize(ccq_norm);
-		//normalize(rr_norm);
-		int count=0;
-		for (Mapping m : toRank)
-		{
-			if(m.getAlignmentType() != type) continue;
-			sim=alpha*(1-cq_norm.get(count))+beta*ccq_norm.get(count)+gamma*pim_norm.get(count);
+
+			double csq_v=csq.getQuality(null, i, j);
+			double cq_v=1-cq.getQuality(null, i, j);
+			double pim_v=pim.getQuality(null, i, j);
+	
+			sim=alpha*cq_v+beta*csq_v+gamma*pim_v;
 			m.setSimilarity(sim);
 			lst.add(m);
-			count++;
 		}
 		
 		
@@ -122,25 +101,7 @@ public class RevalidationRanking extends AbstractRankingStrategy {
 		
 	}
 	
-	private void normalize(List<Double> lst)
-	{
-		double max=Double.MIN_VALUE;
-		double min=Double.MAX_VALUE;
-		
-		for(Double d :lst)
-		{
-			if (d<min)
-				min=d;
-			if (d>max) max=d;	
-		}
-		for(int i=0;i<lst.size();i++)
-		{
-			double tmp=lst.get(i);
-			tmp=(tmp-min)/(max-min);
-			lst.set(i, tmp);
-		}
-		
-	}
+
 
 
 }

@@ -62,7 +62,8 @@ public class ParametricCandidateSelection extends CandidateSelection<MUExperimen
 			double currentRate = total == 0 ? 0d : currentStrategy.getCount() / (double)total;
 			if( currentRate <= currentStrategy.getPercentage() ) {
 				currentStrategy.incrementCount();
-				if( !staticCS ) currentStrategy.rank();
+				if( !staticCS || (staticCS && experiment.getIterationNumber() == 1)) 
+					currentStrategy.rank();
 				List<Mapping> rankedList = currentStrategy.getRankedList();
 				if( currentStrategy instanceof RevalidationRanking )
 					experiment.selectedMapping = rankedList.get(0);
@@ -73,7 +74,7 @@ public class ParametricCandidateSelection extends CandidateSelection<MUExperimen
 				break;
 			}
 		}
-		
+		System.out.println(experiment.selectedMapping);
 		done();
 	}
 		

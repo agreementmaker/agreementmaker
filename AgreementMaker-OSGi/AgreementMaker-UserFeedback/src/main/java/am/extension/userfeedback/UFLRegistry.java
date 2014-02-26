@@ -81,7 +81,7 @@ public class UFLRegistry {
 	public enum CSEvaluationRegistry {
 		MultiplexCSE (am.extension.userfeedback.evaluation.MultiplexCandidateSelectionEvaluation.class),
 		RankingAccuracy (am.extension.userfeedback.evaluation.RankingAccuracy.class),
-		PrecisionRecallEval ( am.extension.userfeedback.common.PrecisionRecallPlot.class );
+		PrecisionRecallEval ( am.extension.userfeedback.common.CandidateMappingEvaluation.class );
 		
 		/* *********************** DO NOT EDIT BELOW THIS LINE **************************** */
 		Class<? extends CandidateSelectionEvaluation> clazz;
@@ -104,7 +104,7 @@ public class UFLRegistry {
 	}
 	
 	public enum FeedbackAggregationRegistry {
-		ServerFeedbackAggregation (am.extension.multiUserFeedback.storage.ServerFeedbackStorage.class);
+		ServerFeedbackAggregation (am.extension.multiUserFeedback.storage.ServerFeedbackAggregation.class);
 		
 		/* *********************** DO NOT EDIT BELOW THIS LINE **************************** */
 		Class<? extends FeedbackAgregation> clazz;
@@ -128,9 +128,9 @@ public class UFLRegistry {
 	}
 	
 	public enum PropagationEvaluationRegistry {
+		ServerPropagationEvaluation (am.extension.multiUserFeedback.evaluation.ServerFeedbackEvaluation.class),
 		SelectionRankingEvaluation ( am.extension.userfeedback.common.SelectionRankingEvaluation.class ),
 		SMatrixDeltaEvaluetion (am.extension.userfeedback.clustering.disagreement.SMatrixDeltaEvaluetion.class),
-		ServerPropagationEvaluation (am.extension.multiUserFeedback.evaluation.ServerFeedbackEvaluation.class),
 		DeltaFromRef ( am.extension.userfeedback.clustering.disagreement.DeltaFromReferenceEvaluation.class ),
 		ClusterBoost ( am.extension.userfeedback.clustering.disagreement.ClusterBoostEvaluation.class );
 		
@@ -149,5 +149,15 @@ public class UFLRegistry {
 		
 		SaveFeedbackRegistry( Class<? extends SaveFeedback> cs ) { clazz = cs; }
 		public Class<? extends SaveFeedback> getEntryClass() { return clazz; }
+	}
+	
+	public enum UFLStatisticRegistry {
+		ServerStatistics (am.extension.userfeedback.ServerStatistics.class);
+		
+		/* *********************** DO NOT EDIT BELOW THIS LINE **************************** */
+		Class<? extends UFLStatistics> clazz;
+		
+		UFLStatisticRegistry( Class<? extends UFLStatistics> us ) { clazz = us; }
+		public Class<? extends UFLStatistics> getEntryClass() { return clazz; }
 	}
 }

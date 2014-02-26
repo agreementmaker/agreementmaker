@@ -42,7 +42,7 @@ public abstract class AbstractRankingStrategy implements StrategyInterface {
 	
 	public void incrementCount() {
 		int count = getCount();
-		setCount(++count);
+		setCount(count+1);
 	}
 	
 	@Override
@@ -54,4 +54,35 @@ public abstract class AbstractRankingStrategy implements StrategyInterface {
 	public List<Mapping> getRankedList() {
 		return rankedList;
 	}
+	
+	public int getBestMappingNumber(double threshold)
+	{
+		int countM=0;
+		for (Mapping m : rankedList)
+		{
+			if (m.getSimilarity()<threshold)
+				countM++;
+		}
+		return countM;
+	}
+	
+	public int getBestMappingNumber(double threshold, boolean revert)
+	{
+		int countM=0;
+		for (Mapping m : rankedList)
+		{
+			if (revert)
+			{
+				if (m.getSimilarity()>1-threshold)
+					countM++;
+			}
+			else
+			{
+				if (m.getSimilarity()<threshold)
+					countM++;
+			}
+		}
+		return countM;
+	}
+	
 }

@@ -1,37 +1,34 @@
-package am.extension.multiUserFeedback.storage;
+package am.extension.userfeedback;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+
 import javax.swing.SwingUtilities;
 import javax.swing.event.EventListenerList;
 
-import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.AbstractMatcher.alignType;
-import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
-import am.extension.userfeedback.UserFeedback.Validation;
 import am.extension.userfeedback.experiments.UFLExperiment;
 import am.extension.userfeedback.ui.UFLControlGUI;
 
-public abstract class FeedbackAgregation <T extends UFLExperiment>{
-	SimilarityMatrix classes;
-	SimilarityMatrix properties;
-	Mapping candidateMapping;
-	Validation userFeedback;
+public abstract class UFLStatistics <T extends UFLExperiment> {
+
 	EventListenerList listeners;  // list of listeners for this class
 	
-	public FeedbackAgregation() {
+	public UFLStatistics() {
 		listeners = new EventListenerList();
 	}
-	public abstract void addFeedback(T exp);
 	
-	public abstract Object[][] getTrainingSet(alignType type, String quantity);
+	public abstract void compute( T exp );
+	
 	
 	public void addActionListener( ActionListener l ) {
 		listeners.add(ActionListener.class, l);
 	}
 	
-	
+	/**
+	 * This method fires an action event.
+	 * @param e Represents the action that was performed.
+	 */
 	protected void fireEvent( ActionEvent e ) {
 		final ActionEvent evt = e;
 		SwingUtilities.invokeLater(new Runnable() {
@@ -47,13 +44,9 @@ public abstract class FeedbackAgregation <T extends UFLExperiment>{
 		
 	}
 	
-	public Mapping getCandidateMapping() {
-		return candidateMapping;
-	}
-	
 	protected void done() {
-		ActionEvent e = new ActionEvent(this, 0, UFLControlGUI.ActionCommands.FEEDBACK_AGREGATION_DONE.name() );
+		ActionEvent e = new ActionEvent(this, 0, UFLControlGUI.ActionCommands.CANDIDATE_SELECTION_DONE.name() );
 		fireEvent(e);
 	}
-	
+
 }

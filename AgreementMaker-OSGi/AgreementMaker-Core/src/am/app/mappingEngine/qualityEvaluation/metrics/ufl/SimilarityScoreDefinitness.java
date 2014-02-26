@@ -12,11 +12,11 @@ import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
  * @author Cosmin Stroe
  */
 
-public class SimilarityScoreHardness extends AbstractQualityMetric {
+public class SimilarityScoreDefinitness extends AbstractQualityMetric {
 		
 	private SimilarityMatrix matrix;
 	
-	public SimilarityScoreHardness(SimilarityMatrix matrix)
+	public SimilarityScoreDefinitness(SimilarityMatrix matrix)
 	{
 		super();
 		this.matrix = matrix;

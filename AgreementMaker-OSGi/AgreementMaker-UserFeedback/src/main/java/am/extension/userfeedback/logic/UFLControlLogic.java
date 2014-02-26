@@ -166,4 +166,19 @@ public abstract class UFLControlLogic<T extends UFLExperiment>  implements Actio
 			e.printStackTrace();
 		}
 	}
+	
+	protected void runStatistic() {
+		try {
+			experiment.uflStatistics = experiment.setup.us.getEntryClass().newInstance();
+			experiment.uflStatistics.addActionListener(this);
+
+			startThread(new Runnable() {
+				@Override public void run() {
+					experiment.uflStatistics.compute(experiment);
+				}
+			});
+		} catch (InstantiationException | IllegalAccessException e) {
+			e.printStackTrace();
+		}
+	}
 }

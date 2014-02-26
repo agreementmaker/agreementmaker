@@ -20,33 +20,33 @@ import am.extension.multiUserFeedback.experiment.MUExperiment;
 import am.extension.userfeedback.UserFeedback.Validation;
 import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
 
-public class ServerFeedbackStorage extends FeedbackAgregation<MUExperiment>{
+public class ServerFeedbackAggregation extends FeedbackAgregation<MUExperiment>{
 	
 	private MUExperiment experiment;
+
+	private final double cm_upper_threshold=0.89d;
+	private final double cm_lower_threshold=0.1d;
 	
 	//Boolean flag=false;
 	
 	@Override
 	public void addFeedback(MUExperiment exp) {
 		this.experiment=exp;
-		Mapping candidateMapping = exp.selectedMapping;
+		candidateMapping = exp.selectedMapping;
 		
 		int mappingRow = candidateMapping.getSourceKey();
 		int mappingCol = candidateMapping.getTargetKey();
 		
-		final Validation userFeedback = experiment.userFeedback.getUserFeedback();
+		userFeedback = experiment.userFeedback.getUserFeedback();
 
-		/*double correctionLabel = 0;
-		if (flag)
-		{
-			correctionLabel = labelizeSingleTS(exp.getUflStorageClassPos().getSimilarity(candidateMapping.getSourceKey(), candidateMapping.getTargetKey()),exp.getUflStorageClass_neg().getSimilarity(candidateMapping.getSourceKey(), candidateMapping.getTargetKey()));
-		}*/
-		
 		// update the validation matrices
 		SparseMatrix validationMatrix = exp.getFeedbackMatrix(candidateMapping.getAlignmentType(), userFeedback);
 		int count = (int) validationMatrix.getSimilarity(mappingRow, mappingCol);
 		count++;
+
 		validationMatrix.setSimilarity(mappingRow, mappingCol, (double)count);
+
+		exp.setFeedBackMatrix(validationMatrix, candidateMapping.getAlignmentType(), userFeedback);
 		
 		// update the forbidden positions
 		updateForbiddenPositions(candidateMapping, userFeedback);
@@ -57,61 +57,69 @@ public class ServerFeedbackStorage extends FeedbackAgregation<MUExperiment>{
 			printForbiddenPositions(alignType.aligningProperties);
 		}
 		
-		experiment.setTrainingSet_classes(getTrainingSet(alignType.aligningClasses));
-		experiment.setTrainingSet_property(getTrainingSet(alignType.aligningProperties));
+		//experiment.setTrainingSet_classes(getTrainingSet(alignType.aligningClasses));
+		//experiment.setTrainingSet_property(getTrainingSet(alignType.aligningProperties));
 		
 		done();
 	}
 	
-	/*public void getSingleTrainingSet()
+	
+
+	
+	public Object[][] getSingleTrainingSet()
 	{
 		Object[][] tmp= new Object[1][experiment.initialMatcher.getComponentMatchers().size()+1];
-		tmp[0]=getLabeledMapping(lastAdded,correctionLabel);
-		if (lastAdded.getAlignmentType().equals(alignType.aligningClasses))
-			experiment.setTrainingSet_classes(tmp);
-		else
-			experiment.setTrainingSet_property(tmp);
-		
+		double label=userFeedback==Validation.CORRECT?1.0:-1.0;
+		tmp[0]=getLabeledMapping(candidateMapping,label);
+		return tmp;
 	}
 	
-	private int labelizeSingleTS(double pos, double neg)
+	public Object[][] getSingleCheckedTrainingSet(alignType type)
 	{
-		int x=experiment.userFeedback.equals("CORRECT")?1:-1;
-		int sum=(int)pos-(int)neg+x;
-		if (sum>0) return 1;
-		if (sum<0) return 0;
-		if (x>0) return 1;
-		return 0;
-		
-	}*/
+		double sum=0.0d;
+		Object[][] tmp= new Object[1][experiment.initialMatcher.getComponentMatchers().size()+1];
+		int i=candidateMapping.getSourceKey();
+		int j=candidateMapping.getTargetKey();
+		SparseMatrix positiveFeedback = experiment.getFeedbackMatrix(type, Validation.CORRECT);
+		SparseMatrix negativeFeedback = experiment.getFeedbackMatrix(type, Validation.INCORRECT);
+		sum = (int)positiveFeedback.getSimilarity(i, j);
+		sum-= (int)negativeFeedback.getSimilarity(i, j);
+		if (sum != 0) {
+			tmp[0]=getLabeledMapping(candidateMapping,sum);
+		}
+		return tmp;
+	}
+	
 
-	@Override
-	public Object[][] getTrainingSet(alignType type) {
+
+	private Object[][] getMultipleTrainingSet(alignType type) {
+		int sum=0;
 		List<Object[]> trainingSet = new ArrayList<Object[]>();
 		SparseMatrix positiveFeedback = experiment.getFeedbackMatrix(type, Validation.CORRECT);
 		SparseMatrix negativeFeedback = experiment.getFeedbackMatrix(type, Validation.INCORRECT);
-		ExpandedConsensus ec=new ExpandedConsensus(experiment.getFeedbackMatrix(alignType.aligningClasses, Validation.CORRECT),
-				experiment.getFeedbackMatrix(alignType.aligningClasses, Validation.INCORRECT),
+		/*ExpandedConsensus ec=new ExpandedConsensus(experiment.getFeedbackMatrix(type, Validation.CORRECT),
+				experiment.getFeedbackMatrix(type, Validation.INCORRECT),
 				experiment.initialMatcher.getFinalMatcher().getClassesMatrix(),
-				experiment.initialMatcher.getFinalMatcher().getPropertiesMatrix(), 3);
+				experiment.initialMatcher.getFinalMatcher().getPropertiesMatrix(), 3, experiment.setup.parameters.getDoubleParameter(Parameter.IM_THRESHOLD));*/
 		for(int i=0;i < positiveFeedback.getRows();i++)
 		{
 			for(int j=0;j < positiveFeedback.getColumns();j++)
 			{
-				int sum = (int)positiveFeedback.getSimilarity(i, j) - (int)negativeFeedback.getSimilarity(i, j);
+				sum = (int)positiveFeedback.getSimilarity(i, j);
+				sum-= (int)negativeFeedback.getSimilarity(i, j);
 				if (sum != 0) {
 					Mapping m = positiveFeedback.get(i, j) == null ? negativeFeedback.get(i, j) : positiveFeedback.get(i, j);
-					if (ec.getQuality(m.getAlignmentType(), i, j)>0.5d)
-						trainingSet.add(getLabeledMapping(m,sum));
+					//if (ec.getQuality(m.getAlignmentType(), i, j)>0.5d)
+					trainingSet.add(getLabeledMapping(m,sum));
 				}
 			}
 		}
-		List<Object[]> tt =addAMconfidentMapping();
+		List<Object[]> tt =addAMconfidentMapping(type);
 		trainingSet.addAll(tt);
 		return trainingSet.toArray(new Object[0][0]);
 	}
 	
-	private List<Object[]> addAMconfidentMapping()
+	private List<Object[]> addAMconfidentMapping(alignType type)
 	{
 		int count=0;
 		Alignment<Mapping> amFinal=experiment.initialMatcher.getFinalMatcher().getAlignment();
@@ -119,7 +127,7 @@ public class ServerFeedbackStorage extends FeedbackAgregation<MUExperiment>{
 		for(Mapping m : amFinal)
 		{
 			
-			if (m.getSimilarity()>0.89)
+			if ((m.getSimilarity()>cm_upper_threshold)&&(m.getAlignmentType().equals(type)))
 			{
 				trainingSet.add(getLabeledMapping(m,1));
 				count++;
@@ -129,7 +137,7 @@ public class ServerFeedbackStorage extends FeedbackAgregation<MUExperiment>{
 		for(Mapping m : amFinal)
 		{
 			
-			if (m.getSimilarity()<0.1)
+			if ((m.getSimilarity()<cm_lower_threshold)&&(m.getAlignmentType().equals(type)))
 			{
 				trainingSet.add(getLabeledMapping(m,0));
 				count--;
@@ -171,61 +179,8 @@ public class ServerFeedbackStorage extends FeedbackAgregation<MUExperiment>{
 		
 	}
 	
-	private SimilarityMatrix zeroSim(SimilarityMatrix sm,int source_index,int target_index, int sourceCardinality, int targetCardinality)
-	{
-		ArrayList<Integer> sourceToKeep=new ArrayList<Integer>();
-		ArrayList<Integer> targetToKeep=new ArrayList<Integer>();
-		if (sourceCardinality!=1)
-		{
-			sourceToKeep=topN(sm,-1,target_index,sourceCardinality);
-		}
-		
-		if (targetCardinality!=1)
-		{
-			targetToKeep=topN(sm,source_index,-1,sourceCardinality);
-		}
-		sourceToKeep.add(source_index);
-		targetToKeep.add(target_index);
 
-		
-		for(int i=0;i<sm.getRows();i++)
-		{
-			if (sourceToKeep.contains(i)) 
-				continue;
-			sm.setSimilarity(i, target_index, 0.0);		
-		}
-		for(int j=0;j<sm.getColumns();j++)
-		{
-			if (targetToKeep.contains(j)) 
-				continue;
-			sm.setSimilarity(source_index, j, 0.0);	
-		}
-		return sm;
-	}
-	
-	private ArrayList<Integer> topN (SimilarityMatrix sm, int sourceIndex, int targetIndex, int topNumber)
-	{
-		ArrayList<Integer> top=new ArrayList<Integer>();
-		Mapping[] tmp;
-		if (targetIndex==-1)
-		{
-			tmp=sm.getRowMaxValues(sourceIndex, topNumber);	
-			for (Mapping m : tmp)
-			{
-				top.add(m.getTargetKey());
-			}
-		}
-		else
-		{
-			tmp=sm.getColMaxValues(targetIndex, topNumber);
-			for (Mapping m : tmp)
-			{
-				top.add(m.getSourceKey());
-			}
-		}
 
-		return top;
-	}
 	
 	/**
 	 * @param diff
@@ -296,6 +251,21 @@ public class ServerFeedbackStorage extends FeedbackAgregation<MUExperiment>{
 		for(Mapping fm : forbiddenMappings) {
 			experiment.info(fm.toString());
 		}
+	}
+
+	@Override
+	public Object[][] getTrainingSet(alignType type, String quantity) {
+		switch (quantity) {
+		case ("multi"):
+			return getMultipleTrainingSet(type);
+		case ("single"):
+			return getSingleTrainingSet();
+		case ("checked"):
+			return getSingleCheckedTrainingSet(type);
+		default:
+			break;
+		}
+		return null;
 	}
 
 }

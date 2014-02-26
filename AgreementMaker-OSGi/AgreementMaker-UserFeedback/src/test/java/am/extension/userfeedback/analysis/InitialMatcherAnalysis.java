@@ -203,6 +203,7 @@ public class InitialMatcherAnalysis {
 		
 		setup.parameters = new UFLExperimentParameters();
 		setup.parameters.setDoubleParameter(Parameter.IM_THRESHOLD, threshold);
+		setup.parameters.setIntParameter(Parameter.NUM_ITERATIONS, 100);
 		
 		Ontology sourceOnt = OntoTreeBuilder.loadOWLOntology(p.getSourceOntology());
 		Ontology targetOnt = OntoTreeBuilder.loadOWLOntology(p.getTargetOntology());

@@ -8,13 +8,14 @@ public class Confidence extends AbstractQualityMetric{
 		
 	private SimilarityMatrix amScoreClass;
 	private SimilarityMatrix amScoreProp;
-	private final double threshold=0.4;
+	private double threshold;
 	
-	public Confidence(SimilarityMatrix amClass, SimilarityMatrix amProp)
+	public Confidence(SimilarityMatrix amClass, SimilarityMatrix amProp, double threshold)
 	{
 		super();
 		this.amScoreClass=amClass;
 		this.amScoreProp=amProp;
+		this.threshold=threshold;
 	}
 	
 	/**

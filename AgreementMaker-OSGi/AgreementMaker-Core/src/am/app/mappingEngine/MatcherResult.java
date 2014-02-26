@@ -10,9 +10,9 @@ public class MatcherResult implements Serializable {
 	
 	private static final long serialVersionUID = -3777252152922774451L;
 
-	private boolean modifiedbyUser;
+	private boolean modifiedbyUser = false;
 	
-	private long executionTime;
+	private long executionTime = 0;
 	
 	private SimilarityMatrix classesMatrix;
 	
@@ -50,8 +50,14 @@ public class MatcherResult implements Serializable {
 
 	public long getExecutionTime() {return executionTime;}
 
+	public void setClassesMatrix(SimilarityMatrix mtx) {
+		this.classesMatrix = mtx;
+	}
 	public SimilarityMatrix getClassesMatrix() {return classesMatrix;}
 
+	public void setPropertiesMatrix(SimilarityMatrix mtx) {
+		this.propMatrix = mtx;
+	}
 	public SimilarityMatrix getPropertiesMatrix() {return propMatrix;}
 
 	public Ontology getSourceOntology() { return sourceOntology; }

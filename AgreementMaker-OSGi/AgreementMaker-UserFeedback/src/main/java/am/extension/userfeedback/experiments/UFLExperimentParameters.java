@@ -20,7 +20,35 @@ public class UFLExperimentParameters extends Properties {
 		ERROR_RATE,
 		NUM_USERS,
 		REVALIDATION_RATE,
+		/**
+		 * Select the combination methods between the possible metrics that can be used in the CS
+		 * the possible value are:
+		 * max, min, avg, lwc
+		 */
+		CS_COMBINATION_METHOD,
+		/**
+		 * List of metric to use in the CS
+		 * Possible values:
+		 * dis : disagreement ranking
+		 * ccq : cross Count Quality
+		 * ssd : SimilarityScoreDefinitness
+		 * con : contention Point (SHI)
+		 * mmc : multy matcher conbination (SHI)
+		 * sim : similarity distance (SHI)
+		 */
+		CS_METRICS_LIST,
 		PRINT_FORBIDDEN_POSITIONS("false"), // whether to print out the forbidden matrices every time
+		/**
+		 * Number of max validation for each mapping
+		 */
+		MAX_VALIDATION("5"),
+		
+		/**
+		 * 	none 	: no propagation
+		 *  euzero 	: euclidean distance
+		 *  logdist	: euclidean distance + log radius
+		 *  regression : use weka linear regression
+		 */
 		PROPAGATION_METHOD, // the propagation method we will use in Feedback Propagation.
 		STATIC_CANDIDATE_SELECTION("false"), // whether our CS is static (only computed before experiment) or dynamic (computed every new itertation).
 		LOGFILE, // the name of the logfile
@@ -76,6 +104,24 @@ public class UFLExperimentParameters extends Properties {
 	public void setDoubleParameter(Parameter p, double value) {
 		setProperty(p.name(), Double.toString(value));
 	}
+	
+	public String[] getArrayParameter(Parameter p)
+	{
+		String value=getProperty(p.name());
+		if (value==null)
+			return null;
+		String[] tmp=value.split(",");
+		for (int i=0;i<tmp.length;i++)
+		{
+			tmp[i]=tmp[i].replace(" ", "");
+		}
+		return tmp;
+	}
+	
+	public String getStringParameter(Parameter p)
+	{
+		return getProperty(p.name());
+	}
 
 	public void setBooleanParameter(Parameter p, boolean value) {
 		setProperty(p.name(), Boolean.toString(value));
@@ -94,7 +140,8 @@ public class UFLExperimentParameters extends Properties {
 		else if( value != null ) {
 			return Integer.parseInt(value);
 		}
-		throw new RuntimeException("The parameter has not been set and it does not have a default value.");
+		throw new RuntimeException("The parameter " + p.name() + 
+				" has not been set and it does not have a default value.");
 	}
 	
 	public double getDoubleParameter(Parameter p) {

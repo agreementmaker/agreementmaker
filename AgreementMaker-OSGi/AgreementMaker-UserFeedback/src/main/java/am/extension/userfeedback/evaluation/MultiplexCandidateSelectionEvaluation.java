@@ -1,6 +1,6 @@
 package am.extension.userfeedback.evaluation;
 
-import am.extension.userfeedback.common.PrecisionRecallPlot;
+import am.extension.userfeedback.common.CandidateMappingEvaluation;
 import am.extension.userfeedback.experiments.UFLExperiment;
 
 /**
@@ -19,9 +19,18 @@ public class MultiplexCandidateSelectionEvaluation extends CandidateSelectionEva
 		
 		// hardcoded for now
 		evaluations = new CandidateSelectionEvaluation[2];
-		evaluations[0] = new PrecisionRecallPlot();
+		evaluations[0] = new CandidateMappingEvaluation();
 		evaluations[1] = new RankingAccuracy();
 	}
+	
+	public CandidateSelectionEvaluation getEvaluation(Class cls) {
+		for(CandidateSelectionEvaluation cse : evaluations) {
+			if( cse.getClass().equals(cls) ) return cse;
+		}
+		return null;
+	}
+	
+	
 	
 	@Override
 	public void evaluate(UFLExperiment exp) {
@@ -30,5 +39,4 @@ public class MultiplexCandidateSelectionEvaluation extends CandidateSelectionEva
 		}
 		done();
 	}
-	
 }

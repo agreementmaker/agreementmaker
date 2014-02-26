@@ -582,6 +582,14 @@ public class Utility {
 			}
 			return value;
 		}
+		
+		public static double getMaxValue(double[] array) {
+			double value = Double.MIN_VALUE;
+			for( double i : array) {
+				if( value < i ) value = i;
+			}
+			return value;
+		}
 	}
 	
 	public static boolean fileExists(String file) {
