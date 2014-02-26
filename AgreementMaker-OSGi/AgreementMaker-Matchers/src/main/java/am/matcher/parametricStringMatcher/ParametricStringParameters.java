@@ -21,6 +21,7 @@ public class ParametricStringParameters extends DefaultMatcherParameters {
 	
 	public boolean useLexicons = false;
 	public boolean useBestLexSimilarity = true;
+	public boolean useNormalizer = true;
 	public boolean lexExtendSynonyms = false; // use the Subconcept Synonyms to extend the synonyms.
 	public double lexOntSynonymWeight = 0.90;
 	public double lexOntDefinitionWeight = 0.10;

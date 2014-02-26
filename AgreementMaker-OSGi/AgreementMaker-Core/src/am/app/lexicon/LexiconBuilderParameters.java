@@ -54,13 +54,7 @@ public class LexiconBuilderParameters {
 	
 	private List<Property> getAnnotationList(Ontology ont) {
 		List<Property> annotationList = new ArrayList<Property>();
-		
-		for( Node classNode : ont.getClassesList() ) 
-			annotationList.addAll(ManualOntologyProfiler.createClassAnnotationsList(classNode));
-		
-		for( Node propertyNode : ont.getPropertiesList() ) 
-			annotationList.addAll(ManualOntologyProfiler.createPropertyAnnotationsList(propertyNode));
-		
+		annotationList.addAll(ont.getModel().listAnnotationProperties().toList());
 		return annotationList;
 	}
 	

@@ -106,7 +106,7 @@ public class LexiconStore implements OntologyChangeListener {
 		}	
 		case WORDNET_LEXICON:
 		{
-			WordNetLexiconBuilder sourceOLB = new WordNetLexiconBuilder(ont, getLexicon(ont.getID(), LexiconRegistry.ONTOLOGY_LEXICON));
+			WordNetLexiconBuilder sourceOLB = new WordNetLexiconBuilder(ont, getLexicon(ont, LexiconRegistry.ONTOLOGY_LEXICON));
 
 			Lexicon sourceWordNetLexicon = sourceOLB.buildLexicon();
 			sourceWordNetLexicon.setOntologyID(ont.getID());
@@ -145,12 +145,12 @@ public class LexiconStore implements OntologyChangeListener {
 		
 
 	// FIXME: This method should return null, not try to automatically build the lexicon.
-	public Lexicon getLexicon( int ontologyID, LexiconRegistry type ) throws Exception {
+	public Lexicon getLexicon(Ontology ont, LexiconRegistry type ) throws Exception  {
 		for( Lexicon lex : lexList ) {
-			if( lex.getOntologyID() == ontologyID && lex.getType() == type ) return lex;
+			if( lex.getOntologyID() == ont.getID() && lex.getType() == type ) return lex;
 		}
 		// lexicon was not found.
-		return build(type, Core.getInstance().getOntologyByID(ontologyID));
+		return build(type, ont);
 	}
 	
 	public List<Lexicon> getLexicons( int ontologyID ) {

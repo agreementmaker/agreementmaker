@@ -93,8 +93,16 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	/**If the algo calculates prop alignments*/
 	protected boolean alignClass;
 
-	/***Some algorithms may need other algorithms as input*/
+	/**
+	 * Some algorithms may need other algorithms as input
+	 * @deprecated We're moving to MatchingTask based API.  Use {@link #inputTasks}.
+	 */
+	@Deprecated
 	protected transient List<AbstractMatcher> inputMatchers;
+	
+	protected transient List<MatchingTask> inputTasks;
+
+	
 	/**Minum and maximum number of input matchers
 	 * a generic matcher which doesn't need any inputs should have 0, 0
 	 * */
@@ -214,7 +222,6 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	protected long lastStepsDone = 0;
 	protected int tentativealignments = 0;  // incremental selection?
 	protected long timeOfLastUpdate = 0;
-
 
 	/**
 	 * The constructor must be a Nullary Constructor
@@ -1220,6 +1227,16 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		 return inputMatchers;
 	 }
 
+	 public void addInputTask(MatchingTask t) {
+		 if( inputTasks == null ) inputTasks = new LinkedList<MatchingTask>();
+		 inputTasks.add(t);
+		 // TODO Remove this when the transition to MatchingTask is done.
+		 addInputMatcher(t.matchingAlgorithm);
+	 }
+	 
+	 /**
+	  * @deprecated Use {@link #addInputTask(MatchingTask)}
+	  */
 	 public void addInputMatcher(AbstractMatcher a) {
 		 if( inputMatchers == null ) inputMatchers = new ArrayList<AbstractMatcher>();
 		 inputMatchers.add(a);
@@ -1584,7 +1601,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	  * 
 	  *  @author Cosmin Stroe @date Dec 17, 2008
 	  */
-	 protected void stepDone() {
+	 public void stepDone() {
 		 stepsDone++;
 	 }
 
@@ -1595,7 +1612,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	  *  @author Cosmin Stroe @date Dec 17, 2008
 	  *  @author Cosmin Stroe @date Oct 1, 2010 @comment Updated to display estimated total time and estimated time left.  
 	  */	
-	 protected void updateProgress() {
+	 public void updateProgress() {
 
 		 long currentTime = System.currentTimeMillis();
 		 if( !useProgressDelay || currentTime - timeOfLastUpdate > 500 ) {
@@ -1754,6 +1771,13 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	 protected List<MatcherFeature> supportedFeatures = null;
 
 	 /**
+	  * The result of this matcher.
+	  * 
+	  * @see {@link #getResult()}, {@link #setResult(MatcherResult)}.
+	  */
+	 protected MatcherResult matcherResult;
+
+	 /**
 	  * Determine if a feature is supported by a specific matcher.
 	  * These features must be setup in the constructor.
 	  * @param f Feature to check for.
@@ -1786,10 +1810,17 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 
 	 @Override
 	 public MatcherResult getResult() {
-		 // TODO: Fix this to use the correct constructor from MatcherResult.
-		 return new MatcherResult(this);
+		 if( this.matcherResult == null ) {
+			 // TODO: Fix this to use the correct constructor from MatcherResult.
+			 this.matcherResult = new MatcherResult(this);
+		 }
+		 return matcherResult;
 	 }
 
+	 @Override
+	 public void setResult(MatcherResult result) {
+		 this.matcherResult = result;
+	 }
 
 	 public String getProperty(PropertyKey key) {
 		 return matcherProperties.getProperty(key.name());

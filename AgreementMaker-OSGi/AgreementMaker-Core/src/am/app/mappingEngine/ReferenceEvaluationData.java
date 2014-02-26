@@ -47,6 +47,11 @@ public class ReferenceEvaluationData
         errorAlignments = ea;
     }
 
+	/**
+	 * @return The number of mappings in the intersection between the computed
+	 *         alignment and the reference alignment. In other words, the number
+	 *         of correct mappings in the computed alignment.
+	 */
     public int getCorrect()
     {
         return correct;
@@ -57,6 +62,9 @@ public class ReferenceEvaluationData
         correct = c;
     }
 
+    /**
+     * @return The number of mappings in the computed alignment.
+     */
     public int getFound()
     {
         return found;
@@ -67,6 +75,9 @@ public class ReferenceEvaluationData
         found = f;
     }
 
+    /**
+     * @return The number of mappings in the reference alignment.
+     */
     public int getExist()
     {
         return exist;

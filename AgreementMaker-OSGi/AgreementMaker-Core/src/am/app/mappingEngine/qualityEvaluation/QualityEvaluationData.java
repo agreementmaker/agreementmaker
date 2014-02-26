@@ -77,7 +77,7 @@ public class QualityEvaluationData {
 	public void setLocalPropMeasures(double[] localPropMeasures) { this.localPropMeasures = localPropMeasures; }
 
 	public boolean isSourceOntology() { return isSourceOntology; }
-	public void setSourceOrTarget(boolean isSource) { this.isSourceOntology = isSource; }
+	public void setSource(boolean isSource) { this.isSourceOntology = isSource; }
 	
 
 	public boolean isLocal() { return isLocalQualityMeasure; }

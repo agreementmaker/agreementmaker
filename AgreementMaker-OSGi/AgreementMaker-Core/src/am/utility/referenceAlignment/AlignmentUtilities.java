@@ -15,10 +15,20 @@ import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.ReferenceEvaluationData;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
+import am.app.mappingEngine.referenceAlignment.ReferenceEvaluator;
 import am.app.mappingEngine.utility.MatchingPair;
 import am.app.ontology.Ontology;
 import am.app.ontology.instance.Instance;
 
+/**
+ * Utilities for alignments.  (they need to be unit tested)
+ * 
+ * See {@link ReferenceEvaluator#compare(Alignment, Alignment)} for evaluating a
+ * computed alignment against a reference alignment.
+ * 
+ * @author <a href="http://cstroe.com">Cosmin Stroe</a>
+ * 
+ */
 public class AlignmentUtilities {
 
 	public static AlignmentsComparison diff(List<MatchingPair> sourceList, List<MatchingPair> targetList){
@@ -120,6 +130,30 @@ public class AlignmentUtilities {
 			}
 		}
 		return null;
+	}
+	
+	/**
+	 * Helper function to read an alignment from a file.
+	 * You must pass in the ontologies. If you do not have the ontologies, consider using {@link #getMatchingPairsOAEI(String)} instead.
+	 */
+	public static Alignment<Mapping> getOAEIAlignment(String fileName, Ontology sourceOntology, Ontology targetOntology) {
+		ReferenceAlignmentMatcher m = new ReferenceAlignmentMatcher();
+		ReferenceAlignmentParameters p = new ReferenceAlignmentParameters();
+		p.fileName = fileName;
+		p.format = ReferenceAlignmentMatcher.OAEI;
+		
+		m.setParameters(p);
+		m.setSourceOntology(sourceOntology);
+		m.setTargetOntology(targetOntology);
+		
+		try {
+			m.match();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+		
+		return m.getAlignment();
 	}
 	
 	/**

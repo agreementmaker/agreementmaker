@@ -252,7 +252,7 @@ public class AlternateHierachyDialog extends JDialog implements ActionListener {
 //			}
 		} catch(Exception exc) {
 			exc.printStackTrace();
-			Utility.displayErrorPane(exc.toString() + "\n\n" + exc.getMessage(), "ERROR");
+			UIUtility.displayErrorPane(exc.toString() + "\n\n" + exc.getMessage(), "ERROR");
 		} finally {
 			qexec.close();
 		}

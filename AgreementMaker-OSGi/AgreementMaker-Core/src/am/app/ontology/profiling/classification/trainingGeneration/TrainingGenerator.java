@@ -19,19 +19,16 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import am.Utility;
 import am.app.Core;
 import am.app.lexicon.LexiconBuilderParameters;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.MatcherFactory;
-import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.app.ontology.profiling.classification.ClassifierRegistry;
 import am.app.ontology.profiling.classification.OntologyClassifier;
 import am.app.ontology.profiling.classification.TestSet;
-import am.app.ontology.profiling.manual.ManualOntologyProfiler;
 import am.utility.LocalnameComparator;
 
 import com.hp.hpl.jena.rdf.model.Property;
@@ -771,20 +768,12 @@ public static void testClassified() {
 		
 		// create the source property
 		ArrayList<Property> sourceProperties = new ArrayList<Property>();
-		for( Node classNode : sourceOntology.getClassesList() ) 
-			sourceProperties.addAll(ManualOntologyProfiler.createClassAnnotationsList(classNode));
-		
-		for( Node propertyNode : sourceOntology.getPropertiesList() )
-			sourceProperties.addAll(ManualOntologyProfiler.createPropertyAnnotationsList(propertyNode));
-		
+		sourceProperties.addAll(sourceOnto.getModel().listAnnotationProperties().toList());
 		Collections.sort(sourceProperties, new LocalnameComparator());
 		
 		// create the target property
 		ArrayList<Property> targetProperties = new ArrayList<Property>();
-		for( Node classNode : targetOntology.getClassesList() ) 
-			targetProperties.addAll(ManualOntologyProfiler.createClassAnnotationsList(classNode));
-		for( Node propertyNode : targetOntology.getPropertiesList() ) 
-			targetProperties.addAll(ManualOntologyProfiler.createPropertyAnnotationsList(propertyNode));
+		targetProperties.addAll(targetOnto.getModel().listAnnotationProperties().toList());
 		Collections.sort(targetProperties, new LocalnameComparator());
 		
 		
@@ -843,9 +832,7 @@ public static void testClassified() {
 			Core.getLexiconStore().buildAll();
 			//setVisible(false);
 		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-			Utility.displayErrorPane("Unexpected error while building lexicons.\n" + e1.getMessage(), "Runtime Exception");
+			sLog.error("Unexpected error while building lexicons.\n" + e1.getMessage(), e1);
 		}
 	}
 	

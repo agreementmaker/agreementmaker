@@ -336,7 +336,7 @@ public class AMNode extends AbstractNode implements Serializable {
 	/**Owl classes or all rdf nodes or all xml nodes their are considered classes, so nodes in the first of the two trees*/
 	public boolean isClass() {
 		if( resource == null ) {
-			System.out.println("Null resource in Node object: " + this);
+			//System.out.println("Null resource in Node object: " + this);
 			return false;
 		}
 		return resource.canAs(OntClass.class);
@@ -345,11 +345,20 @@ public class AMNode extends AbstractNode implements Serializable {
 	
 	public boolean isProp() {
 		if( resource == null ) {
-			System.out.println("Null resource in Node object: " + this);
+			//System.out.println("Null resource in Node object: " + this);
 			return false;
 		}
 		if( resource.canAs(OntProperty.class) ) return true;
 		return false;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if( obj instanceof Node ) {
+			return equals((Node)obj);
+		}
+		else 
+			return false;
 	}
 	
 	// equality checker --- VERY IMPORTANT

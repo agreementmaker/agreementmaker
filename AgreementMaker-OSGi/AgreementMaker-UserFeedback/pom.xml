@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 
@@ -12,7 +13,7 @@
 	<artifactId>AgreementMaker-UserFeedback</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>bundle</packaging>
-	
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<bundle.namespace>am.extension.userfeedback</bundle.namespace>
@@ -32,7 +33,18 @@
 						<Bundle-Version>${project.version}</Bundle-Version>
 						<Export-Package>${bundle.namespace}.*,am.extension.feedback.*</Export-Package>
 						<Bundle-Activator>${bundle.namespace}.Activator</Bundle-Activator>
-						<Import-Package>*</Import-Package>
+						<Import-Package>
+							!org.joda.time.*,
+							!com.bea.xml.stream.*,
+							!net.sf.cglib.proxy.*,
+							!org.codehaus.jettison.*,
+							!org.jdom.*,
+							!org.jdom2.*,
+							!org.kxml2.io.*,
+							!nu.xom.*,
+							!sun.misc.*,
+							*
+						</Import-Package>
 						<Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
 						<Embed-Directory>target/dependency</Embed-Directory>
 						<Embed-StripGroup>true</Embed-StripGroup>
@@ -40,9 +52,20 @@
 					</instructions>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.6</version>
+				<configuration>
+					<excludes>
+						<!-- exclude all the tests in the user feedback analysis package -->
+						<exclude>**/am/extension/userfeedback/analysis/*.java</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
-	
+
 	<dependencies>
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
@@ -74,12 +97,36 @@
 			<version>1.0.0-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
-		
+		<dependency>
+			<groupId>${project.parent.groupId}</groupId>
+			<artifactId>AgreementMaker-CollaborationClient</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+
 		<dependency>
 			<groupId>javaplot</groupId>
 			<artifactId>javaplot</artifactId>
 			<version>0.4.0</version>
+		</dependency>		
+
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-mapper-lgpl</artifactId>
+			<version>1.9.13</version>
 		</dependency>
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-core-lgpl</artifactId>
+			<version>1.9.13</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.thoughtworks.xstream</groupId>
+			<artifactId>xstream</artifactId>
+			<version>1.4.6</version>
+		</dependency>
+
 	</dependencies>
 
 </project>

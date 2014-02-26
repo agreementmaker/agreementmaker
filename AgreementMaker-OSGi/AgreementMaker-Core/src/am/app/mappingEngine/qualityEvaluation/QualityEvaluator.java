@@ -24,9 +24,9 @@ import am.app.mappingEngine.AbstractMatcher;
 
 public class QualityEvaluator {
 	
-	public static QualityMetric getQM( QualityMetricRegistry regEntry ) {
+	public static MappingQualityMetric getQM( QualityMetricRegistry regEntry ) {
 		try {
-			return (QualityMetric) regEntry.getQMClass().newInstance();
+			return (MappingQualityMetric) regEntry.getQMClass().newInstance();
 		} catch (InstantiationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -38,11 +38,11 @@ public class QualityEvaluator {
 		}
 	}
 
-	public static QualityEvaluationData evaluate(AbstractMatcher matcher, QualityMetric qm) throws Exception {
+	public static QualityEvaluationData evaluate(AbstractMatcher matcher, MappingQualityMetric qm) throws Exception {
 		return qm.getQuality(matcher);		
 	}
 	
-	public static QualityEvaluationData evaluate(AbstractMatcher matcher, AbstractMatcher[] matcherList, QualityMetric qm) throws Exception {
+	public static QualityEvaluationData evaluate(AbstractMatcher matcher, AbstractMatcher[] matcherList, MappingQualityMetric qm) throws Exception {
 		if(qm instanceof InterMatcherQualityEvaluation)
 		{
 			return ((InterMatcherQualityEvaluation)qm).getQuality(matcher,matcherList);
@@ -70,19 +70,19 @@ public class QualityEvaluator {
 				throw new RuntimeException("Developer error, you are merging two local qualities which have a different way of defining if the quality is local for source or target");
 			}
 			result.setLocal(true);
-			result.setSourceOrTarget(first.isSourceOntology());
+			result.setSource(first.isSourceOntology());
 			result.setLocalClassMeasures(Utility.avgArrays(first.getLocalClassMeasures(), second.getLocalClassMeasures()));
 			result.setLocalPropMeasures(Utility.avgArrays(first.getLocalPropMeasures(), second.getLocalPropMeasures()));
 		}
 		else if(first.isLocal()) { //only first local
 			result.setLocal(true);
-			result.setSourceOrTarget(first.isSourceOntology());
+			result.setSource(first.isSourceOntology());
 			result.setLocalClassMeasures(Utility.avgArrayAndDouble(first.getLocalClassMeasures(), second.getGlobalClassMeasure()));
 			result.setLocalPropMeasures(Utility.avgArrayAndDouble(first.getLocalPropMeasures(), second.getGlobalPropMeasure()));
 		}
 		else if(second.isLocal()) { //only second local
 			result.setLocal(true);
-			result.setSourceOrTarget(second.isSourceOntology());
+			result.setSource(second.isSourceOntology());
 			result.setLocalClassMeasures(Utility.avgArrayAndDouble(second.getLocalClassMeasures(), first.getGlobalClassMeasure()));
 			result.setLocalPropMeasures(Utility.avgArrayAndDouble(second.getLocalPropMeasures(), first.getGlobalPropMeasure()));
 		}
