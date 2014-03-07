@@ -92,14 +92,14 @@ public class VASyncData {
 
 			Ontology sourceOntology = currentTask.matcherResult
 					.getSourceOntology();
-			if (VASyncListener.getNodeType() == VAVariables.nodeType.Class)
+			if (VAPanelLogic.getCurrentNodeType() == VAVariables.nodeType.Class)
 				rootNode = sourceOntology.getClassesRoot();
 			else
 				rootNode = sourceOntology.getPropertiesRoot();
 		} else {
 			Ontology targetOntology = currentTask.matcherResult
 					.getTargetOntology();
-			if (VASyncListener.getNodeType() == VAVariables.nodeType.Class)
+			if (VAPanelLogic.getCurrentNodeType() == VAVariables.nodeType.Class)
 				rootNode = targetOntology.getClassesRoot();
 			else
 				rootNode = targetOntology.getPropertiesRoot();
@@ -142,7 +142,7 @@ public class VASyncData {
 		MatchingTask matchingTask = Core.getInstance().getMatchingTasks()
 				.get(currentDisplayNum);
 		SimilarityMatrix smMatrix = null;
-		if (VASyncListener.getNodeType() == VAVariables.nodeType.Class)
+		if (VAPanelLogic.getCurrentNodeType() == VAVariables.nodeType.Class)
 			smMatrix = matchingTask.matcherResult.getClassesMatrix();
 		else
 			smMatrix = matchingTask.matcherResult.getPropertiesMatrix();
@@ -185,7 +185,7 @@ public class VASyncData {
 		Node rootNode = rootNodeData.getSourceNode();
 		for (Node n : rootNode.getChildren()) {
 			// get target node info which best matches this node
-			VAData newChildData = VASyncData.getMatchingVAData(n, ontologyType);
+			VAData newChildData = getMatchingVAData(n, ontologyType);
 			res.add(newChildData);
 		}
 		// if (ontologyType == VAVariables.ontologyType.Source)

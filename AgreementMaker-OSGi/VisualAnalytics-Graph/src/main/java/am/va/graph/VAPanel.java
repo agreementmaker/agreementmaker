@@ -46,38 +46,48 @@ import javafx.stage.Screen;
  */
 public class VAPanel {
 
-	private static JFXPanel fxPanel;
-	private static ListView<String> listViewLeft;
-	private static TreeView<String> listTreeLeft;
-	private static Group root;
-	private static Scene myScene;
+	private JFXPanel fxPanel;
+	private ListView<String> listViewLeft;
+	private TreeView<String> listTreeLeft;
+	private Group root;
+	private Scene myScene;
 
 	static double screenWidth;
 	static double screenHeight;
 
-	private static Button btnRoot;
-	private static Button btnUp;
-	private static Button btnUFB;
-	private static ToggleButton btnPages[] = new ToggleButton[7];
-	private static ChoiceBox<String> cbOntology;
-	private static Label lblSource1;
-	private static Label lblTarget1;
-	private static VASearchBox searchBox;
-	private static Tooltip pieTooltip;
+	private Button btnRoot;
+	private Button btnUp;
+	private Button btnUFB;
+	private ToggleButton btnPages[] = new ToggleButton[7];
+	private ChoiceBox<String> cbOntology;
+	private Label lblSource1;
+	private Label lblTarget1;
+	private VASearchBox searchBox;
+	private Tooltip pieTooltip;
 
-	private static VAPieChart chartLeft1;
-	private static VAPieChart chartRight1;
+	private VAPieChart chartLeft1;
+	private VAPieChart chartRight1;
 
-	private static VAGroup rootGroupLeft1;
-	private static VAGroup rootGroupRight1;
-	private static VAGroup previousGroup;
-	private static VAGroup currentGroup;
-	private static int stop = -1;
+	private int stop = -1;
+
+	private VAPanelLogic val;
+
+	public VAPanel(VAPanelLogic v) {
+		this.val = v;
+	}
+
+	public VAPanelLogic getVal() {
+		return val;
+	}
+
+	public void setVal(VAPanelLogic val) {
+		this.val = val;
+	}
 
 	/**
 	 * Start showing the panel on the tab
 	 */
-	public static void initButNotShow() {
+	public void initButNotShow() {
 		fxPanel = new VATab();
 		screenWidth = Screen.getPrimary().getVisualBounds().getWidth() - 25;
 		screenHeight = Screen.getPrimary().getVisualBounds().getHeight();
@@ -89,24 +99,26 @@ public class VAPanel {
 		});
 	}
 
-	public static JFXPanel getFxPanel() {
+	public JFXPanel getFxPanel() {
 		return fxPanel;
 	}
 
 	/**
 	 * Init JavaFx panel, add mouse click Event handler
 	 */
-	public static void InitFX() {
+	public void InitFX() {
 		root = new Group();
 		myScene = new Scene(root);
 		String sceneCss = VAPanel.class.getResource("VA.css").toExternalForm();
 		myScene.getStylesheets().add(sceneCss);
 		setLayout();
 		fxPanel.setScene(myScene);
-		updatePreviousGroup(rootGroupLeft1);
-		updateCurrentGroup(rootGroupLeft1);
+		val.updatePreviousGroup(val.getRootGroupLeft1());
+		// setUpButton(val.getRootGroupLeft1());
+		val.updateCurrentGroup(val.getRootGroupLeft1());
+		// setUpButton(val.getRootGroupLeft1());
 		chartLeft1.updatePieChart(ontologyType.Source);
-		generateParentGroup();
+		generateNewTree();
 	}
 
 	// =====================Graphic User Interface========================
@@ -114,7 +126,7 @@ public class VAPanel {
 	/**
 	 * Set the main panel layout, here we use BorderPane
 	 */
-	private static void setLayout() {
+	private void setLayout() {
 		BorderPane borderPane = new BorderPane();
 		borderPane.setPrefSize(screenWidth, screenHeight);
 		initCenterSplitPanel(borderPane); // pie chart & lists panel
@@ -128,7 +140,7 @@ public class VAPanel {
 	 * 
 	 * @param borderPane
 	 */
-	private static void initCenterSplitPanel(BorderPane borderPane) {
+	private void initCenterSplitPanel(BorderPane borderPane) {
 		SplitPane splitPane = new SplitPane();
 		// splitPane.getItems().addAll(getLeftSplitPane(), getCenterGroup());
 		splitPane.getItems().addAll(getLeftSplitPane(), getCenterSplitPane());
@@ -139,31 +151,33 @@ public class VAPanel {
 
 	/**
 	 * Left split panel, contains a treeview and a listview
+	 * 
 	 * @return
 	 */
-	private static SplitPane getLeftSplitPane() {
+	private SplitPane getLeftSplitPane() {
 		SplitPane splitPane = new SplitPane();
 		splitPane.getItems().addAll(getTreeView(), getListView());
 		splitPane.setOrientation(Orientation.VERTICAL);
 		splitPane.setDividerPosition(0, 0.5);
 		return splitPane;
 	}
-	
+
 	/**
 	 * The treeview (up)
 	 * 
 	 * @return
 	 */
-	private static TreeView<String> getTreeView() {
+	private TreeView<String> getTreeView() {
 		listTreeLeft = new TreeView<String>();
 		return listTreeLeft;
 	}
 
 	/**
 	 * The listview (down)
+	 * 
 	 * @return
 	 */
-	private static ListView<String> getListView() {
+	private ListView<String> getListView() {
 		listViewLeft = new ListView<String>();
 		listViewLeft.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 		// tilePane.getChildren().add(listViewLeft);
@@ -172,9 +186,10 @@ public class VAPanel {
 
 	/**
 	 * Center split panel, contains two sets of pie charts
+	 * 
 	 * @return
 	 */
-	private static SplitPane getCenterSplitPane() {
+	private SplitPane getCenterSplitPane() {
 		SplitPane splitPane = new SplitPane();
 		splitPane.getItems().addAll(getCenterGroupUp(), getCenterGroupDown());
 		splitPane.setOrientation(Orientation.VERTICAL);
@@ -184,16 +199,17 @@ public class VAPanel {
 
 	/**
 	 * Up Tile panel, contains the first set of pie charts
+	 * 
 	 * @return
 	 */
-	private static Group getCenterGroupUp() {
+	private Group getCenterGroupUp() {
 		Group chartGroup = new Group();
 		TilePane tilePane = new TilePane();
 		tilePane.setPrefColumns(2); // preferred columns
 
-		chartLeft1 = new VAPieChart(rootGroupLeft1);
+		chartLeft1 = new VAPieChart(val.getRootGroupLeft1(), this);
 		chartLeft1.getPieChart().setClockwise(false);
-		chartRight1 = new VAPieChart(rootGroupRight1);
+		chartRight1 = new VAPieChart(val.getRootGroupRight1(), this);
 		chartRight1.getPieChart().setClockwise(false);
 		lblSource1 = new Label("Source ontology", chartLeft1.getPieChart());
 		lblSource1.setContentDisplay(ContentDisplay.CENTER);
@@ -208,16 +224,17 @@ public class VAPanel {
 
 	/**
 	 * Down Tile panel, contains the second set of pie charts
+	 * 
 	 * @return
 	 */
-	private static Group getCenterGroupDown() {
+	private Group getCenterGroupDown() {
 		Group chartGroup = new Group();
 		TilePane tilePane = new TilePane();
 		tilePane.setPrefColumns(2); // preferred columns
 
-		chartLeft1 = new VAPieChart(rootGroupLeft1);
+		chartLeft1 = new VAPieChart(val.getRootGroupLeft1(), this);
 		chartLeft1.getPieChart().setClockwise(false);
-		chartRight1 = new VAPieChart(rootGroupRight1);
+		chartRight1 = new VAPieChart(val.getRootGroupRight1(), this);
 		chartRight1.getPieChart().setClockwise(false);
 		lblSource1 = new Label("Source ontology", chartLeft1.getPieChart());
 		lblSource1.setContentDisplay(ContentDisplay.CENTER);
@@ -229,19 +246,17 @@ public class VAPanel {
 		initTooltip(chartLeft1);
 		return chartGroup;
 	}
-	
+
 	/**
 	 * Add tooltip to the chart.
 	 */
-	private static void initTooltip(VAPieChart chartLeft) {
+	private void initTooltip(VAPieChart chartLeft) {
 		pieTooltip = new Tooltip("click to view more");
 		for (final PieChart.Data currentData : chartLeft.getPieChart()
 				.getData()) {
-			Tooltip.install(currentData.getNode(), getPieTooltip());
+			Tooltip.install(currentData.getNode(), pieTooltip);
 		}
 	}
-
-	
 
 	/**
 	 * Init Top panel, including a toolbar that consists of buttons, a choice
@@ -249,7 +264,7 @@ public class VAPanel {
 	 * 
 	 * @param borderPane
 	 */
-	private static void initTopToolbar(BorderPane borderPane) {
+	private void initTopToolbar(BorderPane borderPane) {
 		ToolBar toolbar = new ToolBar();
 		// toolbar.setPrefWidth(screenWidth);
 		Region spacer1 = new Region();
@@ -273,9 +288,10 @@ public class VAPanel {
 
 	/**
 	 * Init buttons in the HBox
+	 * 
 	 * @param buttonBar
 	 */
-	private static void initButtons(HBox buttonBar) {
+	private void initButtons(HBox buttonBar) {
 		btnRoot = new Button("Top level");
 		btnUp = new Button("Go back");
 		btnUFB = new Button("User feedback");
@@ -286,7 +302,7 @@ public class VAPanel {
 	/**
 	 * Init choice box
 	 */
-	private static void initChoiceBox() {
+	private void initChoiceBox() {
 		cbOntology = new ChoiceBox<String>();
 		cbOntology.getItems().addAll("Class", "Properity");
 		cbOntology.getSelectionModel().selectFirst();
@@ -296,17 +312,18 @@ public class VAPanel {
 	/**
 	 * Init search box
 	 */
-	private static void initSearchBox() {
-		searchBox = new VASearchBox();
+	private void initSearchBox() {
+		searchBox = new VASearchBox(this);
 		searchBox.setId("SearchBox");
 	}
 
 	/**
-	 * Init right panel, using buttons to represent different matching algorithms
+	 * Init right panel, using buttons to represent different matching
+	 * algorithms
 	 * 
 	 * @return
 	 */
-	public static void initRightFlowPane(BorderPane borderPane) {
+	public void initRightFlowPane(BorderPane borderPane) {
 		FlowPane flow = new FlowPane(Orientation.VERTICAL);
 		flow.setPadding(new Insets(5, 0, 5, 0));
 		flow.setVgap(8);
@@ -331,55 +348,52 @@ public class VAPanel {
 		borderPane.setRight(flow);
 	}
 
-	
-
-	// =================Pie Chart related logic=================
+	// ============Pie Chart, tree/list views related logic============
 
 	/**
-	 * Generate new VAGroup according to user's click
+	 * Update Pie chart
 	 * 
-	 * @param currentGroup
-	 * @return
+	 * @param ontologyType
 	 */
-	public static void generateNewGroup(VAVariables.ontologyType ontologyType,
-			VAData newRootData) {
-		// Need a function here, return value:VAData
-		VAGroup newGroup = new VAGroup();
-		newGroup.setRootNode(newRootData);
-		if (newRootData != null && newRootData.hasChildren()) {
-			newGroup.setParent(currentGroup.getGroupID());
-			newGroup.setListVAData(VASyncData.getChildrenData(newRootData,
-					ontologyType));
-		} else {
-			newGroup.setParent(previousGroup.getGroupID());
-		}
-		updateCurrentGroup(newGroup);
-		/**
-		 * Update list, being called twice ?!
-		 */
-		if (ontologyType == VAVariables.ontologyType.Source)
-			generateParentGroup();
-		chartLeft1.updatePieChart(ontologyType);
+	public void updateLeftChart() {
+		chartLeft1.updatePieChart(VAVariables.ontologyType.Source);
 	}
 
 	/**
-	 * Generate parent group and update tree view
+	 * Set source pie chart's label
+	 * 
+	 * @param label
+	 * @param empty
 	 */
-	public static void generateParentGroup() {
-		VAGroup parentGroup = null;
-		if (currentGroup.getCurrentLevel() < 1) {
-			// System.out.println("Generate Parent: parent=root");
-			parentGroup = rootGroupLeft1;
+	public void setSourceLabel(String label, int empty) {
+		lblSource1.setText(label);
+		if (empty == 1) {
+			lblSource1.setFont(Font.font("Verdana", 20));
+			lblSource1.setTextFill(Color.RED);
 		} else {
-			// System.out.println("Generate Parent: new parent");
-			parentGroup = new VAGroup();
-			VAData parentData = VASyncData.getParentVAData(currentGroup
-					.getRootNode());
-			parentGroup.setRootNode(parentData);
-			parentGroup.setListVAData(VASyncData.getChildrenData(parentData,
-					VAVariables.ontologyType.Source));
+			lblSource1.setFont(Font.font("Verdana", 15));
+			lblSource1.setTextFill(Color.WHITESMOKE);
 		}
-		generateNewTree(parentGroup);
+	}
+
+	/**
+	 * Set target pie chart's label
+	 * 
+	 * @param label
+	 */
+	public void setTargetLabel(String label) {
+		lblTarget1.setText(label);
+		lblTarget1.setFont(Font.font("Verdana", 20));
+		lblTarget1.setTextFill(Color.RED);
+	}
+
+	/**
+	 * Get the right pie chart (display only)
+	 * 
+	 * @return
+	 */
+	public VAPieChart getRightPie() {
+		return chartRight1;
 	}
 
 	/**
@@ -387,7 +401,8 @@ public class VAPanel {
 	 * 
 	 * @param parentGroup
 	 */
-	private static void generateNewTree(VAGroup parentGroup) {
+	public void generateNewTree() {
+		VAGroup parentGroup = val.generateParentGroup();
 		TreeItem<String> listTreeLeftRoot = null;
 		String label = "";
 		if (parentGroup.getParent() == 0)
@@ -413,7 +428,7 @@ public class VAPanel {
 	 * 
 	 * @param data
 	 */
-	private static void treeviewAction(final ArrayList<VAData> data) {
+	private void treeviewAction(final ArrayList<VAData> data) {
 		listTreeLeft.getSelectionModel().selectedItemProperty()
 				.addListener(new ChangeListener<Object>() {
 
@@ -428,7 +443,7 @@ public class VAPanel {
 								if (da.getNodeName().equals(selected)) {
 									VAGroup newGroup = new VAGroup();
 									newGroup.setRootNode(da);
-									newGroup.setParent(currentGroup
+									newGroup.setParent(val.getCurrentGroup1()
 											.getGroupID());
 									newGroup.setListVAData(VASyncData
 											.getChildrenData(da,
@@ -443,128 +458,24 @@ public class VAPanel {
 	}
 
 	/**
-	 * Update previous group
-	 * 
-	 * @param group
-	 */
-	private static void updatePreviousGroup(VAGroup group) {
-		if (group != null) {
-			if (btnUp.isDisable()) {
-				btnUp.setDisable(false);
-			}
-			previousGroup = group;
-
-		} else {
-			System.out.println("- Previous group is empty ?!!");
-		}
-	}
-
-	/**
-	 * Update current group
-	 * 
-	 * @param group
-	 */
-	private static void updateCurrentGroup(VAGroup group) {
-		if (stop != -1)
-			updatePreviousGroup(currentGroup);
-		currentGroup = group;
-	}
-
-	/**
-	 * Init rootGroup
-	 * 
-	 * @param group
-	 */
-	public static void setRootGroupLeft(VAGroup group) {
-		rootGroupLeft1 = group;
-	}
-
-	public static void setRootGroupRight(VAGroup group) {
-		rootGroupRight1 = group;
-	}
-
-	/**
-	 * Get current group
-	 * 
-	 * @return
-	 */
-	public static VAGroup getCurrentGroup() {
-		return currentGroup;
-	}
-
-	/**
 	 * The stop is just a on and off variable
 	 * 
 	 * @param i
 	 */
-	public static void setStop(int i) {
+	public void setStop(int i) {
 		stop = i;
 	}
 
-	public static int getStop() {
+	public int getStop() {
 		return stop;
 	}
 
-	public static Tooltip getPieTooltip() {
-		return pieTooltip;
-	}
-
-	public static void setPieTooltip(Tooltip pieTooltip) {
-		VAPanel.pieTooltip = pieTooltip;
-	}
-
-	public static ListView<String> getlistView() {
+	public ListView<String> getlistView() {
 		return listViewLeft;
 	}
 
-	public static void setListView(ListView<String> list) {
+	public void setListView(ListView<String> list) {
 		listViewLeft = list;
-	}
-
-	/**
-	 * Set source pie chart's label
-	 * 
-	 * @param label
-	 * @param empty
-	 */
-	public static void setSourceLabel(String label, int empty) {
-		lblSource1.setText(label);
-		if (empty == 1) {
-			lblSource1.setFont(Font.font("Verdana", 20));
-			lblSource1.setTextFill(Color.RED);
-		} else {
-			lblSource1.setFont(Font.font("Verdana", 15));
-			lblSource1.setTextFill(Color.WHITESMOKE);
-		}
-	}
-
-	/**
-	 * Set target pie chart's label
-	 * 
-	 * @param label
-	 */
-	public static void setTargetLabel(String label) {
-		lblTarget1.setText(label);
-		lblTarget1.setFont(Font.font("Verdana", 20));
-		lblTarget1.setTextFill(Color.RED);
-	}
-
-	/**
-	 * Get the right pie chart (display only)
-	 * 
-	 * @return
-	 */
-	public static VAPieChart getRightPie() {
-		return chartRight1;
-	}
-
-	/**
-	 * Get the right pie chart's root group (display only)
-	 * 
-	 * @return
-	 */
-	public static VAGroup getRightRootGroup() {
-		return rootGroupRight1;
 	}
 
 	/**
@@ -572,30 +483,43 @@ public class VAPanel {
 	 * 
 	 * @param newGroup
 	 */
-	public static void updateAllWithNewGroup(VAGroup newGroup) {
-		updateCurrentGroup(newGroup);
+	public void updateAllWithNewGroup(VAGroup newGroup) {
+		val.updateCurrentGroup(newGroup);
+		setUpButton(newGroup);
 		chartLeft1.updatePieChart(ontologyType.Source);
-		generateParentGroup();
+		generateNewTree();
 		chartLeft1.clearList();
 	}
 
-	// ==============================Button & List
-	// Event=====================================================
+	// ==========Button & List Event==================
 
 	/**
 	 * Haven't been used yet
 	 * 
 	 * @param n
 	 */
-	public static void setButtonVisible(int n) {
+	public void setButtonVisible(int n) {
 		if (n < btnPages.length && btnPages != null && btnPages[n] != null)
 			btnPages[n].setVisible(true);
 	}
 
 	/**
+	 * Enable/Disable go up button
+	 * 
+	 * @param group
+	 */
+	public void setUpButton(VAGroup group) {
+		if (group != null) {
+			if (btnUp.isDisable()) {
+				btnUp.setDisable(false);
+			}
+		}
+	}
+
+	/**
 	 * Add event for choice box
 	 */
-	private static void setChoiceBoxActions() {
+	private void setChoiceBoxActions() {
 		cbOntology.getSelectionModel().selectedIndexProperty()
 				.addListener(new ChangeListener<Number>() {
 					@Override
@@ -605,19 +529,22 @@ public class VAPanel {
 						String choice = cbOntology.getItems().get(
 								(Integer) number2);
 						if (choice.equals(VAVariables.nodeType.Class.toString())) {
-							VASyncListener
-									.setNodeType(VAVariables.nodeType.Class);
+							VAPanelLogic
+									.setCurrentNodeType(VAVariables.nodeType.Class);
 						} else {
-							VASyncListener
-									.setNodeType(VAVariables.nodeType.Property);
+							VAPanelLogic
+									.setCurrentNodeType(VAVariables.nodeType.Property);
 						}
-						VASyncListener.InitData();
-						updateAllWithNewGroup(rootGroupLeft1);
+						val.InitData();
+						updateAllWithNewGroup(val.getRootGroupLeft1());
 					}
 				});
 	}
 
-	private static void setPageButtonActions() {
+	/**
+	 * Add event for page buttons
+	 */
+	private void setPageButtonActions() {
 		int num = btnPages.length;
 		for (int i = 0; i < num; i++) {
 			final int cur = i + 1;
@@ -627,12 +554,10 @@ public class VAPanel {
 				public void handle(ActionEvent arg0) {
 					// TODO Auto-generated method stub
 					VASyncData.setCurrentDisplayNum(cur);
-					VASyncListener.InitData();
-					updateAllWithNewGroup(rootGroupLeft1);
+					val.InitData();
+					updateAllWithNewGroup(val.getRootGroupLeft1());
 					// set colors here
-
 				}
-
 			});
 		}
 	}
@@ -640,7 +565,7 @@ public class VAPanel {
 	/**
 	 * Add event for buttons
 	 */
-	private static void setToolButtonActions() {
+	private void setToolButtonActions() {
 		/**
 		 * Go to root panel
 		 */
@@ -648,7 +573,7 @@ public class VAPanel {
 
 			@Override
 			public void handle(ActionEvent arg0) {
-				updateAllWithNewGroup(rootGroupLeft1);
+				updateAllWithNewGroup(val.getRootGroupLeft1());
 			}
 
 		});
@@ -660,7 +585,7 @@ public class VAPanel {
 
 			@Override
 			public void handle(ActionEvent arg0) {
-				updateAllWithNewGroup(rootGroupLeft1);
+				updateAllWithNewGroup(val.getPreviousGroup1());
 				btnUp.setDisable(true);
 			}
 
