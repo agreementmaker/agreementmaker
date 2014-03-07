@@ -22,11 +22,14 @@ public class VAPieChart {
 	private PieChart pieChart;
 	private ListView<String> listView;
 	private ObservableList<PieChart.Data> pieCharDatalist;
-	private static VAData selectedVAData;
+	private VAData selectedVAData;
+	
+	private VAPanel vap;
 
-	public VAPieChart() {
+	public VAPieChart(VAPanel v) {
 		this.pieCharDatalist = null;
 		this.pieChart = null;
+		this.vap = v;
 	}
 
 	/**
@@ -34,7 +37,8 @@ public class VAPieChart {
 	 * 
 	 * @param group
 	 */
-	public VAPieChart(VAGroup group) {
+	public VAPieChart(VAGroup group, VAPanel v) {
+		this.vap = v;
 		pieCharDatalist = FXCollections.observableArrayList();
 		HashMap<String, Integer> slotsMap = group.getslotCountMap();
 		for (String key : VAVariables.thresholdName) {
@@ -54,10 +58,10 @@ public class VAPieChart {
 	 * Update current pie chart and add listeners
 	 */
 	public void updatePieChart(VAVariables.ontologyType ontologyType) {
-		VAGroup currentGroup = VAPanel.getCurrentGroup();
+		VAGroup currentGroup = vap.getVal().getCurrentGroup1();
 
 		if (currentGroup != null && currentGroup.hasChildren()) {
-			if (VAPanel.getStop() != -1) {// Renew pie chart and build a new one
+			if (vap.getStop() != -1) {// Renew pie chart and build a new one
 				int num = pieCharDatalist.size();
 				for (int i = 0; i < num; i++)
 					pieCharDatalist.remove(0);
@@ -75,21 +79,21 @@ public class VAPieChart {
 			for (int i = 0; i < num; i++)
 				pieCharDatalist.remove(0);
 		}
-		if (VAPanel.getStop() != -1) {
-			VAPanel.getRightPie().updateRightPieChart();
+		if (vap.getStop() != -1) {
+			vap.getRightPie().updateRightPieChart();
 			String newLabel = currentGroup.getRootNodeName() + ": "
 					+ currentGroup.getRootNode().getSimilarity();
 			if (currentGroup.getParent() == 0)
 				newLabel = "Source ontoloty:"
 						+ String.valueOf(VASyncData.getCurrentDisplayNum());
 			if (currentGroup.hasChildren())
-				VAPanel.setSourceLabel(newLabel, 0);
+				vap.setSourceLabel(newLabel, 0);
 			else
-				VAPanel.setSourceLabel(newLabel, 1);
+				vap.setSourceLabel(newLabel, 1);
 		}
 
-		if (VAPanel.getStop() == -1) {
-			VAPanel.setStop(0);
+		if (vap.getStop() == -1) {
+			vap.setStop(0);
 		}
 	}
 
@@ -104,7 +108,7 @@ public class VAPieChart {
 			pieCharDatalist.remove(0);
 		String newLabel = "";
 		// build new pie chart
-		VAGroup currentGroup = VAPanel.getCurrentGroup();
+		VAGroup currentGroup = vap.getVal().getCurrentGroup1();
 		VAGroup newRightGroup = new VAGroup();
 		HashMap<String, Integer> slotsMap = null;
 		if (currentGroup != null && currentGroup.hasMatching()) {
@@ -117,7 +121,7 @@ public class VAPieChart {
 				slotsMap = newRightGroup.getslotCountMap();
 			}
 		} else if (currentGroup != null && currentGroup.getParent() == 0) {
-			slotsMap = VAPanel.getRightRootGroup().getslotCountMap();
+			slotsMap = vap.getVal().getRootGroupRight1().getslotCountMap();
 			newLabel = "Target ontology";
 		} else {
 			newLabel = "No matching found.";
@@ -128,7 +132,7 @@ public class VAPieChart {
 					pieCharDatalist.add(new PieChart.Data(key, slotsMap
 							.get(key)));
 			}
-		VAPanel.setTargetLabel(newLabel);
+		vap.setTargetLabel(newLabel);
 	}
 
 	/**
@@ -151,7 +155,7 @@ public class VAPieChart {
 						@Override
 						public void handle(MouseEvent e) {
 							getNodesList(currentData, ontologyType);
-							VAPanel.setListView(listView);
+							vap.setListView(listView);
 						}
 
 					});
@@ -169,7 +173,7 @@ public class VAPieChart {
 	private void getNodesList(PieChart.Data data,
 			VAVariables.ontologyType ontologyType) {
 
-		VAGroup currentGroup = VAPanel.getCurrentGroup();
+		VAGroup currentGroup = vap.getVal().getCurrentGroup1();
 
 		final ArrayList<VAData> dataArrayList = currentGroup.getVADataArray();
 		final HashMap<String, Integer> slotCountMap = currentGroup
@@ -179,7 +183,7 @@ public class VAPieChart {
 		VARange idxRange = getPieSliceDataIdxRange(data, slotCountMap);
 
 		if (idxRange.isValid()) {
-			listView = VAPanel.getlistView();
+			listView = vap.getlistView();
 			ObservableList<String> arcListData = getListData(idxRange,
 					dataArrayList, listMap);
 
@@ -199,7 +203,7 @@ public class VAPieChart {
 	 * 
 	 * @return
 	 */
-	public static VAData getSelectedVAData() {
+	public VAData getSelectedVAData() {
 		return selectedVAData;
 	}
 
@@ -223,8 +227,9 @@ public class VAPieChart {
 					selectedVAData = listMap.get(selectedLocalName);
 					// Still need to figure the color
 
-					VAPanel.generateNewGroup(ontologyType, getSelectedVAData());
-					// updatePieChart(ontologyType);
+					vap.setUpButton(vap.getVal().generateNewGroup(ontologyType, getSelectedVAData()));
+					vap.generateNewTree();
+					updatePieChart(ontologyType);
 					listView.getSelectionModel().clearSelection();
 				} else {
 					System.out.println("- select empty!");

@@ -11,7 +11,7 @@ import java.util.HashMap;
  *
  */
 public class VAGroup {
-	private static int nodeCount = 0;
+	private static int nodeCount = 0; //not really useful
 	private int groupID;
 	private int parent;
 	private VAData rootNode;

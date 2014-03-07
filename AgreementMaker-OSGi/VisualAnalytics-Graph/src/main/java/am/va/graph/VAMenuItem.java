@@ -29,13 +29,15 @@ public class VAMenuItem implements AMMenuItem, ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// Init data
-		VASyncListener.InitData();
+		VAPanelLogic val = new VAPanelLogic();
+		val.InitData();
 
 		// show chart panel
-		VAPanel.initButNotShow();
+		VAPanel vap = new VAPanel(val);
+		vap.initButNotShow();
 
 		//Init tab
-		JFXPanel fxp = VAPanel.getFxPanel();
+		JFXPanel fxp = vap.getFxPanel();
 		if (fxp instanceof VATab) {
 			UICore.getUI().addTab((VATab) fxp);
 		}

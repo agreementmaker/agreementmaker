@@ -16,8 +16,11 @@ public class VASearchBox extends Region {
 	private TextField textBox;
     private Button clearButton;
     private static VASearcher searcher = new VASearcher();
+    
+    private VAPanel vap;
 
-    public VASearchBox() {
+    public VASearchBox(VAPanel v) {
+    	this.vap = v;
         setId("SearchBox");
         setMinHeight(24);
         setPrefSize(200, 24);
@@ -48,7 +51,9 @@ public class VASearchBox extends Region {
 					if (inputString.length() != 0) {
 						VAData result = searcher.search(inputString);
 						if (result != null){
-							VAPanel.generateNewGroup(VAVariables.ontologyType.Source, result);
+							vap.setUpButton(vap.getVal().generateNewGroup(VAVariables.ontologyType.Source, result));
+							vap.updateLeftChart();
+							vap.generateNewTree();
 							System.out.println("result is "
 									+ result.getNodeName());
 							
