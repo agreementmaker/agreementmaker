@@ -6,6 +6,7 @@ import java.util.HashMap;
 import javafx.collections.ObservableList;
 import javafx.collections.FXCollections;
 import javafx.event.EventHandler;
+import javafx.geometry.Side;
 
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.ListView;
@@ -41,6 +42,12 @@ public class VAPieChart {
 				pieCharDatalist.add(new PieChart.Data(key, slotsMap.get(key)));
 		}
 		pieChart = new PieChart(this.pieCharDatalist);
+		//Adjust the size of piechart & labels
+		pieChart.setMaxSize(350, 350);
+		pieChart.setLegendSide(Side.RIGHT);
+		pieChart.setLegendVisible(false);
+		pieChart.setLabelLineLength(5);
+		//pieChart.setStyle("-fx-pie-label-visible: false");
 	}
 
 	/**
