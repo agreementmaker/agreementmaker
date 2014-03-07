@@ -1,11 +1,9 @@
 package am.va.graph;
 
-import javafx.scene.control.Button;
 import am.va.graph.VAVariables.nodeType;
 
 /**
- * Implement the MatcherChangeListener to see if the ontologies have been
- * matched or not For now I haven't use this class
+ * Data related logic
  * 
  * @author Yiting
  * 
