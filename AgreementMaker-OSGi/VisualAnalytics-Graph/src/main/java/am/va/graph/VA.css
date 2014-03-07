@@ -13,9 +13,13 @@
 	-fx-clockwise: false;
 }
 
+.chart-pie-content {
+    -fx-padding: 5px;
+}
+
 .chart-pie:hover {
     -fx-border-color: red;
-    -fx-border-width: 3px;
+    -fx-border-width: 2px;
 }
 
 .radio-button {
