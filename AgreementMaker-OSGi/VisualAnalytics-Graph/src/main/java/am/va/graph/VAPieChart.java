@@ -86,6 +86,7 @@ public class VAPieChart {
 			if (currentGroup.getParent() == 0)
 				newLabel = "Source ontoloty:"
 						+ String.valueOf(VASyncData.getCurrentDisplayNum());
+			//setChartTitle(newLabel);
 			if (currentGroup.hasChildren())
 				vap.setSourceLabel(newLabel, 0);
 			else

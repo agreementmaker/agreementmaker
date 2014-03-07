@@ -11,6 +11,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.chart.PieChart;
@@ -19,8 +20,10 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.ToolBar;
@@ -59,7 +62,9 @@ public class VAPanel {
 	private Button btnUp;
 	private Button btnUFB;
 	private ToggleButton btnPages[] = new ToggleButton[7];
-	private ChoiceBox<String> cbOntology;
+	// private ChoiceBox<String> cbOntology;
+	private RadioButton rbClass;
+	private RadioButton rbProperity;
 	private Label lblSource1;
 	private Label lblTarget1;
 	private VASearchBox searchBox;
@@ -89,8 +94,8 @@ public class VAPanel {
 	 */
 	public void initButNotShow() {
 		fxPanel = new VATab();
-		screenWidth = Screen.getPrimary().getVisualBounds().getWidth() - 25;
-		screenHeight = Screen.getPrimary().getVisualBounds().getHeight();
+		screenWidth = Screen.getPrimary().getVisualBounds().getWidth() - 20;
+		screenHeight = Screen.getPrimary().getVisualBounds().getHeight() - 30;
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
@@ -114,7 +119,6 @@ public class VAPanel {
 		setLayout();
 		fxPanel.setScene(myScene);
 		val.updatePreviousGroup(val.getRootGroupLeft1());
-		// setUpButton(val.getRootGroupLeft1());
 		val.updateCurrentGroup(val.getRootGroupLeft1());
 		// setUpButton(val.getRootGroupLeft1());
 		chartLeft1.updatePieChart(ontologyType.Source);
@@ -132,6 +136,7 @@ public class VAPanel {
 		initCenterSplitPanel(borderPane); // pie chart & lists panel
 		initRightFlowPane(borderPane); // preview panel
 		initTopToolbar(borderPane); // tool bar panel
+
 		root.getChildren().add(borderPane);
 	}
 
@@ -142,11 +147,11 @@ public class VAPanel {
 	 */
 	private void initCenterSplitPanel(BorderPane borderPane) {
 		SplitPane splitPane = new SplitPane();
-		// splitPane.getItems().addAll(getLeftSplitPane(), getCenterGroup());
-		splitPane.getItems().addAll(getLeftSplitPane(), getCenterSplitPane());
 		splitPane.setOrientation(Orientation.HORIZONTAL);
 		splitPane.setDividerPosition(0, 0.2);
+		splitPane.getItems().addAll(getLeftSplitPane(), getCenterSplitPane());
 		borderPane.setCenter(splitPane);
+		BorderPane.setAlignment(splitPane, Pos.CENTER);
 	}
 
 	/**
@@ -156,9 +161,9 @@ public class VAPanel {
 	 */
 	private SplitPane getLeftSplitPane() {
 		SplitPane splitPane = new SplitPane();
-		splitPane.getItems().addAll(getTreeView(), getListView());
 		splitPane.setOrientation(Orientation.VERTICAL);
 		splitPane.setDividerPosition(0, 0.5);
+		splitPane.getItems().addAll(getTreeView(), getListView());
 		return splitPane;
 	}
 
@@ -180,7 +185,6 @@ public class VAPanel {
 	private ListView<String> getListView() {
 		listViewLeft = new ListView<String>();
 		listViewLeft.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-		// tilePane.getChildren().add(listViewLeft);
 		return listViewLeft;
 	}
 
@@ -191,9 +195,9 @@ public class VAPanel {
 	 */
 	private SplitPane getCenterSplitPane() {
 		SplitPane splitPane = new SplitPane();
-		splitPane.getItems().addAll(getCenterGroupUp(), getCenterGroupDown());
 		splitPane.setOrientation(Orientation.VERTICAL);
 		splitPane.setDividerPosition(0, 0.3);
+		splitPane.getItems().addAll(getCenterGroupUp(), getCenterGroupDown());
 		return splitPane;
 	}
 
@@ -266,24 +270,25 @@ public class VAPanel {
 	 */
 	private void initTopToolbar(BorderPane borderPane) {
 		ToolBar toolbar = new ToolBar();
-		// toolbar.setPrefWidth(screenWidth);
+
 		Region spacer1 = new Region();
 		spacer1.setStyle("-fx-padding: 0 20em 0 0;");
 		Region spacer2 = new Region();
 		spacer2.setStyle("-fx-padding: 0 10em 0 0;");
 		Region spacer3 = new Region();
 		spacer3.setStyle("-fx-padding: 0 10em 0 0;");
+
 		HBox buttonBar = new HBox();
 		initButtons(buttonBar);
-		initChoiceBox();
+		initRadioButtons(buttonBar);
 		BorderPane searchboxborderPane = new BorderPane();
 		initSearchBox();
 		searchboxborderPane.setRight(searchBox);
 		HBox.setMargin(searchBox, new Insets(0, 5, 0, 0));
-		toolbar.getItems().addAll(spacer1, buttonBar, spacer2, cbOntology,
-				spacer3, searchboxborderPane);
-
+		toolbar.getItems().addAll(spacer1, buttonBar, spacer2,
+				searchboxborderPane);
 		borderPane.setTop(toolbar);
+		BorderPane.setAlignment(searchboxborderPane, Pos.CENTER);
 	}
 
 	/**
@@ -299,14 +304,17 @@ public class VAPanel {
 		buttonBar.getChildren().addAll(btnRoot, btnUp, btnUFB);
 	}
 
-	/**
-	 * Init choice box
-	 */
-	private void initChoiceBox() {
-		cbOntology = new ChoiceBox<String>();
-		cbOntology.getItems().addAll("Class", "Properity");
-		cbOntology.getSelectionModel().selectFirst();
-		setChoiceBoxActions();
+	private void initRadioButtons(HBox buttonBar) {
+		ToggleGroup tg = new ToggleGroup();
+		rbClass = new RadioButton("Class");
+		rbClass.setToggleGroup(tg);
+		rbClass.setUserData("Class");
+		rbClass.setSelected(true);
+		rbProperity = new RadioButton("Properity");
+		rbProperity.setToggleGroup(tg);
+		rbProperity.setUserData("Properity");
+		buttonBar.getChildren().addAll(rbClass, rbProperity);
+		setRadioButtonActions(tg);
 	}
 
 	/**
@@ -409,7 +417,6 @@ public class VAPanel {
 			label = "Source Root";
 		else
 			label = parentGroup.getRootNodeName();
-		// System.out.println("Generate Parent: label=" + label);
 		listTreeLeftRoot = new TreeItem<String>(label);
 		ArrayList<VAData> data = parentGroup.getVADataArray();
 		for (VAData d : data) {
@@ -516,29 +523,25 @@ public class VAPanel {
 		}
 	}
 
-	/**
-	 * Add event for choice box
-	 */
-	private void setChoiceBoxActions() {
-		cbOntology.getSelectionModel().selectedIndexProperty()
-				.addListener(new ChangeListener<Number>() {
-					@Override
-					public void changed(
-							ObservableValue<? extends Number> observableValue,
-							Number number, Number number2) {
-						String choice = cbOntology.getItems().get(
-								(Integer) number2);
-						if (choice.equals(VAVariables.nodeType.Class.toString())) {
-							VAPanelLogic
-									.setCurrentNodeType(VAVariables.nodeType.Class);
-						} else {
-							VAPanelLogic
-									.setCurrentNodeType(VAVariables.nodeType.Property);
-						}
-						val.InitData();
-						updateAllWithNewGroup(val.getRootGroupLeft1());
+	private void setRadioButtonActions(final ToggleGroup tg) {
+		tg.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
+			public void changed(ObservableValue<? extends Toggle> ov,
+					Toggle old_toggle, Toggle new_toggle) {
+				if (tg.getSelectedToggle() != null) {
+					String selected = tg.getSelectedToggle().getUserData()
+							.toString();
+					if (selected.equals("Class")) {
+						VAPanelLogic
+								.setCurrentNodeType(VAVariables.nodeType.Class);
+					} else {
+						VAPanelLogic
+								.setCurrentNodeType(VAVariables.nodeType.Property);
 					}
-				});
+					val.InitData();
+					updateAllWithNewGroup(val.getRootGroupLeft1());
+				}
+			}
+		});
 	}
 
 	/**
