@@ -218,8 +218,13 @@ public class VAPanel {
 		tilePane.setStyle("-fx-background-color: BEF2B4;");
 		tilePane.setPrefColumns(2); // preferred columns
 
-		chartLeft[i] = new VAPieChart(val.getRootGroupLeft(i), this, VAVariables.ChartType.LeftMain);
-		chartRight[i] = new VAPieChart(val.getRootGroupRight(i), this, VAVariables.ChartType.RightMain);
+		if(i==0){
+			chartLeft[i] = new VAPieChart(val.getRootGroupLeft(i), this, VAVariables.ChartType.LeftMain);
+			chartRight[i] = new VAPieChart(val.getRootGroupRight(i), this, VAVariables.ChartType.RightMain);
+		}else{
+			chartLeft[i] = new VAPieChart(val.getRootGroupLeft(i), this, VAVariables.ChartType.LeftSub);
+			chartRight[i] = new VAPieChart(val.getRootGroupRight(i), this, VAVariables.ChartType.RightSub);
+		}
 		lblSource[i] = new Label("Source ontology", chartLeft[i].getPieChart());
 		lblSource[i].setContentDisplay(ContentDisplay.CENTER);
 		lblTarget[i] = new Label("Target ontology", chartRight[i].getPieChart());
@@ -227,7 +232,8 @@ public class VAPanel {
 
 		tilePane.getChildren().addAll(lblSource[i], lblTarget[i]);
 		chartGroup.getChildren().add(tilePane);
-		initTooltip(chartLeft[i]);
+		if(i==0)
+			initTooltip(chartLeft[i]);
 		return chartGroup;
 	}
 
