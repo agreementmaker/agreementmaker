@@ -61,7 +61,7 @@ public class VAPanel {
 	private Button btnRoot;
 	private Button btnUp;
 	private Button btnUFB;
-	private ToggleButton btnPages[] = new ToggleButton[7];
+	private ToggleButton btnPages[] = new ToggleButton[3];
 
 	private RadioButton rbClass;
 	private RadioButton rbProperity;
@@ -210,15 +210,20 @@ public class VAPanel {
 	private Group getCenterGroups(int i) {
 		Group chartGroup = new Group();
 		TilePane tilePane = new TilePane();
-		tilePane.setStyle("-fx-background-color: BEF2B4;");
+		if (i == 0)
+			tilePane.setStyle("-fx-background-color: "
+					+ VAVariables.panelColor[0] + ";");
+		else
+			tilePane.setStyle("-fx-background-color: "
+					+ VAVariables.panelColor[1] + ";");
 		tilePane.setPrefColumns(2); // preferred columns
 
-		if (i == 0) {	//main set
+		if (i == 0) { // main set
 			chartLeft[i] = new VAPieChart(val.getRootGroupLeft(i), this,
 					VAVariables.ChartType.LeftMain);
 			chartRight[i] = new VAPieChart(val.getRootGroupRight(i), this,
 					VAVariables.ChartType.RightMain);
-		} else {		//sub set
+		} else { // sub set
 			chartLeft[i] = new VAPieChart(val.getRootGroupLeft(i), this,
 					VAVariables.ChartType.LeftSub);
 			chartRight[i] = new VAPieChart(val.getRootGroupRight(i), this,
@@ -327,6 +332,7 @@ public class VAPanel {
 		final ToggleGroup group = new ToggleGroup();
 		for (int i = 0; i < btnPages.length; i++) {
 			btnPages[i] = new ToggleButton("AL" + String.valueOf(i + 1));
+			btnPages[i].setUserData(i);
 			btnPages[i].setStyle("-fx-font-size: " + size + "pt;");
 			btnPages[i].setToggleGroup(group);
 			if (i >= VASyncData.getTotalDisplayNum()) {// init visibility
@@ -336,8 +342,9 @@ public class VAPanel {
 			}
 			flow.getChildren().add(btnPages[i]);
 		}
-		setPageButtonActions();
 		btnPages[0].setSelected(true);
+		setPageButtonActions();
+		//btnPages[0].setSelected(true); // default, shown by main chart panel
 		borderPane.setRight(flow);
 	}
 
@@ -541,20 +548,40 @@ public class VAPanel {
 	 */
 	private void setPageButtonActions() {
 		int num = btnPages.length;
-		for (int i = 0; i < num; i++) {
-			final int cur = i + 1;
-			btnPages[i].setOnAction(new EventHandler<ActionEvent>() {
-
-				@Override
-				public void handle(ActionEvent arg0) {
-					// TODO Auto-generated method stub
-					VASyncData.setCurrentDisplayNum(cur);
+		ToggleGroup group = new ToggleGroup();
+		for(int i=0; i<num; i++)
+			btnPages[i].setToggleGroup(group);
+       
+        group.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
+            @Override public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle selectedToggle) {
+                if(selectedToggle!=null) {
+                	int cur = (int)((ToggleButton) selectedToggle).getUserData() + 1;
+                	VASyncData.setCurrentDisplayNum(cur);
 					val.InitData();
 					updateAllWithNewGroup(val.getRootGroupLeft(0));
-					// set colors here
-				}
-			});
-		}
+                }
+                else {
+                    //Renew Current set variable
+                }
+            }
+        });
+        
+        //group.selectToggle(btnPages[0]);
+        
+//		for (int i = 0; i < num; i++) {
+//			final int cur = i + 1;
+//			btnPages[i].setOnAction(new EventHandler<ActionEvent>() {
+//
+//				@Override
+//				public void handle(ActionEvent arg0) {
+//					// TODO Auto-generated method stub
+//					VASyncData.setCurrentDisplayNum(cur);
+//					val.InitData();
+//					updateAllWithNewGroup(val.getRootGroupLeft(0));
+//					// set colors here
+//				}
+//			});
+//		}
 	}
 
 	/**

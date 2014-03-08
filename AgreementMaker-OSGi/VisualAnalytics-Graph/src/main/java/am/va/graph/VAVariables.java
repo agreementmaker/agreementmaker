@@ -10,8 +10,8 @@ public interface VAVariables {
 
 	String selectionPer[] = { "100%", "90%-99%", "80%-89%", "60-79%",
 			"Not matched" };
-	String selectionStyle[] = { "#FFD700", "#90EE90", "#B0E0E6", "#FFC0CB",
-			"#FF6347" };
+	
+	String panelColor[] = {"#e6ffcc", "#ffffcc"};
 
 	HashMap<String, String> ColorRange = new HashMap<String, String>() {
 		{
@@ -33,6 +33,10 @@ public interface VAVariables {
 
 	enum ChartType {
 		LeftMain, RightMain, LeftSub, RightSub;
+	}
+	
+	enum currentSet{
+		mainSet, subSet;
 	}
 
 }
