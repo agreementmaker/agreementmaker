@@ -107,7 +107,7 @@ public class VAPieChart {
 	 * updateMainPieChart
 	 */
 	public void updateSubRightPieChart() {
-		int t = (type == VAVariables.ChartType.LeftSub) ? 0 : 1;
+		int t = (type == VAVariables.ChartType.RightMain) ? 0 : 1;
 		// Clear old pie chart
 		int num = pieCharDatalist.size();
 		for (int i = 0; i < num; i++)

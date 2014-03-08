@@ -62,21 +62,16 @@ public class VAPanel {
 	private Button btnUp;
 	private Button btnUFB;
 	private ToggleButton btnPages[] = new ToggleButton[7];
-	
+
 	private RadioButton rbClass;
 	private RadioButton rbProperity;
 	private Label lblSource[] = new Label[2];
 	private Label lblTarget[] = new Label[2];
-	//private Label lblSource2;
-	//private Label lblTarget2;
 	private VASearchBox searchBox;
 	private Tooltip pieTooltip;
 
 	private VAPieChart chartLeft[] = new VAPieChart[2];
 	private VAPieChart chartRight[] = new VAPieChart[2];
-	
-	//private VAPieChart chartLeft2;
-	//private VAPieChart chartRight2;
 
 	private int stop = -1;
 
@@ -126,8 +121,8 @@ public class VAPanel {
 		val.updatePreviousGroup(val.getRootGroupLeft(0));
 		val.updateCurrentGroup(val.getRootGroupLeft(0));
 		// setUpButton(val.getRootGroupLeft1());
-		chartLeft[0].updateMainPieChart(ontologyType.Source);
-		chartLeft[1].updateMainPieChart(ontologyType.Source);
+		for (int i = 0; i < 2; i++)
+			chartLeft[i].updateMainPieChart(ontologyType.Source);
 		generateNewTree();
 	}
 
@@ -218,12 +213,16 @@ public class VAPanel {
 		tilePane.setStyle("-fx-background-color: BEF2B4;");
 		tilePane.setPrefColumns(2); // preferred columns
 
-		if(i==0){
-			chartLeft[i] = new VAPieChart(val.getRootGroupLeft(i), this, VAVariables.ChartType.LeftMain);
-			chartRight[i] = new VAPieChart(val.getRootGroupRight(i), this, VAVariables.ChartType.RightMain);
-		}else{
-			chartLeft[i] = new VAPieChart(val.getRootGroupLeft(i), this, VAVariables.ChartType.LeftSub);
-			chartRight[i] = new VAPieChart(val.getRootGroupRight(i), this, VAVariables.ChartType.RightSub);
+		if (i == 0) {	//main set
+			chartLeft[i] = new VAPieChart(val.getRootGroupLeft(i), this,
+					VAVariables.ChartType.LeftMain);
+			chartRight[i] = new VAPieChart(val.getRootGroupRight(i), this,
+					VAVariables.ChartType.RightMain);
+		} else {		//sub set
+			chartLeft[i] = new VAPieChart(val.getRootGroupLeft(i), this,
+					VAVariables.ChartType.LeftSub);
+			chartRight[i] = new VAPieChart(val.getRootGroupRight(i), this,
+					VAVariables.ChartType.RightSub);
 		}
 		lblSource[i] = new Label("Source ontology", chartLeft[i].getPieChart());
 		lblSource[i].setContentDisplay(ContentDisplay.CENTER);
@@ -232,7 +231,7 @@ public class VAPanel {
 
 		tilePane.getChildren().addAll(lblSource[i], lblTarget[i]);
 		chartGroup.getChildren().add(tilePane);
-		if(i==0)
+		if (i == 0)
 			initTooltip(chartLeft[i]);
 		return chartGroup;
 	}
@@ -350,7 +349,7 @@ public class VAPanel {
 	 * @param ontologyType
 	 */
 	public void updateLeftChart() {
-		for(int i=0; i<2; i++)
+		for (int i = 0; i < 2; i++)
 			chartLeft[i].updateMainPieChart(VAVariables.ontologyType.Source);
 	}
 
@@ -390,8 +389,8 @@ public class VAPanel {
 	public VAPieChart getRightPie(int i) {
 		return chartRight[i];
 	}
-	
-	public VAPieChart getLeftPie2(){
+
+	public VAPieChart getLeftPie2() {
 		return chartLeft[1];
 	}
 
@@ -484,7 +483,7 @@ public class VAPanel {
 	public void updateAllWithNewGroup(VAGroup newGroup) {
 		val.updateCurrentGroup(newGroup);
 		setUpButton(newGroup);
-		for(int i=0; i<2; i++){
+		for (int i = 0; i < 2; i++) {
 			chartLeft[i].updateMainPieChart(ontologyType.Source);
 			chartLeft[i].clearList();
 		}

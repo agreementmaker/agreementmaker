@@ -10,7 +10,7 @@ import am.va.graph.VAVariables.nodeType;
  */
 public class VAPanelLogic {
 
-	private VAGroup rootGroupLeft[] = new VAGroup[2]; 
+	private VAGroup rootGroupLeft[] = new VAGroup[2];
 	private VAGroup rootGroupRight[] = new VAGroup[2];
 
 	private VAGroup previousGroup; // pointer group
@@ -23,10 +23,6 @@ public class VAPanelLogic {
 	}
 
 	// =============Getter and Setter=============
-//	public VAGroup getRootGroup(int i) {
-//		return rootGroupLeft[i];
-//	}
-
 	public VAGroup getRootGroupLeft(int i) {
 		return rootGroupLeft[i];
 	}
@@ -69,13 +65,16 @@ public class VAPanelLogic {
 
 	// ==================Init data==================
 	public void InitData() {
-		for(int i=0; i<2; i++){
-		rootGroupLeft[i] = initRootGroup(rootGroupLeft[i], VAVariables.ontologyType.Source);
-		rootGroupRight[i] = initRootGroup(rootGroupRight[i], VAVariables.ontologyType.Target);
+		for (int i = 0; i < 2; i++) {
+			rootGroupLeft[i] = initRootGroup(rootGroupLeft[i],
+					VAVariables.ontologyType.Source);
+			rootGroupRight[i] = initRootGroup(rootGroupRight[i],
+					VAVariables.ontologyType.Target);
 		}
 	}
 
-	private VAGroup initRootGroup(VAGroup rootGroup, VAVariables.ontologyType type) {
+	private VAGroup initRootGroup(VAGroup rootGroup,
+			VAVariables.ontologyType type) {
 		rootGroup = new VAGroup();
 		rootGroup.setParent(0);
 		VAData rootNode = VASyncData.getRootVAData(type);
