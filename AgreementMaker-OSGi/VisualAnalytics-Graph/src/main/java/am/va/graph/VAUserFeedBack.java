@@ -61,7 +61,7 @@ public class VAUserFeedBack {
 		for (int i = 0; i < 5; i++) {
 			RadioButton bt = new RadioButton(VAVariables.selectionPer[i]);
 			bt.setToggleGroup(tg);
-			bt.setStyle("-fx-background-color:"+VAVariables.selectionStyle[i]);
+			//bt.setStyle("-fx-background-color:"+VAVariables.selectionStyle[i]);
 			rb.add(bt);
 		}
 

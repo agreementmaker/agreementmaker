@@ -44,9 +44,12 @@ public class VAPieChart {
 		pieCharDatalist = FXCollections.observableArrayList();
 		HashMap<String, Integer> slotsMap = group.getslotCountMap();
 		for (String key : VAVariables.thresholdName) {
-			if (slotsMap.containsKey(key))
-				pieCharDatalist.add(new PieChart.Data(key, slotsMap.get(key)));
+			if (slotsMap.containsKey(key)) {
+				PieChart.Data d = new PieChart.Data(key, slotsMap.get(key));
+				pieCharDatalist.add(d);
+			}
 		}
+
 		pieChart = new PieChart(this.pieCharDatalist);
 		// Adjust the size of piechart & labels
 		pieChart.setMaxSize(350, 350);
@@ -55,6 +58,17 @@ public class VAPieChart {
 		pieChart.setLabelLineLength(5);
 		pieChart.setClockwise(false);
 
+		// the method must be applied after the chart has been shown on an
+		// active scene (otherwise the data.getNode() call will return null).
+		customPieChartColor();
+	}
+
+	private void customPieChartColor() {
+		for (PieChart.Data d : pieCharDatalist) {
+			d.getNode().setStyle(
+					"-fx-pie-color: " + VAVariables.ColorRange.get(d.getName())
+							+ ";");
+		}
 	}
 
 	/**
@@ -77,7 +91,7 @@ public class VAPieChart {
 								.get(key)));
 				}
 			}
-			if (t == 0)	//add listener to main pie chart
+			if (t == 0) // add listener to main pie chart
 				addListener(ontologyType);
 		} else {
 			int num = pieCharDatalist.size();
@@ -96,7 +110,7 @@ public class VAPieChart {
 			else
 				vap.setLblSource(newLabel, 1, t);
 		}
-
+		customPieChartColor();
 		if (vap.getStop() == -1) {
 			vap.setStop(0);
 		}
@@ -140,6 +154,7 @@ public class VAPieChart {
 							.get(key)));
 			}
 		vap.setLblTarget(newLabel, t);
+		customPieChartColor();
 	}
 
 	/**
