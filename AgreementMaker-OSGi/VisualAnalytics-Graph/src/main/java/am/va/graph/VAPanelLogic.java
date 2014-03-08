@@ -10,11 +10,11 @@ import am.va.graph.VAVariables.nodeType;
  */
 public class VAPanelLogic {
 
-	private VAGroup rootGroupLeft1;
-	private VAGroup rootGroupRight1;
+	private VAGroup rootGroupLeft[] = new VAGroup[2]; 
+	private VAGroup rootGroupRight[] = new VAGroup[2];
 
-	private VAGroup previousGroup1; // pointer group
-	private VAGroup currentGroup1; // pointer group
+	private VAGroup previousGroup; // pointer group
+	private VAGroup currentGroup; // pointer group
 
 	private static nodeType currentNodeType = nodeType.Class;
 
@@ -23,24 +23,24 @@ public class VAPanelLogic {
 	}
 
 	// =============Getter and Setter=============
-	public VAGroup getRootGroup() {
-		return rootGroupLeft1;
+//	public VAGroup getRootGroup(int i) {
+//		return rootGroupLeft[i];
+//	}
+
+	public VAGroup getRootGroupLeft(int i) {
+		return rootGroupLeft[i];
 	}
 
-	public VAGroup getRootGroupLeft1() {
-		return rootGroupLeft1;
+	public void setRootGroupLeft(VAGroup rootGroupLeft, int i) {
+		this.rootGroupLeft[i] = rootGroupLeft;
 	}
 
-	public void setRootGroupLeft1(VAGroup rootGroupLeft1) {
-		this.rootGroupLeft1 = rootGroupLeft1;
+	public VAGroup getRootGroupRight(int i) {
+		return rootGroupRight[i];
 	}
 
-	public VAGroup getRootGroupRight1() {
-		return rootGroupRight1;
-	}
-
-	public void setRootGroupRight1(VAGroup rootGroupRight1) {
-		this.rootGroupRight1 = rootGroupRight1;
+	public void setRootGroupRight1(VAGroup rootGroupRight, int i) {
+		this.rootGroupRight[i] = rootGroupRight;
 	}
 
 	public static nodeType getCurrentNodeType() {
@@ -52,47 +52,38 @@ public class VAPanelLogic {
 	}
 
 	public VAGroup getPreviousGroup1() {
-		return previousGroup1;
+		return previousGroup;
 	}
 
-	public void setPreviousGroup1(VAGroup previousGroup1) {
-		this.previousGroup1 = previousGroup1;
+	public void setPreviousGroup(VAGroup previousGroup1) {
+		this.previousGroup = previousGroup1;
 	}
 
-	public VAGroup getCurrentGroup1() {
-		return currentGroup1;
+	public VAGroup getCurrentGroup() {
+		return currentGroup;
 	}
 
-	public void setCurrentGroup1(VAGroup currentGroup1) {
-		this.currentGroup1 = currentGroup1;
+	public void setCurrentGroup(VAGroup currentGroup1) {
+		this.currentGroup = currentGroup1;
 	}
 
 	// ==================Init data==================
 	public void InitData() {
-		/**
-		 * Set root group left
-		 */
-		rootGroupLeft1 = new VAGroup();
-		rootGroupLeft1.setParent(0);
-		VAData rootNodeLeft = VASyncData
-				.getRootVAData(VAVariables.ontologyType.Source);
-		rootGroupLeft1.setRootNode(rootNodeLeft);
-		// get all the children data sorted by similarity
-		rootGroupLeft1.setListVAData(VASyncData.getChildrenData(
-				rootGroupLeft1.getRootNode(), VAVariables.ontologyType.Source));
+		for(int i=0; i<2; i++){
+		rootGroupLeft[i] = initRootGroup(rootGroupLeft[i], VAVariables.ontologyType.Source);
+		rootGroupRight[i] = initRootGroup(rootGroupRight[i], VAVariables.ontologyType.Target);
+		}
+	}
 
-		/**
-		 * Set root group right
-		 */
-		rootGroupRight1 = new VAGroup();
-		rootGroupRight1.setParent(0);
-		VAData rootNodeRight = VASyncData
-				.getRootVAData(VAVariables.ontologyType.Target);
-		rootGroupRight1.setRootNode(rootNodeRight);
-		rootGroupRight1
-				.setListVAData(VASyncData.getChildrenData(
-						rootGroupRight1.getRootNode(),
-						VAVariables.ontologyType.Target));
+	private VAGroup initRootGroup(VAGroup rootGroup, VAVariables.ontologyType type) {
+		rootGroup = new VAGroup();
+		rootGroup.setParent(0);
+		VAData rootNode = VASyncData.getRootVAData(type);
+		rootGroup.setRootNode(rootNode);
+		// get all the children data sorted by similarity
+		rootGroup.setListVAData(VASyncData.getChildrenData(
+				rootGroup.getRootNode(), type));
+		return rootGroup;
 	}
 
 	// ==============Updating Logic===================
@@ -110,11 +101,11 @@ public class VAPanelLogic {
 		VAGroup newGroup = new VAGroup();
 		newGroup.setRootNode(newRootData);
 		if (newRootData != null && newRootData.hasChildren()) {
-			newGroup.setParent(currentGroup1.getGroupID());
+			newGroup.setParent(currentGroup.getGroupID());
 			newGroup.setListVAData(VASyncData.getChildrenData(newRootData,
 					ontologyType));
 		} else {
-			newGroup.setParent(previousGroup1.getGroupID());
+			newGroup.setParent(previousGroup.getGroupID());
 		}
 		updateCurrentGroup(newGroup);
 		/**
@@ -132,14 +123,14 @@ public class VAPanelLogic {
 	 */
 	public VAGroup generateParentGroup() {
 		VAGroup parentGroup = null;
-		if (currentGroup1.getCurrentLevel() < 1) {
+		if (currentGroup.getCurrentLevel() < 1) {
 			// System.out.println("Generate Parent: parent=root");
-			parentGroup = rootGroupLeft1;
+			parentGroup = rootGroupLeft[0];
 		} else {
 			// System.out.println("Generate Parent: new parent");
 			parentGroup = new VAGroup();
-			VAData parentData = VASyncData
-					.getParentVAData(currentGroup1.getRootNode());
+			VAData parentData = VASyncData.getParentVAData(currentGroup
+					.getRootNode());
 			parentGroup.setRootNode(parentData);
 			parentGroup.setListVAData(VASyncData.getChildrenData(parentData,
 					VAVariables.ontologyType.Source));
@@ -154,7 +145,7 @@ public class VAPanelLogic {
 	 */
 	public void updatePreviousGroup(VAGroup group) {
 		if (group != null) {
-			previousGroup1 = group;
+			previousGroup = group;
 
 		} else {
 			System.out.println("- Previous group is empty ?!!");
@@ -167,8 +158,8 @@ public class VAPanelLogic {
 	 * @param group
 	 */
 	public void updateCurrentGroup(VAGroup group) {
-		updatePreviousGroup(currentGroup1);
-		currentGroup1 = group;
+		updatePreviousGroup(currentGroup);
+		currentGroup = group;
 	}
 
 }
