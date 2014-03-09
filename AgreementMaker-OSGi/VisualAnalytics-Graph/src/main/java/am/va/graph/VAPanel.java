@@ -436,7 +436,7 @@ public class VAPanel {
 					String selected = selectedItem.getValue();
 					for (VAData da : data) {
 						if (da.getNodeName().equals(selected)) {
-							for (int i = 0; i < 1; i++) {
+							for (int i = 0; i < 2; i++) {
 								VAGroup newGroup = new VAGroup();
 
 								/**
