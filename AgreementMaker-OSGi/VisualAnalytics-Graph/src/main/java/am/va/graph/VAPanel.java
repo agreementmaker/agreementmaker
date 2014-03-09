@@ -338,8 +338,6 @@ public class VAPanel {
 			btnPages[i].setToggleGroup(group);
 			if (i >= VASyncData.getTotalDisplayNum()) {// init visibility
 				btnPages[i].setVisible(false);
-				// System.out.println("[test]-display num="+
-				// VASyncData.getTotalDisplayNum() + ", i=" + i);
 			}
 			flow.getChildren().add(btnPages[i]);
 		}
@@ -347,6 +345,7 @@ public class VAPanel {
 		btnPages[0].setSelected(true);// default, shown by main chart panel
 		btnPages[0].setStyle("-fx-background-color: "
 				+ VAVariables.panelColor[0] + ";");
+		setToggleButtonStatus(true);
 		setPageButtonActions();
 		borderPane.setRight(flow);
 	}
@@ -581,13 +580,28 @@ public class VAPanel {
 							((ToggleButton) selectedToggle).requestFocus();
 							
 							status = VAVariables.currentSetStatus.noEmpty;
+							
+							//disable all other buttons
+							setToggleButtonStatus(true);
+							
 						} else {
 							// Renew Current set variable
 							((ToggleButton) oldValue).setStyle(null);
 							status = VAVariables.currentSetStatus.mainSetEmpty;
+							
+							//enable all other buttons
+							setToggleButtonStatus(false);
 						}
 					}
 				});
+	}
+	
+	private void setToggleButtonStatus(boolean disable){
+		for(int i=0; i<btnPages.length; i++){
+			if(!btnPages[i].isSelected()){
+				btnPages[i].setDisable(disable);
+			}
+		}
 	}
 
 	/**
