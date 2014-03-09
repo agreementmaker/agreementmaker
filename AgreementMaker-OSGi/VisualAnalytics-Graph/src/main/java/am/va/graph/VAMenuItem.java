@@ -30,7 +30,8 @@ public class VAMenuItem implements AMMenuItem, ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		// Init data
 		VAPanelLogic val = new VAPanelLogic();
-		val.InitData();
+		val.InitData(0);
+		val.InitData(1);
 
 		// show chart panel
 		VAPanel vap = new VAPanel(val);

@@ -53,6 +53,7 @@ public class VASearchBox extends Region {
 						if (result != null){
 							//set 0 here
 							vap.setUpButton(vap.getVal().generateNewGroup(VAVariables.ontologyType.Source, result, 0));
+							vap.getVal().generateNewGroup(VAVariables.ontologyType.Source, result, 1);
 							vap.updateLeftChart();
 							vap.generateNewTree();
 							System.out.println("result is "
