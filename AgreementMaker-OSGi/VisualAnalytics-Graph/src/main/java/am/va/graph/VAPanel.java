@@ -214,23 +214,17 @@ public class VAPanel {
 		Group chartGroup = new Group();
 		TilePane tilePane = new TilePane();
 		if (i == 0)
-			tilePane.setStyle("-fx-background-color: "
-					+ VAVariables.panelColor[0] + ";");
+			tilePane.setStyle("-fx-background-color: " + VAVariables.panelColor[0] + ";");
 		else
-			tilePane.setStyle("-fx-background-color: "
-					+ VAVariables.panelColor[1] + ";");
+			tilePane.setStyle("-fx-background-color: " + VAVariables.panelColor[1] + ";");
 		tilePane.setPrefColumns(2); // preferred columns
 
 		if (i == 0) { // main set
-			chartLeft[i] = new VAPieChart(val.getRootGroupLeft(i), this,
-					VAVariables.ChartType.LeftMain);
-			chartRight[i] = new VAPieChart(val.getRootGroupRight(i), this,
-					VAVariables.ChartType.RightMain);
+			chartLeft[i] = new VAPieChart(val.getRootGroupLeft(i), this, VAVariables.ChartType.LeftMain);
+			chartRight[i] = new VAPieChart(val.getRootGroupRight(i), this, VAVariables.ChartType.RightMain);
 		} else { // sub set
-			chartLeft[i] = new VAPieChart(val.getRootGroupLeft(i), this,
-					VAVariables.ChartType.LeftSub);
-			chartRight[i] = new VAPieChart(val.getRootGroupRight(i), this,
-					VAVariables.ChartType.RightSub);
+			chartLeft[i] = new VAPieChart(val.getRootGroupLeft(i), this, VAVariables.ChartType.LeftSub);
+			chartRight[i] = new VAPieChart(val.getRootGroupRight(i), this, VAVariables.ChartType.RightSub);
 		}
 		lblSource[i] = new Label("Source ontology", chartLeft[i].getPieChart());
 		lblSource[i].setContentDisplay(ContentDisplay.CENTER);
@@ -249,8 +243,7 @@ public class VAPanel {
 	 */
 	private void initTooltip(VAPieChart chartLeft) {
 		pieTooltip = new Tooltip("click to view more");
-		for (final PieChart.Data currentData : chartLeft.getPieChart()
-				.getData()) {
+		for (final PieChart.Data currentData : chartLeft.getPieChart().getData()) {
 			Tooltip.install(currentData.getNode(), pieTooltip);
 		}
 	}
@@ -278,8 +271,7 @@ public class VAPanel {
 		initSearchBox();
 		searchboxborderPane.setRight(searchBox);
 		HBox.setMargin(searchBox, new Insets(0, 5, 0, 0));
-		toolbar.getItems().addAll(spacer1, buttonBar, spacer2,
-				searchboxborderPane);
+		toolbar.getItems().addAll(spacer1, buttonBar, spacer2, searchboxborderPane);
 		borderPane.setTop(toolbar);
 		BorderPane.setAlignment(searchboxborderPane, Pos.CENTER);
 	}
@@ -343,8 +335,7 @@ public class VAPanel {
 		}
 		status = VAVariables.currentSetStatus.noEmpty;
 		btnPages[0].setSelected(true);// default, shown by main chart panel
-		btnPages[0].setStyle("-fx-background-color: "
-				+ VAVariables.panelColor[0] + ";");
+		btnPages[0].setStyle("-fx-background-color: " + VAVariables.panelColor[0] + ";");
 		setToggleButtonStatus(true);
 		setPageButtonActions();
 		borderPane.setRight(flow);
@@ -420,8 +411,7 @@ public class VAPanel {
 		listTreeLeftRoot = new TreeItem<String>(label);
 		ArrayList<VAData> data = parentGroup.getVADataArray();
 		for (VAData d : data) {
-			listTreeLeftRoot.getChildren().add(
-					new TreeItem<String>(d.getNodeName()));
+			listTreeLeftRoot.getChildren().add(new TreeItem<String>(d.getNodeName()));
 		}
 
 		listTreeLeft.setShowRoot(true);
@@ -436,36 +426,51 @@ public class VAPanel {
 	 * @param data
 	 */
 	private void treeviewAction(final ArrayList<VAData> data) {
-		listTreeLeft.getSelectionModel().selectedItemProperty()
-				.addListener(new ChangeListener<Object>() {
+		listTreeLeft.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Object>() {
 
-					@Override
-					public void changed(ObservableValue<?> observable,
-							Object oldValue, Object newValue) {
+			@Override
+			public void changed(ObservableValue<?> observable, Object oldValue, Object newValue) {
 
-						TreeItem<String> selectedItem = (TreeItem<String>) newValue;
-						if (selectedItem != null) {
-							String selected = selectedItem.getValue();
-							for (VAData da : data) {
-								if (da.getNodeName().equals(selected)) {
-									for (int i = 0; i < 2; i++) {
-										VAGroup newGroup = new VAGroup();
-										newGroup.setRootNode(da);
-										newGroup.setParent(val.getCurrentGroup(
-												i).getGroupID());
-										// tree view updates according to main
-										// set
-										newGroup.setListVAData(VASyncData
-												.getChildrenData(da,
-														ontologyType.Source, i));
-										updateAllWithNewGroup(newGroup, i);//newGroup?
-									}
+				TreeItem<String> selectedItem = (TreeItem<String>) newValue;
+				if (selectedItem != null) {
+					String selected = selectedItem.getValue();
+					for (VAData da : data) {
+						if (da.getNodeName().equals(selected)) {
+							for (int i = 0; i < 1; i++) {
+								VAGroup newGroup = new VAGroup();
+
+								/**
+								 * If i==0, then rebuild the VAData according to the selected item name
+								 * Always updating the main set
+								 */
+								if (i == 0) {
+									VAData subda = VASyncData.searchFrom(da.getNodeName(), val.getRootGroupLeft(i)
+											.getRootNode());
+									System.out.println("treeviewAction, sub: " + subda.getNodeName() + " "
+											+ subda.getSimilarity());
+									newGroup.setRootNode(subda);
+									newGroup.setListVAData(VASyncData.getChildrenData(subda, ontologyType.Source, i));
+								} else {
+									newGroup.setRootNode(da);
+									System.out.println("treeviewAction, main: " + da.getNodeName() + " "
+											+ da.getSimilarity());
+
+									newGroup.setListVAData(VASyncData.getChildrenData(da, ontologyType.Source, i));
+									newGroup.setParent(val.getCurrentGroup(i).getGroupID());
 								}
+
+								// tree view updates according to main
+								// set
+
+								updateAllWithNewGroup(newGroup, i);
 							}
+							break;
 						}
 					}
+				}
+			}
 
-				});
+		});
 	}
 
 	/**
@@ -496,13 +501,15 @@ public class VAPanel {
 	 */
 	public void updateAllWithNewGroup(VAGroup newGroup, int set) {
 		val.updateCurrentGroup(newGroup, set);
-		setUpButton(newGroup);
+		if (set == 0)
+			setUpButton(newGroup);
 
 		chartLeft[set].updateMainPieChart(ontologyType.Source);
 		chartLeft[set].clearList();
 
 		generateNewTree();
 	}
+	
 
 	// ==========Button & List Event==================
 
@@ -536,17 +543,13 @@ public class VAPanel {
 	 */
 	private void setRadioButtonActions(final ToggleGroup tg) {
 		tg.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
-			public void changed(ObservableValue<? extends Toggle> ov,
-					Toggle old_toggle, Toggle new_toggle) {
+			public void changed(ObservableValue<? extends Toggle> ov, Toggle old_toggle, Toggle new_toggle) {
 				if (tg.getSelectedToggle() != null) {
-					String selected = tg.getSelectedToggle().getUserData()
-							.toString();
+					String selected = tg.getSelectedToggle().getUserData().toString();
 					if (selected.equals("Class")) {
-						VAPanelLogic
-								.setCurrentNodeType(VAVariables.nodeType.Class);
+						VAPanelLogic.setCurrentNodeType(VAVariables.nodeType.Class);
 					} else {
-						VAPanelLogic
-								.setCurrentNodeType(VAVariables.nodeType.Property);
+						VAPanelLogic.setCurrentNodeType(VAVariables.nodeType.Property);
 					}
 					for (int i = 0; i < 2; i++) {
 						val.InitData(i); // init both main and sub sets
@@ -566,45 +569,38 @@ public class VAPanel {
 		for (int i = 0; i < num; i++)
 			btnPages[i].setToggleGroup(group);
 
-		group.selectedToggleProperty().addListener(
-				new ChangeListener<Toggle>() {
-					@Override
-					public void changed(
-							ObservableValue<? extends Toggle> observable,
-							Toggle oldValue, Toggle selectedToggle) {
-						if (selectedToggle != null
-								&& status != VAVariables.currentSetStatus.noEmpty) {
-							int t = (status == VAVariables.currentSetStatus.mainSetEmpty) ? 0
-									: 1;
-							int cur = (int) ((ToggleButton) selectedToggle)
-									.getUserData() + 1;
-							VASyncData.setCurrentDisplayNum(cur, t);
-							val.InitData(t); // init main or sub set
-							// update selected group only
-							updateAllWithNewGroup(val.getRootGroupLeft(t), t);
+		group.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
+			@Override
+			public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle selectedToggle) {
+				if (selectedToggle != null && status != VAVariables.currentSetStatus.noEmpty) {
+					int t = (status == VAVariables.currentSetStatus.mainSetEmpty) ? 0 : 1;
+					int cur = (int) ((ToggleButton) selectedToggle).getUserData() + 1;
+					VASyncData.setCurrentDisplayNum(cur, t);
+					val.InitData(t); // init main or sub set
+					// update selected group only
+					updateAllWithNewGroup(val.getRootGroupLeft(t), t);
 
-							// Set color according to current main set
-							((ToggleButton) selectedToggle)
-									.setStyle("-fx-background-color: "
-											+ VAVariables.panelColor[0] + ";");
-							((ToggleButton) selectedToggle).requestFocus();
+					// Set color according to current main set
+					((ToggleButton) selectedToggle)
+							.setStyle("-fx-background-color: " + VAVariables.panelColor[0] + ";");
+					((ToggleButton) selectedToggle).requestFocus();
 
-							status = VAVariables.currentSetStatus.noEmpty;
+					status = VAVariables.currentSetStatus.noEmpty;
 
-							// disable all other buttons
-							setToggleButtonStatus(true);
+					// disable all other buttons
+					setToggleButtonStatus(true);
 
-						} else {
-							// Renew Current set variable
-							((ToggleButton) oldValue).setStyle(null);
-							// set main set empty here for testing
-							status = VAVariables.currentSetStatus.mainSetEmpty;
+				} else {
+					// Renew Current set variable
+					((ToggleButton) oldValue).setStyle(null);
+					// set main set empty here for testing
+					status = VAVariables.currentSetStatus.mainSetEmpty;
 
-							// enable all other buttons
-							setToggleButtonStatus(false);
-						}
-					}
-				});
+					// enable all other buttons
+					setToggleButtonStatus(false);
+				}
+			}
+		});
 	}
 
 	private void setToggleButtonStatus(boolean disable) {

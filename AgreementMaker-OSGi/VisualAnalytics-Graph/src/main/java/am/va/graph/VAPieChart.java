@@ -216,7 +216,7 @@ public class VAPieChart {
 			listView.setItems(arcListData);
 			setListViewAction(listView, listMap, ontologyType);
 			// test
-			printData(idxRange, dataArrayList);
+			//printData(idxRange, dataArrayList);
 		} else {
 			System.out.println("- pie chart is empty, return empty list");
 		}
@@ -249,18 +249,26 @@ public class VAPieChart {
 				String selectedLocalName = listView.getSelectionModel()
 						.getSelectedItems().get(0);
 				if (selectedLocalName != null) {
-					System.out.println("clicked on " + selectedLocalName);
+					//System.out.println("clicked on " + selectedLocalName);
 					selectedVAData = listMap.get(selectedLocalName);
 
-					vap.setUpButton(vap.getVal().generateNewGroup(ontologyType,
-							selectedVAData, 0)); // list view changes according
-													// to main set
-					vap.getVal().generateNewGroup(ontologyType, selectedVAData,
-							1);
-					vap.generateNewTree();
+					//new main group
+					VAGroup selectedMainGroup = vap.getVal().generateNewGroup(
+							ontologyType, selectedVAData, 0);
 
+					VAData selectedSubVAData = VASyncData.searchFrom(
+							selectedVAData.getNodeName(), vap.getVal()
+									.getRootGroupLeft(1).getRootNode());
+					//new sub group
+					VAGroup selectedSubGroup = vap.getVal().generateNewGroup(
+							ontologyType, selectedSubVAData, 1);
+					
+					vap.generateNewTree();
+					vap.setUpButton(selectedMainGroup);
+
+					// update main set's pie chart
 					updateMainPieChart(ontologyType);
-					// update second pie chart set
+					// update sub set's pie chart
 					vap.getLeftPie2().updateMainPieChart(ontologyType);
 
 					listView.getSelectionModel().clearSelection();
