@@ -74,6 +74,7 @@ public class VAPanel {
 	private VAPieChart chartRight[] = new VAPieChart[2];
 
 	private int stop = -1;
+	private VAVariables.currentSetStatus status;
 
 	private VAPanelLogic val;
 
@@ -124,6 +125,8 @@ public class VAPanel {
 		for (int i = 0; i < 2; i++)
 			chartLeft[i].updateMainPieChart(ontologyType.Source);
 		generateNewTree();
+
+		// test set status
 	}
 
 	// =====================Graphic User Interface========================
@@ -328,23 +331,23 @@ public class VAPanel {
 		flow.setHgap(4);
 		flow.setPrefWrapLength(170); // preferred width allows for two columns
 		flow.setStyle("-fx-background-color: DAE6F3;");
-		int size = 50;
 		final ToggleGroup group = new ToggleGroup();
 		for (int i = 0; i < btnPages.length; i++) {
 			btnPages[i] = new ToggleButton("AL" + String.valueOf(i + 1));
 			btnPages[i].setUserData(i);
-			btnPages[i].setStyle("-fx-font-size: " + size + "pt;");
 			btnPages[i].setToggleGroup(group);
 			if (i >= VASyncData.getTotalDisplayNum()) {// init visibility
 				btnPages[i].setVisible(false);
-				System.out.println("[test]-display num="
-						+ VASyncData.getTotalDisplayNum() + ", i=" + i);
+				// System.out.println("[test]-display num="+
+				// VASyncData.getTotalDisplayNum() + ", i=" + i);
 			}
 			flow.getChildren().add(btnPages[i]);
 		}
-		btnPages[0].setSelected(true);
+		status = VAVariables.currentSetStatus.noEmpty;
+		btnPages[0].setSelected(true);// default, shown by main chart panel
+		btnPages[0].setStyle("-fx-background-color: "
+				+ VAVariables.panelColor[0] + ";");
 		setPageButtonActions();
-		//btnPages[0].setSelected(true); // default, shown by main chart panel
 		borderPane.setRight(flow);
 	}
 
@@ -522,6 +525,11 @@ public class VAPanel {
 		}
 	}
 
+	/**
+	 * Init radio button actions
+	 * 
+	 * @param tg
+	 */
 	private void setRadioButtonActions(final ToggleGroup tg) {
 		tg.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
 			public void changed(ObservableValue<? extends Toggle> ov,
@@ -549,39 +557,37 @@ public class VAPanel {
 	private void setPageButtonActions() {
 		int num = btnPages.length;
 		ToggleGroup group = new ToggleGroup();
-		for(int i=0; i<num; i++)
+		for (int i = 0; i < num; i++)
 			btnPages[i].setToggleGroup(group);
-       
-        group.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
-            @Override public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle selectedToggle) {
-                if(selectedToggle!=null) {
-                	int cur = (int)((ToggleButton) selectedToggle).getUserData() + 1;
-                	VASyncData.setCurrentDisplayNum(cur);
-					val.InitData();
-					updateAllWithNewGroup(val.getRootGroupLeft(0));
-                }
-                else {
-                    //Renew Current set variable
-                }
-            }
-        });
-        
-        //group.selectToggle(btnPages[0]);
-        
-//		for (int i = 0; i < num; i++) {
-//			final int cur = i + 1;
-//			btnPages[i].setOnAction(new EventHandler<ActionEvent>() {
-//
-//				@Override
-//				public void handle(ActionEvent arg0) {
-//					// TODO Auto-generated method stub
-//					VASyncData.setCurrentDisplayNum(cur);
-//					val.InitData();
-//					updateAllWithNewGroup(val.getRootGroupLeft(0));
-//					// set colors here
-//				}
-//			});
-//		}
+
+		group.selectedToggleProperty().addListener(
+				new ChangeListener<Toggle>() {
+					@Override
+					public void changed(
+							ObservableValue<? extends Toggle> observable,
+							Toggle oldValue, Toggle selectedToggle) {
+						if (selectedToggle != null
+								&& status != VAVariables.currentSetStatus.noEmpty) {
+							int cur = (int) ((ToggleButton) selectedToggle)
+									.getUserData() + 1;
+							VASyncData.setCurrentDisplayNum(cur);
+							val.InitData();
+							updateAllWithNewGroup(val.getRootGroupLeft(0));
+
+							// Set color according to current main set
+							((ToggleButton) selectedToggle)
+									.setStyle("-fx-background-color: "
+											+ VAVariables.panelColor[0] + ";");
+							((ToggleButton) selectedToggle).requestFocus();
+							
+							status = VAVariables.currentSetStatus.noEmpty;
+						} else {
+							// Renew Current set variable
+							((ToggleButton) oldValue).setStyle(null);
+							status = VAVariables.currentSetStatus.mainSetEmpty;
+						}
+					}
+				});
 	}
 
 	/**

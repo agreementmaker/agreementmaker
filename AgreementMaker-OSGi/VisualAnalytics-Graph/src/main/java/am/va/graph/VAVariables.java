@@ -35,8 +35,8 @@ public interface VAVariables {
 		LeftMain, RightMain, LeftSub, RightSub;
 	}
 	
-	enum currentSet{
-		mainSet, subSet;
+	enum currentSetStatus{
+		mainSetEmpty, subSetEmpty, noEmpty;
 	}
 
 }
