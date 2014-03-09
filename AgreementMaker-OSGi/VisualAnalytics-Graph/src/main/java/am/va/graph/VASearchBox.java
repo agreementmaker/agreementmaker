@@ -51,7 +51,8 @@ public class VASearchBox extends Region {
 					if (inputString.length() != 0) {
 						VAData result = searcher.search(inputString);
 						if (result != null){
-							vap.setUpButton(vap.getVal().generateNewGroup(VAVariables.ontologyType.Source, result));
+							//set 0 here
+							vap.setUpButton(vap.getVal().generateNewGroup(VAVariables.ontologyType.Source, result, 0));
 							vap.updateLeftChart();
 							vap.generateNewTree();
 							System.out.println("result is "

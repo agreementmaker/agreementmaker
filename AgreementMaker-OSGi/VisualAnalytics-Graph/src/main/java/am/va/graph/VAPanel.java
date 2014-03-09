@@ -409,7 +409,8 @@ public class VAPanel {
 	 * @param parentGroup
 	 */
 	public void generateNewTree() {
-		VAGroup parentGroup = val.generateParentGroup();
+		// tree view updates according to main set
+		VAGroup parentGroup = val.generateParentGroup(0);
 		TreeItem<String> listTreeLeftRoot = null;
 		String label = "";
 		if (parentGroup.getParent() == 0)
@@ -451,10 +452,11 @@ public class VAPanel {
 									newGroup.setRootNode(da);
 									newGroup.setParent(val.getCurrentGroup()
 											.getGroupID());
+									// tree view updates according to main set
 									newGroup.setListVAData(VASyncData
 											.getChildrenData(da,
-													ontologyType.Source));
-									updateAllWithNewGroup(newGroup);
+													ontologyType.Source, 0));
+									updateAllWithNewGroup(newGroup, false);
 								}
 							}
 						}
@@ -489,12 +491,23 @@ public class VAPanel {
 	 * 
 	 * @param newGroup
 	 */
-	public void updateAllWithNewGroup(VAGroup newGroup) {
+	public void updateAllWithNewGroup(VAGroup newGroup, boolean select) {
 		val.updateCurrentGroup(newGroup);
 		setUpButton(newGroup);
-		for (int i = 0; i < 2; i++) {
-			chartLeft[i].updateMainPieChart(ontologyType.Source);
-			chartLeft[i].clearList();
+		if (select) {
+			int g = -1;
+			if (status == VAVariables.currentSetStatus.mainSetEmpty)
+				g = 0;
+			else if (status == VAVariables.currentSetStatus.subSetEmpty)
+				g = 1;
+
+			chartLeft[g].updateMainPieChart(ontologyType.Source);
+			chartLeft[g].clearList();
+		} else {
+			for (int i = 0; i < 2; i++) {
+				chartLeft[i].updateMainPieChart(ontologyType.Source);
+				chartLeft[i].clearList();
+			}
 		}
 		generateNewTree();
 	}
@@ -544,7 +557,7 @@ public class VAPanel {
 								.setCurrentNodeType(VAVariables.nodeType.Property);
 					}
 					val.InitData();
-					updateAllWithNewGroup(val.getRootGroupLeft(0));
+					updateAllWithNewGroup(val.getRootGroupLeft(0), false);
 				}
 			}
 		});
@@ -567,38 +580,42 @@ public class VAPanel {
 							Toggle oldValue, Toggle selectedToggle) {
 						if (selectedToggle != null
 								&& status != VAVariables.currentSetStatus.noEmpty) {
+							int t = (status == VAVariables.currentSetStatus.mainSetEmpty) ? 0
+									: 1;
 							int cur = (int) ((ToggleButton) selectedToggle)
 									.getUserData() + 1;
-							VASyncData.setCurrentDisplayNum(cur);
+							VASyncData.setCurrentDisplayNum(cur, t);
 							val.InitData();
-							updateAllWithNewGroup(val.getRootGroupLeft(0));
+							// update selected group only
+							updateAllWithNewGroup(val.getRootGroupLeft(t), true);
 
 							// Set color according to current main set
 							((ToggleButton) selectedToggle)
 									.setStyle("-fx-background-color: "
 											+ VAVariables.panelColor[0] + ";");
 							((ToggleButton) selectedToggle).requestFocus();
-							
+
 							status = VAVariables.currentSetStatus.noEmpty;
-							
-							//disable all other buttons
+
+							// disable all other buttons
 							setToggleButtonStatus(true);
-							
+
 						} else {
 							// Renew Current set variable
 							((ToggleButton) oldValue).setStyle(null);
+							//set main set empty here for testing
 							status = VAVariables.currentSetStatus.mainSetEmpty;
-							
-							//enable all other buttons
+
+							// enable all other buttons
 							setToggleButtonStatus(false);
 						}
 					}
 				});
 	}
-	
-	private void setToggleButtonStatus(boolean disable){
-		for(int i=0; i<btnPages.length; i++){
-			if(!btnPages[i].isSelected()){
+
+	private void setToggleButtonStatus(boolean disable) {
+		for (int i = 0; i < btnPages.length; i++) {
+			if (!btnPages[i].isSelected()) {
 				btnPages[i].setDisable(disable);
 			}
 		}
@@ -615,7 +632,7 @@ public class VAPanel {
 
 			@Override
 			public void handle(ActionEvent arg0) {
-				updateAllWithNewGroup(val.getRootGroupLeft(0));
+				updateAllWithNewGroup(val.getRootGroupLeft(0), false);
 			}
 
 		});
@@ -627,7 +644,7 @@ public class VAPanel {
 
 			@Override
 			public void handle(ActionEvent arg0) {
-				updateAllWithNewGroup(val.getPreviousGroup1());
+				updateAllWithNewGroup(val.getPreviousGroup1(), false);
 				btnUp.setDisable(true);
 			}
 
