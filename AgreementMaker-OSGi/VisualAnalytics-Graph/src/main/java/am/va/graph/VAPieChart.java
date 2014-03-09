@@ -104,7 +104,7 @@ public class VAPieChart {
 					+ currentGroup.getRootNode().getSimilarity();
 			if (currentGroup.getParent() == 0)
 				newLabel = "Source ontoloty:"
-						+ String.valueOf(VASyncData.getCurrentDisplayNum());
+						+ String.valueOf(VASyncData.getCurrentDisplayNum(t));
 			if (currentGroup.hasChildren())
 				vap.setLblSource(newLabel, 0, t);
 			else
@@ -138,7 +138,7 @@ public class VAPieChart {
 			newLabel = newRightRootData.getNodeName();
 			if (newRightRootData.hasChildren()) {
 				newRightGroup.setListVAData(VASyncData.getChildrenData(
-						newRightRootData, VAVariables.ontologyType.Target));
+						newRightRootData, VAVariables.ontologyType.Target, t));
 				slotsMap = newRightGroup.getslotCountMap();
 			}
 		} else if (currentGroup != null && currentGroup.getParent() == 0) {
@@ -252,7 +252,7 @@ public class VAPieChart {
 					// Still need to figure the color
 
 					vap.setUpButton(vap.getVal().generateNewGroup(ontologyType,
-							selectedVAData));
+							selectedVAData, 0)); //list view changes according to main set
 					vap.generateNewTree();
 					updateMainPieChart(ontologyType);
 					// update second pie chart set

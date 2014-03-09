@@ -67,9 +67,9 @@ public class VAPanelLogic {
 	public void InitData() {
 		for (int i = 0; i < 2; i++) {
 			rootGroupLeft[i] = initRootGroup(rootGroupLeft[i],
-					VAVariables.ontologyType.Source);
+					VAVariables.ontologyType.Source, i);
 			rootGroupRight[i] = initRootGroup(rootGroupRight[i],
-					VAVariables.ontologyType.Target);
+					VAVariables.ontologyType.Target, i);
 		}
 		//init parent&previous group pointers
 		currentGroup = rootGroupLeft[0];
@@ -77,14 +77,14 @@ public class VAPanelLogic {
 	}
 
 	private VAGroup initRootGroup(VAGroup rootGroup,
-			VAVariables.ontologyType type) {
+			VAVariables.ontologyType type, int currentSet) {
 		rootGroup = new VAGroup();
 		rootGroup.setParent(0);
-		VAData rootNode = VASyncData.getRootVAData(type);
+		VAData rootNode = VASyncData.getRootVAData(type, currentSet);
 		rootGroup.setRootNode(rootNode);
 		// get all the children data sorted by similarity
 		rootGroup.setListVAData(VASyncData.getChildrenData(
-				rootGroup.getRootNode(), type));
+				rootGroup.getRootNode(), type, currentSet));
 		return rootGroup;
 	}
 
@@ -98,14 +98,14 @@ public class VAPanelLogic {
 	 * @return
 	 */
 	public VAGroup generateNewGroup(VAVariables.ontologyType ontologyType,
-			VAData newRootData) {
+			VAData newRootData, int currentSet) {
 		// Need a function here, return value:VAData
 		VAGroup newGroup = new VAGroup();
 		newGroup.setRootNode(newRootData);
 		if (newRootData != null && newRootData.hasChildren()) {
 			newGroup.setParent(currentGroup.getGroupID());
 			newGroup.setListVAData(VASyncData.getChildrenData(newRootData,
-					ontologyType));
+					ontologyType, currentSet));
 		} else {
 			newGroup.setParent(previousGroup.getGroupID());
 		}
@@ -114,7 +114,7 @@ public class VAPanelLogic {
 		 * Update list, being called twice ?!
 		 */
 		if (ontologyType == VAVariables.ontologyType.Source)
-			generateParentGroup();
+			generateParentGroup(currentSet);
 		return newGroup;
 	}
 
@@ -123,7 +123,7 @@ public class VAPanelLogic {
 	 * 
 	 * @return
 	 */
-	public VAGroup generateParentGroup() {
+	public VAGroup generateParentGroup(int currentSet) {
 		VAGroup parentGroup = null;
 		if (currentGroup.getCurrentLevel() < 1) {
 			// System.out.println("Generate Parent: parent=root");
@@ -135,7 +135,7 @@ public class VAPanelLogic {
 					.getRootNode());
 			parentGroup.setRootNode(parentData);
 			parentGroup.setListVAData(VASyncData.getChildrenData(parentData,
-					VAVariables.ontologyType.Source));
+					VAVariables.ontologyType.Source, currentSet));
 		}
 		return parentGroup;
 	}
