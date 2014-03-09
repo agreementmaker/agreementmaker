@@ -71,6 +71,9 @@ public class VAPanelLogic {
 			rootGroupRight[i] = initRootGroup(rootGroupRight[i],
 					VAVariables.ontologyType.Target);
 		}
+		//init parent&previous group pointers
+		currentGroup = rootGroupLeft[0];
+		previousGroup = rootGroupLeft[0];
 	}
 
 	private VAGroup initRootGroup(VAGroup rootGroup,
