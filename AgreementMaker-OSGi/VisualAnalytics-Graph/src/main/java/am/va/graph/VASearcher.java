@@ -12,7 +12,7 @@ public class VASearcher {
 
 	private VAData searchFrom(String name, VAData rootNode) {
 		// TODO Auto-generated method stub
-		System.out.println("Search from " + rootNode.getNodeName());
+		//System.out.println("Search from " + rootNode.getNodeName());
 		return VASyncData.searchFrom(name, rootNode);
 	}
 }

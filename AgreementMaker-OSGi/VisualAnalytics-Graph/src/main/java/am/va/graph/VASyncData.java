@@ -140,11 +140,11 @@ public class VASyncData {
 	 * @return
 	 */
 	private static VAData getMatchingVAData(Node n,
-			VAVariables.ontologyType ontologyType, int i) {
+			VAVariables.ontologyType ontologyType, int currentSet) {
 		Node matchingNode = null;
 		double sim = 0.00;
 		MatchingTask matchingTask = Core.getInstance().getMatchingTasks()
-				.get(currentDisplayNum[i]);
+				.get(currentDisplayNum[currentSet]);
 		SimilarityMatrix smMatrix = null;
 		if (VAPanelLogic.getCurrentNodeType() == VAVariables.nodeType.Class)
 			smMatrix = matchingTask.matcherResult.getClassesMatrix();
@@ -205,7 +205,7 @@ public class VASyncData {
 	 */
 	public static VAData searchFrom(String name, VAData rootNode) {
 		// TODO Auto-generated method stub
-		System.out.println("Search from " + rootNode.getNodeName());
+		//System.out.println("Search from " + rootNode.getNodeName());
 
 		if (rootNode != null) {
 			// find ontology
