@@ -75,8 +75,8 @@ public class VAPieChart {
 	 * Update current pie chart and add listeners
 	 */
 	public void updateMainPieChart(VAVariables.ontologyType ontologyType) {
-		int t = (type == VAVariables.ChartType.LeftMain) ? 0 : 1;
-		VAGroup currentGroup = vap.getVal().getCurrentGroup();
+		int currentSet = (type == VAVariables.ChartType.LeftMain) ? 0 : 1;
+		VAGroup currentGroup = vap.getVal().getCurrentGroup(currentSet);
 
 		if (currentGroup != null && currentGroup.hasChildren()) {
 			if (vap.getStop() != -1) {// Renew pie chart and build a new one
@@ -91,24 +91,25 @@ public class VAPieChart {
 								.get(key)));
 				}
 			}
-			if (t == 0) // add listener to main pie chart
-				addListener(ontologyType);
+			if (currentSet == 0) // add listener to main pie chart
+				addListener(ontologyType, currentSet);
 		} else {
 			int num = pieCharDatalist.size();
 			for (int i = 0; i < num; i++)
 				pieCharDatalist.remove(0);
 		}
 		if (vap.getStop() != -1) {
-			vap.getRightPie(t).updateSubRightPieChart();
+			vap.getRightPie(currentSet).updateSubRightPieChart();
 			String newLabel = currentGroup.getRootNodeName() + ": "
 					+ currentGroup.getRootNode().getSimilarity();
 			if (currentGroup.getParent() == 0)
 				newLabel = "Source ontoloty:"
-						+ String.valueOf(VASyncData.getCurrentDisplayNum(t));
+						+ String.valueOf(VASyncData
+								.getCurrentDisplayNum(currentSet));
 			if (currentGroup.hasChildren())
-				vap.setLblSource(newLabel, 0, t);
+				vap.setLblSource(newLabel, 0, currentSet);
 			else
-				vap.setLblSource(newLabel, 1, t);
+				vap.setLblSource(newLabel, 1, currentSet);
 		}
 		customPieChartColor();
 		if (vap.getStop() == -1) {
@@ -129,7 +130,7 @@ public class VAPieChart {
 		String newLabel = "";
 
 		// build new pie chart based on currentGroup info
-		VAGroup currentGroup = vap.getVal().getCurrentGroup();
+		VAGroup currentGroup = vap.getVal().getCurrentGroup(t);
 		VAGroup newRightGroup = new VAGroup();
 		HashMap<String, Integer> slotsMap = null;
 		if (currentGroup != null && currentGroup.hasMatching()) {
@@ -170,14 +171,15 @@ public class VAPieChart {
 	 * Add update list info listener (mouse entered event) Called by
 	 * updatePieChart
 	 */
-	public void addListener(final VAVariables.ontologyType ontologyType) {
+	public void addListener(final VAVariables.ontologyType ontologyType,
+			final int currentSet) {
 		for (final PieChart.Data currentData : pieChart.getData()) {
 			currentData.getNode().addEventHandler(MouseEvent.MOUSE_PRESSED,
 					new EventHandler<MouseEvent>() {
 
 						@Override
 						public void handle(MouseEvent e) {
-							getNodesList(currentData, ontologyType);
+							getNodesList(currentData, ontologyType, currentSet);
 							vap.setListView(listView);
 						}
 
@@ -195,9 +197,9 @@ public class VAPieChart {
 	 * @return
 	 */
 	private void getNodesList(PieChart.Data data,
-			VAVariables.ontologyType ontologyType) {
+			VAVariables.ontologyType ontologyType, int currentSet) {
 
-		VAGroup currentGroup = vap.getVal().getCurrentGroup();
+		VAGroup currentGroup = vap.getVal().getCurrentGroup(currentSet);
 
 		final ArrayList<VAData> dataArrayList = currentGroup.getVADataArray();
 		final HashMap<String, Integer> slotCountMap = currentGroup
@@ -249,14 +251,18 @@ public class VAPieChart {
 				if (selectedLocalName != null) {
 					System.out.println("clicked on " + selectedLocalName);
 					selectedVAData = listMap.get(selectedLocalName);
-					// Still need to figure the color
 
 					vap.setUpButton(vap.getVal().generateNewGroup(ontologyType,
-							selectedVAData, 0)); //list view changes according to main set
+							selectedVAData, 0)); // list view changes according
+													// to main set
+					vap.getVal().generateNewGroup(ontologyType, selectedVAData,
+							1);
 					vap.generateNewTree();
+
 					updateMainPieChart(ontologyType);
 					// update second pie chart set
 					vap.getLeftPie2().updateMainPieChart(ontologyType);
+
 					listView.getSelectionModel().clearSelection();
 				} else {
 					System.out.println("- select empty!");

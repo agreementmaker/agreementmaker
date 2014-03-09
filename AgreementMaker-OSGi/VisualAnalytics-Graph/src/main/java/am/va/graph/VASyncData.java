@@ -9,6 +9,7 @@ import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
+import am.va.graph.VAVariables.ontologyType;
 
 public class VASyncData {
 
@@ -194,5 +195,39 @@ public class VASyncData {
 		// if (ontologyType == VAVariables.ontologyType.Source)
 		// Collections.sort(res);
 		return res;
+	}
+	
+	/**
+	 * Search VAData from the rootNode
+	 * @param name
+	 * @param rootNode
+	 * @return
+	 */
+	public static VAData searchFrom(String name, VAData rootNode) {
+		// TODO Auto-generated method stub
+		System.out.println("Search from " + rootNode.getNodeName());
+
+		if (rootNode != null) {
+			// find ontology
+			if (rootNode.getNodeName() != null
+					&& rootNode.getNodeName().equals(name)) {
+				System.out.println("VASearch - Return " + rootNode.getNodeName());
+				return rootNode;
+			}
+
+			// Search children recursively
+			if (rootNode.hasChildren()) {
+				// set 0 here
+				ArrayList<VAData> children = VASyncData.getChildrenData(
+						rootNode, ontologyType.Source, 0);
+				for (VAData childData : children) {
+					VAData result = searchFrom(name, childData);
+					if (result != null) {
+						return result;
+					}
+				}
+			}
+		}
+		return null;
 	}
 }
