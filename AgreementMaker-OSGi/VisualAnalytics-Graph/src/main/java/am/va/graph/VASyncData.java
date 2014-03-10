@@ -43,8 +43,8 @@ public class VASyncData {
 		return currentDisplayNum[i];
 	}
 
-	public static void setCurrentDisplayNum(int currentDisplayNum, int i) {
-		VASyncData.currentDisplayNum[i] = currentDisplayNum;
+	public static void setCurrentDisplayNum(int currentDisplayNum, int set) {
+		VASyncData.currentDisplayNum[set] = currentDisplayNum;
 	}
 
 	/**
@@ -71,7 +71,7 @@ public class VASyncData {
 	 * @param ontologyType
 	 * @return
 	 */
-	private static Node getRootNode(VAVariables.ontologyType ontologyType, int i) {
+	private static Node getRootNode(VAVariables.ontologyType ontologyType, int set) {
 		Node rootNode = null;
 		List<MatchingTask> matchingTask = Core.getInstance().getMatchingTasks();
 
@@ -79,8 +79,8 @@ public class VASyncData {
 		totalDisplayNum = matchingTask.size() - 1;
 
 		MatchingTask currentTask = null;
-		if (currentDisplayNum[i] <= matchingTask.size())
-			currentTask = matchingTask.get(currentDisplayNum[i]);
+		if (currentDisplayNum[set] <= matchingTask.size())
+			currentTask = matchingTask.get(currentDisplayNum[set]);
 		else {
 			// Error!
 			return null;
@@ -118,16 +118,16 @@ public class VASyncData {
 	 * @return
 	 */
 	public static VAData getRootVAData(VAVariables.ontologyType ontologyType,
-			int i) {
+			int set) {
 		Node sNode = null, tNode = null;
 		double Similarity = 0.0;
 		if (ontologyType == VAVariables.ontologyType.Source) { // pie chart for
 																// source
 																// ontology
-			sNode = getRootNode(VAVariables.ontologyType.Source, i);
+			sNode = getRootNode(VAVariables.ontologyType.Source, set);
 
 		} else {
-			sNode = getRootNode(VAVariables.ontologyType.Target, i);
+			sNode = getRootNode(VAVariables.ontologyType.Target, set);
 		}
 		tNode = null;
 		return new VAData(sNode, tNode, Similarity);
@@ -140,11 +140,11 @@ public class VASyncData {
 	 * @return
 	 */
 	private static VAData getMatchingVAData(Node n,
-			VAVariables.ontologyType ontologyType, int currentSet) {
+			VAVariables.ontologyType ontologyType, int set) {
 		Node matchingNode = null;
 		double sim = 0.00;
 		MatchingTask matchingTask = Core.getInstance().getMatchingTasks()
-				.get(currentDisplayNum[currentSet]);
+				.get(currentDisplayNum[set]);
 		SimilarityMatrix smMatrix = null;
 		if (VAPanelLogic.getCurrentNodeType() == VAVariables.nodeType.Class)
 			smMatrix = matchingTask.matcherResult.getClassesMatrix();
@@ -203,7 +203,7 @@ public class VASyncData {
 	 * @param rootNode
 	 * @return
 	 */
-	public static VAData searchFrom(String name, VAData rootNode) {
+	public static VAData searchFrom(String name, VAData rootNode, int set) {
 		// TODO Auto-generated method stub
 		//System.out.println("Search from " + rootNode.getNodeName());
 
@@ -219,9 +219,9 @@ public class VASyncData {
 			if (rootNode.hasChildren()) {
 				// set 0 here
 				ArrayList<VAData> children = VASyncData.getChildrenData(
-						rootNode, ontologyType.Source, 0);
+						rootNode, ontologyType.Source, set);
 				for (VAData childData : children) {
-					VAData result = searchFrom(name, childData);
+					VAData result = searchFrom(name, childData, set);
 					if (result != null) {
 						return result;
 					}

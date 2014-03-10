@@ -22,7 +22,7 @@ public class VAPieChart {
 	private PieChart pieChart;
 	private ListView<String> listView;
 	private ObservableList<PieChart.Data> pieCharDatalist;
-	private VAData selectedVAData;
+	//private VAData selectedVAData;
 	private VAVariables.ChartType type;
 
 	private VAPanel vap;
@@ -249,28 +249,15 @@ public class VAPieChart {
 				String selectedLocalName = listView.getSelectionModel()
 						.getSelectedItems().get(0);
 				if (selectedLocalName != null) {
-					//System.out.println("clicked on " + selectedLocalName);
-					selectedVAData = listMap.get(selectedLocalName);
-
-					//new main group
-					VAGroup selectedMainGroup = vap.getVal().generateNewGroup(
-							ontologyType, selectedVAData, 0);
-
-					VAData selectedSubVAData = VASyncData.searchFrom(
-							selectedVAData.getNodeName(), vap.getVal()
-									.getRootGroupLeft(1).getRootNode());
-					//new sub group
-					VAGroup selectedSubGroup = vap.getVal().generateNewGroup(
-							ontologyType, selectedSubVAData, 1);
-					
-					vap.generateNewTree();
-					vap.setUpButton(selectedMainGroup);
-
-					// update main set's pie chart
-					updateMainPieChart(ontologyType);
-					// update sub set's pie chart
-					vap.getLeftPie2().updateMainPieChart(ontologyType);
-
+					for(int i=0; i<2; i++){
+						VAGroup newGroup;
+						VAData subda = VASyncData.searchFrom(selectedLocalName, vap.getVal().getRootGroupLeft(i)
+								.getRootNode(), i);
+						newGroup = vap.getVal().generateNewGroup(VAVariables.ontologyType.Source, subda, i);
+						if(i==0)
+							vap.setUpButton(newGroup);
+						vap.updateAllWithNewGroup(newGroup, i);
+					}
 					listView.getSelectionModel().clearSelection();
 				} else {
 					System.out.println("- select empty!");
