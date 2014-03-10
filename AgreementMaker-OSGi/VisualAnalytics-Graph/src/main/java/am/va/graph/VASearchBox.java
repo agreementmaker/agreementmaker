@@ -51,7 +51,8 @@ public class VASearchBox extends Region {
 				if (ke.getCode().equals(KeyCode.ENTER)) {
 					String inputString = textBox.getText();
 					if (inputString.length() != 0) {
-						VAData result = searcher.search(inputString);
+						//set 0 here
+						VAData result = searcher.search(inputString, 0);
 						if (result != null) {
 							// set 0 here
 							vap.setUpButton(vap.getVal().generateNewGroup(VAVariables.ontologyType.Source, result, 0));

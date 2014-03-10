@@ -77,8 +77,9 @@ public class VAPanelLogic {
 		VAData rootNode = VASyncData.getRootVAData(type, currentSet);
 		rootGroup.setRootNode(rootNode);
 		// get all the children data sorted by similarity
-		rootGroup.setListVAData(VASyncData.getChildrenData(rootGroup.getRootNode(), type, currentSet));
-		// init current & previous group [(3/9/2014)that's where the bug is caused!!!]
+		rootGroup.setListVAData(VASyncData.getChildrenData(rootNode, type, currentSet));
+		// init current & previous group [(3/9/2014)that's where the bug is
+		// caused!!!]
 		currentGroup[currentSet] = rootGroup;
 		previousGroup[currentSet] = rootGroup;
 		return rootGroup;
@@ -107,8 +108,8 @@ public class VAPanelLogic {
 		/**
 		 * Update list, being called twice ?!
 		 */
-		if (ontologyType == VAVariables.ontologyType.Source)
-			generateParentGroup(currentSet);
+		// if (ontologyType == VAVariables.ontologyType.Source)
+		// generateParentGroup(currentSet);
 		return newGroup;
 	}
 

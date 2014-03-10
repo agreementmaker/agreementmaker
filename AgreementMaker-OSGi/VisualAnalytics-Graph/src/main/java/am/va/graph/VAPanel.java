@@ -16,7 +16,6 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -437,31 +436,14 @@ public class VAPanel {
 					for (VAData da : data) {
 						if (da.getNodeName().equals(selected)) {
 							for (int i = 0; i < 2; i++) {
-								VAGroup newGroup = new VAGroup();
-
+								VAGroup newGroup;
 								/**
 								 * If i==0, then rebuild the VAData according to the selected item name
 								 * Always updating the main set
 								 */
-								if (i == 0) {
-									VAData subda = VASyncData.searchFrom(da.getNodeName(), val.getRootGroupLeft(i)
-											.getRootNode());
-									System.out.println("treeviewAction, sub: " + subda.getNodeName() + " "
-											+ subda.getSimilarity());
-									newGroup.setRootNode(subda);
-									newGroup.setListVAData(VASyncData.getChildrenData(subda, ontologyType.Source, i));
-								} else {
-									newGroup.setRootNode(da);
-									System.out.println("treeviewAction, main: " + da.getNodeName() + " "
-											+ da.getSimilarity());
-
-									newGroup.setListVAData(VASyncData.getChildrenData(da, ontologyType.Source, i));
-									newGroup.setParent(val.getCurrentGroup(i).getGroupID());
-								}
-
-								// tree view updates according to main
-								// set
-
+								VAData newda = VASyncData.searchFrom(da.getNodeName(), val.getRootGroupLeft(i)
+										.getRootNode(), i);
+								newGroup = val.generateNewGroup(VAVariables.ontologyType.Source, newda, i);
 								updateAllWithNewGroup(newGroup, i);
 							}
 							break;
@@ -507,7 +489,7 @@ public class VAPanel {
 		chartLeft[set].updateMainPieChart(ontologyType.Source);
 		chartLeft[set].clearList();
 
-		generateNewTree();
+		generateNewTree();//may being called twice
 	}
 	
 
@@ -575,7 +557,7 @@ public class VAPanel {
 				if (selectedToggle != null && status != VAVariables.currentSetStatus.noEmpty) {
 					int t = (status == VAVariables.currentSetStatus.mainSetEmpty) ? 0 : 1;
 					int cur = (int) ((ToggleButton) selectedToggle).getUserData() + 1;
-					VASyncData.setCurrentDisplayNum(cur, t);
+					VASyncData.setCurrentDisplayNum(cur, t);//(***)
 					val.InitData(t); // init main or sub set
 					// update selected group only
 					updateAllWithNewGroup(val.getRootGroupLeft(t), t);
