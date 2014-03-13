@@ -11,10 +11,8 @@ import java.util.List;
 
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
-import am.extension.multiUserFeedback.MUExperiment;
-import am.extension.userfeedback.MLFeedback.MLFExperiment;
+import am.extension.userfeedback.experiments.MLFExperiment;
 
 public class MultiUserSaveFeedback extends SaveFeedback<MLFExperiment> {
 	
