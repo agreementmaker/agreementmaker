@@ -4,7 +4,6 @@ import java.awt.event.ActionEvent;
 
 import org.apache.log4j.Logger;
 
-import am.extension.userfeedback.MLFeedback.MLFExperiment;
 import am.extension.userfeedback.ui.UFLControlGUI.ActionCommands;
 
 public class IndependentSequentialLogicML  extends UFLControlLogic<MLFExperiment> {

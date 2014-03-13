@@ -2,8 +2,6 @@ package am.extension.userfeedback.experiments;
 
 import java.awt.event.ActionListener;
 
-import am.extension.userfeedback.UFLExperiment;
-
 public abstract class UFLControlLogic<T extends UFLExperiment>  implements ActionListener {
 	
 	protected T experiment;
