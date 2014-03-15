@@ -67,10 +67,8 @@ public abstract class AbstractSelectionAlgorithm extends SwingWorker<Void,Void> 
 	
     protected void selectAndSetAlignments() {
     	if(params.alignClasses) {
-    		if (params.inputResult == null){
-    			LOG.error("Input result is NULL! D: Cannot select!");
-    			return;
-    		}
+    		if (params.inputResult == null)
+    			throw new RuntimeException("Input result is NULL. Mapping selection cannot performed.");
     		Alignment<Mapping> classesAlignmentSet = scanMatrix(params.inputResult.getClassesMatrix());
     		result.setClassAlignmentSet(classesAlignmentSet);
     	}
