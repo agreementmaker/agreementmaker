@@ -47,21 +47,12 @@ public class VASearchBox extends Region {
 
 		textBox.setOnKeyPressed(new EventHandler<KeyEvent>() {
 			public void handle(KeyEvent ke) {
-				// System.out.println("Key Pressed: " + ke.getText());
 				if (ke.getCode().equals(KeyCode.ENTER)) {
 					String inputString = textBox.getText();
 					if (inputString.length() != 0) {
-						//set 0 here
 						VAData result = searcher.search(inputString, 0);
 						if (result != null) {
-							// set 0 here
-							vap.setUpButton(vap.getVal().generateNewGroup(VAVariables.ontologyType.Source, result, 0));
-							vap.getVal().generateNewGroup(VAVariables.ontologyType.Source, result, 1);
-							vap.updateLeftChart();
-							vap.generateNewTree();
-							// System.out.println("result is "+
-							// result.getNodeName());
-
+							vap.updateBothSets(result.getNodeName());
 						} else {
 							System.out.println("No result");
 						}

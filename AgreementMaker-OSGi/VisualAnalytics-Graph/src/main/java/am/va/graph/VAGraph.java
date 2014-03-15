@@ -18,16 +18,14 @@ import javafx.scene.input.MouseEvent;
  * @author Yiting
  * 
  */
-public class VAPieChart {
+public class VAGraph {
 	private PieChart pieChart;
 	private ListView<String> listView;
 	private ObservableList<PieChart.Data> pieCharDatalist;
-	//private VAData selectedVAData;
 	private VAVariables.ChartType type;
-
 	private VAPanel vap;
 
-	public VAPieChart(VAPanel v) {
+	public VAGraph(VAPanel v) {
 		this.pieCharDatalist = null;
 		this.pieChart = null;
 		this.vap = v;
@@ -38,7 +36,7 @@ public class VAPieChart {
 	 * 
 	 * @param group
 	 */
-	public VAPieChart(VAGroup group, VAPanel v, VAVariables.ChartType Category) {
+	public VAGraph(VAGroup group, VAPanel v, VAVariables.ChartType Category) {
 		this.vap = v;
 		this.type = Category;
 		pieCharDatalist = FXCollections.observableArrayList();
@@ -224,16 +222,6 @@ public class VAPieChart {
 	}
 
 	/**
-	 * return slected VAData often called after user clicks one item on
-	 * ListView, passed to getNewGroup in VAPanel
-	 * 
-	 * @return
-	 */
-	// public VAData getSelectedVAData() {
-	// return selectedVAData;
-	// }
-
-	/**
 	 * Set click action of listView Called by getNodesList
 	 * 
 	 * @param listView
@@ -249,15 +237,7 @@ public class VAPieChart {
 				String selectedLocalName = listView.getSelectionModel()
 						.getSelectedItems().get(0);
 				if (selectedLocalName != null) {
-					for(int i=0; i<2; i++){
-						VAGroup newGroup;
-						VAData subda = VASyncData.searchFrom(selectedLocalName, vap.getVal().getRootGroupLeft(i)
-								.getRootNode(), i);
-						newGroup = vap.getVal().generateNewGroup(VAVariables.ontologyType.Source, subda, i);
-						if(i==0)
-							vap.setUpButton(newGroup);
-						vap.updateAllWithNewGroup(newGroup, i);
-					}
+					vap.updateBothSets(selectedLocalName);
 					listView.getSelectionModel().clearSelection();
 				} else {
 					System.out.println("- select empty!");
