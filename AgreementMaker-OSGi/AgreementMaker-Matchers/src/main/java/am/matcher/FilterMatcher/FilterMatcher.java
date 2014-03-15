@@ -116,9 +116,9 @@ public class FilterMatcher  extends AbstractMatcher  {
 
 			if (typeOfNodes == alignType.aligningClasses
 					&& a.areClassesAligned()) {
-				if (matrix.get(sourceindex, targetindex) != null) {
+				if (a.getClassesMatrix().get(sourceindex, targetindex) != null) {
 	
-		sim = matrix.get(sourceindex, targetindex).getSimilarity();
+		sim = a.getClassesMatrix().get(sourceindex, targetindex).getSimilarity();
 		String srcinpFileName=a.getSourceOntology().getFilename();
 		String trginpFileName=a.getTargetOntology().getFilename();		
 		Model model = ModelFactory.createDefaultModel();
@@ -306,7 +306,7 @@ public class FilterMatcher  extends AbstractMatcher  {
 				
 			} else if (typeOfNodes == alignType.aligningProperties
 					&& a.arePropertiesAligned()) {
-				if (matrix.get(sourceindex, targetindex) != null) {
+				if (a.getPropertiesMatrix().get(sourceindex, targetindex) != null) {
 			//		sim = a.getPropertiesMatrix().get(sourceindex, targetindex).getSimilarity();
 					
 					String srcdomain, trgdomain, srcrange, trgrange;
@@ -330,7 +330,7 @@ public class FilterMatcher  extends AbstractMatcher  {
 
 					if (srcdomain.equals(trgdomain)
 							&& srcrange.equals(trgrange)) {
-						sim = matrix.get(sourceindex, targetindex).getSimilarity();
+						sim = a.getPropertiesMatrix().get(sourceindex, targetindex).getSimilarity();
 					} else {
 						sim = 0.4;
 					}
