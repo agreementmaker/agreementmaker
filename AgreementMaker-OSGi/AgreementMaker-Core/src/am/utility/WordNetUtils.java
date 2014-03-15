@@ -6,6 +6,7 @@ import java.util.HashMap;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import am.app.Core;
 import edu.smu.tspell.wordnet.Synset;
 import edu.smu.tspell.wordnet.WordNetDatabase;
 
@@ -23,39 +24,40 @@ public class WordNetUtils {
 	
 	private void initWordnet() {
 		if( wordNet != null ) return; // skip the initialization, wordnet has already been initialized
-		
-		// Initialize the WordNet interface.
-		String cwd = System.getProperty("user.dir");
-		System.out.println(cwd);
-	//	String wordnetdir = null;
-		String wordnetdir = "C:/eclipse/wordnet-3.0";
-	
-/*		String wordnetdir2 = cwd + "/../AgreementMaker/wordnet-3.0";
-		String wordnetdir3 = cwd + "/../InformationMatching/wordnet-3.0";
-		String[] dirs = { wordnetdir1, wordnetdir2, wordnetdir3 };
-		
-		// search through the directories for the wordnet files
-		for( String currentDir : dirs ) {
-			File wndir = new File(currentDir);
-			if( wndir.exists() && wndir.canRead() ) {
-				wordnetdir = currentDir;
-				break;
-			}
-		}*/
 
-		if( wordnetdir == null ) {
+		// Initialize the WordNet interface.
+		String wordnetDir = Core.getInstance().getRoot() + "wordnet-3.0";
+
+		File rootDir = new File(wordnetDir);
+		if( !rootDir.exists() || !rootDir.canRead() ) {
+			String cwd = System.getProperty("user.dir");
+			
+			String wordnetDir1 = cwd + "/AgreementMaker-OSGi/AM_ROOT/wordnet-3.0";
+			String wordnetDir2 = cwd + "/../AgreementMaker-OSGi/AM_ROOT/wordnet-3.0";
+			String[] dirs = { wordnetDir1, wordnetDir2 };
+			
+			for( String currentDir : dirs ) {
+				File wndir = new File(currentDir);
+				if( wndir.exists() && wndir.canRead() ) {
+					wordnetDir = currentDir;
+					break;
+				}
+			}
+		}
+
+		if( wordnetDir == null ) {
 			Logger log = Logger.getLogger(WordNetUtils.class);
 			log.error("Could not find WordNet directory!");
 			return;
 		}
 		
-		System.setProperty("wordnet.database.dir", wordnetdir);
+		System.setProperty("wordnet.database.dir", wordnetDir);
 		// Instantiate 
 		try {
 			wordNet = WordNetDatabase.getFileInstance();
 		}
 		catch( Exception e ) {
-			LOG.error("Cannot open WordNet files.\nWordNet should be in the following directory:\n" + wordnetdir, e);
+			LOG.error("Cannot open WordNet files.\nWordNet should be in the following directory:\n" + wordnetDir, e);
 		}
 	}
 
