@@ -67,6 +67,7 @@ public class MatchingTask {
 	 */
 	public void select() {
 		try {
+			selectionParameters.inputResult = matcherResult;
 			selectionAlgorithm.setParameters(selectionParameters);
 			selectionAlgorithm.select();
 			selectionResult = selectionAlgorithm.getResult();
