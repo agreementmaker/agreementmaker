@@ -6,6 +6,7 @@ package am.matcher.groupFinder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import am.AMException;
@@ -202,24 +203,28 @@ public class GroupFinderMatcher extends AbstractMatcher {
 	    	localList = input.chooseBestN(createIntList(sourceSet), createIntList(targetSet));
 	    	Mapping selectedMapping = null;
 	    	double newSim = 0.0;
-    		Node sourceRoot, targetRoot;
 	    	
     		if(localList.size() > 0){ // if is unnecessary -- Cosmin, Sept 17, 2011
 		    	for(int k = 0; k < localList.size(); k++){
 		    		selectedMapping = localList.get(k);
 		    		//System.out.println();
 		    		//System.out.println("start:");
-		    		sourceRoot = selectedMapping.getEntity1().getRoot();
+		    		Node sourceRoot = selectedMapping.getEntity1().getRoot();
 		    		//System.out.println("source root " + sourceRoot.getLocalName());
 		    		//System.out.println("target " + a.getEntity2());
 		    		//System.out.println("target root " + a.getEntity2().getRoot().getLocalName());
-		    		targetRoot = selectedMapping.getEntity2().getRoot();
+		    		Node targetRoot = selectedMapping.getEntity2().getRoot();
 		    		//System.out.println("target root " + targetRoot.getLocalName());
 		    		int sourceInd = source_root_list.indexOf(sourceRoot);
 		    		//System.out.println("sourceIndex " + sourceInd);
 		    		int targetInd = target_root_list.indexOf(targetRoot);
 		    		//System.out.println("targetIndex " + targetInd);
-		    		newSim = selectedMapping.getSimilarity() + localMatrix[sourceInd][targetInd].getSimilarity();
+		    		
+		    		double localMatrixSim = 0.0d;
+		    		if( localMatrix[sourceInd][targetInd] != null ) {
+		    			localMatrixSim = localMatrix[sourceInd][targetInd].getSimilarity();
+		    		}
+		    		newSim = selectedMapping.getSimilarity() + localMatrixSim;
 		    		//System.out.println("newSim " + newSim);
 		    		//localMatrix.set(sourceInd, targetInd, new Mapping( sourceRoot, targetRoot, newSim) );
 		    		localMatrix[sourceInd][targetInd] = new Mapping( sourceRoot, targetRoot, newSim );
@@ -245,6 +250,13 @@ public class GroupFinderMatcher extends AbstractMatcher {
     		}
     	}
     	
+    	// filter out nulls from the allMappings list.
+    	// FIXME: THERE SHOULD NOT BE NULLS IN THE LIST!!!!! - Cosmin.
+    	List<Mapping> allMappingsFiltered = new LinkedList<Mapping>();
+    	for( Mapping m : allMappings ) {
+    		if( m != null ) allMappingsFiltered.add(m);
+    	}
+ 
     	Collections.sort(allMappings, new MappingSimilarityComparator());
     	
     	List<Mapping> bestMappings = new ArrayList<Mapping>();
