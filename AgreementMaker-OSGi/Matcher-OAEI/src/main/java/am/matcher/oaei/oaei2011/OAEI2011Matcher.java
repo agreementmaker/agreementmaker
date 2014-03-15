@@ -6,8 +6,6 @@ package am.matcher.oaei.oaei2011;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,15 +28,10 @@ import am.app.mappingEngine.qualityEvaluation.QualityMetricRegistry;
 import am.app.mappingEngine.utility.OAEI_Track;
 import am.app.ontology.Node;
 import am.app.ontology.NodeHierarchy;
-import am.app.ontology.Ontology;
 import am.app.ontology.hierarchy.AlternateHierarchy;
-import am.app.ontology.profiling.OntologyProfiler;
-import am.app.ontology.profiling.ProfilerRegistry;
-import am.app.ontology.profiling.OntologyProfiler.ParamType;
 import am.app.ontology.profiling.classification.OntologyClassifier;
 import am.app.ontology.profiling.classification.OntologyClassifier.OAEI2011Configuration;
 import am.app.ontology.profiling.manual.ManualOntologyProfiler;
-import am.app.ontology.profiling.manual.ManualProfilerMatchingParameters;
 import am.matcher.Combination.CombinationMatcher;
 import am.matcher.Combination.CombinationParameters;
 import am.matcher.FilterMatcher.FilterMatcher;
@@ -62,7 +55,6 @@ import am.matcher.parametricStringMatcher.ParametricStringMatcher;
 import am.matcher.parametricStringMatcher.ParametricStringParameters;
 
 import com.hp.hpl.jena.ontology.OntProperty;
-import com.hp.hpl.jena.rdf.model.Property;
 
 /**
  * The matching algorithm for OAEI 2011.
@@ -131,6 +123,10 @@ public class OAEI2011Matcher extends AbstractMatcher {
     			finalResult = runGeneralPurposeAdvanced();
     		}
     		break;
+    		case GENERAL_PURPOSE_FILTERED: {
+    			finalResult = runGeneralPurposeFiltered();
+    		}
+    		break;
     		case LARGE_LEXICAL_WITH_LOCALNAMES: {
     			finalResult = runLexicalBasedWithLocalnames();
     		}
@@ -166,6 +162,9 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		case GENERAL_PURPOSE: {
 			finalResult = runGeneralPurpose();
 		}
+		case GENERAL_PURPOSE_FILTERED: {
+			finalResult = runGeneralPurposeFiltered();
+		}
 		break;
 		case GENERAL_MULTI: {
 			finalResult = runMultiOntologyBased();
@@ -193,6 +192,36 @@ public class OAEI2011Matcher extends AbstractMatcher {
 	
 	private AbstractMatcher runGeneralPurpose() throws Exception {
 		
+		AbstractMatcher gpm = runGeneralPurposeMatchers();
+
+		if( isCancelled() ) return null;
+		
+		AbstractMatcher iism = MatcherFactory.getMatcherInstance(IterativeInstanceStructuralMatcher.class);
+		
+		iism.addInputMatcher(gpm);
+		
+		IterativeInstanceStructuralParameters iismParam = 
+				new IterativeInstanceStructuralParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign);
+		
+		iismParam.allBoost();
+		iismParam.setConsiderIndividuals(true);
+		iismParam.setPropertyUsageThreshold(0.6);
+		iismParam.setPropertyValuesThreshold(0.5);
+		iismParam.setRangeDomainThreshold(0.89);
+		iismParam.setSuperclassThreshold(0.6);
+		iismParam.setUsePropertyUsage(true);
+		iismParam.setUsePropertyValues(true);
+		iismParam.setUseRangeDomain(true);
+		iismParam.setUseSuperclasses(true);
+		
+		setupSubMatcher(iism, iismParam);
+		runSubMatcher(iism, "IISM");
+		
+		return iism;
+	}
+	
+	/** Runs the first part of the general purpose matcher stack */
+	private AbstractMatcher runGeneralPurposeMatchers() throws Exception {
 		// Build the lexicons.
 		LexiconBuilderParameters lexParam = new LexiconBuilderParameters();
 		lexParam.sourceOntology = sourceOntology;
@@ -213,72 +242,79 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		Core.getInstance().setOntologyProfiler(
 				ManualOntologyProfiler.createOntologyProfiler(sourceOntology, targetOntology));
 		
-		// BSM
 		List<AbstractMatcher> lwcInputMatchers = new ArrayList<AbstractMatcher>();
 		
-		if( !isCancelled() ) {
-			AbstractMatcher bsm = MatcherFactory.getMatcherInstance(BaseSimilarityMatcher.class);
-			
-			BaseSimilarityParameters bsmParam = 
-					new BaseSimilarityParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign);
-			bsmParam.useDictionary = false;
-			
-			setupSubMatcher(bsm, bsmParam);
-			runSubMatcher(bsm, "BSM 1/6");
-			
-			lwcInputMatchers.add(bsm);			
-		}
+		if( isCancelled() ) return null;
 		
+		/* *********************************************** */
+		// BSM
+		AbstractMatcher bsm = MatcherFactory.getMatcherInstance(BaseSimilarityMatcher.class);
+		
+		BaseSimilarityParameters bsmParam = 
+				new BaseSimilarityParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign);
+		bsmParam.useDictionary = false;
+		
+		setupSubMatcher(bsm, bsmParam);
+		runSubMatcher(bsm, "BSM");
+		
+		lwcInputMatchers.add(bsm);			
+		
+		if( isCancelled() ) return null;
+		
+		/* *********************************************** */
 		// PSM
-		if( !isCancelled() ) {
-			AbstractMatcher psm = MatcherFactory.getMatcherInstance(ParametricStringMatcher.class);
-			
-			ParametricStringParameters psmParam = 
-					new ParametricStringParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign);
-			
-			psmParam.localWeight = 0.33;
-			psmParam.labelWeight = 0.34d;
-			psmParam.commentWeight = 0.33d;
-			psmParam.seeAlsoWeight = 0.00d;
-			psmParam.isDefinedByWeight = 0.00d;
-			
-			psmParam.useLexicons = false;
-			psmParam.useBestLexSimilarity = false;
-			psmParam.measure = StringMetrics.AMSUB_AND_EDIT;
-			psmParam.normParameter = new NormalizerParameter();
-			psmParam.normParameter.setForOAEI2009();
-			psmParam.redistributeWeights = true;
-			
-			setupSubMatcher(psm, psmParam);
-			runSubMatcher(psm, "PSM 2/6");
-			
-			lwcInputMatchers.add(psm);			
-		}
+		AbstractMatcher psm = MatcherFactory.getMatcherInstance(ParametricStringMatcher.class);
+		
+		ParametricStringParameters psmParam = 
+				new ParametricStringParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign);
+		
+		psmParam.localWeight = 0.33;
+		psmParam.labelWeight = 0.34d;
+		psmParam.commentWeight = 0.33d;
+		psmParam.seeAlsoWeight = 0.00d;
+		psmParam.isDefinedByWeight = 0.00d;
+		
+		psmParam.useLexicons = false;
+		psmParam.useBestLexSimilarity = false;
+		psmParam.measure = StringMetrics.AMSUB_AND_EDIT;
+		psmParam.normParameter = new NormalizerParameter();
+		psmParam.normParameter.setForOAEI2009();
+		psmParam.redistributeWeights = true;
+		
+		setupSubMatcher(psm, psmParam);
+		runSubMatcher(psm, "PSM");
+		
+		lwcInputMatchers.add(psm);
+		
+		/* *********************************************** */
+		
+		if( isCancelled() ) return null;
 		
 		// VMM
+		AbstractMatcher vmm = MatcherFactory.getMatcherInstance(MultiWordsMatcher.class);
 		
-		if( !isCancelled() ) {
-			AbstractMatcher vmm = MatcherFactory.getMatcherInstance(MultiWordsMatcher.class);
-			
-			MultiWordsParameters vmmParam = 
-					new MultiWordsParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign);
-			
-			vmmParam.measure = MultiWordsParameters.TFIDF;
-			//only on concepts right now because it should be weighted differently
-			vmmParam.considerInstances = true;
-			vmmParam.considerNeighbors = false;
-			vmmParam.considerConcept = true;
-			vmmParam.considerClasses = false;
-			vmmParam.considerProperties = false;
-			vmmParam.ignoreLocalNames = true; 
-			
-			vmmParam.useLexiconSynonyms = true; // May change later.
-			
-			setupSubMatcher(vmm, vmmParam);
-			runSubMatcher(vmm, "VMM 3/6");
-			
-			lwcInputMatchers.add(vmm);
-		}
+		MultiWordsParameters vmmParam = 
+				new MultiWordsParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign);
+		
+		vmmParam.measure = MultiWordsParameters.TFIDF;
+		//only on concepts right now because it should be weighted differently
+		vmmParam.considerInstances = true;
+		vmmParam.considerNeighbors = false;
+		vmmParam.considerConcept = true;
+		vmmParam.considerClasses = false;
+		vmmParam.considerProperties = false;
+		vmmParam.ignoreLocalNames = true; 
+		
+		vmmParam.useLexiconSynonyms = true; // May change later.
+		
+		setupSubMatcher(vmm, vmmParam);
+		runSubMatcher(vmm, "VMM");
+		
+		lwcInputMatchers.add(vmm);
+		
+		/* *********************************************** */
+		
+		if( isCancelled() ) return null;
 		
 		// LSM
 		if( !isCancelled() ) {
@@ -289,74 +325,46 @@ public class OAEI2011Matcher extends AbstractMatcher {
 			lsmParam.useSynonymTerms = false;
 			
 			setupSubMatcher(lsm, lsmParam);
-			runSubMatcher(lsm, "LSM 4/6");
+			runSubMatcher(lsm, "LSM");
 			
 			lwcInputMatchers.add(lsm);
 		}
 		
+		if( isCancelled() ) return null;
+		
+		/* *********************************************** */
 		// LWC
-		AbstractMatcher lwc = null;
-		List<AbstractMatcher> filter_matcher_InputMatchers = new ArrayList<AbstractMatcher>();
-		if( !isCancelled() ) {
-			lwc = MatcherFactory.getMatcherInstance(CombinationMatcher.class);
+		
+		AbstractMatcher lwc = MatcherFactory.getMatcherInstance(CombinationMatcher.class);
 			
-			lwc.setInputMatchers(lwcInputMatchers);
-			
-			CombinationParameters lwcParam = 
-					new CombinationParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign);
-			lwcParam.combinationType = CombinationParameters.AVERAGECOMB;
-			lwcParam.qualityEvaluation = true;
-			lwcParam.manualWeighted = false;
-			lwcParam.quality = QualityMetricRegistry.LOCAL_CONFIDENCE;
-			
-			setupSubMatcher(lwc, lwcParam);
-			runSubMatcher(lwc, "LWC 5/6");
-			filter_matcher_InputMatchers.add(lwc);
+		lwc.setInputMatchers(lwcInputMatchers);
+		
+		CombinationParameters lwcParam = 
+				new CombinationParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign);
+		lwcParam.combinationType = CombinationParameters.AVERAGECOMB;
+		lwcParam.qualityEvaluation = true;
+		lwcParam.manualWeighted = false;
+		lwcParam.quality = QualityMetricRegistry.LOCAL_CONFIDENCE;
+		
+		setupSubMatcher(lwc, lwcParam);
+		runSubMatcher(lwc, "LWC");
 
-	
-		}
-
-		AbstractMatcher  fm=null;
-
-		if( !isCancelled() ) {
-			
-		
-			fm = MatcherFactory.getMatcherInstance(FilterMatcher.class);
-				
-			fm.setInputMatchers(lwcInputMatchers);
-			fm.match();
-		}
-		
-		
-		
-		if( !isCancelled() ) {
-			AbstractMatcher iism = MatcherFactory.getMatcherInstance(IterativeInstanceStructuralMatcher.class);
-			
-			iism.addInputMatcher(fm);
-			
-			IterativeInstanceStructuralParameters iismParam = 
-					new IterativeInstanceStructuralParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign);
-			
-			iismParam.allBoost();
-			iismParam.setConsiderIndividuals(true);
-			iismParam.setPropertyUsageThreshold(0.6);
-			iismParam.setPropertyValuesThreshold(0.5);
-			iismParam.setRangeDomainThreshold(0.89);
-			iismParam.setSuperclassThreshold(0.6);
-			iismParam.setUsePropertyUsage(true);
-			iismParam.setUsePropertyValues(true);
-			iismParam.setUseRangeDomain(true);
-			iismParam.setUseSuperclasses(true);
-			
-			setupSubMatcher(iism, iismParam);
-			runSubMatcher(iism, "IISM 6/6");
-			
-			return iism;
-		}
-		
-		return null;
+		return lwc;
 	}
+	
+	private AbstractMatcher runGeneralPurposeFiltered() throws Exception {
+		
+		AbstractMatcher gpm = runGeneralPurposeMatchers();
 
+		if( isCancelled() ) return null;
+				
+		AbstractMatcher fm = MatcherFactory.getMatcherInstance(FilterMatcher.class);
+		fm.addInputMatcher(gpm);
+		setupSubMatcher(fm, new DefaultMatcherParameters());
+		runSubMatcher(fm, "FM");
+		return fm;
+	}
+	
 	private AbstractMatcher runGeneralPurposeAdvanced() throws Exception {
 		
 		// Build the lexicons.
@@ -1131,6 +1139,14 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		if(p.showIntermediateMatchers && !m.isCancelled()) {
 			MatchingTask mt = new MatchingTask(m, m.getParam(), 
 					new MwbmSelection(), new DefaultSelectionParameters());
+			
+			mt.matcherResult = m.getResult();
+
+			// do selection
+			mt.selectionParameters.inputResult = m.getResult();
+			mt.selectionAlgorithm.setParameters(mt.selectionParameters);
+			mt.selectionAlgorithm.select();
+			mt.selectionResult = mt.selectionAlgorithm.getResult();
 			
 			Core.getInstance().addMatchingTask(mt);
 		}
