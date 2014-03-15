@@ -157,5 +157,4 @@ public class VAPanelLogic {
 		updatePreviousGroup(currentGroup[currentSet], currentSet);
 		currentGroup[currentSet] = group;
 	}
-
 }

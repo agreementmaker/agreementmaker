@@ -69,8 +69,8 @@ public class VAPanel {
 	private VASearchBox searchBox;
 	private Tooltip pieTooltip;
 
-	private VAPieChart chartLeft[] = new VAPieChart[2];
-	private VAPieChart chartRight[] = new VAPieChart[2];
+	private VAGraph chartLeft[] = new VAGraph[2];
+	private VAGraph chartRight[] = new VAGraph[2];
 
 	private int stop = -1;
 	private VAVariables.currentSetStatus status;
@@ -219,11 +219,11 @@ public class VAPanel {
 		tilePane.setPrefColumns(2); // preferred columns
 
 		if (i == 0) { // main set
-			chartLeft[i] = new VAPieChart(val.getRootGroupLeft(i), this, VAVariables.ChartType.LeftMain);
-			chartRight[i] = new VAPieChart(val.getRootGroupRight(i), this, VAVariables.ChartType.RightMain);
+			chartLeft[i] = new VAGraph(val.getRootGroupLeft(i), this, VAVariables.ChartType.LeftMain);
+			chartRight[i] = new VAGraph(val.getRootGroupRight(i), this, VAVariables.ChartType.RightMain);
 		} else { // sub set
-			chartLeft[i] = new VAPieChart(val.getRootGroupLeft(i), this, VAVariables.ChartType.LeftSub);
-			chartRight[i] = new VAPieChart(val.getRootGroupRight(i), this, VAVariables.ChartType.RightSub);
+			chartLeft[i] = new VAGraph(val.getRootGroupLeft(i), this, VAVariables.ChartType.LeftSub);
+			chartRight[i] = new VAGraph(val.getRootGroupRight(i), this, VAVariables.ChartType.RightSub);
 		}
 		lblSource[i] = new Label("Source ontology", chartLeft[i].getPieChart());
 		lblSource[i].setContentDisplay(ContentDisplay.CENTER);
@@ -240,7 +240,7 @@ public class VAPanel {
 	/**
 	 * Add tooltip to the chart.
 	 */
-	private void initTooltip(VAPieChart chartLeft) {
+	private void initTooltip(VAGraph chartLeft) {
 		pieTooltip = new Tooltip("click to view more");
 		for (final PieChart.Data currentData : chartLeft.getPieChart().getData()) {
 			Tooltip.install(currentData.getNode(), pieTooltip);
@@ -385,11 +385,11 @@ public class VAPanel {
 	 * 
 	 * @return
 	 */
-	public VAPieChart getRightPie(int i) {
+	public VAGraph getRightPie(int i) {
 		return chartRight[i];
 	}
 
-	public VAPieChart getLeftPie2() {
+	public VAGraph getLeftPie2() {
 		return chartLeft[1];
 	}
 
@@ -435,17 +435,7 @@ public class VAPanel {
 					String selected = selectedItem.getValue();
 					for (VAData da : data) {
 						if (da.getNodeName().equals(selected)) {
-							for (int i = 0; i < 2; i++) {
-								VAGroup newGroup;
-								/**
-								 * If i==0, then rebuild the VAData according to the selected item name
-								 * Always updating the main set
-								 */
-								VAData newda = VASyncData.searchFrom(da.getNodeName(), val.getRootGroupLeft(i)
-										.getRootNode(), i);
-								newGroup = val.generateNewGroup(VAVariables.ontologyType.Source, newda, i);
-								updateAllWithNewGroup(newGroup, i);
-							}
+							updateBothSets(da.getNodeName());
 							break;
 						}
 					}
@@ -492,6 +482,15 @@ public class VAPanel {
 		generateNewTree();//may being called twice
 	}
 	
+	public void updateBothSets(String newNode){
+		for(int i=0; i<2; i++){
+			VAGroup newGroup;
+			VAData subda = VASyncData.searchFrom(newNode, val.getRootGroupLeft(i)
+					.getRootNode(), i);
+			newGroup = val.generateNewGroup(VAVariables.ontologyType.Source, subda, i);
+			updateAllWithNewGroup(newGroup, i);
+		}
+	}
 
 	// ==========Button & List Event==================
 
