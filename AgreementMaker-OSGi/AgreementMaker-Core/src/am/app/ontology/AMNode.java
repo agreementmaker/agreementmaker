@@ -336,7 +336,7 @@ public class AMNode extends AbstractNode implements Serializable {
 	/**Owl classes or all rdf nodes or all xml nodes their are considered classes, so nodes in the first of the two trees*/
 	public boolean isClass() {
 		if( resource == null ) {
-			System.out.println("Null resource in Node object: " + this);
+			//System.out.println("Null resource in Node object: " + this);
 			return false;
 		}
 		return resource.canAs(OntClass.class);
@@ -345,11 +345,20 @@ public class AMNode extends AbstractNode implements Serializable {
 	
 	public boolean isProp() {
 		if( resource == null ) {
-			System.out.println("Null resource in Node object: " + this);
+			//System.out.println("Null resource in Node object: " + this);
 			return false;
 		}
 		if( resource.canAs(OntProperty.class) ) return true;
 		return false;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if( obj instanceof Node ) {
+			return equals((Node)obj);
+		}
+		else 
+			return false;
 	}
 	
 	// equality checker --- VERY IMPORTANT
@@ -634,6 +643,9 @@ public class AMNode extends AbstractNode implements Serializable {
 		return children == null || children.size() == 0;
 	}
 	
+	/**
+	 * FIXME: There should be a better way to find out if the node is the root node or not.
+	 */
 	public boolean isRoot() {
 		if( index == -1 ) return true; // roots have an index of -1
 		return false;
@@ -717,7 +729,12 @@ public class AMNode extends AbstractNode implements Serializable {
 	public Node getRoot(){
 		//System.out.println(this + " " + this.isRoot());
 		if(!this.isRoot()){
-			return this.getParents().get(0).getRoot();
+			if( this.getParentCount() != 0 ) {
+				return this.getParents().get(0).getRoot();
+			}
+			else {
+				return this;
+			}
 		}
 		return this;
 	}
@@ -837,10 +854,14 @@ public class AMNode extends AbstractNode implements Serializable {
 	  public int compareTo(Node n) {
 		  if( this.getResource() == null ) {
 			  if( n.getResource() == null )
+				 
 				  return uri.compareTo(n.getUri());
 			  else
 				  return uri.compareTo(n.getResource().getURI());
 		  }
 		  return this.getResource().getURI().compareTo(n.getResource().getURI());
 	  }
+
+	
+
 }

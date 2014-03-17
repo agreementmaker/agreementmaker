@@ -42,6 +42,11 @@ public class MatcherFactory {
 	}
 	
 	/**
+	 * The reason this method is deprecated is because to call it you need to
+	 * import the class of the matcher you're looking for, which does not allow
+	 * decoupling of dependencies, and defeats the purpose of this
+	 * MatcherFactory in the first place.
+	 * 
 	 * @deprecated Use {@link #getMatcherInstance(String)}
 	 */
 	@Deprecated

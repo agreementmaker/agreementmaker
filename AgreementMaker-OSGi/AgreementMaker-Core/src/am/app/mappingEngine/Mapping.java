@@ -14,8 +14,6 @@ import am.app.ontology.Ontology;
 import am.parsing.OutputController;
 import am.utility.BitVector;
 
-import com.hp.hpl.jena.rdf.model.Resource;
-
 /**
  * This class represents a mapping between two concepts from separate ontologies.
  */
@@ -268,13 +266,7 @@ public class Mapping implements Serializable
     
     public boolean equals(Object o){
 		if(o instanceof Mapping){
-			Mapping alignment = (Mapping)o;
-	        if (entity1.equals(alignment.getEntity1()) 
-	                && entity2.equals(alignment.getEntity2())) {
-	            return true;
-	        } else {
-	            return false;
-	        }
+			return equals((Mapping)o);
 		}
 		return false;
 	}
@@ -285,7 +277,7 @@ public class Mapping implements Serializable
 		//map can be replaced with string except empty string
 		//this method is used in the PRAintegrationMatcher
 		//and in the conference conflict resolution.
-		return (entity1.getIndex()+"map"+entity2.getIndex()).hashCode();
+		return (typeOfConcepts.toString() + entity1.getIndex()+"map"+entity2.getIndex()).hashCode();
 	}
 	
 	

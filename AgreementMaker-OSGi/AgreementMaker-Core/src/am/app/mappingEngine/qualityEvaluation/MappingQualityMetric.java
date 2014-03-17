@@ -20,16 +20,13 @@
 package am.app.mappingEngine.qualityEvaluation;
 
 import am.app.mappingEngine.AbstractMatcher;
-import am.utility.parameters.AMParameter;
-import am.utility.parameters.AMParameterSet;
+import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.utility.parameters.HasParameters;
 
-public interface QualityMetric {
-
-	public void setParameter( AMParameter param );
-	public void setParameters( AMParameterSet params );
+public interface MappingQualityMetric extends HasParameters {
+	
+	public double getQuality(alignType type, int i, int j);
 	
 	public QualityEvaluationData getQuality( AbstractMatcher matcher ) throws Exception;
-	
-	public QualityEvaluationData getQuality( AbstractMatcher matcher, AMParameterSet params ) throws Exception;
 	
 }

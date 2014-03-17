@@ -55,14 +55,14 @@ public class AbstractMatcherRunner implements Runnable {
 						matcher.saveThreadResult(i, j, mapping, matrix);
 					}
 
-					/*if( matcher.isProgressDisplayed() ) {
+					if( matcher.isProgressDisplayed() ) {
 						 matcher.stepDone();
 						 matcher.updateProgress();
-						 if( mapping != null && mapping.getSimilarity() >= param.threshold ) { 
+						 /*if( mapping != null && mapping.getSimilarity() >= param.threshold ) { 
 							 tentativealignments++; // keep track of possible alignments for progress display
 							 //System.out.println(mapping);
-						 }
-					 }*/
+						 }*/
+					}
 
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
