@@ -53,6 +53,7 @@ import javax.swing.text.html.HTMLDocument;
 
 import am.Utility;
 import am.app.mappingEngine.StringUtil.PorterStemmer;
+import am.ui.UIUtility;
 import am.ui.api.AMTab;
 import am.ui.api.impl.AMTabSupportPanel;
 import am.visualization.graphviz.GraphViz;
@@ -145,7 +146,7 @@ public class WordNetLookupPanel extends AMTabSupportPanel implements ActionListe
 		try {
 			WordNet = WordNetDatabase.getFileInstance();
 		} catch( Exception e ) {
-			Utility.displayErrorPane(e.getMessage(), "Cannot open WordNet files.\nWordNet should be in the following directory:\n" + wordnetdir);
+			UIUtility.displayErrorPane(e.getMessage(), "Cannot open WordNet files.\nWordNet should be in the following directory:\n" + wordnetdir);
 		}
 
 	}

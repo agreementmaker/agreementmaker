@@ -24,7 +24,6 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRootPane;
 import javax.swing.JScrollPane;
@@ -142,8 +141,8 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 					currentMatcher.getMaxInputMatchers() + " matcher(s).");
 		}
 		for(int i = 0; i < rowsIndex.length && i < currentMatcher.getMaxInputMatchers(); i++) {
-			AbstractMatcher input = Core.getInstance().getMatcherInstances().get(rowsIndex[i]);
-			currentMatcher.addInputMatcher(input);
+			MatchingTask input = Core.getInstance().getMatchingTasks().get(rowsIndex[i]);
+			currentMatcher.addInputTask(input);
 		}
 		
 	}
@@ -574,7 +573,7 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 				setVisible(false);  // required
 			}
 			else { 
-				Utility.displayErrorPane(check, "Illegal Parameters" ); 
+				UIUtility.displayErrorPane(check, "Illegal Parameters" ); 
 				return;
 			}
 			
@@ -651,10 +650,10 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 		int[] rowsIndex = matchersTablePanel.getTable().getSelectedRows(); //indexes in the table correspond to the indexes of the matchers in the matcherInstances list in core class
 		int selectedMatchers = rowsIndex.length;
 		if(!Core.getInstance().ontologiesLoaded() ) {
-			Utility.displayErrorPane("You have to load Source and Target ontologies before running any matcher\nClick on File Menu and select Open Ontology functions ", null);
+			UIUtility.displayErrorPane("You have to load Source and Target ontologies before running any matcher\nClick on File Menu and select Open Ontology functions ", null);
 		}
 		else if(currentMatcher.getMinInputMatchers() > selectedMatchers ) {
-			Utility.displayErrorPane("Select at least "+currentMatcher.getMinInputMatchers()+" matchings from the table to run this matcher.", null);
+			UIUtility.displayErrorPane("Select at least "+currentMatcher.getMinInputMatchers()+" matchings from the table to run this matcher.", null);
 		}
 		else {
 			//Set input matchers into the abstractmatcher VERY IMPORTANT to set them before invoking the parameter panel, in fact the parameter panel may need to work on inputMatchers also.

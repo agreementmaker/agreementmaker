@@ -56,7 +56,7 @@ import am.app.mappingEngine.MatchingProgressListener;
 import am.app.osgi.MatcherNotFoundException;
 import am.tools.seals.SealsServer;
 import am.ui.MatcherParametersDialog;
-import am.ui.api.AMTab;
+import am.ui.UIUtility;
 import am.ui.api.impl.AMTabSupportPanel;
 import am.utility.LinuxInetAddress;
 /**
@@ -330,7 +330,7 @@ public class SealsPanel extends AMTabSupportPanel
 				
 				// 2. Make sure we are using a Layer I matcher.
 				if( matcherToPublish.getMinInputMatchers() > 0 ) {
-					Utility.displayErrorPane("Matcher must be a \"Layer I\" matcher.  A \"Layer I\" matcher does not require any input matchers.", "Cannot use this matcher.");
+					UIUtility.displayErrorPane("Matcher must be a \"Layer I\" matcher.  A \"Layer I\" matcher does not require any input matchers.", "Cannot use this matcher.");
 					//throw new Exception("Matcher must be a \"Layer I\" matcher.");
 					return;
 				}
@@ -377,18 +377,18 @@ public class SealsPanel extends AMTabSupportPanel
 						// bind exception.
 						BindException be = (BindException) e.getCause();
 						if ( be.getMessage().equals("Address already in use" ) ) {
-							Utility.displayErrorPane(e.getMessage() + "\nYou may have to close and restart AgreementMaker if this problem persists.", "Cannot Publish Endpoint");
+							UIUtility.displayErrorPane(e.getMessage() + "\nYou may have to close and restart AgreementMaker if this problem persists.", "Cannot Publish Endpoint");
 						} else if( be.getMessage().equals("Cannot assign requested address") ) {
-							Utility.displayErrorPane(e.getMessage() + "\nPlease check that the IP address "+ txtHost.getText() + " is the current IP address of the computer.", "Cannot Publish Endpoint");
+							UIUtility.displayErrorPane(e.getMessage() + "\nPlease check that the IP address "+ txtHost.getText() + " is the current IP address of the computer.", "Cannot Publish Endpoint");
 						} else {
-							Utility.displayErrorPane(e.getMessage(), "Cannot Publish Endpoint");
+							UIUtility.displayErrorPane(e.getMessage(), "Cannot Publish Endpoint");
 						}
 						
 					} else if ( e.getCause() instanceof URISyntaxException ) {
-						Utility.displayErrorPane(e.getMessage() + "\nYour endpoint name contains invalid characters.", "Cannot Publish Endpoint");
+						UIUtility.displayErrorPane(e.getMessage() + "\nYour endpoint name contains invalid characters.", "Cannot Publish Endpoint");
 						endpoint.stop();
 					}else {
-						Utility.displayErrorPane(e.getMessage(), "Cannot Publish Endpoint");
+						UIUtility.displayErrorPane(e.getMessage(), "Cannot Publish Endpoint");
 					}
 
 					return;

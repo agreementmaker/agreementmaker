@@ -296,7 +296,6 @@ public class AlternateHierarchyLayout extends LegacyLayout {
 //				}
 		} catch(Exception exc) {
 			exc.printStackTrace();
-			Utility.displayErrorPane(exc.toString() + "\n\n" + exc.getMessage(), "ERROR");
 		} finally {
 			qexec.close();
 		}

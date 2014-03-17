@@ -229,6 +229,10 @@ public class UI {
 		tabbedPane.setSelectedIndex( tabbedPane.getTabCount() - 1 );
 	}
 
+	public void removeTab(Component tab) {
+		tabbedPane.remove(tab);
+	}
+	
 	public void addMenuItem( AMMenuItem mi ) { uiMenu.addMenuItem(mi);	}
 	
 	/** 

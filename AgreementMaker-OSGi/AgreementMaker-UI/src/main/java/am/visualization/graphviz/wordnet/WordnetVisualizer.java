@@ -11,7 +11,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import am.Utility;
+import am.ui.UIUtility;
 import am.visualization.graphviz.GraphViz;
 import edu.smu.tspell.wordnet.NounSynset;
 import edu.smu.tspell.wordnet.Synset;
@@ -50,7 +50,7 @@ public class WordnetVisualizer {
 		}
 		catch( Exception e ) 
 		{
-			Utility.displayErrorPane(e.getMessage(), "Cannot open WordNet files.\nWordNet should be in the following directory:\n" + wordnetdir);
+			UIUtility.displayErrorPane(e.getMessage(), "Cannot open WordNet files.\nWordNet should be in the following directory:\n" + wordnetdir);
 		}
 		System.out.println("Done");
 	}

@@ -382,14 +382,14 @@ public class DatabaseSettingsDialog extends JDialog implements ActionListener{
 			p.putInt("portSource", Integer.parseInt(portSource.getText()));
 		}catch(NumberFormatException e)
 		{
-			Utility.displayErrorPane("Source port number is invalid.", "ERROR");
+			UIUtility.displayErrorPane("Source port number is invalid.", "ERROR");
 			return false;//problem found, do not proceed
 		}
 		try{
 			p.putInt("portTarget", Integer.parseInt(portSource.getText()));
 		}catch(NumberFormatException e)
 		{
-			Utility.displayErrorPane("Target port number is invalid.", "ERROR");
+			UIUtility.displayErrorPane("Target port number is invalid.", "ERROR");
 			return false;//problem found, do not proceed
 		}
 		return true;//no problems found
@@ -404,13 +404,13 @@ public class DatabaseSettingsDialog extends JDialog implements ActionListener{
 			Utility.displayMessagePane("Connected successfully to the Source database.", "Connection Successful");
 			testDB.closeSourceConnection();
 		}else if(sourceEnabled)
-			Utility.displayErrorPane("Could not connect to the Source database.  Please check the settings and try again.","Connection Unsuccessful");
+			UIUtility.displayErrorPane("Could not connect to the Source database.  Please check the settings and try again.","Connection Unsuccessful");
 		
 		if(targetEnabled && testDB.openTargetConnection()){
 			Utility.displayMessagePane("Connected successfully to the Target database.", "Connection Successful");
 			testDB.closeSourceConnection();
 		}else if(targetEnabled)
-			Utility.displayErrorPane("Could not connect to the Target database.  Please check the settings and try again.","Connection Unsuccessful");
+			UIUtility.displayErrorPane("Could not connect to the Target database.  Please check the settings and try again.","Connection Unsuccessful");
 	}
 	@Override
 	public void actionPerformed(ActionEvent ae) {

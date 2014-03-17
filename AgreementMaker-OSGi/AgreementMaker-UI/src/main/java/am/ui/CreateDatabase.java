@@ -15,11 +15,14 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
-import am.Utility;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class CreateDatabase extends JDialog implements ActionListener{
 	
 	private static final long serialVersionUID = -6783509852631814172L;
+	
+	private static final Logger LOG = LogManager.getLogger(CreateDatabase.class);
 	
 	private JTextField dbName,host, port, username;
 	private JPasswordField password;
@@ -165,11 +168,11 @@ public class CreateDatabase extends JDialog implements ActionListener{
 		}
 		else if(obj==test){
 			if(createDB()){
-				Utility.displayConfirmPane("The database "+dbName.getText()+" was created.", "Database Created");
+				LOG.info("The database "+dbName.getText()+" was created.");
 				this.dispose();
 			}
 			else
-				Utility.displayErrorPane("Database could not be created.  Please check the information entered.", "Error Creating Database");
+				LOG.error("Database could not be created.  Please check the information entered.");
 		}
 	}
 	public boolean createDB(){
