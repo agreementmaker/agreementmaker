@@ -32,8 +32,8 @@ public class LexicalSynonymMatcherParametersPanel extends AbstractMatcherParamet
 		Ontology targetOntology = Core.getInstance().getTargetOntology();
 		
 		try {
-			Lexicon sourceOntLexicon = Core.getLexiconStore().getLexicon(sourceOntology.getID(), LexiconRegistry.ONTOLOGY_LEXICON);
-			Lexicon targetOntLexicon = Core.getLexiconStore().getLexicon(targetOntology.getID(), LexiconRegistry.ONTOLOGY_LEXICON);
+			Lexicon sourceOntLexicon = Core.getLexiconStore().getLexicon(sourceOntology, LexiconRegistry.ONTOLOGY_LEXICON);
+			Lexicon targetOntLexicon = Core.getLexiconStore().getLexicon(targetOntology, LexiconRegistry.ONTOLOGY_LEXICON);
 			
 			if( sourceOntLexicon instanceof SynonymTermLexicon || 
 				targetOntLexicon instanceof SynonymTermLexicon ){

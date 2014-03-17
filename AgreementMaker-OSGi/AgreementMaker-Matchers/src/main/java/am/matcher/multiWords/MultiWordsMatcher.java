@@ -110,10 +110,10 @@ public class MultiWordsMatcher extends AbstractMatcher {
 		
 		if( parameters.useLexiconDefinitions || parameters.useLexiconSynonyms ) {
 			// build all the lexicons if they don't exist. 
-			sourceOntologyLexicon = Core.getLexiconStore().getLexicon(sourceOntology.getID(), LexiconRegistry.ONTOLOGY_LEXICON);			
-			targetOntologyLexicon = Core.getLexiconStore().getLexicon(targetOntology.getID(), LexiconRegistry.ONTOLOGY_LEXICON);			
-			sourceWordNetLexicon = Core.getLexiconStore().getLexicon(sourceOntology.getID(), LexiconRegistry.WORDNET_LEXICON);
-			targetWordNetLexicon = Core.getLexiconStore().getLexicon(targetOntology.getID(), LexiconRegistry.WORDNET_LEXICON);
+			sourceOntologyLexicon = Core.getLexiconStore().getLexicon(sourceOntology, LexiconRegistry.ONTOLOGY_LEXICON);			
+			targetOntologyLexicon = Core.getLexiconStore().getLexicon(targetOntology, LexiconRegistry.ONTOLOGY_LEXICON);			
+			sourceWordNetLexicon = Core.getLexiconStore().getLexicon(sourceOntology, LexiconRegistry.WORDNET_LEXICON);
+			targetWordNetLexicon = Core.getLexiconStore().getLexicon(targetOntology, LexiconRegistry.WORDNET_LEXICON);
 		}
 		
 		
@@ -189,7 +189,6 @@ public class MultiWordsMatcher extends AbstractMatcher {
 	@SuppressWarnings("unchecked")
 	private String createMultiWordsString(Node node, alignType typeOfNodes) throws Exception {
 		
-		mWS = new String();
 		String multiWordsString = "";
 
 		MultiWordsParameters mp = (MultiWordsParameters)param;
@@ -200,20 +199,10 @@ public class MultiWordsMatcher extends AbstractMatcher {
 			multiWordsString = Utility.smartConcat(multiWordsString, node.getComment());
 			multiWordsString = Utility.smartConcat(multiWordsString, node.getSeeAlsoLabel());
 			multiWordsString = Utility.smartConcat(multiWordsString, node.getIsDefinedByLabel());
-			
-			if( param.storeProvenance ) {
-				mWS+="considering Concept:\n";
-				mWS+="\tlabel and/or name: "+getLabelAndOrNameString(node)+"\n";
-				mWS+="\tcomment: "+node.getComment()+"\n";
-				mWS+="\tSee also label: "+node.getSeeAlsoLabel()+"\n";
-				mWS+="\tis defined by label: "+node.getIsDefinedByLabel()+"\n";
-			}
 		}
 
 		//add neighbors strings
 		if(mp.considerNeighbors) {
-			if( param.storeProvenance ) mWS+="considering neighbors:\n";
-			
 			String neighbourString = "";
 			HashSet<Node> neighborNodes = new HashSet<Node>(); // use a hashset to avoid duplicates
 			
