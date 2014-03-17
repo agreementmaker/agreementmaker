@@ -1,5 +1,7 @@
 package am.ui;
 
+import javax.swing.JFrame;
+
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
@@ -28,7 +30,20 @@ public class UIActivator implements BundleActivator {
 
 			@Override
 			public void run() {
-				UICore.setUI(new UI());
+				System.setProperty("apple.laf.useScreenMenuBar", "true");
+				System.setProperty("apple.awt.brushMetalLook", "true");
+				
+				UI newUI = new UI();
+				UICore.setUI(newUI);
+				final JFrame uiFrame = newUI.getUIFrame();
+				
+				java.awt.EventQueue.invokeLater(new Runnable() {
+				    @Override
+				    public void run() {
+				        uiFrame.toFront();
+				        uiFrame.repaint();
+				    }
+				});
 				
 				// start the visualization tracker
 				visTracker = new ServiceTracker<AMVisualizationComponent, AMVisualizationComponent>(context, 
