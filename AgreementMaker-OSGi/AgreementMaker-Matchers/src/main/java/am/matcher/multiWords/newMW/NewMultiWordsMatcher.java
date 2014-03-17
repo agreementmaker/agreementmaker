@@ -108,10 +108,10 @@ public class NewMultiWordsMatcher extends AbstractMatcher {
 		
 		if( parameters.useLexiconDefinitions || parameters.useLexiconSynonyms ) {
 			// build all the lexicons if they don't exist. 
-			sourceOntologyLexicon = Core.getLexiconStore().getLexicon(sourceOntology.getID(), LexiconRegistry.ONTOLOGY_LEXICON);			
-			targetOntologyLexicon = Core.getLexiconStore().getLexicon(targetOntology.getID(), LexiconRegistry.ONTOLOGY_LEXICON);			
-			sourceWordNetLexicon = Core.getLexiconStore().getLexicon(sourceOntology.getID(), LexiconRegistry.WORDNET_LEXICON);
-			targetWordNetLexicon = Core.getLexiconStore().getLexicon(targetOntology.getID(), LexiconRegistry.WORDNET_LEXICON);
+			sourceOntologyLexicon = Core.getLexiconStore().getLexicon(sourceOntology, LexiconRegistry.ONTOLOGY_LEXICON);			
+			targetOntologyLexicon = Core.getLexiconStore().getLexicon(targetOntology, LexiconRegistry.ONTOLOGY_LEXICON);			
+			sourceWordNetLexicon = Core.getLexiconStore().getLexicon(sourceOntology, LexiconRegistry.WORDNET_LEXICON);
+			targetWordNetLexicon = Core.getLexiconStore().getLexicon(targetOntology, LexiconRegistry.WORDNET_LEXICON);
 		}
 		
 		

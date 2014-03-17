@@ -9,10 +9,12 @@ import org.osgi.framework.ServiceRegistration;
 
 import am.app.mappingEngine.AbstractMatcher;
 import am.matcher.Combination.CombinationMatcher;
+import am.matcher.FilterMatcher.FilterMatcher;
 import am.matcher.IterativeInstanceStructuralMatcher.IterativeInstanceStructuralMatcher;
 import am.matcher.LexicalSynonymMatcher.LexicalSynonymMatcher;
 import am.matcher.LexicalSynonymMatcher.LexicalSynonymMatcherWeighted;
 import am.matcher.dsi.DescendantsSimilarityInheritanceMatcher;
+import am.matcher.groupFinder.GroupFinderMatcher;
 import am.matcher.multiWords.MultiWordsMatcher;
 import am.matcher.parametricStringMatcher.ParametricStringMatcher;
 
@@ -30,6 +32,8 @@ public class MatchersActivator implements BundleActivator {
 	private ServiceRegistration<AbstractMatcher> regLexicalSynonymWeighted;
 	private ServiceRegistration<AbstractMatcher> regDsi;
 	private ServiceRegistration<AbstractMatcher> regIism;
+	private ServiceRegistration<AbstractMatcher> regFilterMatcher;
+	private ServiceRegistration<AbstractMatcher> regGroupFinderMatcher;
 	/*
 	 * (non-Javadoc)
 	 * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
@@ -45,7 +49,8 @@ public class MatchersActivator implements BundleActivator {
 		regLexicalSynonymWeighted = context.registerService(AbstractMatcher.class, new LexicalSynonymMatcherWeighted(), null);
 		regDsi = context.registerService(AbstractMatcher.class, new DescendantsSimilarityInheritanceMatcher(), new Hashtable<String,String>());
 		regIism = context.registerService(AbstractMatcher.class, new IterativeInstanceStructuralMatcher(), new Hashtable<String,String>());
-		
+		regFilterMatcher = context.registerService(AbstractMatcher.class, new FilterMatcher(), null);
+		regGroupFinderMatcher = context.registerService(AbstractMatcher.class, new GroupFinderMatcher(), null);
 	}
 
 	/*
@@ -62,6 +67,8 @@ public class MatchersActivator implements BundleActivator {
 		regLexicalSynonym.unregister();
 		regDsi.unregister();
 		regIism.unregister();
+		regFilterMatcher.unregister();
+		regGroupFinderMatcher.unregister();
 	}
 
 }

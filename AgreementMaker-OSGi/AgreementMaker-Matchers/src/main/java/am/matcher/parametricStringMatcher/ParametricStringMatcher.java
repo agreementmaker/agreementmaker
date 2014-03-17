@@ -90,19 +90,19 @@ public class ParametricStringMatcher extends AbstractMatcher {
 			for( MatchingProgressListener mpd : progressDisplays ) mpd.setProgressLabel("Building Ontology Lexicon (1/2)");
 			sourceOntologyLexicon = 
 					Core.getLexiconStore().getLexicon(
-							sourceOntology.getID(), LexiconRegistry.ONTOLOGY_LEXICON);
+							sourceOntology, LexiconRegistry.ONTOLOGY_LEXICON);
 			targetOntologyLexicon = 
 					Core.getLexiconStore().getLexicon(
-							targetOntology.getID(), LexiconRegistry.ONTOLOGY_LEXICON);
+							targetOntology, LexiconRegistry.ONTOLOGY_LEXICON);
 			
 			for( MatchingProgressListener mpd : progressDisplays ) mpd.setProgressLabel("Building WordNet Lexicon (2/2)");
 			
 			sourceWordNetLexicon = 
 					Core.getLexiconStore().getLexicon(
-							sourceOntology.getID(), LexiconRegistry.WORDNET_LEXICON);
+							sourceOntology, LexiconRegistry.WORDNET_LEXICON);
 			targetWordNetLexicon = 
 					Core.getLexiconStore().getLexicon(
-							targetOntology.getID(), LexiconRegistry.WORDNET_LEXICON);
+							targetOntology, LexiconRegistry.WORDNET_LEXICON);
 			
 			for( MatchingProgressListener mpd : progressDisplays ) mpd.setProgressLabel(null);
 		}
@@ -364,19 +364,21 @@ public class ParametricStringMatcher extends AbstractMatcher {
 			return 0; //this should never happen because we set string to empty string always
 			
 		//PREPROCESSING
-		String processedSource = normalizer.normalize(sourceString);
-		String processedTarget = normalizer.normalize(targetString);
+		if( ((ParametricStringParameters)param).useNormalizer ) {
+			sourceString = normalizer.normalize(sourceString);
+			targetString = normalizer.normalize(targetString);
+		}
 
 		//usually empty strings shouldn't be compared, but if redistrubute weights is not selected 
 		//in the redistribute weights case this can't happen because the code won't arrive till here
-		if(processedSource.equals("")) 
-			if(processedTarget.equals(""))
+		if(sourceString.equals("")) 
+			if(targetString.equals(""))
 				return 1;
 			else return 0;
-		else if(processedTarget.equals(""))
+		else if(targetString.equals(""))
 			return 0;
 
-		return ssm.getSimilarity(processedSource, processedTarget);
+		return ssm.getSimilarity(sourceString, targetString);
 	}
 	
 	@Override
