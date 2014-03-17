@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import am.Utility;
@@ -18,7 +19,7 @@ import am.ui.UICore;
 
 public class MatchersControlPanelTableModel extends AbstractTableModel {
 		
-	private final Logger log = Logger.getLogger(MatchersControlPanelTableModel.class);
+	private final Logger log = LogManager.getLogger(MatchersControlPanelTableModel.class);
 	private static final long serialVersionUID = 1L;
 	public final static String NONE = "N/A";
 	public final static String ANY = "ANY";
@@ -134,20 +135,12 @@ public class MatchersControlPanelTableModel extends AbstractTableModel {
             		else return NONE;
             	}
             	else if( col == MODIFIED){
-            		if ((a == null) || (a.matcherResult == null) ){
-            			log.warn("Matcher result is equal to null, or the matching task is equal to null");
-            			return false;
-            		}
             		return a.matcherResult.isModifiedByUser();
             	}else if(col == ALIGNCLASSES)
             		return a.selectionParameters.alignClasses;
             	else if (col == ALIGNPROPERTIES)
             		return a.selectionParameters.alignProperties;
             	else if(col == FOUND ) {
-            		if ( a.selectionResult == null ) {
-            			log.warn("Selection Result is null! OH NOES!!!!");
-            			return 0;
-            		}
             		return a.selectionResult.getTotalNumberAlignments();
             	}
             	else if(col == PERFORMANCE ) {
@@ -156,10 +149,6 @@ public class MatchersControlPanelTableModel extends AbstractTableModel {
             		else return a.matcherResult.getExecutionTime();
             	}
             	else if (col == CORRECT ){
-            		if ( a.selectionResult == null ) {
-            			log.warn("Selection Result is null! OH NOES!!!!");
-            			return 0;
-            		}
             		if(!a.selectionResult.isRefEvaluated())
             			return NONE;
             		else return a.selectionResult.refEvalData.getCorrect();
