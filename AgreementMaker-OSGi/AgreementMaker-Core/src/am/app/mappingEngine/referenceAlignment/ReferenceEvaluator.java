@@ -94,7 +94,7 @@ public class ReferenceEvaluator{
         else prec = (double) correctMappings / (double) foundMappings;
         
         double rec;
-        if(referenceMappings == 0.0d) {
+        if(referenceMappings == 0) {
         	rec = 0.0d;
         }
         else rec = (double) correctMappings / (double) referenceMappings;

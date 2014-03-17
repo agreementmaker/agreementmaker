@@ -25,7 +25,7 @@ public class LexiconStringSizeMetric extends AbstractOntologyMetric {
 	@Override
 	public void runMetric() {
 		try {
-			Lexicon ontLex = Core.getLexiconStore().getLexicon(ontology.getID(), LexiconRegistry.ONTOLOGY_LEXICON);
+			Lexicon ontLex = Core.getLexiconStore().getLexicon(ontology, LexiconRegistry.ONTOLOGY_LEXICON);
 			
 			Collection<LexiconSynSet> synsets = ontLex.getSynSetMap().values();
 			int[] synCount = new int[synsets.size()];

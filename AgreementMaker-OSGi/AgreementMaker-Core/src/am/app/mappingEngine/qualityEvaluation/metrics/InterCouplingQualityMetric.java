@@ -3,6 +3,7 @@ package am.app.mappingEngine.qualityEvaluation.metrics;
 import java.util.HashMap;
 
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.qualityEvaluation.InterMatcherQualityEvaluation;
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluationData;
@@ -29,13 +30,6 @@ public class InterCouplingQualityMetric implements InterMatcherQualityEvaluation
 	public void setParameters(AMParameterSet params) {
 		// TODO Auto-generated method stub
 		
-	}
-
-	@Override
-	public QualityEvaluationData getQuality(AbstractMatcher matcher,
-			AMParameterSet params) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override
@@ -81,6 +75,12 @@ public class InterCouplingQualityMetric implements InterMatcherQualityEvaluation
 			throws Exception {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public double getQuality(alignType type, int i, int j) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 }

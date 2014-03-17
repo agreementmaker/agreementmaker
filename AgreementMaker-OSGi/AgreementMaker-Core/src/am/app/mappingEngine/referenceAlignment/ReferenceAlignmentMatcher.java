@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -31,6 +32,8 @@ import am.parsing.OutputController;
 
 public class ReferenceAlignmentMatcher extends AbstractMatcher {
 
+	private static final Logger LOG = LogManager.getLogger(ReferenceAlignmentMatcher.class);
+	
 	private static final long serialVersionUID = -1688117047019381847L;
 
 	//Constants
@@ -66,7 +69,9 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 		super.beforeAlignOperations();
 		
 		// 1. Read the alignment file.
-		referenceListOfPairs = readReferenceFile();  
+		referenceListOfPairs = readReferenceFile();
+		//LOG.info("Read " + referenceListOfPairs.size() + " mapping pairs.");
+		
 		
 		nonEquivalencePairs = new ArrayList<MatchingPair>();
 		
@@ -125,8 +130,6 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 
 		if( referenceListOfPairs == null || referenceListOfPairs.size() == 0 ) 
 			return matrix; // nothing to do		
-			
-		Iterator<MatchingPair> it = referenceListOfPairs.iterator();
 		
 		// create HashMap lookups by URI.
 		HashMap<String,Node> sourceNodeURIMap = new HashMap<String,Node>();
@@ -138,8 +141,7 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 		
 		//in this case the reference file contains URIs and that's what will be used for comparisons
 		// Iterate over the list of pairs from the file
-		while( it.hasNext() ) {
-			MatchingPair mp = it.next(); // get the first matching pair from the list
+		for(MatchingPair mp : referenceListOfPairs ) {
 			
 			Mapping m = null;
 			if( sourceNodeURIMap.containsKey( mp.sourceURI ) && targetNodeURIMap.containsKey( mp.targetURI ) ) {
@@ -234,34 +236,37 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
         if( matcherName != null && !matcherName.isEmpty() ) setName(StringEscapeUtils.unescapeHtml(matcherName));
         
         Element align = root.element("Alignment");
-        Iterator<?> map = align.elementIterator("map");  // TODO: Fix this hack? (Iterator<?>)
+        Iterator map = align.elementIterator("map");  // TODO: Fix this hack? (Iterator<?>)
         while (map.hasNext()) {
-            Element e = ((Element)map.next()).element("Cell");
-            if (e == null) {
-            	
-                continue;
-            }
-            String sourceURI = e.element("entity1").attributeValue("resource");
-            String targetURI = e.element("entity2").attributeValue("resource");
-            MappingRelation relation =  MappingRelation.parseRelation( e.elementText("relation") );
-            String measure = e.elementText("measure");
-            String provenance = e.elementText("provenance");
-
-            //Take the measure, if i can't find a valid measure i'll suppose 1
-            
-            double parsedSimilarity = -1;
-            if(measure != null) {
-            	try {
-            		parsedSimilarity = Double.parseDouble(measure);
-            	}
-            	catch(Exception ex) {};
-            }
-            if(parsedSimilarity < 0 || parsedSimilarity > 1) parsedSimilarity = 1;
-            
-            // String correctRelation = getRelationFromFileFormat(relation);
-            
-    		MatchingPair mp = new MatchingPair(sourceURI, targetURI, parsedSimilarity, relation, provenance);
-    		result.add(mp);
+        	Element currentMap = (Element) map.next();
+        	
+        	Iterator cellIter = currentMap.elementIterator("Cell");
+        	while( cellIter.hasNext() ) {
+        		Element e = (Element) cellIter.next();
+        		
+	            String sourceURI = e.element("entity1").attributeValue("resource");
+	            String targetURI = e.element("entity2").attributeValue("resource");
+	            
+	            MappingRelation relation =  MappingRelation.parseRelation( e.elementText("relation") );
+	            String measure = e.elementText("measure");
+	            String provenance = e.elementText("provenance");
+	
+	            //Take the measure, if i can't find a valid measure i'll suppose 1
+	            
+	            double parsedSimilarity = -1;
+	            if(measure != null) {
+	            	try {
+	            		parsedSimilarity = Double.parseDouble(measure);
+	            	}
+	            	catch(Exception ex) {};
+	            }
+	            if(parsedSimilarity < 0 || parsedSimilarity > 1) parsedSimilarity = 1;
+	            
+	            // String correctRelation = getRelationFromFileFormat(relation);
+	            
+	    		MatchingPair mp = new MatchingPair(sourceURI, targetURI, parsedSimilarity, relation, provenance);
+	    		result.add(mp);
+        	}
         }
 
 	    return result;

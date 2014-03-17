@@ -4,8 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
-import java.util.LinkedList;
-import java.util.List;
 
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;

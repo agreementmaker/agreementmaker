@@ -20,6 +20,7 @@
 package am.app.mappingEngine.qualityEvaluation;
 
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.utility.parameters.AMParameter;
 import am.utility.parameters.AMParameterSet;
 
@@ -32,17 +33,55 @@ import am.utility.parameters.AMParameterSet;
  * @author Cosmin Stroe
  *
  */
-public abstract class AbstractQualityMetric implements QualityMetric {
+public abstract class AbstractQualityMetric implements MappingQualityMetric {
 
 	protected AMParameterSet params = new AMParameterSet();
+	protected String metricID;
+	protected double weight;
 
-	@Override public void setParameter(AMParameter param) { params.put(param); }
-	@Override public void setParameters(AMParameterSet param) { params = param; }
-	@Override public QualityEvaluationData getQuality(AbstractMatcher matcher, AMParameterSet params) throws Exception {
+	public double getWeight() {
+		return weight;
+	}
+
+	public void setWeight(double weight) {
+		this.weight = weight;
+	}
+
+	public String getMetricID() {
+		return metricID;
+	}
+
+	public void setMetricID(String metricID) {
+		this.metricID = metricID;
+	}
+
+	@Override 
+	public void setParameter(AMParameter param) { 
+		params.put(param); 
+	}
+	
+	@Override
+	public void setParameters(AMParameterSet param) {
+		params = param;
+	}
+	
+	/**
+	 * Helper method for setting the parameters and computing the quality at the
+	 * same time.
+	 */
+	public QualityEvaluationData getQuality(AbstractMatcher matcher, AMParameterSet params) throws Exception {
 		setParameters(params);
 		return getQuality(matcher);
 	}
 	
-	@Override public abstract QualityEvaluationData getQuality(AbstractMatcher matcher) throws Exception;
+	@Override 
+	public QualityEvaluationData getQuality(AbstractMatcher matcher) throws Exception {
+		throw new RuntimeException("Not implemented.");
+	}
 
+	@Override
+	public double getQuality(alignType type, int i, int j) {
+		throw new RuntimeException("Not implemented.");
+	}
+	
 }

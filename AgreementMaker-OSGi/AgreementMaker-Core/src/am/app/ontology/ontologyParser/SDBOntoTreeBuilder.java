@@ -11,12 +11,9 @@ import java.util.Set;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import am.Utility;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.AMNode;
 import am.app.ontology.Node;
-import am.app.ontology.Ontology;
-import am.app.ontology.ontologyParser.TreeBuilder.ProgressEvent;
 import am.utility.RunTimer;
 
 import com.hp.hpl.jena.ontology.ConversionException;
@@ -179,8 +176,7 @@ public class SDBOntoTreeBuilder extends TreeBuilder{
 					ontDefinition.db_host + ":" + ontDefinition.db_port + "/" + ontDefinition.db_name,
 					ontDefinition.db_username, ontDefinition.db_password);
 		} catch (SQLException e) {
-			LOG.error(e);
-			Utility.displayErrorPane("Unknown connection Error", "ERROR");
+			LOG.error("Unknown connection Error",e);
 		}
 		
 		if( jdbcConnection != null ) {
@@ -193,8 +189,7 @@ public class SDBOntoTreeBuilder extends TreeBuilder{
 			else if(!ontDefinition.db_persistent)
 				store.getTableFormatter().truncate();
 		} catch (SQLException e) {
-			LOG.error(e);
-			Utility.displayErrorPane("Unknown connection Error", "ERROR");
+			LOG.error("Unknown connection Error", e);
 		}
 		
 		Model basemodel=SDBFactory.connectDefaultModel(store);

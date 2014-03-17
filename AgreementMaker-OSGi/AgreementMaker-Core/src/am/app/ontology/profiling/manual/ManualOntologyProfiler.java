@@ -3,7 +3,6 @@ package am.app.ontology.profiling.manual;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -28,8 +27,6 @@ import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.NodeIterator;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.rdf.model.StmtIterator;
 
 /**
  * This ontology profiler allows the user to manually set 
@@ -47,14 +44,19 @@ public class ManualOntologyProfiler implements OntologyProfiler {
 	private Ontology targetOntology;
 	
 	// TODO: This is a big mess.  Fix this somehow.
-	private List<Property> sourceClassAnnotations;
-	public List<Property> getSourceClassAnnotations() { return sourceClassAnnotations; }
-	private List<Property> targetClassAnnotations;
-	public List<Property> getTargetClassAnnotations() { return targetClassAnnotations; }
-	private List<Property> sourcePropertyAnnotations;
-	public List<Property> getSourcePropertyAnnotations() { return sourcePropertyAnnotations; }
-	private List<Property> targetPropertyAnnotations;
-	public List<Property> getTargetPropertyAnnotations() { return targetPropertyAnnotations; }
+	private List<Property> sourceAnnotations;
+	private List<Property> targetAnnotations;
+	public List<Property> getSourceAnnotations() { return sourceAnnotations; }
+	public List<Property> getTargetAnnotations() { return targetAnnotations; }
+	
+	/** @deprecated Merged into {@link #sourceAnnotations} */
+	@Deprecated public List<Property> getSourceClassAnnotations() { return sourceAnnotations; }
+	/** @deprecated Merged into {@link #targetAnnotations} */
+	@Deprecated public List<Property> getTargetClassAnnotations() { return targetAnnotations; }
+	/** @deprecated Merged into {@link #sourceAnnotations} */
+	@Deprecated public List<Property> getSourcePropertyAnnotations() { return sourceAnnotations; }
+	/** @deprecated Merged into {@link #targetAnnotations} */
+	@Deprecated public List<Property> getTargetPropertyAnnotations() { return targetAnnotations; }
 	
 	private Map<Property, CoverageTriple> sourceClassAnnotationCoverage;
 	public Map<Property, CoverageTriple> getSourceClassAnnotationCoverage() { return sourceClassAnnotationCoverage; }
@@ -73,37 +75,23 @@ public class ManualOntologyProfiler implements OntologyProfiler {
 		sourceOntology = source;
 		targetOntology = target;
 		
-		Set<Property> uniqueProperties;
+		Set<AnnotationProperty> uniqueProperties;
 		
-		sourceClassAnnotations = new ArrayList<Property>();
+		sourceAnnotations = new ArrayList<Property>();
 		uniqueProperties = new HashSet<>();
-		for( Node classNode : source.getClassesList() ) 
-			uniqueProperties.addAll(createClassAnnotationsList(classNode));
-		sourceClassAnnotations.addAll(uniqueProperties);
-				
-		targetClassAnnotations = new ArrayList<Property>();
-		uniqueProperties = new HashSet<>();
-		for( Node classNode : target.getClassesList() ) 
-			uniqueProperties.addAll(createClassAnnotationsList(classNode));
-		targetClassAnnotations.addAll(uniqueProperties);
+		uniqueProperties.addAll(sourceOntology.getModel().listAnnotationProperties().toList());
+		sourceAnnotations.addAll(uniqueProperties);
 		
+		targetAnnotations = new ArrayList<Property>();
+		uniqueProperties = new HashSet<>();
+		uniqueProperties.addAll(targetOntology.getModel().listAnnotationProperties().toList());
+		targetAnnotations.addAll(uniqueProperties);
+
 		// annotation property coverage
 		PropertyCoverage sourceCoverage = new PropertyCoverage(source);
 		sourceCoverage.runMetric();
 		sourceClassAnnotationCoverage = sourceCoverage.getClassMap();
 		sourcePropertyAnnotationCoverage = sourceCoverage.getPropertyMap();
-		
-		sourcePropertyAnnotations = new ArrayList<Property>();
-		uniqueProperties = new HashSet<>();
-		for( Node propertyNode : source.getPropertiesList() ) 
-			uniqueProperties.addAll(createPropertyAnnotationsList(propertyNode));
-		sourcePropertyAnnotations.addAll(uniqueProperties);
-		
-		targetPropertyAnnotations = new ArrayList<Property>();
-		uniqueProperties = new HashSet<>();
-		for( Node propertyNode : target.getPropertiesList() ) 
-			uniqueProperties.addAll(createPropertyAnnotationsList(propertyNode));
-		targetPropertyAnnotations.addAll(uniqueProperties);
 		
 		// annotation property coverage
 		PropertyCoverage targetCoverage = new PropertyCoverage(target);
@@ -115,52 +103,6 @@ public class ManualOntologyProfiler implements OntologyProfiler {
 //		ProfilingReport manuProfilingReport = newFFFFFF ManualProfilingReport();
 	}
 	
-	/**
-	 * Given a Node representing an ontology property, append to the propertyList
-	 * any annotation properties not in the list already that are defined on this property.
-	 */
-	public static Collection<Property> createPropertyAnnotationsList(Node propertyNode) {
-		
-		Set<Property> annotationSet = new HashSet<Property>();
-		
-		OntProperty currentProperty = (OntProperty) propertyNode.getResource().as(OntProperty.class);
-		StmtIterator i = currentProperty.listProperties();
-
-		while( i.hasNext() ) {
-			Statement s = (Statement) i.next();
-			Property p = s.getPredicate();
-
-			if( p.canAs( AnnotationProperty.class) ) {
-				annotationSet.add(p);
-			}
-		}
-		
-		return annotationSet;
-	}
-
-	/**
-	 * Given a Node representing an ontology class, append to the annotationList
-	 * any annotation properties not in the list already that are defined on this class.
-	 */
-	public static Collection<Property> createClassAnnotationsList(Node classNode) {
-		
-		Set<Property> annotationSet = new HashSet<Property>();
-		
-		OntClass currentClass = (OntClass) classNode.getResource().as(OntClass.class);
-		StmtIterator i = currentClass.listProperties();
-		while( i.hasNext() ) {
-			Statement s = (Statement) i.next();
-			Property p = s.getPredicate();
-
-			if( p.canAs( AnnotationProperty.class ) ) {
-				// this is an annotation property
-				annotationSet.add(p);
-			}
-		}
-		
-		return annotationSet;
-	}
-
 	@Override
 	public OntologyProfilerPanel getProfilerPanel(ParamType type) {
 		switch(type) {

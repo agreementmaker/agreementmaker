@@ -12,6 +12,9 @@ import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import am.Utility;
 import am.app.mappingEngine.AbstractMatcher;
 
@@ -19,6 +22,8 @@ import am.app.mappingEngine.AbstractMatcher;
 public class ClusterFactoryDialog extends JDialog implements ActionListener {
 
 	private static final long serialVersionUID = -6675553141084080729L;
+	
+	private static final Logger LOG = LogManager.getLogger(ClusterFactoryDialog.class);
 
 	private ClusteringParametersPanel clusterPanel = null;
 	
@@ -90,7 +95,7 @@ public class ClusterFactoryDialog extends JDialog implements ActionListener {
 				dispose();
 			}
 			else {
-				Utility.displayErrorPane(errorMsg, "Invalid parameters.");
+				LOG.error("Invalid parameters. " + errorMsg);
 			}
 		}
 		

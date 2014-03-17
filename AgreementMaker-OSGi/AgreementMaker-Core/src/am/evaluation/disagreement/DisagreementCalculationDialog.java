@@ -12,13 +12,17 @@ import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 
-import am.Utility;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import am.app.mappingEngine.AbstractMatcher;
 
 public class DisagreementCalculationDialog extends JDialog implements ActionListener {
 
 	private static final long serialVersionUID = -6675553141084080729L;
 
+	private static final Logger LOG = LogManager.getLogger(DisagreementCalculationDialog.class);
+	
 	private DisagreementParametersPanel clusterPanel = null;
 	
 	private JButton btnCancel;
@@ -90,7 +94,7 @@ public class DisagreementCalculationDialog extends JDialog implements ActionList
 				dispose();
 			}
 			else {
-				Utility.displayErrorPane(errorMsg, "Invalid parameters.");
+				LOG.error("Invalid parameters." + errorMsg);
 			}
 		}
 		
