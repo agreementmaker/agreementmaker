@@ -19,8 +19,10 @@ import am.extension.userfeedback.UFLRegistry;
 import am.extension.userfeedback.UFLRegistry.CSEvaluationRegistry;
 import am.extension.userfeedback.UFLRegistry.CandidateSelectionRegistry;
 import am.extension.userfeedback.UFLRegistry.ExperimentRegistry;
+import am.extension.userfeedback.UFLRegistry.FeedbackAggregationRegistry;
 import am.extension.userfeedback.UFLRegistry.FeedbackPropagationRegistry;
 import am.extension.userfeedback.UFLRegistry.InitialMatcherRegistry;
+import am.extension.userfeedback.UFLRegistry.LoopInizializationRegistry;
 import am.extension.userfeedback.UFLRegistry.PropagationEvaluationRegistry;
 import am.extension.userfeedback.UFLRegistry.UserValidationRegistry;
 
@@ -32,8 +34,10 @@ public class UFLControlGUI_InitialSettingsPanel extends JPanel implements Action
 	public JButton btn_start;
 	public JComboBox<ExperimentRegistry> cmbExperiment;
 	public JComboBox<InitialMatcherRegistry> cmbMatcher;
+	public JComboBox<LoopInizializationRegistry> cmbInizialization;
 	public JComboBox<CandidateSelectionRegistry> cmbCandidate;
 	public JComboBox<CSEvaluationRegistry> cmbCSEvaluation;
+	public JComboBox<FeedbackAggregationRegistry> cmbAgregation;
 	public JComboBox<FeedbackPropagationRegistry> cmbPropagation;
 	public JComboBox<PropagationEvaluationRegistry> cmbPropagationEvaluation;
 	public JComboBox<UserValidationRegistry> cmbUserFeedback;
@@ -46,9 +50,11 @@ public class UFLControlGUI_InitialSettingsPanel extends JPanel implements Action
 		
 		ExperimentRegistry[] 			experimentEntries 				= UFLRegistry.ExperimentRegistry.values();
 		InitialMatcherRegistry[] 		InitialMatchersEntries 			= UFLRegistry.InitialMatcherRegistry.values();
+		LoopInizializationRegistry[]	LoopInitializationEntries		= UFLRegistry.LoopInizializationRegistry.values();
 		CandidateSelectionRegistry[] 	CandidateSelectionEntries 		= UFLRegistry.CandidateSelectionRegistry.values();
 		CSEvaluationRegistry[] 			CSEvaluationEntries 			= UFLRegistry.CSEvaluationRegistry.values();
 		UserValidationRegistry[] 		UserValidationEntries 			= UFLRegistry.UserValidationRegistry.values();
+		FeedbackAggregationRegistry[] 	FeedbackAgregationEntries 		= UFLRegistry.FeedbackAggregationRegistry.values();
 		FeedbackPropagationRegistry[] 	FeedbackPropagationEntries 		= UFLRegistry.FeedbackPropagationRegistry.values();
 		PropagationEvaluationRegistry[] PropagationEvaluationEntries 	= UFLRegistry.PropagationEvaluationRegistry.values();
 		
@@ -61,6 +67,10 @@ public class UFLControlGUI_InitialSettingsPanel extends JPanel implements Action
 		cmbMatcher.setActionCommand( UFLControlGUI.ActionCommands.INITSCREEN_cmbMatcher.name() );
 		cmbMatcher.addActionListener(this);
 		
+		cmbInizialization = new JComboBox<LoopInizializationRegistry>(LoopInitializationEntries);
+		cmbInizialization.setActionCommand( UFLControlGUI.ActionCommands.INITSCREEN_cmbInizialization.name() );
+		cmbInizialization.addActionListener(this);
+		
 		cmbCandidate = new JComboBox<CandidateSelectionRegistry>(CandidateSelectionEntries);
 		cmbCandidate.setActionCommand( UFLControlGUI.ActionCommands.INITSCREEN_cmbCandidate.name() );
 		cmbCandidate.addActionListener(this);
@@ -72,6 +82,10 @@ public class UFLControlGUI_InitialSettingsPanel extends JPanel implements Action
 		cmbUserFeedback = new JComboBox<UserValidationRegistry>(UserValidationEntries);
 		cmbUserFeedback.setActionCommand( UFLControlGUI.ActionCommands.INITSCREEN_cmbUserFeedback.name() );
 		cmbUserFeedback.addActionListener(this);
+		
+		cmbAgregation = new JComboBox<FeedbackAggregationRegistry>(FeedbackAgregationEntries);
+		cmbAgregation.setActionCommand( UFLControlGUI.ActionCommands.INITSCREEN_cmbAgregation.name() );
+		cmbAgregation.addActionListener(this);
 		
 		cmbPropagation = new JComboBox<FeedbackPropagationRegistry>(FeedbackPropagationEntries);
 		cmbPropagation.setActionCommand( UFLControlGUI.ActionCommands.INITSCREEN_cmbPropagation.name() );
@@ -89,6 +103,7 @@ public class UFLControlGUI_InitialSettingsPanel extends JPanel implements Action
 		
 		JLabel lblExperiment				= new JLabel("Experiment");
 		JLabel lblInitialMatcher 			= new JLabel("Automatic Initial Matcher:");
+		JLabel lblLoopInizialization 		= new JLabel("Loop Inizialization:");
 		JLabel lblCandidateSelection 		= new JLabel("Candidate Selection:");
 		JLabel lblCSEvaluation 				= new JLabel("CS Evaluation:");
 		JLabel lblUserFeedback 				= new JLabel("User Validation:");
@@ -112,6 +127,7 @@ public class UFLControlGUI_InitialSettingsPanel extends JPanel implements Action
 				.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
 					.addComponent(lblExperiment)
 					.addComponent(lblInitialMatcher)
+					.addComponent(lblLoopInizialization)
 					.addComponent(lblCandidateSelection)
 					.addComponent(lblCSEvaluation)
 					.addComponent(lblPropagation)
@@ -122,6 +138,7 @@ public class UFLControlGUI_InitialSettingsPanel extends JPanel implements Action
 				.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 					.addComponent(cmbExperiment)
 					.addComponent(cmbMatcher)
+					.addComponent(cmbInizialization)
 					.addComponent(cmbCandidate)
 					.addComponent(cmbCSEvaluation)
 					.addComponent(cmbPropagation) 
@@ -145,6 +162,10 @@ public class UFLControlGUI_InitialSettingsPanel extends JPanel implements Action
 				.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
 					.addComponent(lblInitialMatcher)
 					.addComponent(cmbMatcher)
+				)
+				.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
+					.addComponent(lblLoopInizialization)
+					.addComponent(cmbInizialization)
 				)
 				.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
 					.addComponent(lblCandidateSelection)
@@ -174,6 +195,15 @@ public class UFLControlGUI_InitialSettingsPanel extends JPanel implements Action
 		
 		this.setLayout(new FlowLayout(FlowLayout.CENTER));
 		this.add(centralContainer);
+		
+//		cmbExperiment				.setEnabled(false);
+//		cmbMatcher					.setEnabled(false);
+//		cmbInizialization			.setEnabled(false);
+//		cmbCandidate				.setEnabled(false);
+//		cmbCSEvaluation				.setEnabled(false);
+//		cmbUserFeedback				.setEnabled(false);
+//		cmbPropagation				.setEnabled(false);
+//		cmbPropagationEvaluation	.setEnabled(false);
 	}
 	
 	
@@ -201,12 +231,13 @@ public class UFLControlGUI_InitialSettingsPanel extends JPanel implements Action
 	/* Test entrypoint */
 	public static void main(String[] args)
 	{
-		 JDialog newFrame = new JDialog(); 
-		 newFrame.setLayout(new BorderLayout());
-		 newFrame.add(new UFLControlGUI_InitialSettingsPanel(), BorderLayout.CENTER);
-		 newFrame.pack();  newFrame.setLocationRelativeTo(null); newFrame.setVisible(true);
-		//UFLControl_InitialSettingsPanel p=new UFLControl_InitialSettingsPanel();
+		JDialog newFrame = new JDialog();
+		newFrame.setModal(true); // stop execution on setVisible(true) until the dialog is closed.
+		newFrame.setLayout(new BorderLayout());
+		newFrame.add(new UFLControlGUI_InitialSettingsPanel(), BorderLayout.CENTER);
+		newFrame.pack();  newFrame.setLocationRelativeTo(null); newFrame.setVisible(true);
 		
+		System.exit(0);
 	}
 	
 }
