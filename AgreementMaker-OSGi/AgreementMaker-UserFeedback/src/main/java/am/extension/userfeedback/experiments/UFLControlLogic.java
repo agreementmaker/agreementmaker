@@ -2,13 +2,12 @@ package am.extension.userfeedback.experiments;
 
 import java.awt.event.ActionListener;
 
-import am.extension.userfeedback.UFLExperiment;
-
-public abstract class UFLControlLogic implements ActionListener {
+public abstract class UFLControlLogic<T extends UFLExperiment>  implements ActionListener {
 	
-	protected UFLExperiment experiment;
+	protected T experiment;
 	
-	public abstract void runExperiment(UFLExperiment experiment);
+	
+	public abstract void runExperiment(T experiment);
 	
 	/**
 	 * Starts a separate thread for running a piece of the experiment.
@@ -26,6 +25,21 @@ public abstract class UFLControlLogic implements ActionListener {
 			startThread(new Runnable(){
 				@Override public void run() {
 					experiment.initialMatcher.run(experiment);	
+				}
+			});
+		} catch (InstantiationException | IllegalAccessException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	protected void runInizialization() {
+		// Run the initial matchers in a separate thread.
+		try {
+			experiment.dataInizialization = experiment.setup.fli.getEntryClass().newInstance();
+			experiment.dataInizialization.addActionListener(this);
+			startThread(new Runnable(){
+				@Override public void run() {
+					experiment.dataInizialization.inizialize(experiment);	
 				}
 			});
 		} catch (InstantiationException | IllegalAccessException e) {

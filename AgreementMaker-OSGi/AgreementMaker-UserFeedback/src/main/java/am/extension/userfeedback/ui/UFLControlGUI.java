@@ -1,31 +1,36 @@
 package am.extension.userfeedback.ui;
 
-import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
+import java.lang.reflect.Constructor;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import am.Utility;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.Matcher;
-import am.extension.userfeedback.UFLExperiment;
-import am.extension.userfeedback.UFLExperimentSetup;
 import am.extension.userfeedback.UFLRegistry.CSEvaluationRegistry;
 import am.extension.userfeedback.UFLRegistry.CandidateSelectionRegistry;
 import am.extension.userfeedback.UFLRegistry.ExperimentRegistry;
+import am.extension.userfeedback.UFLRegistry.FeedbackAggregationRegistry;
 import am.extension.userfeedback.UFLRegistry.FeedbackPropagationRegistry;
 import am.extension.userfeedback.UFLRegistry.InitialMatcherRegistry;
+import am.extension.userfeedback.UFLRegistry.LoopInizializationRegistry;
 import am.extension.userfeedback.UFLRegistry.PropagationEvaluationRegistry;
 import am.extension.userfeedback.UFLRegistry.SaveFeedbackRegistry;
 import am.extension.userfeedback.UFLRegistry.UserValidationRegistry;
-import am.extension.userfeedback.experiments.UFLControlLogic;
-import am.ui.MatchingProgressDisplay;
+import am.extension.userfeedback.experiments.UFLExperiment;
+import am.extension.userfeedback.experiments.UFLExperimentSetup;
+import am.extension.userfeedback.logic.UFLControlLogic;
 import am.ui.UI;
+import am.ui.UIUtility;
 import am.ui.api.impl.AMTabSupportPanel;
 
-public class UFLControlGUI extends AMTabSupportPanel implements ActionListener, MatchingProgressDisplay {
+public class UFLControlGUI extends AMTabSupportPanel implements ActionListener, UFLProgressDisplay {
 
 	private static final long serialVersionUID = -967696425990716259L;
 	
@@ -37,17 +42,23 @@ public class UFLControlGUI extends AMTabSupportPanel implements ActionListener, 
 	    
     public enum ActionCommands {
     	INITSCREEN_cmbExperiment,
-    	INITSCREEN_cmbMatcher, 
+    	INITSCREEN_cmbMatcher,
+    	INITSCREEN_cmbInizialization,
     	INITSCREEN_cmbCandidate,
     	INITSCREEN_cmbCSEvaluation,
     	INITSCREEN_cmbUserFeedback,
+    	INITSCREEN_cmbFeedbackStorage, 
     	INITSCREEN_cmbPropagationEvaluation,  
+    	INITSCREEN_cmbAgregation,
     	INITSCREEN_cmbPropagation,
     	INITSCREEN_btnStart,
     	
+    	LOOP_INIZIALIZATION_DONE,
     	EXECUTION_SEMANTICS_DONE, 
     	CANDIDATE_SELECTION_DONE, 
     	CS_EVALUATION_DONE, 
+    	USER_STORAGE_DONE, 
+    	FEEDBACK_AGREGATION_DONE,
     	USER_FEEDBACK_DONE, 
     	PROPAGATION_DONE, 
     	PROPAGATION_EVALUATION_DONE,
@@ -56,6 +67,8 @@ public class UFLControlGUI extends AMTabSupportPanel implements ActionListener, 
     
     
 	private UFLControlGUI_InitialSettingsPanel panel;
+	
+	private JLabel lblStatus = new JLabel();
 
 	UI ui;
 	
@@ -75,16 +88,34 @@ public class UFLControlGUI extends AMTabSupportPanel implements ActionListener, 
 		panel = new UFLControlGUI_InitialSettingsPanel();
 		panel.addActionListener(this);
 		
-		this.setLayout(new FlowLayout(FlowLayout.CENTER));
+		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		lblStatus.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+		panel.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+		
 		this.add(panel);
+		this.add(Box.createHorizontalStrut(5));
+		this.add(lblStatus);
+		this.add(Box.createHorizontalStrut(5));
+		
+		//this.setLayout(new FlowLayout(FlowLayout.CENTER));
+		//this.add(panel);
 		
 		repaint();
 	}
 	
+	@Override
 	public void displayPanel( JPanel panel ) {
-		removeAll();		
-		this.setLayout(new FlowLayout(FlowLayout.CENTER));
+		removeAll();
+		
+		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		lblStatus.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+		panel.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+		
 		this.add(panel);
+		this.add(Box.createHorizontalStrut(5));
+		this.add(lblStatus);
+		this.add(Box.createHorizontalStrut(5));
+		
 		repaint();
 	}
 	
@@ -97,17 +128,24 @@ public class UFLControlGUI extends AMTabSupportPanel implements ActionListener, 
 			if( e.getActionCommand() == ActionCommands.INITSCREEN_btnStart.name() ) {
 				
 				ExperimentRegistry experimentRegistryEntry = (ExperimentRegistry) panel.cmbExperiment.getSelectedItem();
-				final UFLExperiment newExperiment = experimentRegistryEntry.getEntryClass().newInstance();
-				newExperiment.gui = this;
 				
-				newExperiment.setup = new UFLExperimentSetup();
-				newExperiment.setup.im = (InitialMatcherRegistry) panel.cmbMatcher.getSelectedItem();
-				newExperiment.setup.cs = (CandidateSelectionRegistry) panel.cmbCandidate.getSelectedItem();
-				newExperiment.setup.cse = (CSEvaluationRegistry) panel.cmbCSEvaluation.getSelectedItem();
-				newExperiment.setup.uv = (UserValidationRegistry) panel.cmbUserFeedback.getSelectedItem();
-				newExperiment.setup.fp = (FeedbackPropagationRegistry) panel.cmbPropagation.getSelectedItem();
-				newExperiment.setup.pe = (PropagationEvaluationRegistry) panel.cmbPropagationEvaluation.getSelectedItem();
-				newExperiment.setup.sf= SaveFeedbackRegistry.MultiUserSaveFeedback; 
+				UFLExperimentSetup newSetup = new UFLExperimentSetup();
+				newSetup.im = (InitialMatcherRegistry) panel.cmbMatcher.getSelectedItem();
+				newSetup.fli= (LoopInizializationRegistry) panel.cmbInizialization.getSelectedItem();
+				newSetup.cs = (CandidateSelectionRegistry) panel.cmbCandidate.getSelectedItem();
+				newSetup.cse = (CSEvaluationRegistry) panel.cmbCSEvaluation.getSelectedItem();
+				newSetup.uv = (UserValidationRegistry) panel.cmbUserFeedback.getSelectedItem();
+				newSetup.fa = (FeedbackAggregationRegistry) panel.cmbAgregation.getSelectedItem();
+				newSetup.fp = (FeedbackPropagationRegistry) panel.cmbPropagation.getSelectedItem();
+				newSetup.pe = (PropagationEvaluationRegistry) panel.cmbPropagationEvaluation.getSelectedItem();
+				newSetup.sf= SaveFeedbackRegistry.MultiUserSaveFeedback;
+				
+				Constructor<? extends UFLExperiment> constructor = 
+						experimentRegistryEntry.getEntryClass().getConstructor(new Class<?>[] { UFLExperimentSetup.class });
+				final UFLExperiment newExperiment = constructor.newInstance(newSetup);
+				
+				newExperiment.gui = this;
+				 
 				// the experiment is starting, or we have just completed an iteration of the loop (assuming the propagation evaluation is done last)
 
 				// Step 1.  experiment is starting.  Initialize the experiment setup.
@@ -131,31 +169,31 @@ public class UFLControlGUI extends AMTabSupportPanel implements ActionListener, 
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
-			Utility.displayErrorPane(Utility.UNEXPECTED_ERROR + "\n\n" + ex.getMessage(), Utility.UNEXPECTED_ERROR_TITLE);
+			UIUtility.displayErrorPane(Utility.UNEXPECTED_ERROR + "\n\n" + ex.getMessage(), Utility.UNEXPECTED_ERROR_TITLE);
 		}
 	}
 
 	@Override
 	public void matchingStarted(AbstractMatcher matcher) {
-		System.out.println("Matching Started: " + matcher.getName());
+		lblStatus.setText("Matching the loaded ontologies...");
 	}
 
 	@Override
 	public void matchingComplete() {
-		System.out.println("Matching Complete");
+		lblStatus.setText("Initial Matchers Complete.");
 	}
 
 	@Override public void clearReport() {}
 
 	@Override
 	public void appendToReport(String report) {
-		//System.out.println(report);
+		lblStatus.setText(report);
 	}
 
 	@Override public void scrollToEndOfReport() { }
 
 	@Override public void setProgressLabel(String label) {
-		System.out.println("Progress Label: " + label);
+		lblStatus.setText("Progress: " + label);
 	}
 
 	@Override public void setIndeterminate(boolean indeterminate) { }
@@ -163,6 +201,6 @@ public class UFLControlGUI extends AMTabSupportPanel implements ActionListener, 
 	@Override public void ignoreComplete(boolean ignore) { }
 
 	@Override public void propertyChange(PropertyChangeEvent evt) {
-		System.out.println("Property Change: " + evt.getPropertyName() + " = " + evt.getNewValue());
+		lblStatus.setText(evt.getPropertyName() + " = " + evt.getNewValue());
 	}
 }
