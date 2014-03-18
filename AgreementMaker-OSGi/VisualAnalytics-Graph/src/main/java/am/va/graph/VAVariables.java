@@ -12,6 +12,7 @@ public interface VAVariables {
 			"Not matched" };
 	
 	String panelColor[] = {"#e6ffcc", "#ffffcc"};
+	String uflPanelColor[] = {"#CCCCFF", "#CCFFFF"};
 
 	HashMap<String, String> ColorRange = new HashMap<String, String>() {
 		{

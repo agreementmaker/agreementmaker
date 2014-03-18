@@ -59,8 +59,8 @@ public class VAPanel {
 
 	private Button btnRoot;
 	private Button btnUp;
-	private Button btnUFB;
-	private ToggleButton btnPages[] = new ToggleButton[3];
+	private Button btnUFL;
+	private ToggleButton btnPages[] = new ToggleButton[5];
 
 	private RadioButton rbClass;
 	private RadioButton rbProperity;
@@ -76,6 +76,8 @@ public class VAPanel {
 	private VAVariables.currentSetStatus status;
 
 	private VAPanelLogic val;
+	
+	private VAUFLPanel UFLPanel;
 
 	public VAPanel(VAPanelLogic v) {
 		this.val = v;
@@ -118,9 +120,6 @@ public class VAPanel {
 		myScene.getStylesheets().add(sceneCss);
 		setLayout();
 		fxPanel.setScene(myScene);
-		// val.updatePreviousGroup(val.getRootGroupLeft(0));
-		// val.updateCurrentGroup(val.getRootGroupLeft(0));
-		// setUpButton(val.getRootGroupLeft1());
 		for (int i = 0; i < 2; i++)
 			chartLeft[i].updateMainPieChart(ontologyType.Source);
 		generateNewTree();
@@ -283,9 +282,9 @@ public class VAPanel {
 	private void initButtons(HBox buttonBar) {
 		btnRoot = new Button("Top level");
 		btnUp = new Button("Go back");
-		btnUFB = new Button("User feedback");
+		btnUFL = new Button("User feedback");
 		setToolButtonActions();
-		buttonBar.getChildren().addAll(btnRoot, btnUp, btnUFB);
+		buttonBar.getChildren().addAll(btnRoot, btnUp, btnUFL);
 	}
 
 	private void initRadioButtons(HBox buttonBar) {
@@ -623,7 +622,7 @@ public class VAPanel {
 
 		});
 
-		btnUFB.setOnAction(new EventHandler<ActionEvent>() {
+		btnUFL.setOnAction(new EventHandler<ActionEvent>() {
 
 			@Override
 			public void handle(ActionEvent arg0) {
@@ -631,7 +630,10 @@ public class VAPanel {
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
-						new VAUserFeedBack();
+						if(UFLPanel == null)
+							new VAUFLPanel();
+						else
+							UFLPanel.showFrame(true);
 					}
 				});
 			}
