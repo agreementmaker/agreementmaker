@@ -134,7 +134,7 @@ public class VAUFLPanel {
 			@Override
 			public void handle(ActionEvent arg0) {
 				// TODO save user selection
-				
+				new VAUFL();
 			}
 			
 		});
