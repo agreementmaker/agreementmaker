@@ -42,7 +42,6 @@ public class FilterMatcher  extends AbstractMatcher  {
 	protected SimilarityMatrix alignUnmappedNodes( List<Node> sourceList, List<Node> targetList, SimilarityMatrix inputMatrix,
 			Alignment<Mapping> inputAlignmentSet, alignType typeOfNodes) throws Exception {
 
-		System.out.println("inside alignUnmappedNodes overridden function");
 		MappedNodes mappedNodes = new MappedNodes(sourceList, targetList, inputAlignmentSet, param.maxSourceAlign, param.maxTargetAlign);
 		AbstractMatcher a;
 		SimilarityMatrix matrix = null; //= new ArraySimilarityMatrix(sourceOntology, targetOntology, typeOfNodes);
@@ -56,9 +55,9 @@ public class FilterMatcher  extends AbstractMatcher  {
 				&& a.arePropertiesAligned()) {
 			matrix=a.getPropertiesMatrix().clone();
 			
-			
 		}
 		
+	
 		
 		Node source;
 		Node target;
@@ -102,10 +101,11 @@ public class FilterMatcher  extends AbstractMatcher  {
 		int targetindex = target.getIndex();
 				
 		AbstractMatcher a;
-		double sim = 0.0d;
+		double sim;
 		
 		
-		a = inputMatchers.get(0);
+			
+			a = inputMatchers.get(0);
 
 			// get the sim for this two nodes in the input matcher matrix
 			if (typeOfNodes != alignType.aligningClasses
@@ -178,9 +178,9 @@ public class FilterMatcher  extends AbstractMatcher  {
 				double parentsim=a.getClassesMatrix().getSimilarity(p1, p2);
 
 				if(parentsim<0.6){
-			//		System.out.println("source concept:"+ resource_uri1);
+					System.out.println("source concept:"+ resource_uri1);
 				//	System.out.println("parent source: "+srcsublist.get(0).asTriple().getObject().toString());
-				//	System.out.println("target concept:"+ resource_uri2);
+					System.out.println("target concept:"+ resource_uri2);
 			//		System.out.println("target_parent"+trgsublist.get(0).asTriple().getObject().toString());
 					sim=0;
 					}
@@ -306,13 +306,8 @@ public class FilterMatcher  extends AbstractMatcher  {
 				
 			} else if (typeOfNodes == alignType.aligningProperties
 					&& a.arePropertiesAligned()) {
-
-			
-			
-
 				if (a.getPropertiesMatrix().get(sourceindex, targetindex) != null) {
-
-					sim = a.getPropertiesMatrix().get(sourceindex, targetindex).getSimilarity();
+			//		sim = a.getPropertiesMatrix().get(sourceindex, targetindex).getSimilarity();
 					
 					String srcdomain, trgdomain, srcrange, trgrange;
 					OntResource stringuri;
@@ -344,10 +339,14 @@ public class FilterMatcher  extends AbstractMatcher  {
 					sim = 0.0;
 				}
 				
-			//} else
-				//throw new RuntimeException(	"DEVELOPER ERROR: The input matchers must perform the mapping selection step. ("+ a + ")");
+			} else
+				throw new RuntimeException(
+						"DEVELOPER ERROR: The input matchers must perform the mapping selection step. ("
+								+ a + ")");
+
+
 		
-			}	
+		
 		return new Mapping(source, target, sim, MappingRelation.EQUIVALENCE);
 	}
 
