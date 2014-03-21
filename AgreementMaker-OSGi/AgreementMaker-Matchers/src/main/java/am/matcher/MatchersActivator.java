@@ -32,7 +32,6 @@ public class MatchersActivator implements BundleActivator {
 	private ServiceRegistration<AbstractMatcher> regLexicalSynonymWeighted;
 	private ServiceRegistration<AbstractMatcher> regDsi;
 	private ServiceRegistration<AbstractMatcher> regIism;
-	private ServiceRegistration<AbstractMatcher> regGFM;
 	private ServiceRegistration<AbstractMatcher> regFilterMatcher;
 	private ServiceRegistration<AbstractMatcher> regGroupFinderMatcher;
 	/*
@@ -50,7 +49,6 @@ public class MatchersActivator implements BundleActivator {
 		regLexicalSynonymWeighted = context.registerService(AbstractMatcher.class, new LexicalSynonymMatcherWeighted(), null);
 		regDsi = context.registerService(AbstractMatcher.class, new DescendantsSimilarityInheritanceMatcher(), new Hashtable<String,String>());
 		regIism = context.registerService(AbstractMatcher.class, new IterativeInstanceStructuralMatcher(), new Hashtable<String,String>());
-		regGFM = context.registerService(AbstractMatcher.class, new GroupFinderMatcher(), null);
 		regFilterMatcher = context.registerService(AbstractMatcher.class, new FilterMatcher(), null);
 		regGroupFinderMatcher = context.registerService(AbstractMatcher.class, new GroupFinderMatcher(), null);
 	}
@@ -69,7 +67,6 @@ public class MatchersActivator implements BundleActivator {
 		regLexicalSynonym.unregister();
 		regDsi.unregister();
 		regIism.unregister();
-		regGFM.unregister();
 		regFilterMatcher.unregister();
 		regGroupFinderMatcher.unregister();
 	}
