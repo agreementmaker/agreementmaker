@@ -162,6 +162,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		case GENERAL_PURPOSE: {
 			finalResult = runGeneralPurpose();
 		}
+		break;
 		case GENERAL_PURPOSE_FILTERED: {
 			finalResult = runGeneralPurposeFiltered();
 		}
