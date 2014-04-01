@@ -5,7 +5,7 @@ import java.util.HashMap;
 import am.app.ontology.Node;
 
 /**
- * Possible alignment pairs
+ * Possible alignment pairs, 1 to n
  * @author Yiting
  *
  */
@@ -28,8 +28,27 @@ public class VAUFLPairs {
 		this.sourceNode = sourceNode;
 	}
 	
-	public void addToTargetList(String s, Node n){
-		targetNodes.put(s, n);
+	public HashMap<String, Node> getTargetNodes() {
+		return targetNodes;
+	}
+
+	public void setTargetNodes(HashMap<String, Node> targetNodes) {
+		this.targetNodes = targetNodes;
+	}
+
+	public void addToTargetList(Node n){
+		targetNodes.put(n.getLocalName(), n);
+	}
+	
+	/**
+	 * Check if target node is already in the hash map
+	 * @param target
+	 * @return
+	 */
+	public boolean containTarget(String target){
+		if(targetNodes.containsKey(target))
+			return true;
+		return false;
 	}
 	
 	
