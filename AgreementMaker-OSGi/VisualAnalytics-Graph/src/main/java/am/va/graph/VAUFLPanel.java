@@ -32,39 +32,44 @@ public class VAUFLPanel {
 	private JFXPanel fxPanelSub;
 	private Group rootSub;
 	private Scene mySubScene;
+	private int pointer;
 
 	private ArrayList<VAUFLPairs> lstPairs;
 	private ListView<String> lstchoices;
+	private Label lblQuestion;
 
 	public VAUFLPanel() {
-		frameSub = new JFrame("VA-UFL");
-		;
-		fxPanelSub = new JFXPanel();
-		frameSub.setSize(500, 320);
-		frameSub.setLocation(500, 200);
-		frameSub.setVisible(true);
-		frameSub.add(fxPanelSub);
 
 		VAUFL vaUFL = new VAUFL(); // first init data sets
 		lstPairs = new ArrayList<VAUFLPairs>();
 		vaUFL.getAbiMatchings(lstPairs, VAVariables.ontologyType.Source);
+		pointer = -1;
 
 		// test list here: test pass
-		for (VAUFLPairs p : lstPairs) {
-			String sname = p.getSourceNode().getLocalName();
-			HashMap<String, Node> t = p.getTargetNodes();
-			for (String key : t.keySet()) {
-				String tname = key;
-				System.out.println("(" + sname + "," + tname + ")");
-			}
-		}
+		// for (VAUFLPairs p : lstPairs) {
+		// String sname = p.getSourceNode().getLocalName();
+		// HashMap<String, Node> t = p.getTargetNodes();
+		// for (String key : t.keySet()) {
+		// String tname = key;
+		// System.out.println("(" + sname + "," + tname + ")");
+		// }
+		// }
 
-		Platform.runLater(new Runnable() {
-			@Override
-			public void run() {
-				InitUFLFX();
-			}
-		});
+		if (lstPairs != null && lstPairs.size() > 0) {
+			frameSub = new JFrame("VA-UFL");
+			fxPanelSub = new JFXPanel();
+			frameSub.setSize(500, 320);
+			frameSub.setLocation(500, 200);
+			frameSub.setVisible(true);
+			frameSub.add(fxPanelSub);
+
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					InitUFLFX();
+				}
+			});
+		}
 	}
 
 	/**
@@ -95,6 +100,7 @@ public class VAUFLPanel {
 		initTopQuestion(borderPane);
 		initCenterChoices(borderPane, 3);
 		initBottomButtons(borderPane);
+		setQuestions(0);// init question
 		return borderPane;
 	}
 
@@ -104,7 +110,7 @@ public class VAUFLPanel {
 	 * @param borderPane
 	 */
 	private void initTopQuestion(BorderPane borderPane) {
-		Label lblQuestion = new Label("Question here");
+		lblQuestion = new Label();
 		borderPane.setTop(lblQuestion);
 	}
 
@@ -117,24 +123,8 @@ public class VAUFLPanel {
 	private void initCenterChoices(BorderPane borderPane, int num) {
 		// Create a listview here
 		lstchoices = new ListView<String>();
-		ObservableList<String> cListData = FXCollections.observableArrayList();
-		;
-		cListData.add("choice 1");
-		cListData.add("choice 2");
 		lstchoices.setMaxHeight(100);
-		lstchoices.setItems(cListData);
 		borderPane.setCenter(lstchoices);
-
-		// ToggleGroup tg = new ToggleGroup();
-		// VBox vbox = new VBox();
-		// vbox.setSpacing(5);
-		// RadioButton[] rb = new RadioButton[num];
-		// for (int i = 0; i < num; i++) {
-		// rb[i] = new RadioButton("choice " + (i + 1));
-		// rb[i].setToggleGroup(tg);
-		// vbox.getChildren().add(rb[i]);
-		// }
-		// borderPane.setCenter(vbox);
 	}
 
 	/**
@@ -188,4 +178,45 @@ public class VAUFLPanel {
 	public void showFrame(boolean show) {
 		frameSub.setVisible(show);
 	}
+
+	public void setQuestions(int qnumber) {
+		// Set question label
+		String qSourceName = lstPairs.get(qnumber).getSourceNode().getLocalName();
+		lblQuestion.setText("Select the concept that best matches \"" + qSourceName + "\":");
+
+		// Set question body (choices)
+		ObservableList<String> cListData = FXCollections.observableArrayList();
+		HashMap<String, Node> t = lstPairs.get(qnumber).getTargetNodes();
+		for (String key : t.keySet()) {
+			cListData.add(key);
+		}
+		lstchoices.setItems(cListData);
+	}
+
+	/**
+	 * Get next question by adding pointer 1
+	 * 
+	 * @return
+	 */
+	private int getNextQuestion() {
+		if (pointer == lstPairs.size())
+			pointer = 0;
+		else
+			pointer++;
+		return pointer;
+	}
+
+	/**
+	 * Get previous question by reducing pointer 1
+	 * 
+	 * @return
+	 */
+	private int getPreviousQuestion() {
+		if (pointer == 0)
+			pointer = lstPairs.size() - 1;
+		else
+			pointer--;
+		return pointer;
+	}
+
 }
