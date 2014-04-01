@@ -11,7 +11,7 @@ import am.app.ontology.Node;
  */
 public class VAUFLPairs {
 	private Node sourceNode;
-	private HashMap<String, Node> targetNodes;
+	private HashMap<String, Node> targetNodes; //target name & target node
 	
 	
 	

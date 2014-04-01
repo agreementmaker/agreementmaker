@@ -103,31 +103,35 @@ public class VAUFL {
 						VAUFLPairs newPair = new VAUFLPairs(source);
 						newPair.addToTargetList(target);
 						UFLSelectionMap.put(source.getLocalName(), newPair);
-						// System.out.println("add new source: " +
-						// source.getLocalName() + ", target:" +
-						// target.getLocalName());
 					} else {
 						VAUFLPairs oldPair = UFLSelectionMap.get(source.getLocalName());
 						if (!oldPair.containTarget(target.getLocalName())) {
 							oldPair.addToTargetList(target);
-							// System.out.println("source: " +
-							// source.getLocalName() + ", target: " +
-							// target.getLocalName());
 						}
 					}
 				}
 			}
 		}
-		// check UFLSelectionMap (pass)
-//		for (String key : UFLSelectionMap.keySet()) {
-//			System.out.println("Source=" + key);
-//			for (Map.Entry<String, Node> t : UFLSelectionMap.get(key).getTargetNodes().entrySet()) {
-//				String tname = t.getValue().getLocalName();
-//				System.out.println("(" + key + ", " + tname + ")");
-//			}
-//		}
 		
-		//Get the list multi-matchings
+		//Get the list multi-matchings by remove single value matchings
+		for(String key : UFLSelectionMap.keySet()){
+			if(UFLSelectionMap.get(key).getTargetNodes().size() > 1){
+				for (Map.Entry<String, Node> t : UFLSelectionMap.get(key).getTargetNodes().entrySet()) {
+					String tname = t.getValue().getLocalName();
+					System.out.println("(" + key + ", " + tname + ")");
+				}
+			}	
+		}
 		
+	}
+	
+	private void output(){
+		for (String key : UFLSelectionMap.keySet()) {
+			System.out.println("Source=" + key);
+			for (Map.Entry<String, Node> t : UFLSelectionMap.get(key).getTargetNodes().entrySet()) {
+				String tname = t.getValue().getLocalName();
+				System.out.println("(" + key + ", " + tname + ")");
+			}
+		}
 	}
 }
