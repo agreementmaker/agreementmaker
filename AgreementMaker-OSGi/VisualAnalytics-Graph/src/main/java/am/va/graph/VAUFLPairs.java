@@ -12,6 +12,7 @@ import am.app.ontology.Node;
 public class VAUFLPairs {
 	private Node sourceNode;
 	private HashMap<String, Node> targetNodes; //target name & target node
+	private String bestChoice;
 	
 	
 	
@@ -19,6 +20,7 @@ public class VAUFLPairs {
 		super();
 		this.sourceNode = sourceNode;
 		this.targetNodes = new HashMap<String, Node>();
+		this.bestChoice = "";
 	}
 	
 	public Node getSourceNode() {
@@ -38,6 +40,18 @@ public class VAUFLPairs {
 
 	public void addToTargetList(Node n){
 		targetNodes.put(n.getLocalName(), n);
+	}
+	
+	public void setBestChoice(String c){
+		this.bestChoice = c;
+	}
+	
+	public boolean selected(){
+		return !bestChoice.equals("");
+	}
+	
+	public String getBestChoice(){
+		return bestChoice;
 	}
 	
 	/**
