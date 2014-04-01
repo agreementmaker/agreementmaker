@@ -44,7 +44,7 @@ public class VAUFLPanel {
 		VAUFL vaUFL = new VAUFL(); // first init data sets
 		lstPairs = new ArrayList<VAUFLPairs>();
 		vaUFL.getAbiMatchings(lstPairs, VAVariables.ontologyType.Source);
-		pointer = -1;
+		pointer = 0;
 
 		if (lstPairs != null && lstPairs.size() > 0) {
 			frameSub = new JFrame("VA-UFL");
@@ -205,7 +205,10 @@ public class VAUFLPanel {
 			cListData.add(key);
 		}
 		if(lstPairs.get(qnumber).selected()){
-			lstchoices.getSelectionModel().setSelectionMode(SelectionMode.valueOf(lstPairs.get(qnumber).getBestChoice()));
+			String selected = lstPairs.get(qnumber).getBestChoice();
+			lstchoices.getSelectionModel().select(selected);
+			
+			//lstchoices.getSelectionModel().setSelectionMode(SelectionMode.valueOf(lstPairs.get(qnumber).getBestChoice()));
 		}
 		lstchoices.setItems(cListData);
 	}
