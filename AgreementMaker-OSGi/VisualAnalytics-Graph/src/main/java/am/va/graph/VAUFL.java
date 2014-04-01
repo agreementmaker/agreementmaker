@@ -122,11 +122,6 @@ public class VAUFL {
 		for (String key : UFLSelectionMap.keySet()) {
 			if (UFLSelectionMap.get(key).getTargetNodes().size() > 1) {
 				lstPairs.add(UFLSelectionMap.get(key));//add to list
-				
-//				for (Map.Entry<String, Node> t : UFLSelectionMap.get(key).getTargetNodes().entrySet()) {
-//					String tname = t.getValue().getLocalName();
-//					System.out.println("(" + key + ", " + tname + ")");
-//				}
 			}
 		}
 	}

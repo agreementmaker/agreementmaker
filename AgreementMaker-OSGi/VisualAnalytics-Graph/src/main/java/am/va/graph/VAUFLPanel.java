@@ -15,6 +15,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
@@ -45,16 +46,6 @@ public class VAUFLPanel {
 		vaUFL.getAbiMatchings(lstPairs, VAVariables.ontologyType.Source);
 		pointer = -1;
 
-		// test list here: test pass
-		// for (VAUFLPairs p : lstPairs) {
-		// String sname = p.getSourceNode().getLocalName();
-		// HashMap<String, Node> t = p.getTargetNodes();
-		// for (String key : t.keySet()) {
-		// String tname = key;
-		// System.out.println("(" + sname + "," + tname + ")");
-		// }
-		// }
-
 		if (lstPairs != null && lstPairs.size() > 0) {
 			frameSub = new JFrame("VA-UFL");
 			fxPanelSub = new JFXPanel();
@@ -76,18 +67,14 @@ public class VAUFLPanel {
 	 * Init UFL Panel
 	 */
 	public void InitUFLFX() {
-
 		rootSub = new Group();
 		mySubScene = new Scene(rootSub);
 		fxPanelSub.setScene(mySubScene);
-
 		String subSceneCss = VAUFLPanel.class.getResource("VA.css").toExternalForm();
 		mySubScene.getStylesheets().add(subSceneCss);
-
 		BorderPane borderPane = setUFLLayout();
 		rootSub.getChildren().add(borderPane);
 		fxPanelSub.setScene(mySubScene);
-
 	}
 
 	/**
@@ -134,11 +121,12 @@ public class VAUFLPanel {
 	 */
 	private void initBottomButtons(BorderPane borderPane) {
 		VBox vbox = new VBox();
-
-		Button btnClose = new Button("close");
+		Button btnNext = new Button("Next");
+		Button btnPrevious = new Button("Previous");
 		Button btnSave = new Button("save");
-		setButtonActions(btnClose, btnSave);
-		vbox.getChildren().addAll(btnClose, btnSave);
+		Button btnClose = new Button("close");
+		setButtonActions(btnClose, btnSave, btnNext, btnPrevious);
+		vbox.getChildren().addAll(btnNext, btnPrevious, btnSave, btnClose);
 		borderPane.setBottom(vbox);
 	}
 
@@ -148,7 +136,7 @@ public class VAUFLPanel {
 	 * @param btnClose
 	 * @param btnSave
 	 */
-	private void setButtonActions(Button btnClose, Button btnSave) {
+	private void setButtonActions(Button btnClose, Button btnSave, Button btnNext, Button btnPrevious) {
 		btnClose.setOnAction(new EventHandler<ActionEvent>() {
 
 			@Override
@@ -164,9 +152,35 @@ public class VAUFLPanel {
 			@Override
 			public void handle(ActionEvent arg0) {
 				// TODO save user selection
-
+				//get current listview choice and set it to the bestChoice (bug here)
+				String currentChoice = lstchoices.getSelectionModel().getSelectedItem();
+				lstPairs.get(pointer).setBestChoice(currentChoice);
+				
+				//Insert the choice to matrix[0]
 			}
 
+		});
+		
+		btnNext.setOnAction(new EventHandler<ActionEvent>(){
+
+			@Override
+			public void handle(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				int qnumber = getNextQuestion();
+				setQuestions(qnumber);
+			}
+			
+		});
+		
+		btnPrevious.setOnAction(new EventHandler<ActionEvent>(){
+
+			@Override
+			public void handle(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				int qnumber = getPreviousQuestion();
+				setQuestions(qnumber);
+			}
+			
 		});
 	}
 
@@ -190,6 +204,9 @@ public class VAUFLPanel {
 		for (String key : t.keySet()) {
 			cListData.add(key);
 		}
+		if(lstPairs.get(qnumber).selected()){
+			lstchoices.getSelectionModel().setSelectionMode(SelectionMode.valueOf(lstPairs.get(qnumber).getBestChoice()));
+		}
 		lstchoices.setItems(cListData);
 	}
 
@@ -199,7 +216,7 @@ public class VAUFLPanel {
 	 * @return
 	 */
 	private int getNextQuestion() {
-		if (pointer == lstPairs.size())
+		if (pointer >= lstPairs.size() - 1)
 			pointer = 0;
 		else
 			pointer++;
@@ -212,7 +229,7 @@ public class VAUFLPanel {
 	 * @return
 	 */
 	private int getPreviousQuestion() {
-		if (pointer == 0)
+		if (pointer <= 0)
 			pointer = lstPairs.size() - 1;
 		else
 			pointer--;
