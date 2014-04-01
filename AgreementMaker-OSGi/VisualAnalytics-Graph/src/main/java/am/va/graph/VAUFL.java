@@ -1,5 +1,6 @@
 package am.va.graph;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,11 +19,15 @@ public class VAUFL {
 	HashMap<String, VAUFLPairs> UFLSelectionMap;
 
 	public VAUFL() {
-		UFLSelectionMap = new HashMap<String, VAUFLPairs>();
-		matchingTask = Core.getInstance().getMatchingTasks();
+		UFLSelectionMap = new HashMap<String, VAUFLPairs>(); // init selection
+																// map
+		matchingTask = Core.getInstance().getMatchingTasks(); // get matching
+																// tasks for
+																// later use
 		userTask = matchingTask.get(0);
-		setBestMatchingGroup();
-		getAbiMatchings(VAVariables.ontologyType.Source);
+		setBestMatchingGroup(); // find out the best matching group and assign
+								// it to userResult (matchingTask[0])
+		//getAbiMatchings(VAVariables.ontologyType.Source);//get arbitrary matchings 
 	}
 
 	/**
@@ -82,7 +87,7 @@ public class VAUFL {
 	 * 
 	 * @param type
 	 */
-	private void getAbiMatchings(VAVariables.ontologyType type) {
+	public void getAbiMatchings(ArrayList<VAUFLPairs> lstPairs, VAVariables.ontologyType type) {
 		// iterate the source ontology concepts
 		int len = matchingTask.size();
 		SimilarityMatrix sMatrix;
@@ -112,20 +117,21 @@ public class VAUFL {
 				}
 			}
 		}
-		
-		//Get the list multi-matchings by remove single value matchings
-		for(String key : UFLSelectionMap.keySet()){
-			if(UFLSelectionMap.get(key).getTargetNodes().size() > 1){
-				for (Map.Entry<String, Node> t : UFLSelectionMap.get(key).getTargetNodes().entrySet()) {
-					String tname = t.getValue().getLocalName();
-					System.out.println("(" + key + ", " + tname + ")");
-				}
-			}	
+
+		// Get the list multi-matchings by remove single value matchings
+		for (String key : UFLSelectionMap.keySet()) {
+			if (UFLSelectionMap.get(key).getTargetNodes().size() > 1) {
+				lstPairs.add(UFLSelectionMap.get(key));//add to list
+				
+//				for (Map.Entry<String, Node> t : UFLSelectionMap.get(key).getTargetNodes().entrySet()) {
+//					String tname = t.getValue().getLocalName();
+//					System.out.println("(" + key + ", " + tname + ")");
+//				}
+			}
 		}
-		
 	}
-	
-	private void output(){
+
+	private void output() {
 		for (String key : UFLSelectionMap.keySet()) {
 			System.out.println("Source=" + key);
 			for (Map.Entry<String, Node> t : UFLSelectionMap.get(key).getTargetNodes().entrySet()) {
