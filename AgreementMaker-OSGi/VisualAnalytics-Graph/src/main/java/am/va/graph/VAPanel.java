@@ -59,7 +59,7 @@ public class VAPanel {
 
 	private Button btnRoot;
 	private Button btnUp;
-	private Button btnUFL;
+	private static Button btnUFL;
 	private ToggleButton btnPages[] = new ToggleButton[5];
 
 	private RadioButton rbClass;
@@ -634,10 +634,15 @@ public class VAPanel {
 							new VAUFLPanel();
 						else
 							UFLPanel.showFrame(true);
+						btnUFL.setDisable(true);
 					}
 				});
 			}
 
 		});
+	}
+	
+	public static void enableUFL(boolean enable){
+		btnUFL.setDisable(!enable);
 	}
 }
