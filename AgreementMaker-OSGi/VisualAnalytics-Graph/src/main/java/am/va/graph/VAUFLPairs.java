@@ -13,6 +13,7 @@ public class VAUFLPairs {
 	private Node sourceNode;
 	private HashMap<String, Node> targetNodes; //target name & target node
 	private String bestChoice;
+	private double sim;
 	
 	
 	
@@ -21,6 +22,7 @@ public class VAUFLPairs {
 		this.sourceNode = sourceNode;
 		this.targetNodes = new HashMap<String, Node>();
 		this.bestChoice = "";
+		sim = 0;
 	}
 	
 	public Node getSourceNode() {
@@ -52,6 +54,10 @@ public class VAUFLPairs {
 	
 	public String getBestChoice(){
 		return bestChoice;
+	}
+	
+	public void setSim(double sim){
+		this.sim = sim;
 	}
 	
 	/**

@@ -4,11 +4,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.JFXPanel;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -16,9 +21,12 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -38,6 +46,9 @@ public class VAUFLPanel {
 	private ArrayList<VAUFLPairs> lstPairs;
 	private ListView<String> lstchoices;
 	private Label lblQuestion;
+	private Label lblSelection;
+	private ToggleGroup tg;
+	private double sim;
 
 	public VAUFLPanel() {
 
@@ -49,10 +60,15 @@ public class VAUFLPanel {
 		if (lstPairs != null && lstPairs.size() > 0) {
 			frameSub = new JFrame("VA-UFL");
 			fxPanelSub = new JFXPanel();
-			frameSub.setSize(500, 320);
+			frameSub.setSize(500, 400);
 			frameSub.setLocation(500, 200);
 			frameSub.setVisible(true);
 			frameSub.add(fxPanelSub);
+			frameSub.addWindowListener(new java.awt.event.WindowAdapter() {
+				public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+					VAPanel.enableUFL(true);
+				}
+			});
 
 			Platform.runLater(new Runnable() {
 				@Override
@@ -72,8 +88,8 @@ public class VAUFLPanel {
 		fxPanelSub.setScene(mySubScene);
 		String subSceneCss = VAUFLPanel.class.getResource("VA.css").toExternalForm();
 		mySubScene.getStylesheets().add(subSceneCss);
-		BorderPane borderPane = setUFLLayout();
-		rootSub.getChildren().add(borderPane);
+		VBox vbox = setUFLLayout();
+		rootSub.getChildren().add(vbox);
 		fxPanelSub.setScene(mySubScene);
 	}
 
@@ -82,52 +98,86 @@ public class VAUFLPanel {
 	 * 
 	 * @return
 	 */
-	private BorderPane setUFLLayout() {
-		BorderPane borderPane = new BorderPane();
-		initTopQuestion(borderPane);
-		initCenterChoices(borderPane, 3);
-		initBottomButtons(borderPane);
+	private VBox setUFLLayout() {
+		VBox vBox = new VBox(5);
+		vBox.setAlignment(Pos.CENTER);
+		vBox.setPadding(new Insets(70));
+		vBox.setSpacing(20);
+
+		initTopQuestion(vBox);
+		initTopPreviousSelection(vBox);
+		initCenterChoices(vBox);
+		initBottomButtons(vBox);
 		setQuestions(0);// init question
-		return borderPane;
+		return vBox;
 	}
 
 	/**
-	 * Set top part of border panel
+	 * Set top Question part
 	 * 
 	 * @param borderPane
 	 */
-	private void initTopQuestion(BorderPane borderPane) {
+	private void initTopQuestion(VBox vBox) {
 		lblQuestion = new Label();
-		borderPane.setTop(lblQuestion);
+		vBox.getChildren().add(lblQuestion);
+	}
+
+	private void initTopPreviousSelection(VBox vBox) {
+		lblSelection = new Label();
+		vBox.getChildren().add(lblSelection);
 	}
 
 	/**
-	 * Set center part of border panel
+	 * Set center Choices part
 	 * 
 	 * @param borderPane
-	 * @param num
 	 */
-	private void initCenterChoices(BorderPane borderPane, int num) {
-		// Create a listview here
+	private void initCenterChoices(VBox vBox) {
+		// Create a listview & Radio Buttons here
+		VBox centerBox = new VBox(2);
+
 		lstchoices = new ListView<String>();
 		lstchoices.setMaxHeight(100);
-		borderPane.setCenter(lstchoices);
+		lstchoices.setMaxWidth(300);
+
+		HBox radiobuttons = new HBox();
+		HBox.setMargin(radiobuttons, new Insets(0, 5, 0, 0));
+		tg = new ToggleGroup();
+		RadioButton[] rb = new RadioButton[3];
+		for (int i = 0; i < 3; i++) {
+			rb[i] = new RadioButton();
+			rb[i].setText(Integer.toString(i * 30));
+			rb[i].setUserData(i * 30);
+			rb[i].setToggleGroup(tg);
+			radiobuttons.getChildren().add(rb[i]);
+		}
+		tg.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
+			public void changed(ObservableValue<? extends Toggle> ov, Toggle old_toggle, Toggle new_toggle) {
+				if (tg.getSelectedToggle() != null) {
+					if (tg.getSelectedToggle().getUserData() != null)
+						sim = (double) (tg.getSelectedToggle().getUserData());// ?
+				}
+			}
+		});
+		centerBox.getChildren().addAll(lstchoices, radiobuttons);
+		vBox.getChildren().add(centerBox);
 	}
 
 	/**
-	 * Set bottom part of border panel
+	 * Set bottom Buttons part
 	 * 
 	 * @param borderPane
 	 */
-	private void initBottomButtons(BorderPane borderPane) {
-		VBox vbox = new VBox();
+	private void initBottomButtons(VBox vBox) {
+		HBox hbox = new HBox();
+		HBox.setMargin(hbox, new Insets(0, 5, 0, 0));
 		Button btnNext = new Button("Next");
 		Button btnPrevious = new Button("Previous");
 		Button btnSave = new Button("save");
 		Button btnClose = new Button("close");
 		setButtonActions(btnClose, btnSave, btnNext, btnPrevious);
-		vbox.getChildren().addAll(btnNext, btnPrevious, btnSave, btnClose);
-		borderPane.setBottom(vbox);
+		hbox.getChildren().addAll(btnNext, btnPrevious, btnSave, btnClose);
+		vBox.getChildren().add(hbox);
 	}
 
 	/**
@@ -143,6 +193,7 @@ public class VAUFLPanel {
 			public void handle(ActionEvent arg0) {
 				// close the UFL window
 				showFrame(false);
+				VAPanel.enableUFL(true);
 			}
 
 		});
@@ -152,27 +203,34 @@ public class VAUFLPanel {
 			@Override
 			public void handle(ActionEvent arg0) {
 				// TODO save user selection
-				//get current listview choice and set it to the bestChoice (bug here)
-				String currentChoice = lstchoices.getSelectionModel().getSelectedItem();
-				lstPairs.get(pointer).setBestChoice(currentChoice);
-				
-				//Insert the choice to matrix[0]
+				// get current listview choice and set it to the bestChoice
+				if (lstchoices.getSelectionModel().getSelectedItem() != null && sim > 0) {
+					String currentChoice = lstchoices.getSelectionModel().getSelectedItem();
+					double curSim = (double) tg.getSelectedToggle().getUserData();
+					lstPairs.get(pointer).setBestChoice(currentChoice);
+					lstPairs.get(pointer).setSim(curSim);
+				} else {
+					System.out.println("Not saved");
+				}
+
+				// Insert the choice to matrix[0]
 			}
 
 		});
-		
-		btnNext.setOnAction(new EventHandler<ActionEvent>(){
+
+		btnNext.setOnAction(new EventHandler<ActionEvent>() {
 
 			@Override
 			public void handle(ActionEvent arg0) {
 				// TODO Auto-generated method stub
 				int qnumber = getNextQuestion();
+				lstchoices.getSelectionModel().select(-1);
 				setQuestions(qnumber);
 			}
-			
+
 		});
-		
-		btnPrevious.setOnAction(new EventHandler<ActionEvent>(){
+
+		btnPrevious.setOnAction(new EventHandler<ActionEvent>() {
 
 			@Override
 			public void handle(ActionEvent arg0) {
@@ -180,7 +238,7 @@ public class VAUFLPanel {
 				int qnumber = getPreviousQuestion();
 				setQuestions(qnumber);
 			}
-			
+
 		});
 	}
 
@@ -194,21 +252,25 @@ public class VAUFLPanel {
 	}
 
 	public void setQuestions(int qnumber) {
+		sim = 0;
+
+		if (tg != null && tg.getSelectedToggle() != null) {
+			tg.getSelectedToggle().setSelected(false);
+		}
 		// Set question label
 		String qSourceName = lstPairs.get(qnumber).getSourceNode().getLocalName();
 		lblQuestion.setText("Select the concept that best matches \"" + qSourceName + "\":");
-
 		// Set question body (choices)
 		ObservableList<String> cListData = FXCollections.observableArrayList();
 		HashMap<String, Node> t = lstPairs.get(qnumber).getTargetNodes();
 		for (String key : t.keySet()) {
 			cListData.add(key);
 		}
-		if(lstPairs.get(qnumber).selected()){
+		if (lstPairs.get(qnumber).selected()) {
 			String selected = lstPairs.get(qnumber).getBestChoice();
-			lstchoices.getSelectionModel().select(selected);
-			
-			//lstchoices.getSelectionModel().setSelectionMode(SelectionMode.valueOf(lstPairs.get(qnumber).getBestChoice()));
+			lblSelection.setText("Previous selection: " + selected);
+		} else {
+			lblSelection.setText("Previous selection: N/A");
 		}
 		lstchoices.setItems(cListData);
 	}
