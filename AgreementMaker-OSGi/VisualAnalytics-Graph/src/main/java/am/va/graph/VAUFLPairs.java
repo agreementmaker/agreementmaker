@@ -60,6 +60,10 @@ public class VAUFLPairs {
 		this.sim = sim;
 	}
 	
+	public String getSim(){
+		return String.valueOf(sim);
+	}
+	
 	/**
 	 * Check if target node is already in the hash map
 	 * @param target

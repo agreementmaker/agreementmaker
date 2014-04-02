@@ -145,17 +145,17 @@ public class VAUFLPanel {
 		tg = new ToggleGroup();
 		RadioButton[] rb = new RadioButton[3];
 		for (int i = 0; i < 3; i++) {
+			double s = i * 30;
 			rb[i] = new RadioButton();
 			rb[i].setText(Integer.toString(i * 30));
-			rb[i].setUserData(i * 30);
+			rb[i].setUserData(s);
 			rb[i].setToggleGroup(tg);
 			radiobuttons.getChildren().add(rb[i]);
 		}
 		tg.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
 			public void changed(ObservableValue<? extends Toggle> ov, Toggle old_toggle, Toggle new_toggle) {
 				if (tg.getSelectedToggle() != null) {
-					if (tg.getSelectedToggle().getUserData() != null)
-						sim = (double) (tg.getSelectedToggle().getUserData());// ?
+					sim = (double) (tg.getSelectedToggle().getUserData());
 				}
 			}
 		});
@@ -268,7 +268,8 @@ public class VAUFLPanel {
 		}
 		if (lstPairs.get(qnumber).selected()) {
 			String selected = lstPairs.get(qnumber).getBestChoice();
-			lblSelection.setText("Previous selection: " + selected);
+			String sim = lstPairs.get(qnumber).getSim();
+			lblSelection.setText("Previous selection: " + selected + ", sim=" +sim + "%");
 		} else {
 			lblSelection.setText("Previous selection: N/A");
 		}
