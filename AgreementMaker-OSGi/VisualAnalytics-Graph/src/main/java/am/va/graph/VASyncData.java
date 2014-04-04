@@ -17,6 +17,8 @@ public class VASyncData {
 	// private static int currentDisplayNum = 1; //default value = the first
 	// loaded algorithm
 	private static int currentDisplayNum[] = new int[] { 1, 1 };
+	
+	private static ArrayList<VAMatchingTask> lstTask = new ArrayList<VAMatchingTask>();
 
 	/**
 	 * Get a node's parent node
