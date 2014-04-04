@@ -143,8 +143,8 @@ public class VAUFLPanel {
 		HBox radiobuttons = new HBox();
 		HBox.setMargin(radiobuttons, new Insets(0, 5, 0, 0));
 		tg = new ToggleGroup();
-		RadioButton[] rb = new RadioButton[3];
-		for (int i = 0; i < 3; i++) {
+		RadioButton[] rb = new RadioButton[4];
+		for (int i = 0; i <= 3; i++) {
 			double s = i * 30;
 			rb[i] = new RadioButton();
 			rb[i].setText(Integer.toString(i * 30));
