@@ -326,7 +326,7 @@ public class VAPanel {
 			btnPages[i] = new ToggleButton("AL" + String.valueOf(i + 1));
 			btnPages[i].setUserData(i);
 			btnPages[i].setToggleGroup(group);
-			if (i >= VASyncData.getTotalDisplayNum()) {// init visibility
+			if (i >= VAMatchingTask.totalDisplayNum) {// init visibility
 				btnPages[i].setVisible(false);
 			}
 			flow.getChildren().add(btnPages[i]);
@@ -484,7 +484,7 @@ public class VAPanel {
 	public void updateBothSets(String newNode){
 		for(int i=0; i<2; i++){
 			VAGroup newGroup;
-			VAData subda = VASyncData.searchFrom(newNode, val.getRootGroupLeft(i)
+			VAData subda = VASyncData.getInstance().searchFrom(newNode, val.getRootGroupLeft(i)
 					.getRootNode(), i);
 			newGroup = val.generateNewGroup(VAVariables.ontologyType.Source, subda, i);
 			updateAllWithNewGroup(newGroup, i);
@@ -555,7 +555,7 @@ public class VAPanel {
 				if (selectedToggle != null && status != VAVariables.currentSetStatus.noEmpty) {
 					int t = (status == VAVariables.currentSetStatus.mainSetEmpty) ? 0 : 1;
 					int cur = (int) ((ToggleButton) selectedToggle).getUserData() + 1;
-					VASyncData.setCurrentDisplayNum(cur, t);//(***)
+					VASyncData.getInstance().setCurrentDisplayNum(cur, t);//(***)
 					val.InitData(t); // init main or sub set
 					// update selected group only
 					updateAllWithNewGroup(val.getRootGroupLeft(t), t);

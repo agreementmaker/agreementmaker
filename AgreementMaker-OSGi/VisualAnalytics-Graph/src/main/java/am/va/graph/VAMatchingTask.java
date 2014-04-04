@@ -7,17 +7,21 @@ import am.app.ontology.Ontology;
 
 public class VAMatchingTask {
 	private String taskName;
-	private Ontology taskSource;
-	private Ontology taskTarget;
+	private Ontology source;
+	private Ontology target;
 	private MatchingTask task;
 	private SimilarityMatrix classMatrix;
 	private SimilarityMatrix propertyMatrix;
 
+	public static int totalDisplayNum = 0;
+
 	public VAMatchingTask(int num) {
+		if (totalDisplayNum == 0)
+			totalDisplayNum = Core.getInstance().getMatchingTasks().size() - 1;
 		task = Core.getInstance().getMatchingTasks().get(num);
 		taskName = task.matchingAlgorithm.getName();
-		taskSource = task.matcherResult.getSourceOntology();
-		taskTarget = task.matcherResult.getTargetOntology();
+		source = task.matcherResult.getSourceOntology();
+		target = task.matcherResult.getTargetOntology();
 		classMatrix = task.matcherResult.getClassesMatrix();
 		propertyMatrix = task.matcherResult.getPropertiesMatrix();
 	}
@@ -26,12 +30,12 @@ public class VAMatchingTask {
 		return taskName;
 	}
 
-	public Ontology getTaskSource() {
-		return taskSource;
+	public Ontology getSource() {
+		return source;
 	}
 
-	public Ontology getTaskTarget() {
-		return taskTarget;
+	public Ontology getTarget() {
+		return target;
 	}
 
 	public MatchingTask getTask() {
@@ -45,6 +49,5 @@ public class VAMatchingTask {
 	public SimilarityMatrix getPropertyMatrix() {
 		return propertyMatrix;
 	}
-	
-	
+
 }

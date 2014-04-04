@@ -102,7 +102,7 @@ public class VAGraph {
 					+ currentGroup.getRootNode().getSimilarity();
 			if (currentGroup.getParent() == 0)
 				newLabel = "Source ontoloty:"
-						+ String.valueOf(VASyncData
+						+ String.valueOf(VASyncData.getInstance()
 								.getCurrentDisplayNum(currentSet));
 			if (currentGroup.hasChildren())
 				vap.setLblSource(newLabel, 0, currentSet);
@@ -136,7 +136,7 @@ public class VAGraph {
 					.getTargetNode(), null, 0);
 			newLabel = newRightRootData.getNodeName();
 			if (newRightRootData.hasChildren()) {
-				newRightGroup.setListVAData(VASyncData.getChildrenData(
+				newRightGroup.setListVAData(VASyncData.getInstance().getChildrenData(
 						newRightRootData, VAVariables.ontologyType.Target, t));
 				slotsMap = newRightGroup.getslotCountMap();
 			}
