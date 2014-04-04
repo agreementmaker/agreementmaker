@@ -74,10 +74,10 @@ public class VAPanelLogic {
 		// init root group
 		rootGroup = new VAGroup();
 		rootGroup.setParent(0);
-		VAData rootNode = VASyncData.getRootVAData(type, currentSet);
+		VAData rootNode = VASyncData.getInstance().getRootVAData(type, currentSet);
 		rootGroup.setRootNode(rootNode);
 		// get all the children data sorted by similarity
-		rootGroup.setListVAData(VASyncData.getChildrenData(rootNode, type, currentSet));
+		rootGroup.setListVAData(VASyncData.getInstance().getChildrenData(rootNode, type, currentSet));
 		// init current & previous group [(3/9/2014)that's where the bug is
 		// caused!!!]
 		currentGroup[currentSet] = rootGroup;
@@ -100,7 +100,7 @@ public class VAPanelLogic {
 		newGroup.setRootNode(newRootData);
 		if (newRootData != null && newRootData.hasChildren()) {
 			newGroup.setParent(currentGroup[currentSet].getGroupID());
-			newGroup.setListVAData(VASyncData.getChildrenData(newRootData, ontologyType, currentSet));
+			newGroup.setListVAData(VASyncData.getInstance().getChildrenData(newRootData, ontologyType, currentSet));
 		} else {
 			newGroup.setParent(previousGroup[currentSet].getGroupID());
 		}
@@ -126,9 +126,9 @@ public class VAPanelLogic {
 		} else {
 			// System.out.println("Generate Parent: new parent");
 			parentGroup = new VAGroup();
-			VAData parentData = VASyncData.getParentVAData(currentGroup[currentSet].getRootNode());
+			VAData parentData = VASyncData.getInstance().getParentVAData(currentGroup[currentSet].getRootNode());
 			parentGroup.setRootNode(parentData);
-			parentGroup.setListVAData(VASyncData.getChildrenData(parentData, VAVariables.ontologyType.Source,
+			parentGroup.setListVAData(VASyncData.getInstance().getChildrenData(parentData, VAVariables.ontologyType.Source,
 					currentSet));
 		}
 		return parentGroup;
