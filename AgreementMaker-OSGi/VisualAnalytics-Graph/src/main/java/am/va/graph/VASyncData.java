@@ -23,15 +23,27 @@ public class VASyncData {
 
 	private VASyncData() {
 		userTask = new VAMatchingTask(0);
-		lstTask.add(userTask);// added but never use this one in the ArrayList
+		lstTask.add(userTask);
 		for (int i = 1; i <= VAMatchingTask.totalDisplayNum; i++)
 			lstTask.add(new VAMatchingTask(i));
 	}
 
+	/**
+	 * Get instance
+	 * @return
+	 */
 	public static VASyncData getInstance() {
 		if (instance == null)
 			instance = new VASyncData();
 		return instance;
+	}
+	
+	/**
+	 * Get all tasks
+	 * @return
+	 */
+	public ArrayList<VAMatchingTask> getListofTasks(){
+		return lstTask;
 	}
 
 	/**
