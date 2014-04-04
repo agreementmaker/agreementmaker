@@ -631,7 +631,7 @@ public class VAPanel {
 					@Override
 					public void run() {
 						if(UFLPanel == null)
-							new VAUFLPanel();
+							UFLPanel = new VAUFLPanel();
 						else
 							UFLPanel.showFrame(true);
 						btnUFL.setDisable(true);
