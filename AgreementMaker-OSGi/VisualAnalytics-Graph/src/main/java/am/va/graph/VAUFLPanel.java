@@ -50,6 +50,9 @@ public class VAUFLPanel {
 	private ToggleGroup tg;
 	private double sim;
 
+	private int FrameWidth = 500;
+	private int FrameHeight = 400;
+
 	public VAUFLPanel() {
 
 		VAUFL vaUFL = new VAUFL(); // first init data sets
@@ -60,10 +63,11 @@ public class VAUFLPanel {
 		if (lstPairs != null && lstPairs.size() > 0) {
 			frameSub = new JFrame("VA-UFL");
 			fxPanelSub = new JFXPanel();
-			frameSub.setSize(500, 400);
+			frameSub.setSize(FrameWidth, FrameHeight);
 			frameSub.setLocation(500, 200);
 			frameSub.setVisible(true);
 			frameSub.add(fxPanelSub);
+			// frameSub.setAlwaysOnTop(true); //place the panel on the very top
 			frameSub.addWindowListener(new java.awt.event.WindowAdapter() {
 				public void windowClosing(java.awt.event.WindowEvent windowEvent) {
 					VAPanel.enableUFL(true);
@@ -101,7 +105,7 @@ public class VAUFLPanel {
 	private VBox setUFLLayout() {
 		VBox vBox = new VBox(5);
 		vBox.setAlignment(Pos.CENTER);
-		vBox.setPadding(new Insets(70));
+		vBox.setPadding(new Insets(75));
 		vBox.setSpacing(20);
 
 		initTopQuestion(vBox);
@@ -137,11 +141,12 @@ public class VAUFLPanel {
 		VBox centerBox = new VBox(2);
 
 		lstchoices = new ListView<String>();
-		lstchoices.setMaxHeight(100);
-		lstchoices.setMaxWidth(300);
+		lstchoices.setMaxHeight(FrameHeight / 3);
+		lstchoices.setMaxWidth(FrameWidth / 3 * 2);
 
 		HBox radiobuttons = new HBox();
-		HBox.setMargin(radiobuttons, new Insets(0, 5, 0, 0));
+		radiobuttons.setAlignment(Pos.CENTER);
+		// HBox.setMargin(radiobuttons, new Insets(0, 5, 0, 0));
 		tg = new ToggleGroup();
 		RadioButton[] rb = new RadioButton[4];
 		for (int i = 0; i <= 3; i++) {
@@ -170,7 +175,8 @@ public class VAUFLPanel {
 	 */
 	private void initBottomButtons(VBox vBox) {
 		HBox hbox = new HBox();
-		HBox.setMargin(hbox, new Insets(0, 5, 0, 0));
+		hbox.setAlignment(Pos.CENTER);
+		// HBox.setMargin(hbox, new Insets(0, 5, 0, 0));
 		Button btnNext = new Button("Next");
 		Button btnPrevious = new Button("Previous");
 		Button btnSave = new Button("save");
@@ -269,7 +275,7 @@ public class VAUFLPanel {
 		if (lstPairs.get(qnumber).selected()) {
 			String selected = lstPairs.get(qnumber).getBestChoice();
 			String sim = lstPairs.get(qnumber).getSim();
-			lblSelection.setText("Previous selection: " + selected + ", sim=" +sim + "%");
+			lblSelection.setText("Previous selection: " + selected + ", sim=" + sim + "%");
 		} else {
 			lblSelection.setText("Previous selection: N/A");
 		}
