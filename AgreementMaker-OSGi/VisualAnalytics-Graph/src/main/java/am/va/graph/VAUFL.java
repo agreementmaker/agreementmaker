@@ -15,24 +15,26 @@ import am.app.ontology.Ontology;
 
 /**
  * UFL Logic, set ambiguous matching pairs
+ * 
  * @author Yiting
- *
+ * 
  */
 public class VAUFL {
-	List<MatchingTask> matchingTask;
+	List<MatchingTask> matchingTasks = null;
 	MatchingTask userTask;
 	HashMap<String, VAUFLPairs> UFLSelectionMap;
 
 	public VAUFL() {
 		UFLSelectionMap = new HashMap<String, VAUFLPairs>(); // init selection
 																// map
-		matchingTask = Core.getInstance().getMatchingTasks(); // get matching
-																// tasks for
-																// later use
-		userTask = matchingTask.get(0);
+		matchingTasks = VASyncData.getMatchingTasks(); // get matching
+														// tasks for
+														// later use
+		userTask = matchingTasks.get(0);
 		setBestMatchingGroup(); // find out the best matching group and assign
 								// it to userResult (matchingTask[0])
-		//getAbiMatchings(VAVariables.ontologyType.Source);//get arbitrary matchings 
+		// getAbiMatchings(VAVariables.ontologyType.Source);//get arbitrary
+		// matchings
 	}
 
 	/**
@@ -40,11 +42,11 @@ public class VAUFL {
 	 * 
 	 * @return
 	 */
-	private boolean setBestMatchingGroup() { 
-		int len = matchingTask.size();
+	private boolean setBestMatchingGroup() {
+		int len = matchingTasks.size();
 		int res = 0, best = -1;
 		for (int i = 1; i < len; i++) {
-			MatchingTask m = matchingTask.get(i);
+			MatchingTask m = matchingTasks.get(i);
 			int tmp = 0;
 			if (m.selectionResult != null && m.selectionResult.classesAlignment != null)
 				tmp += m.selectionResult.classesAlignment.size();
@@ -59,7 +61,7 @@ public class VAUFL {
 		if (best == -1)
 			return false;
 		// update the 'best' result to userResult
-		updateUserTask(matchingTask.get(best));
+		updateUserTask(matchingTasks.get(best));
 		return true;
 	}
 
@@ -94,13 +96,13 @@ public class VAUFL {
 	 */
 	public void getAmbMatchings(ArrayList<VAUFLPairs> lstPairs, VAVariables.ontologyType type) {
 		// iterate the source ontology concepts
-		int len = matchingTask.size();
+		int len = matchingTasks.size();
 		SimilarityMatrix sMatrix;
 
 		// For each algorithm
 		for (int i = 1; i < len; i++) {
 			if (type == VAVariables.ontologyType.Source) {
-				sMatrix = matchingTask.get(i).matcherResult.getClassesMatrix();
+				sMatrix = matchingTasks.get(i).matcherResult.getClassesMatrix();
 				List<Node> sourceNodes = sMatrix.getSourceOntology().getClassesList();
 
 				// For each sourceNode
@@ -126,7 +128,7 @@ public class VAUFL {
 		// Get the list multi-matchings by remove single value matchings
 		for (String key : UFLSelectionMap.keySet()) {
 			if (UFLSelectionMap.get(key).getTargetNodes().size() > 1) {
-				lstPairs.add(UFLSelectionMap.get(key));//add to list
+				lstPairs.add(UFLSelectionMap.get(key));// add to list
 			}
 		}
 	}

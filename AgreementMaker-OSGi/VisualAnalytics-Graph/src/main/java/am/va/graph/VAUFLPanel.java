@@ -200,7 +200,7 @@ public class VAUFLPanel {
 	 * @param btnClose
 	 * @param btnSave
 	 */
-	private void setButtonActions(Button btnClose, Button btnSave, Button btnNext, Button btnPrevious) {
+	private void setButtonActions(Button btnClose, final Button btnSave, Button btnNext, Button btnPrevious) {
 		btnClose.setOnAction(new EventHandler<ActionEvent>() {
 
 			@Override
@@ -223,6 +223,7 @@ public class VAUFLPanel {
 					double curSim = (double) tg.getSelectedToggle().getUserData();
 					lstPairs.get(pointer).setBestChoice(currentChoice);
 					lstPairs.get(pointer).setSim(curSim);
+					btnSave.setDisable(true);
 				} else {
 					System.out.println("Not saved");
 				}
@@ -240,6 +241,7 @@ public class VAUFLPanel {
 				int qnumber = getNextQuestion();
 				lstchoices.getSelectionModel().select(-1);
 				setQuestions(qnumber);
+				btnSave.setDisable(false);
 			}
 
 		});
@@ -251,6 +253,7 @@ public class VAUFLPanel {
 				// TODO Auto-generated method stub
 				int qnumber = getPreviousQuestion();
 				setQuestions(qnumber);
+				btnSave.setDisable(false);
 			}
 
 		});
