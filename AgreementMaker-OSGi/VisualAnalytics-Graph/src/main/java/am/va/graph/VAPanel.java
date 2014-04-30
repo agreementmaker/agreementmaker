@@ -484,7 +484,7 @@ public class VAPanel {
 	public void updateBothSets(String newNode){
 		for(int i=0; i<2; i++){
 			VAGroup newGroup;
-			VAData subda = VASyncData.getInstance().searchFrom(newNode, val.getRootGroupLeft(i)
+			VAData subda = VASyncData.searchFrom(newNode, val.getRootGroupLeft(i)
 					.getRootNode(), i);
 			newGroup = val.generateNewGroup(VAVariables.ontologyType.Source, subda, i);
 			updateAllWithNewGroup(newGroup, i);
@@ -555,7 +555,7 @@ public class VAPanel {
 				if (selectedToggle != null && status != VAVariables.currentSetStatus.noEmpty) {
 					int t = (status == VAVariables.currentSetStatus.mainSetEmpty) ? 0 : 1;
 					int cur = (int) ((ToggleButton) selectedToggle).getUserData() + 1;
-					VASyncData.getInstance().setCurrentDisplayNum(cur, t);//(***)
+					VASyncData.setCurrentDisplayNum(cur, t);//(***)
 					val.InitData(t); // init main or sub set
 					// update selected group only
 					updateAllWithNewGroup(val.getRootGroupLeft(t), t);
