@@ -16,7 +16,6 @@ public class VAUFLPairs {
 	private double sim;
 	
 	
-	
 	public VAUFLPairs(Node sourceNode) {
 		super();
 		this.sourceNode = sourceNode;
