@@ -55,6 +55,14 @@ public class VAData implements Comparable<VAData> {
 	public String getNodeName() {
 		return sourceNode.getLocalName();
 	}
+	
+	/**
+	 * Return source node's label
+	 * @return
+	 */
+	public String getLabel(){
+		return sourceNode.getLabel();
+	}
 
 	/**
 	 * If source node has children or not
