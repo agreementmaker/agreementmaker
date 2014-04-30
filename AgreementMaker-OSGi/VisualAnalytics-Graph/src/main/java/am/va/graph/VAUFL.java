@@ -13,6 +13,11 @@ import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 
+/**
+ * UFL Logic, set ambiguous matching pairs
+ * @author Yiting
+ *
+ */
 public class VAUFL {
 	List<MatchingTask> matchingTask;
 	MatchingTask userTask;
@@ -35,7 +40,7 @@ public class VAUFL {
 	 * 
 	 * @return
 	 */
-	private boolean setBestMatchingGroup() {
+	private boolean setBestMatchingGroup() { 
 		int len = matchingTask.size();
 		int res = 0, best = -1;
 		for (int i = 1; i < len; i++) {
@@ -87,7 +92,7 @@ public class VAUFL {
 	 * 
 	 * @param type
 	 */
-	public void getAbiMatchings(ArrayList<VAUFLPairs> lstPairs, VAVariables.ontologyType type) {
+	public void getAmbMatchings(ArrayList<VAUFLPairs> lstPairs, VAVariables.ontologyType type) {
 		// iterate the source ontology concepts
 		int len = matchingTask.size();
 		SimilarityMatrix sMatrix;

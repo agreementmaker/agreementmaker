@@ -36,6 +36,14 @@ import javax.swing.JFrame;
 
 import am.app.ontology.Node;
 
+/**
+ * UFL Panel, contain all actions
+ * Generate new questions
+ * User choose the best pairs and save to lstPairs structure
+ * Write back the result to matrix[0] (haven't done yet)
+ * @author Yiting
+ *
+ */
 public class VAUFLPanel {
 	private JFrame frameSub;
 	private JFXPanel fxPanelSub;
@@ -56,12 +64,12 @@ public class VAUFLPanel {
 	public VAUFLPanel() {
 
 		VAUFL vaUFL = new VAUFL(); // first init data sets
-		lstPairs = new ArrayList<VAUFLPairs>();
-		vaUFL.getAbiMatchings(lstPairs, VAVariables.ontologyType.Source);
+		lstPairs = new ArrayList<VAUFLPairs>();	//store all Amb pairs and the best matchings with sim
+		vaUFL.getAmbMatchings(lstPairs, VAVariables.ontologyType.Source);//init lstPairs
 		pointer = 0;
 
-		if (lstPairs != null && lstPairs.size() > 0) {
-			frameSub = new JFrame("VA-UFL");
+		if (lstPairs != null && lstPairs.size() > 0) {	//if Amb pairs exist
+			frameSub = new JFrame("VA-UFL");	//init UFL panel
 			fxPanelSub = new JFXPanel();
 			frameSub.setSize(FrameWidth, FrameHeight);
 			frameSub.setLocation(500, 200);
