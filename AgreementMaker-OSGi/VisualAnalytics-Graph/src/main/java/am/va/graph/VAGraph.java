@@ -63,9 +63,7 @@ public class VAGraph {
 
 	private void customPieChartColor() {
 		for (PieChart.Data d : pieCharDatalist) {
-			d.getNode().setStyle(
-					"-fx-pie-color: " + VAVariables.ColorRange.get(d.getName())
-							+ ";");
+			d.getNode().setStyle("-fx-pie-color: " + VAVariables.ColorRange.get(d.getName()) + ";");
 		}
 	}
 
@@ -81,12 +79,10 @@ public class VAGraph {
 				int num = pieCharDatalist.size();
 				for (int i = 0; i < num; i++)
 					pieCharDatalist.remove(0);
-				HashMap<String, Integer> slotsMap = currentGroup
-						.getslotCountMap();
+				HashMap<String, Integer> slotsMap = currentGroup.getslotCountMap();
 				for (String key : VAVariables.thresholdName) {
 					if (slotsMap.containsKey(key))
-						pieCharDatalist.add(new PieChart.Data(key, slotsMap
-								.get(key)));
+						pieCharDatalist.add(new PieChart.Data(key, slotsMap.get(key)));
 				}
 			}
 			if (currentSet == 0) // add listener to main pie chart
@@ -98,12 +94,9 @@ public class VAGraph {
 		}
 		if (vap.getStop() != -1) {
 			vap.getRightPie(currentSet).updateSubRightPieChart();
-			String newLabel = currentGroup.getRootNodeName() + ": "
-					+ currentGroup.getRootNode().getSimilarity();
+			String newLabel = currentGroup.getRootNodeName() + ": " + currentGroup.getRootNode().getSimilarity();
 			if (currentGroup.getParent() == 0)
-				newLabel = "Source ontoloty:"
-						+ String.valueOf(VASyncData.getInstance()
-								.getCurrentDisplayNum(currentSet));
+				newLabel = "Source ontoloty:" + String.valueOf(VASyncData.getCurrentDisplayNum(currentSet));
 			if (currentGroup.hasChildren())
 				vap.setLblSource(newLabel, 0, currentSet);
 			else
@@ -132,12 +125,11 @@ public class VAGraph {
 		VAGroup newRightGroup = new VAGroup();
 		HashMap<String, Integer> slotsMap = null;
 		if (currentGroup != null && currentGroup.hasMatching()) {
-			VAData newRightRootData = new VAData(currentGroup.getRootNode()
-					.getTargetNode(), null, 0);
+			VAData newRightRootData = new VAData(currentGroup.getRootNode().getTargetNode(), null, 0);
 			newLabel = newRightRootData.getNodeName();
 			if (newRightRootData.hasChildren()) {
-				newRightGroup.setListVAData(VASyncData.getInstance().getChildrenData(
-						newRightRootData, VAVariables.ontologyType.Target, t));
+				newRightGroup.setListVAData(VASyncData.getChildrenData(newRightRootData,
+						VAVariables.ontologyType.Target, t));
 				slotsMap = newRightGroup.getslotCountMap();
 			}
 		} else if (currentGroup != null && currentGroup.getParent() == 0) {
@@ -149,8 +141,7 @@ public class VAGraph {
 		if (slotsMap != null)
 			for (String key : VAVariables.thresholdName) {
 				if (slotsMap.containsKey(key))
-					pieCharDatalist.add(new PieChart.Data(key, slotsMap
-							.get(key)));
+					pieCharDatalist.add(new PieChart.Data(key, slotsMap.get(key)));
 			}
 		vap.setLblTarget(newLabel, t);
 		customPieChartColor();
@@ -169,19 +160,17 @@ public class VAGraph {
 	 * Add update list info listener (mouse entered event) Called by
 	 * updatePieChart
 	 */
-	public void addListener(final VAVariables.ontologyType ontologyType,
-			final int currentSet) {
+	public void addListener(final VAVariables.ontologyType ontologyType, final int currentSet) {
 		for (final PieChart.Data currentData : pieChart.getData()) {
-			currentData.getNode().addEventHandler(MouseEvent.MOUSE_PRESSED,
-					new EventHandler<MouseEvent>() {
+			currentData.getNode().addEventHandler(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
 
-						@Override
-						public void handle(MouseEvent e) {
-							getNodesList(currentData, ontologyType, currentSet);
-							vap.setListView(listView);
-						}
+				@Override
+				public void handle(MouseEvent e) {
+					getNodesList(currentData, ontologyType, currentSet);
+					vap.setListView(listView);
+				}
 
-					});
+			});
 		}
 	}
 
@@ -194,27 +183,24 @@ public class VAGraph {
 	 * @param data
 	 * @return
 	 */
-	private void getNodesList(PieChart.Data data,
-			VAVariables.ontologyType ontologyType, int currentSet) {
+	private void getNodesList(PieChart.Data data, VAVariables.ontologyType ontologyType, int currentSet) {
 
 		VAGroup currentGroup = vap.getVal().getCurrentGroup(currentSet);
 
 		final ArrayList<VAData> dataArrayList = currentGroup.getVADataArray();
-		final HashMap<String, Integer> slotCountMap = currentGroup
-				.getslotCountMap();
+		final HashMap<String, Integer> slotCountMap = currentGroup.getslotCountMap();
 		final HashMap<String, VAData> listMap = new HashMap<String, VAData>();
 
 		VARange idxRange = getPieSliceDataIdxRange(data, slotCountMap);
 
 		if (idxRange.isValid()) {
 			listView = vap.getlistView();
-			ObservableList<String> arcListData = getListData(idxRange,
-					dataArrayList, listMap);
+			ObservableList<String> arcListData = getListData(idxRange, dataArrayList, listMap);
 
 			listView.setItems(arcListData);
 			setListViewAction(listView, listMap, ontologyType);
 			// test
-			//printData(idxRange, dataArrayList);
+			// printData(idxRange, dataArrayList);
 		} else {
 			System.out.println("- pie chart is empty, return empty list");
 		}
@@ -227,15 +213,13 @@ public class VAGraph {
 	 * @param listView
 	 * @param listMap
 	 */
-	private void setListViewAction(final ListView<String> listView,
-			final HashMap<String, VAData> listMap,
+	private void setListViewAction(final ListView<String> listView, final HashMap<String, VAData> listMap,
 			final VAVariables.ontologyType ontologyType) {
 		// Add handler, if user click one ontology,
 		// Update the pie chart
 		listView.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			public void handle(MouseEvent event) {
-				String selectedLocalName = listView.getSelectionModel()
-						.getSelectedItems().get(0);
+				String selectedLocalName = listView.getSelectionModel().getSelectedItems().get(0);
 				if (selectedLocalName != null) {
 					vap.updateBothSets(selectedLocalName);
 					listView.getSelectionModel().clearSelection();
@@ -256,10 +240,9 @@ public class VAGraph {
 	 * @param listMap
 	 * @return
 	 */
-	private ObservableList<String> getListData(VARange idxRange,
-			ArrayList<VAData> dataArrayList, HashMap<String, VAData> listMap) {
-		ObservableList<String> arcListData = FXCollections
-				.observableArrayList();
+	private ObservableList<String> getListData(VARange idxRange, ArrayList<VAData> dataArrayList,
+			HashMap<String, VAData> listMap) {
+		ObservableList<String> arcListData = FXCollections.observableArrayList();
 
 		int start = idxRange.getStartIdx(), end = idxRange.getEndIdx();
 		// Put data in list view
@@ -283,8 +266,7 @@ public class VAGraph {
 		System.out.println("print data " + idxRange.toString());
 		if (idxRange.isValid()) {
 			for (int i = start; i <= end; i++) {
-				System.out.println("data " + i + " = "
-						+ dataArrayList.get(i).toString());
+				System.out.println("data " + i + " = " + dataArrayList.get(i).toString());
 			}
 		}
 	}
@@ -297,13 +279,11 @@ public class VAGraph {
 	 * @param slotCountMap
 	 * @return
 	 */
-	private VARange getPieSliceDataIdxRange(PieChart.Data data,
-			HashMap<String, Integer> slotCountMap) {
+	private VARange getPieSliceDataIdxRange(PieChart.Data data, HashMap<String, Integer> slotCountMap) {
 		if (slotCountMap.containsKey(data.getName())) {
 			int start = 0, end = 1;
 			for (int i = 0;; i++) {
-				if (data.getName() == VAVariables.thresholdName[i]
-						|| i == VAVariables.slotNum)
+				if (data.getName() == VAVariables.thresholdName[i] || i == VAVariables.slotNum)
 					break;
 				if (slotCountMap.containsKey(VAVariables.thresholdName[i])) {
 					start += slotCountMap.get(VAVariables.thresholdName[i]);
