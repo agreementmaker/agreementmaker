@@ -13,38 +13,15 @@ import am.va.graph.VAVariables.ontologyType;
 
 public class VASyncData {
 
-	private static VASyncData instance = null;
-
+	private static int totalDisplayNum = 0;
+	// private static int currentDisplayNum = 1; //default value = the first
 	// loaded algorithm
 	private static int currentDisplayNum[] = new int[] { 1, 1 };
 
-	private VAMatchingTask userTask = null;
-	private ArrayList<VAMatchingTask> lstTask = new ArrayList<VAMatchingTask>();
+	private static List<MatchingTask> matchingTasks = null;
 
-	private VASyncData() {
-		userTask = new VAMatchingTask(0);
-		lstTask.add(userTask);
-		for (int i = 1; i <= VAMatchingTask.totalDisplayNum; i++)
-			lstTask.add(new VAMatchingTask(i));
-	}
-
-	/**
-	 * Get instance
-	 * @return
-	 */
-	public static VASyncData getInstance() {
-		if (instance == null)
-			instance = new VASyncData();
-		return instance;
-	}
-	
-	/**
-	 * Get all tasks
-	 * @return
-	 */
-	public ArrayList<VAMatchingTask> getListofTasks(){
-		return lstTask;
-	}
+	// private static ArrayList<VAMatchingTask> lstTask = new
+	// ArrayList<VAMatchingTask>();
 
 	/**
 	 * Get a node's parent node
@@ -52,19 +29,38 @@ public class VASyncData {
 	 * @param n
 	 * @return
 	 */
-	private Node getParentNode(Node n) {
+	private static Node getParentNode(Node n) {
 		if (n.getParents().size() > 0)
 			return n.getParents().get(0);
 		else
 			return null;
 	}
 
-	public int getCurrentDisplayNum(int i) {
+	public static int getTotalDisplayNum() {
+		return totalDisplayNum;
+	}
+
+	public static void setTotalDisplayNum(int totalDisplayNum) {
+		VASyncData.totalDisplayNum = totalDisplayNum;
+	}
+
+	public static int getCurrentDisplayNum(int i) {
 		return currentDisplayNum[i];
 	}
 
-	public void setCurrentDisplayNum(int currentDisplayNum, int set) {
+	public static void setCurrentDisplayNum(int currentDisplayNum, int set) {
 		VASyncData.currentDisplayNum[set] = currentDisplayNum;
+	}
+
+	public static MatchingTask getCurrentMatchingTask(int set) {
+		MatchingTask current = null;
+		if (matchingTasks == null) {
+			matchingTasks = Core.getInstance().getMatchingTasks();
+			totalDisplayNum = matchingTasks.size() - 1;
+		}
+		if (currentDisplayNum[set] <= matchingTasks.size())
+			current = matchingTasks.get(currentDisplayNum[set]);
+		return current;
 	}
 
 	/**
@@ -73,7 +69,7 @@ public class VASyncData {
 	 * @param v
 	 * @return
 	 */
-	public VAData getParentVAData(VAData v) {
+	public static VAData getParentVAData(VAData v) {
 		Node sNode = null, tNode = null;
 		double Similarity = 0.0;
 		sNode = getParentNode(v.getSourceNode());
@@ -91,26 +87,30 @@ public class VASyncData {
 	 * @param ontologyType
 	 * @return
 	 */
-	private Node getRootNode(VAVariables.ontologyType ontologyType, int set) {
+	private static Node getRootNode(VAVariables.ontologyType ontologyType, int set) {
 		Node rootNode = null;
-		VAMatchingTask vaMatchingTask;
-		if (currentDisplayNum[set] <= VAMatchingTask.totalDisplayNum)// matchingTask.size())
-			vaMatchingTask = lstTask.get(currentDisplayNum[set]);// bug here
-		else {
-			// Error! Should never enter here
-			return null;
-		}
+		MatchingTask currentTask = getCurrentMatchingTask(set);
+
 		if (ontologyType == VAVariables.ontologyType.Source) {
+
+			// Testing...
+			String alg = currentTask.matchingAlgorithm.getName();
+			System.out.println("algorithm: " + alg);
+			System.out.println("report:" + currentTask.getMatchingReport());
+
+			Ontology sourceOntology = currentTask.matcherResult.getSourceOntology();
 			if (VAPanelLogic.getCurrentNodeType() == VAVariables.nodeType.Class)
-				rootNode = vaMatchingTask.getSource().getClassesRoot();
+				rootNode = sourceOntology.getClassesRoot();
 			else
-				rootNode = vaMatchingTask.getSource().getPropertiesRoot();
+				rootNode = sourceOntology.getPropertiesRoot();
 		} else {
+			Ontology targetOntology = currentTask.matcherResult.getTargetOntology();
 			if (VAPanelLogic.getCurrentNodeType() == VAVariables.nodeType.Class)
-				rootNode = vaMatchingTask.getTarget().getClassesRoot();
+				rootNode = targetOntology.getClassesRoot();
 			else
-				rootNode = vaMatchingTask.getTarget().getPropertiesRoot();
+				rootNode = targetOntology.getPropertiesRoot();
 		}
+
 		return rootNode;
 	}
 
@@ -120,7 +120,7 @@ public class VASyncData {
 	 * @param ontologyType
 	 * @return
 	 */
-	public VAData getRootVAData(VAVariables.ontologyType ontologyType, int set) {
+	public static VAData getRootVAData(VAVariables.ontologyType ontologyType, int set) {
 		Node sNode = null, tNode = null;
 		double Similarity = 0.0;
 		if (ontologyType == VAVariables.ontologyType.Source) { // pie chart for
@@ -141,23 +141,25 @@ public class VASyncData {
 	 * @param n
 	 * @return
 	 */
-	private VAData getMatchingVAData(Node n, VAVariables.ontologyType ontologyType, int set) {
+	private static VAData getMatchingVAData(Node n, VAVariables.ontologyType ontologyType, int set) {
 		Node matchingNode = null;
 		double sim = 0.00;
-		VAMatchingTask vaMatchingTask = lstTask.get(currentDisplayNum[set]);
+		MatchingTask matchingTask = Core.getInstance().getMatchingTasks().get(currentDisplayNum[set]);
+		SimilarityMatrix smMatrix = null;
+		if (VAPanelLogic.getCurrentNodeType() == VAVariables.nodeType.Class)
+			smMatrix = matchingTask.matcherResult.getClassesMatrix();
+		else
+			smMatrix = matchingTask.matcherResult.getPropertiesMatrix();
 		Mapping map[] = null;
 		if (ontologyType == VAVariables.ontologyType.Source) // input is source,
 																// find target
 			/**
 			 * Array out of bound error sometimes happen here, just ignore
 			 */
-			map = vaMatchingTask.getClassMatrix().getRowMaxValues(n.getIndex(), 1);// smMatrix.getRowMaxValues(n.getIndex(),
-																					// 1);
+			map = smMatrix.getRowMaxValues(n.getIndex(), 1);
 		else
-			map = vaMatchingTask.getPropertyMatrix().getColMaxValues(n.getIndex(), 1); // input
-																						// is
-																						// target,
-		// find source
+			map = smMatrix.getColMaxValues(n.getIndex(), 1); // input is target,
+																// find source
 		if (map != null) {
 			if (ontologyType == VAVariables.ontologyType.Source)
 				matchingNode = map[0].getEntity2();
@@ -181,7 +183,7 @@ public class VASyncData {
 	 * @param rootNodeData
 	 * @return
 	 */
-	public ArrayList<VAData> getChildrenData(VAData rootNodeData, VAVariables.ontologyType ontologyType, int i) {
+	public static ArrayList<VAData> getChildrenData(VAData rootNodeData, VAVariables.ontologyType ontologyType, int i) {
 		ArrayList<VAData> res = new ArrayList<VAData>();
 		Node rootNode = rootNodeData.getSourceNode();
 		for (Node n : rootNode.getChildren()) {
@@ -189,6 +191,8 @@ public class VASyncData {
 			VAData newChildData = getMatchingVAData(n, ontologyType, i);
 			res.add(newChildData);
 		}
+		// if (ontologyType == VAVariables.ontologyType.Source)
+		// Collections.sort(res);
 		return res;
 	}
 
@@ -199,7 +203,7 @@ public class VASyncData {
 	 * @param rootNode
 	 * @return
 	 */
-	public VAData searchFrom(String name, VAData rootNode, int set) {
+	public static VAData searchFrom(String name, VAData rootNode, int set) {
 		// TODO Auto-generated method stub
 		// System.out.println("Search from " + rootNode.getNodeName());
 
@@ -213,7 +217,7 @@ public class VASyncData {
 			// Search children recursively
 			if (rootNode.hasChildren()) {
 				// set 0 here
-				ArrayList<VAData> children = getChildrenData(rootNode, ontologyType.Source, set);
+				ArrayList<VAData> children = VASyncData.getChildrenData(rootNode, ontologyType.Source, set);
 				for (VAData childData : children) {
 					VAData result = searchFrom(name, childData, set);
 					if (result != null) {
