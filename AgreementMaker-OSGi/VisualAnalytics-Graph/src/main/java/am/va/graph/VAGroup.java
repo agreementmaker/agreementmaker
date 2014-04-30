@@ -110,7 +110,7 @@ public class VAGroup {
 	 * @return
 	 */
 	public String getRootNodeName() {
-		return rootNode.getNodeName();
+		return rootNode.getNodeName() + "|" + rootNode.getLabel();
 	}
 
 	/**

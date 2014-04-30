@@ -126,12 +126,17 @@ public class VAGraph {
 		HashMap<String, Integer> slotsMap = null;
 		if (currentGroup != null && currentGroup.hasMatching()) {
 			VAData newRightRootData = new VAData(currentGroup.getRootNode().getTargetNode(), null, 0);
-			newLabel = newRightRootData.getNodeName();
 			if (newRightRootData.hasChildren()) {
 				newRightGroup.setListVAData(VASyncData.getChildrenData(newRightRootData,
 						VAVariables.ontologyType.Target, t));
 				slotsMap = newRightGroup.getslotCountMap();
 			}
+			newLabel = newRightRootData.getNodeName() + "|" + newRightRootData.getLabel(); // set
+																							// the
+																							// right
+																							// chart
+			// name (using VAData
+			// instead of VAGroup)
 		} else if (currentGroup != null && currentGroup.getParent() == 0) {
 			slotsMap = vap.getVal().getRootGroupRight(t).getslotCountMap();
 			newLabel = "Target ontology";
