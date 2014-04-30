@@ -37,12 +37,12 @@ import javax.swing.JFrame;
 import am.app.ontology.Node;
 
 /**
- * UFL Panel, contain all actions
- * Generate new questions
- * User choose the best pairs and save to lstPairs structure
- * Write back the result to matrix[0] (haven't done yet)
+ * UFL Panel, contain all actions Generate new questions User choose the best
+ * pairs and save to lstPairs structure Write back the result to matrix[0]
+ * (haven't done yet)
+ * 
  * @author Yiting
- *
+ * 
  */
 public class VAUFLPanel {
 	private JFrame frameSub;
@@ -64,12 +64,14 @@ public class VAUFLPanel {
 	public VAUFLPanel() {
 
 		VAUFL vaUFL = new VAUFL(); // first init data sets
-		lstPairs = new ArrayList<VAUFLPairs>();	//store all Amb pairs and the best matchings with sim
-		vaUFL.getAmbMatchings(lstPairs, VAVariables.ontologyType.Source);//init lstPairs
+		lstPairs = new ArrayList<VAUFLPairs>(); // store all Amb pairs and the
+												// best matchings with sim
+		vaUFL.getAmbMatchings(lstPairs, VAVariables.ontologyType.Source);// init
+																			// lstPairs
 		pointer = 0;
 
-		if (lstPairs != null && lstPairs.size() > 0) {	//if Amb pairs exist
-			frameSub = new JFrame("VA-UFL");	//init UFL panel
+		if (lstPairs != null && lstPairs.size() > 0) { // if Amb pairs exist
+			frameSub = new JFrame("VA-UFL"); // init UFL panel
 			fxPanelSub = new JFXPanel();
 			frameSub.setSize(FrameWidth, FrameHeight);
 			frameSub.setLocation(500, 200);
@@ -276,7 +278,8 @@ public class VAUFLPanel {
 		}
 		// Set question label
 		String qSourceName = lstPairs.get(qnumber).getSourceNode().getLocalName();
-		lblQuestion.setText("Select the concept that best matches \"" + qSourceName + "\":");
+		String indexOfQuestion = "(" + (qnumber + 1) + "/" + lstPairs.size() + ") ";
+		lblQuestion.setText(indexOfQuestion + "Select the concept that best matches \"" + qSourceName + "\":");
 		// Set question body (choices)
 		ObservableList<String> cListData = FXCollections.observableArrayList();
 		HashMap<String, Node> t = lstPairs.get(qnumber).getTargetNodes();
