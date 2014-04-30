@@ -326,7 +326,7 @@ public class VAPanel {
 			btnPages[i] = new ToggleButton("AL" + String.valueOf(i + 1));
 			btnPages[i].setUserData(i);
 			btnPages[i].setToggleGroup(group);
-			if (i >= VAMatchingTask.totalDisplayNum) {// init visibility
+			if (i >= VASyncData.getTotalDisplayNum()) {// init visibility
 				btnPages[i].setVisible(false);
 			}
 			flow.getChildren().add(btnPages[i]);
