@@ -13,6 +13,8 @@ import am.app.mappingEngine.SelectionResult;
 import am.app.mappingEngine.oneToOneSelection.MwbmSelection;
 import am.extension.userfeedback.UserFeedback.Validation;
 import am.extension.userfeedback.ui.UFLControlGUI.ActionCommands;
+import am.ui.MatcherProgressDialog;
+import am.ui.UICore;
 
 public class IndependentSequentialLogicMultiUser extends UFLControlLogic<MLFExperiment> {
 	
