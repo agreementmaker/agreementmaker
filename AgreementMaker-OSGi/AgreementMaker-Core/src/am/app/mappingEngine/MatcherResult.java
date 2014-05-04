@@ -14,6 +14,7 @@ public class MatcherResult implements Serializable {
 	
 	private long executionTime = 0;
 	
+	
 	private SimilarityMatrix classesMatrix;
 	
 	private SimilarityMatrix propMatrix;

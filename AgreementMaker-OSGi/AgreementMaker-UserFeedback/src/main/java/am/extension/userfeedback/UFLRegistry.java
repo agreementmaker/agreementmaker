@@ -131,6 +131,7 @@ public class UFLRegistry {
 		ServerPropagationEvaluation (am.extension.multiUserFeedback.evaluation.ServerFeedbackEvaluation.class),
 		SelectionRankingEvaluation ( am.extension.userfeedback.common.SelectionRankingEvaluation.class ),
 		SMatrixDeltaEvaluetion (am.extension.userfeedback.clustering.disagreement.SMatrixDeltaEvaluetion.class),
+		ServerPropagationEvaluation (am.extension.multiUserFeedback.evaluation.ServerFeedbackEvaluation.class),
 		DeltaFromRef ( am.extension.userfeedback.clustering.disagreement.DeltaFromReferenceEvaluation.class ),
 		ClusterBoost ( am.extension.userfeedback.clustering.disagreement.ClusterBoostEvaluation.class );
 		
