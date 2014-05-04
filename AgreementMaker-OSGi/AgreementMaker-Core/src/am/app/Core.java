@@ -49,7 +49,7 @@ import com.hp.hpl.jena.rdf.model.Model;
  */
 public class Core {
 
-	private final Logger log = Logger.getLogger(Core.class);
+	private final Logger log = LogManager.getLogger(Core.class);
 
 	// Program wide DEBUG flag. -- Deprecated, these flags will be removed and
 	// replaced with log4j!!! -- Cosmin Aug. 3, 2012.
