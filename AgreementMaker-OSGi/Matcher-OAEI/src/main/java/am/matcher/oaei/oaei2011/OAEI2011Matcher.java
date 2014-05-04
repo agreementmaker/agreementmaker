@@ -166,10 +166,6 @@ public class OAEI2011Matcher extends AbstractMatcher {
 			finalResult = runGeneralPurposeFiltered();
 		}
 		break;
-		case GENERAL_PURPOSE_FILTERED: {
-			finalResult = runGeneralPurposeFiltered();
-		}
-		break;
 		case GENERAL_MULTI: {
 			finalResult = runMultiOntologyBased();
 		}
