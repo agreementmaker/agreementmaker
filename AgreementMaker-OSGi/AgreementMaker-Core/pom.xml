@@ -14,8 +14,6 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.test.skip>true</maven.test.skip>
-		<maven.test.failure.ignore>true</maven.test.failure.ignore>
 		<bundle.symbolicName>${project.artifactId}</bundle.symbolicName>
 		<bundle.namespace>am</bundle.namespace>
 	</properties>
