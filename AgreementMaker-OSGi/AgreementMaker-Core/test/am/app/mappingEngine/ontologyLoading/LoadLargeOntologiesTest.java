@@ -5,6 +5,7 @@ import java.io.InputStream;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.junit.Ignore;
 
 import am.utility.RunTimer;
 
@@ -21,6 +22,7 @@ public class LoadLargeOntologiesTest {
 
 	private Logger log = Logger.getLogger(LoadLargeOntologiesTest.class);
 	
+	@Ignore("This test is not ready yet")
 	@Test
 	public void loadLargeOntologyWithJena() {
 		
