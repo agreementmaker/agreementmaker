@@ -4,7 +4,7 @@ import am.api.ontology.OntoClass;
 
 import com.hp.hpl.jena.ontology.OntClass;
 
-public class JenaClass implements OntoClass<OntClass> {
+public abstract class JenaClass implements OntoClass<OntClass> {
 
 	private OntClass jenaObject;
 	

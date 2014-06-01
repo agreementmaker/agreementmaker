@@ -1,6 +1,7 @@
 package am.app.ontology.jena;
 
 import java.util.Collection;
+import java.util.List;
 
 import am.api.ontology.AMOntology;
 import am.api.ontology.OntoInstance;
@@ -18,7 +19,7 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
  * @param <P>
  * @param <I>
  */
-public class JenaOntology<I extends OntoInstance<?>> implements AMOntology<OntModel,JenaClass,JenaProperty,I> {
+public abstract class JenaOntology<I extends OntoInstance<?>> implements AMOntology<OntModel,JenaClass,JenaProperty,I> {
 
 	OntModel model;
 	
@@ -33,19 +34,19 @@ public class JenaOntology<I extends OntoInstance<?>> implements AMOntology<OntMo
 	}
 
 	@Override
-	public Collection<JenaClass> getClasses() {
+	public List<JenaClass> getClasses() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Collection<JenaProperty> getProperties() {
+	public List<JenaProperty> getProperties() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Collection<I> getInstances() {
+	public List<I> getInstances() {
 		// TODO Auto-generated method stub
 		return null;
 	}

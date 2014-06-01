@@ -4,7 +4,7 @@ import am.api.ontology.OntoInstance;
 
 import com.hp.hpl.jena.ontology.Individual;
 
-public class JenaInstance implements OntoInstance<Individual> {
+public abstract class JenaInstance implements OntoInstance<Individual> {
 
 	private Individual individual;
 	

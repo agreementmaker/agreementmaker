@@ -4,7 +4,7 @@ import am.api.ontology.OntoProperty;
 
 import com.hp.hpl.jena.ontology.OntProperty;
 
-public class JenaProperty implements OntoProperty<OntProperty> {
+public abstract class JenaProperty implements OntoProperty<OntProperty> {
 
 	private OntProperty property;
 	
