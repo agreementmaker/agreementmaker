@@ -6,10 +6,8 @@ import java.util.HashMap;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-<<<<<<< .working
 import am.app.Core;
-=======
->>>>>>> .merge-right.r3574
+import am.app.Core;
 import edu.smu.tspell.wordnet.Synset;
 import edu.smu.tspell.wordnet.WordNetDatabase;
 
@@ -60,11 +58,7 @@ public class WordNetUtils {
 			wordNet = WordNetDatabase.getFileInstance();
 		}
 		catch( Exception e ) {
-<<<<<<< .working
 			LOG.error("Cannot open WordNet files.\nWordNet should be in the following directory:\n" + wordnetDir, e);
-=======
-			LOG.error("Cannot open WordNet files.\nWordNet should be in the following directory:\n" + wordnetdir, e);
->>>>>>> .merge-right.r3574
 		}
 	}
 
