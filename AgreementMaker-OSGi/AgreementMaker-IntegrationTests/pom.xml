@@ -9,7 +9,7 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<artifactId>AgreementMaker-Tests</artifactId>
+	<artifactId>AgreementMaker-IntegrationTests</artifactId>
 	<packaging>jar</packaging>
 
 	<properties>

@@ -50,10 +50,6 @@
 			<url>http://agreementmaker.org/maven2</url>
 		</repository>
 		<repository>
-			<id>Aduna</id>
-			<url>http://repo.aduna-software.org/maven2/releases</url>
-		</repository>
-		<repository>
 			<id>bliki</id>
 			<url>https://gwtwiki.googlecode.com/svn/maven-repository/</url>
 		</repository>
