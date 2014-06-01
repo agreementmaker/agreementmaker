@@ -16,7 +16,7 @@ import am.parsing.AlignmentOutput;
 public class ConferenceTrack extends Track {
 
 	public final static String AM_NAME = "amaker";
-	public final static String OAEI_DIR = "./OAEI09/";
+	public final static String OAEI_DIR = "C:/dws_workspace/";
 	public final static String OAEI_OUTPUT_DIR = OAEI_DIR+AM_NAME+"/";
 	public final static String TRACK_DIR = "conference";
 	public final static String TRACK_INPUT_DIR = OAEI_DIR+TRACK_DIR+"/";
