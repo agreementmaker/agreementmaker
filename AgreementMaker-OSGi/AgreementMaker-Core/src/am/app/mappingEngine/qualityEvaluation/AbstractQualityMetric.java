@@ -39,8 +39,6 @@ public abstract class AbstractQualityMetric implements MappingQualityMetric {
 	protected String metricID;
 	protected double weight;
 
-<<<<<<< .working
-<<<<<<< .working
 	public double getWeight() {
 		return weight;
 	}
@@ -57,24 +55,6 @@ public abstract class AbstractQualityMetric implements MappingQualityMetric {
 		this.metricID = metricID;
 	}
 
-=======
-	public double getWeight() {
-		return weight;
-	}
-
-	public void setWeight(double weight) {
-		this.weight = weight;
-	}
-
-	public String getMetricID() {
-		return metricID;
-	}
-
-	public void setMetricID(String metricID) {
-		this.metricID = metricID;
-	}
-
->>>>>>> .merge-right.r3637
 	@Override 
 	public void setParameter(AMParameter param) { 
 		params.put(param); 
@@ -90,23 +70,6 @@ public abstract class AbstractQualityMetric implements MappingQualityMetric {
 	 * same time.
 	 */
 	public QualityEvaluationData getQuality(AbstractMatcher matcher, AMParameterSet params) throws Exception {
-=======
-	@Override 
-	public void setParameter(AMParameter param) { 
-		params.put(param); 
-	}
-	
-	@Override
-	public void setParameters(AMParameterSet param) {
-		params = param;
-	}
-	
-	/**
-	 * Helper method for setting the parameters and computing the quality at the
-	 * same time.
-	 */
-	public QualityEvaluationData getQuality(AbstractMatcher matcher, AMParameterSet params) throws Exception {
->>>>>>> .merge-right.r3574
 		setParameters(params);
 		return getQuality(matcher);
 	}
