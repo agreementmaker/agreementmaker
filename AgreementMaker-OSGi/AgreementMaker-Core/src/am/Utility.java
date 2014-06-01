@@ -573,6 +573,7 @@ public class Utility {
 		reader.close();
 		return fileData.toString();
 	}
+<<<<<<< .working
 	
 	public static class IntArray {
 		public static int getMaxValue(int[] array) {
@@ -596,4 +597,16 @@ public class Utility {
 		File f = new File(file);
 		return f.exists();
 	}
+=======
+	
+	public static class IntArray {
+		public static int getMaxValue(int[] array) {
+			int value = Integer.MIN_VALUE;
+			for( int i : array) {
+				if( value < i ) value = i;
+			}
+			return value;
+		}
+	}
+>>>>>>> .merge-right.r3574
 }
