@@ -8,25 +8,11 @@ import am.app.ontology.Ontology;
 
 public class MatcherResult implements Serializable {
 	
-<<<<<<< .working
 	private static final long serialVersionUID = -3777252152922774451L;
 
-<<<<<<< .working
 	private boolean modifiedbyUser = false;
 	
 	private long executionTime = 0;
-	
-	
-=======
-	private static final long serialVersionUID = -3777252152922774451L;
-
-	private boolean modifiedbyUser;
-=======
-	private boolean modifiedbyUser = false;
->>>>>>> .merge-right.r3637
-	
-	private long executionTime = 0;
->>>>>>> .merge-right.r3574
 	
 	private SimilarityMatrix classesMatrix;
 	

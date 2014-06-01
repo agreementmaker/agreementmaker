@@ -60,6 +60,8 @@ public class Core {
 	@Deprecated public static boolean DEBUG_PSM = true;
 	@Deprecated public static boolean DEBUG_VMM = false;
 	@Deprecated public static final boolean DEBUG_FCM = false;
+
+  public static final String SETTINGS_DIR = "settings";
 	
 	/**
 	 * The root directory for all of our runtime data files.
