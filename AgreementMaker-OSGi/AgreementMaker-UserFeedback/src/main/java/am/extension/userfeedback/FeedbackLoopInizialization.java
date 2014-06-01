@@ -7,6 +7,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.EventListenerList;
 
 import am.extension.userfeedback.ui.UFLControlGUI;
+import am.extension.userfeedback.experiments.UFLExperiment;
 
 public abstract class FeedbackLoopInizialization<T extends UFLExperiment>{
 	EventListenerList listeners;  // list of listeners for this class
