@@ -14,8 +14,6 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.test.skip>true</maven.test.skip>
-		<maven.test.failure.ignore>true</maven.test.failure.ignore>
 		<bundle.symbolicName>${project.artifactId}</bundle.symbolicName>
 		<bundle.namespace>am</bundle.namespace>
 	</properties>
@@ -290,47 +288,47 @@
 		<dependency>
 			<groupId>org.openrdf.sesame</groupId>
 			<artifactId>sesame-repository-sail</artifactId>
-			<version>2.6.8</version>
+			<version>2.6.10</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openrdf.sesame</groupId>
 			<artifactId>sesame-repository-http</artifactId>
-			<version>2.6.8</version>
+			<version>2.6.10</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openrdf.sesame</groupId>
 			<artifactId>sesame-sail-memory</artifactId>
-			<version>2.6.8</version>
+			<version>2.6.10</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openrdf.sesame</groupId>
 			<artifactId>sesame-rio-api</artifactId>
-			<version>2.6.8</version>
+			<version>2.6.10</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openrdf.sesame</groupId>
 			<artifactId>sesame-rio-ntriples</artifactId>
-			<version>2.6.8</version>
+			<version>2.6.10</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openrdf.sesame</groupId>
 			<artifactId>sesame-rio-n3</artifactId>
-			<version>2.6.8</version>
+			<version>2.6.10</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openrdf.sesame</groupId>
 			<artifactId>sesame-rio-trig</artifactId>
-			<version>2.6.8</version>
+			<version>2.6.10</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openrdf.sesame</groupId>
 			<artifactId>sesame-rio-rdfxml</artifactId>
-			<version>2.6.8</version>
+			<version>2.6.10</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openrdf.sesame</groupId>
 			<artifactId>sesame-sail-rdbms</artifactId>
-			<version>2.6.8</version>
+			<version>2.6.10</version>
 		</dependency>
 		<dependency>
 			<!-- Sparse Matrix implementation -->
