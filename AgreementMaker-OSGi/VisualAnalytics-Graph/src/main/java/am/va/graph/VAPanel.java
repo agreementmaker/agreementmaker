@@ -48,6 +48,8 @@ import javafx.stage.Screen;
  */
 public class VAPanel {
 
+	private int addTreeViewListener = 1;
+
 	private JFXPanel fxPanel;
 	private ListView<String> listViewLeft;
 	private TreeView<String> listTreeLeft;
@@ -76,7 +78,7 @@ public class VAPanel {
 	private VAVariables.currentSetStatus status;
 
 	private VAPanelLogic val;
-	
+
 	private VAUFLPanel UFLPanel;
 
 	public VAPanel(VAPanelLogic v) {
@@ -122,7 +124,7 @@ public class VAPanel {
 		fxPanel.setScene(myScene);
 		for (int i = 0; i < 2; i++)
 			chartLeft[i].updateMainPieChart(ontologyType.Source);
-		generateNewTree();
+		generateNewTreeView();
 
 		// test set status
 	}
@@ -397,7 +399,7 @@ public class VAPanel {
 	 * 
 	 * @param parentGroup
 	 */
-	public void generateNewTree() {
+	public void generateNewTreeView() {
 		// tree view updates according to main set
 		VAGroup parentGroup = val.generateParentGroup(0);
 		TreeItem<String> listTreeLeftRoot = null;
@@ -415,11 +417,15 @@ public class VAPanel {
 		listTreeLeft.setShowRoot(true);
 		listTreeLeft.setRoot(listTreeLeftRoot);
 		listTreeLeftRoot.setExpanded(true);
-		treeviewAction(data);
+		if (addTreeViewListener == 1) {
+			treeviewAction(data);
+			addTreeViewListener = 0;
+		}
 	}
 
 	/**
-	 * Add tree view actions (refresh pie chart and related data)
+	 * Add tree view actions (refresh pie chart and related data), called by
+	 * generateNewTree
 	 * 
 	 * @param data
 	 */
@@ -428,19 +434,14 @@ public class VAPanel {
 
 			@Override
 			public void changed(ObservableValue<?> observable, Object oldValue, Object newValue) {
-
+				@SuppressWarnings("unchecked")
 				TreeItem<String> selectedItem = (TreeItem<String>) newValue;
 				if (selectedItem != null) {
 					String selected = selectedItem.getValue();
-					for (VAData da : data) {
-						if (da.getNodeName().equals(selected)) {
-							updateBothSets(da.getNodeName());
-							break;
-						}
-					}
+					System.out.println("--TreeView-- selected=" + selected); // print
+					updateBothSets(selected, false);
 				}
 			}
-
 		});
 	}
 
@@ -470,24 +471,28 @@ public class VAPanel {
 	 * 
 	 * @param newGroup
 	 */
-	public void updateAllWithNewGroup(VAGroup newGroup, int set) {
+	public void updateAllWithNewGroup(VAGroup newGroup, int set, boolean updateTreeList) {
 		val.updateCurrentGroup(newGroup, set);
 		if (set == 0)
 			setUpButton(newGroup);
 
 		chartLeft[set].updateMainPieChart(ontologyType.Source);
 		chartLeft[set].clearList();
-
-		generateNewTree();//may being called twice
+		if (set == 0 && updateTreeList)
+			generateNewTreeView();// may being called twice
 	}
-	
-	public void updateBothSets(String newNode){
-		for(int i=0; i<2; i++){
+
+	/**
+	 * Update both pie charts sets
+	 * 
+	 * @param newNode
+	 */
+	public void updateBothSets(String newNode, boolean updateTreeList) {
+		for (int i = 0; i < 2; i++) {
 			VAGroup newGroup;
-			VAData subda = VASyncData.searchFrom(newNode, val.getRootGroupLeft(i)
-					.getRootNode(), i);
+			VAData subda = VASyncData.searchFrom(newNode, val.getRootGroupLeft(i).getRootNode(), i);
 			newGroup = val.generateNewGroup(VAVariables.ontologyType.Source, subda, i);
-			updateAllWithNewGroup(newGroup, i);
+			updateAllWithNewGroup(newGroup, i, updateTreeList);
 		}
 	}
 
@@ -533,7 +538,7 @@ public class VAPanel {
 					}
 					for (int i = 0; i < 2; i++) {
 						val.InitData(i); // init both main and sub sets
-						updateAllWithNewGroup(val.getRootGroupLeft(i), i);
+						updateAllWithNewGroup(val.getRootGroupLeft(i), i, true);
 					}
 				}
 			}
@@ -555,10 +560,10 @@ public class VAPanel {
 				if (selectedToggle != null && status != VAVariables.currentSetStatus.noEmpty) {
 					int t = (status == VAVariables.currentSetStatus.mainSetEmpty) ? 0 : 1;
 					int cur = (int) ((ToggleButton) selectedToggle).getUserData() + 1;
-					VASyncData.setCurrentDisplayNum(cur, t);//(***)
+					VASyncData.setCurrentDisplayNum(cur, t);// (***)
 					val.InitData(t); // init main or sub set
 					// update selected group only
-					updateAllWithNewGroup(val.getRootGroupLeft(t), t);
+					updateAllWithNewGroup(val.getRootGroupLeft(t), t, true);
 
 					// Set color according to current main set
 					((ToggleButton) selectedToggle)
@@ -602,8 +607,10 @@ public class VAPanel {
 
 			@Override
 			public void handle(ActionEvent arg0) {
-				for (int i = 0; i < 2; i++)
-					updateAllWithNewGroup(val.getRootGroupLeft(i), i);
+				System.out.println("Click Top");
+				for (int i = 0; i < 2; i++) {
+					updateAllWithNewGroup(val.getRootGroupLeft(i), i, true);
+				}
 			}
 
 		});
@@ -615,8 +622,9 @@ public class VAPanel {
 
 			@Override
 			public void handle(ActionEvent arg0) {
-				for (int i = 0; i < 2; i++)
-					updateAllWithNewGroup(val.getPreviousGroup(i), i);
+				for (int i = 0; i < 2; i++) {
+					updateAllWithNewGroup(val.getPreviousGroup(i), i, true);
+				}
 				btnUp.setDisable(true);
 			}
 
@@ -630,7 +638,7 @@ public class VAPanel {
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
-						if(UFLPanel == null)
+						if (UFLPanel == null)
 							UFLPanel = new VAUFLPanel();
 						else
 							UFLPanel.showFrame(true);
@@ -641,8 +649,8 @@ public class VAPanel {
 
 		});
 	}
-	
-	public static void enableUFL(boolean enable){
+
+	public static void enableUFL(boolean enable) {
 		btnUFL.setDisable(!enable);
 	}
 }

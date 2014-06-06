@@ -16,7 +16,9 @@ public class VASyncData {
 	private static int totalDisplayNum = 0;
 	// private static int currentDisplayNum = 1; //default value = the first
 	// loaded algorithm
-	private static int currentDisplayNum[] = new int[] { 1, 1 };//display num of up & down matching sets
+	private static int currentDisplayNum[] = new int[] { 1, 1 };// display num
+																// of up & down
+																// matching sets
 
 	private static List<MatchingTask> matchingTasks = null;
 
@@ -51,8 +53,6 @@ public class VASyncData {
 	public static void setCurrentDisplayNum(int currentDisplayNum, int set) {
 		VASyncData.currentDisplayNum[set] = currentDisplayNum;
 	}
-	
-	
 
 	public static List<MatchingTask> getMatchingTasks() {
 		return matchingTasks;
@@ -129,11 +129,8 @@ public class VASyncData {
 	public static VAData getRootVAData(VAVariables.ontologyType ontologyType, int set) {
 		Node sNode = null, tNode = null;
 		double Similarity = 0.0;
-		if (ontologyType == VAVariables.ontologyType.Source) { // pie chart for
-																// source
-																// ontology
+		if (ontologyType == VAVariables.ontologyType.Source) {
 			sNode = getRootNode(VAVariables.ontologyType.Source, set);
-
 		} else {
 			sNode = getRootNode(VAVariables.ontologyType.Target, set);
 		}
