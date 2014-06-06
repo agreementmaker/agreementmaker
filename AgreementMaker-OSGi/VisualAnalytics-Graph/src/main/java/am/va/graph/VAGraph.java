@@ -97,9 +97,9 @@ public class VAGraph {
 		}
 		if (vap.getStop() != -1) {
 			vap.getRightPie(currentSet).updateSubRightPieChart();
-			String newLabel = currentGroup.getRootNodeName() + ": " + currentGroup.getRootNode().getSimilarity();
+			String newLabel = currentGroup.getRootNodeNameWithLabel() + ": " + currentGroup.getRootNode().getSimilarity();
 			if (currentGroup.getParent() == 0)
-				newLabel = "Source ontoloty:" + String.valueOf(VASyncData.getCurrentDisplayNum(currentSet));
+				newLabel = VAVariables.sourceRoot + ":" + String.valueOf(VASyncData.getCurrentDisplayNum(currentSet));
 			if (currentGroup.hasChildren())
 				vap.setLblSource(newLabel, 0, currentSet);
 			else
@@ -142,7 +142,7 @@ public class VAGraph {
 			// instead of VAGroup)
 		} else if (currentGroup != null && currentGroup.getParent() == 0) {
 			slotsMap = vap.getVal().getRootGroupRight(t).getslotCountMap();
-			newLabel = "Target ontology";
+			newLabel = VAVariables.targetRoot;
 		} else {
 			newLabel = "No matching found.";
 		}

@@ -8,11 +8,15 @@ public interface VAVariables {
 	double threshold[] = { 0.00, 0.20, 0.40, 0.60, 0.80, 1.00 };
 	String thresholdName[] = { "0-20%", "20-40%", "40-60%", "60-80%", "80-100%" };
 
-	String selectionPer[] = { "100%", "90%-99%", "80%-89%", "60-79%",
-			"Not matched" };
+	String selectionPer[] = { "100%", "90%-99%", "80%-89%", "60-79%", "Not matched" };
+
+	String sourceRoot = "Source Ontology";
+	String targetRoot = "Target Ontology";
 	
-	String panelColor[] = {"#e6ffcc", "#ffffcc"};
-	String uflPanelColor[] = {"#CCCCFF", "#CCFFFF"};
+	String nodeWithChildren = "+";
+
+	String panelColor[] = { "#e6ffcc", "#ffffcc" };
+	String uflPanelColor[] = { "#CCCCFF", "#CCFFFF" };
 
 	HashMap<String, String> ColorRange = new HashMap<String, String>() {
 		{
@@ -35,8 +39,8 @@ public interface VAVariables {
 	enum ChartType {
 		LeftMain, RightMain, LeftSub, RightSub;
 	}
-	
-	enum currentSetStatus{
+
+	enum currentSetStatus {
 		mainSetEmpty, subSetEmpty, noEmpty;
 	}
 
