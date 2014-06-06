@@ -46,6 +46,10 @@ public class VAData implements Comparable<VAData> {
 	public int getCurrentLevel() {
 		return this.sourceNode.getLevel();
 	}
+	
+	public boolean isLeaf(){
+		return this.sourceNode.isLeaf();
+	}
 
 	/**
 	 * Return source node's local name

@@ -105,12 +105,20 @@ public class VAGroup {
 	}
 
 	/**
-	 * Return root node's local name
+	 * Return root node's local name with label
 	 * 
 	 * @return
 	 */
-	public String getRootNodeName() {
+	public String getRootNodeNameWithLabel() {
 		return rootNode.getNodeName() + "|" + rootNode.getLabel();
+	}
+	
+	/**
+	 * Return root node's local name
+	 * @return
+	 */
+	public String getRootNodeName(){
+		return rootNode.getNodeName();
 	}
 
 	/**
@@ -143,7 +151,7 @@ public class VAGroup {
 	}
 
 	public void printSlots() {
-		System.out.println("current root node:" + getRootNodeName());
+		System.out.println("current root node:" + getRootNodeNameWithLabel());
 		System.out.println(slotCountMap.keySet().size() + " Slots");
 		for (String s : VAVariables.thresholdName) {
 			if (slotCountMap.containsKey(s))

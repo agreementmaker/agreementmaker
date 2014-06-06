@@ -226,9 +226,9 @@ public class VAPanel {
 			chartLeft[i] = new VAGraph(val.getRootGroupLeft(i), this, VAVariables.ChartType.LeftSub);
 			chartRight[i] = new VAGraph(val.getRootGroupRight(i), this, VAVariables.ChartType.RightSub);
 		}
-		lblSource[i] = new Label("Source ontology", chartLeft[i].getPieChart());
+		lblSource[i] = new Label(VAVariables.sourceRoot, chartLeft[i].getPieChart());
 		lblSource[i].setContentDisplay(ContentDisplay.CENTER);
-		lblTarget[i] = new Label("Target ontology", chartRight[i].getPieChart());
+		lblTarget[i] = new Label(VAVariables.targetRoot, chartRight[i].getPieChart());
 		lblTarget[i].setContentDisplay(ContentDisplay.CENTER);
 
 		tilePane.getChildren().addAll(lblSource[i], lblTarget[i]);
@@ -283,7 +283,7 @@ public class VAPanel {
 	 */
 	private void initButtons(HBox buttonBar) {
 		btnRoot = new Button("Top level");
-		btnUp = new Button("Go back");
+		btnUp = new Button("Go Up");
 		btnUFL = new Button("User feedback");
 		setToolButtonActions();
 		buttonBar.getChildren().addAll(btnRoot, btnUp, btnUFL);
@@ -405,13 +405,16 @@ public class VAPanel {
 		TreeItem<String> listTreeLeftRoot = null;
 		String label = "";
 		if (parentGroup.getParent() == 0)
-			label = "Source Root";
+			label = VAVariables.sourceRoot;
 		else
 			label = parentGroup.getRootNodeName();
 		listTreeLeftRoot = new TreeItem<String>(label);
 		ArrayList<VAData> data = parentGroup.getVADataArray();
 		for (VAData d : data) {
-			listTreeLeftRoot.getChildren().add(new TreeItem<String>(d.getNodeName()));
+			String name = d.getNodeName();
+			if (!d.isLeaf())
+				name = VAVariables.nodeWithChildren + name;
+			listTreeLeftRoot.getChildren().add(new TreeItem<String>(name));
 		}
 
 		listTreeLeft.setShowRoot(true);
@@ -438,8 +441,11 @@ public class VAPanel {
 				TreeItem<String> selectedItem = (TreeItem<String>) newValue;
 				if (selectedItem != null) {
 					String selected = selectedItem.getValue();
+					if (selected.startsWith(VAVariables.nodeWithChildren))
+						selected = selected.substring(VAVariables.nodeWithChildren.length());
 					System.out.println("--TreeView-- selected=" + selected); // print
-					updateBothSets(selected, false);
+					if (!selected.equals(VAVariables.sourceRoot) && !listTreeLeft.getRoot().getValue().equals(selected))
+						updateBothSets(selected, false);
 				}
 			}
 		});
@@ -622,10 +628,14 @@ public class VAPanel {
 
 			@Override
 			public void handle(ActionEvent arg0) {
-				for (int i = 0; i < 2; i++) {
-					updateAllWithNewGroup(val.getPreviousGroup(i), i, true);
+				if (!listTreeLeft.getRoot().getValue().equals(VAVariables.sourceRoot))
+					updateBothSets(listTreeLeft.getRoot().getValue(), true);
+				else {
+					for (int i = 0; i < 2; i++) { // same as btnRoot
+						updateAllWithNewGroup(val.getRootGroupLeft(i), i, true);
+					}
 				}
-				btnUp.setDisable(true);
+
 			}
 
 		});
