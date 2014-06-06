@@ -52,7 +52,7 @@ public class VASearchBox extends Region {
 					if (inputString.length() != 0) {
 						VAData result = searcher.search(inputString, 0);
 						if (result != null) {
-							vap.updateBothSets(result.getNodeName());
+							vap.updateBothSets(result.getNodeName(), true);
 						} else {
 							System.out.println("No result");
 						}

@@ -61,6 +61,9 @@ public class VAGraph {
 		customPieChartColor();
 	}
 
+	/**
+	 * Custom pie chart
+	 */
 	private void customPieChartColor() {
 		for (PieChart.Data d : pieCharDatalist) {
 			d.getNode().setStyle("-fx-pie-color: " + VAVariables.ColorRange.get(d.getName()) + ";");
@@ -226,7 +229,7 @@ public class VAGraph {
 			public void handle(MouseEvent event) {
 				String selectedLocalName = listView.getSelectionModel().getSelectedItems().get(0);
 				if (selectedLocalName != null) {
-					vap.updateBothSets(selectedLocalName);
+					vap.updateBothSets(selectedLocalName, true);
 					listView.getSelectionModel().clearSelection();
 				} else {
 					System.out.println("- select empty!");
@@ -261,7 +264,7 @@ public class VAGraph {
 	}
 
 	/**
-	 * given a range, print out the data in the list
+	 * given a range, print out the data in the list, test only
 	 * 
 	 * @param data
 	 */

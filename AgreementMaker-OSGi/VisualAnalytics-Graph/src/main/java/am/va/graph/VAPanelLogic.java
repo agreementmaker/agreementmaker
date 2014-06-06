@@ -67,6 +67,7 @@ public class VAPanelLogic {
 	public void InitData(int i) {
 		rootGroupLeft[i] = initRootGroup(rootGroupLeft[i], VAVariables.ontologyType.Source, i);
 		rootGroupRight[i] = initRootGroup(rootGroupRight[i], VAVariables.ontologyType.Target, i);
+		//rootGroupLeft[i].printData();
 	}
 
 	private VAGroup initRootGroup(VAGroup rootGroup, VAVariables.ontologyType type, int currentSet) {
@@ -82,6 +83,8 @@ public class VAPanelLogic {
 		// caused!!!]
 		currentGroup[currentSet] = rootGroup;
 		previousGroup[currentSet] = rootGroup;
+		
+		
 		return rootGroup;
 	}
 
