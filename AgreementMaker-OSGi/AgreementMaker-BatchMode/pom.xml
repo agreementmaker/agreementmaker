@@ -31,7 +31,10 @@
 						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
 						<Bundle-Version>${project.version}</Bundle-Version>
 						<Export-Package>${bundle.namespace}.*</Export-Package>
-						<Import-Package>*</Import-Package>
+						<Import-Package>
+							!javax.xml.namespace,
+							*
+						</Import-Package>
 					</instructions>
 				</configuration>
 			</plugin>

@@ -43,6 +43,7 @@
 							!org.kxml2.io.*,
 							!nu.xom.*,
 							!sun.misc.*,
+							!javax.xml.namespace,
 							*
 						</Import-Package>
 						<Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
