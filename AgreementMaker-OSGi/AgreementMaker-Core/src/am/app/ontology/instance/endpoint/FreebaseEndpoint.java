@@ -14,13 +14,13 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import am.AMException;
 import am.app.ontology.instance.Instance;
 import am.utility.HTTPUtility;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class FreebaseEndpoint implements SemanticWebEndpoint {
 
@@ -78,7 +78,7 @@ public class FreebaseEndpoint implements SemanticWebEndpoint {
 		return json;
 	}
 	
-	public List<Instance> query(String query) throws JSONException{
+	public List<Instance> query(String query) throws JsonProcessingException, IOException {
 		String url = endpoint + query;
 		
 		ArrayList<Instance> instances = new ArrayList<Instance>();
@@ -102,56 +102,54 @@ public class FreebaseEndpoint implements SemanticWebEndpoint {
 			cache.put(url, json);
 		}
 		
-		JSONObject object = new JSONObject(json);
+		ObjectMapper m = new ObjectMapper();
+		JsonNode rootNode = m.readTree(json);
+		
+		//JSONObject object = new JSONObject(json);
 		
 		//System.out.println(page);
 		
-		JSONArray results = object.getJSONArray("result");
+		JsonNode resultsNode = rootNode.path("result");
 				
-		JSONObject result;
+		JsonNode result;
 		String uri;
-		String score;
 		Instance instance = null;
-		for (int i = 0; i < results.length(); i++) {
-			result = (JSONObject) results.get(i);
-			uri = result.get("id").toString();
-			score = result.optString("relevance:score");
-						
+		for (int i = 0; resultsNode.get(i) != null; i++) {
+			result = resultsNode.get(i);
+			uri = result.get("id").textValue();
 			uri = FREEBASE_URI + uri.substring(1).replace('/','.');
 			
 			instance = new Instance(uri, null);
 			Set<String> valueList = new HashSet<String>();
 			Object name = null;
-			try{
-				name = result.get("name");
-			}
-			catch (JSONException e) {
-				continue;
-			}
+			name = result.get("name");
+			
 			valueList.add(name.toString());
 			instance.setProperty("label",valueList);
 			
-			if(score != null) instance.setProperty("score", score);
+			if(result.has("relevance:score")) {
+				String score = result.get("relevance:score").textValue();
+				instance.setProperty("score", score);
+			}
 						
-			JSONArray types = result.getJSONArray("type");
+			JsonNode types = result.get("type");
 			
 			//System.out.println(types);
 			if(types != null){
 				String typeName;
-				JSONObject type;
-				for (int j = 0; j < types.length(); j++) {
-					type = types.getJSONObject(j);
-					typeName = type.getString("name");
+				JsonNode type;
+				for (int j = 0; types.get(j) != null; j++) {
+					type = types.get(j);
+					typeName = type.get("name").textValue();
 					instance.setProperty("type", typeName);
 				}
 			}
-			
-			JSONArray alias = result.optJSONArray("alias");
-			
+						
 			//System.out.println(types);
-			if(alias != null){
-				for (int j = 0; j < alias.length(); j++) {
-					String al = alias.getString(j);
+			if (result.has("alias")) {
+				JsonNode alias = result.get("alias");
+				for (int j = 0; alias.get(j) != null; j++) {
+					String al = alias.get(j).textValue();
 					instance.setProperty("alias", al);
 				}
 			}
@@ -162,7 +160,7 @@ public class FreebaseEndpoint implements SemanticWebEndpoint {
 		return instances;
 	}
 		
-	public static void main(String[] args) throws JSONException {
+	public static void main(String[] args) throws JsonProcessingException, IOException {
 		String query = "?query=al+gore&type=/people/person&threshold=" + threshold;
 		FreebaseEndpoint fb = new FreebaseEndpoint();
 		fb.query(query);

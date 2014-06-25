@@ -10,13 +10,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import am.app.ontology.Ontology;
 import am.app.ontology.instance.datasets.SeparateFileInstanceDataset;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Property;
@@ -88,13 +87,7 @@ public class NYTKeywords {
 				//return;
 			}
 			
-			List<String> facets = null;
-			
-			try {
-				facets = processJson(ontology.getModel(), json, uri);
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
+			List<String> facets = processJson(ontology.getModel(), json, uri);
 			
 			//System.out.println(facets);
 			
@@ -105,10 +98,11 @@ public class NYTKeywords {
 		System.out.println("Done");
 	}
 
-	private static List<String> processJson(OntModel model, String json, String indURI) throws JSONException {
-		JSONObject object = new JSONObject(json);
+	private static List<String> processJson(OntModel model, String json, String indURI) throws JsonProcessingException, IOException {
+		ObjectMapper m = new ObjectMapper();
+		JsonNode object = m.readTree(json);
 		List<String> facets = new ArrayList<String>();
-		JSONArray results = (JSONArray) object.get("results");
+		JsonNode results = object.get("results");
 		
 		//System.out.println(results.length());
 			
@@ -116,8 +110,8 @@ public class NYTKeywords {
 		List<String> orgKeywords = new ArrayList<String>();
 		List<String> desKeywords = new ArrayList<String>();
 		
-		for (int i = 0; i < results.length(); i++) {
-			JSONObject result = (JSONObject) results.get(i);
+		for (int i = 0; results.get(i) != null; i++) {
+			JsonNode result = results.get(i);
 			
 			//Individual article = model.createIndividual(NYTConstants.NYT_URI + "article" + articleNumber, articleClass);
 			
@@ -157,19 +151,19 @@ public class NYTKeywords {
 		return ret;
 	}
 	
-	public static List<String> getStringsOfProperty(String[] properties, JSONObject res) throws JSONException{
-		JSONArray facet = null;
+	public static List<String> getStringsOfProperty(String[] properties, JsonNode res) {
+		JsonNode facet = null;
 		List<String> facets = new ArrayList<String>();
 		for (int j = 0; j < properties.length; j++) {
-			facet = (JSONArray) res.optJSONArray(properties[j]);
+			facet = res.get(properties[j]);
 			
 			//System.out.println(properties[j] + ": " + facet);
 			
 			if(facet == null) continue;
 			
 			String keyword;
-			for (int k = 0; k < facet.length(); k++) {
-				keyword = facet.getString(k).toLowerCase();
+			for (int k = 0; facet.get(k) != null; k++) {
+				keyword = facet.get(k).textValue().toLowerCase();
 				if(!facets.contains(keyword))
 					facets.add(keyword);
 			}

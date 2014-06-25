@@ -166,11 +166,11 @@
 			<version>2.4.0</version>
 		</dependency>
 
-		<dependency>
+		<!-- <dependency>
 			<groupId>com.hp.hpl.jena</groupId>
 			<artifactId>json-jena</artifactId>
 			<version>1.0</version>
-		</dependency>
+		</dependency> -->
 
 		<dependency>
 			<groupId>org.apache.jena</groupId>

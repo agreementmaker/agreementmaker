@@ -8,10 +8,6 @@ import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.List;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import am.app.ontology.Ontology;
 import am.app.ontology.instance.Instance;
 import am.app.ontology.instance.datasets.SeparateFileInstanceDataset;
@@ -22,6 +18,9 @@ import am.app.ontology.ontologyParser.OntologyDefinition.OntologyLanguage;
 import am.app.ontology.ontologyParser.OntologyDefinition.OntologySyntax;
 import am.utility.HTTPUtility;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hp.hpl.jena.rdf.model.Statement;
 
 public class FreebaseCacher {
@@ -96,16 +95,18 @@ public class FreebaseCacher {
 			
 			String id = null;
 			
-			JSONObject object = null;
+
+			
+			JsonNode object = null;
 			try {
-				object = new JSONObject(json);
-				
-			} catch (JSONException e) {
+				ObjectMapper m = new ObjectMapper();
+				object = m.readTree(json);
+			} catch (JsonProcessingException e) {
 				System.out.println("JSONCorrupted");
 				continue;
 			}
 			
-			JSONArray results = object.optJSONArray("result");
+			JsonNode results = object.get("result");
 			if(results == null){
 				System.err.println("No results");
 				continue;
@@ -113,19 +114,14 @@ public class FreebaseCacher {
 			
 			if(!extractRDF) continue; 
 			
-			JSONObject result;
+			JsonNode result;
 			String fbUri;
 			String score;
 			Instance instance = null;
-			for (int i = 0; i < results.length(); i++) {
-				try {
-					result = (JSONObject) results.get(i);
-					fbUri = result.get("id").toString();
-				} catch (JSONException e) {
-					e.printStackTrace();
-					continue;
-				}
-				
+			for (int i = 0; results.get(i) != null; i++) {
+				result = results.get(i);
+				fbUri = result.get("id").toString();
+			
 				fbUri = FREEBASE_URI + fbUri.substring(1).replace('/','.');
 				
 				System.out.println(fbUri);
