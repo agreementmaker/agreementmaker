@@ -90,6 +90,9 @@
 					<execution>
 						<id>copy-dependencies</id>
 						<phase>package</phase>
+						<configuration>
+							<excludeTypes>pom</excludeTypes>
+						</configuration>
 						<goals>
 							<goal>copy-dependencies</goal>
 						</goals>

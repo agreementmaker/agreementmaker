@@ -44,6 +44,8 @@
 							!nu.xom.*,
 							!sun.misc.*,
 							!javax.xml.namespace,
+							!com.ctc.wstx.stax,
+							!javax.xml.transform,
 							*
 						</Import-Package>
 						<Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>

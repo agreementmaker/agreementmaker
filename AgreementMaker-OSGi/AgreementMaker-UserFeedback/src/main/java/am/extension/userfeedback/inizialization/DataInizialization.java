@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.openjena.atlas.logging.Log;
 
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
