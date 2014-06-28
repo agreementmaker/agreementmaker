@@ -109,17 +109,21 @@ public class VAUFL {
 				for (Node source : sourceNodes) {
 					// get matching info here
 					Mapping map = sMatrix.getRowMaxValues(source.getIndex(), 1)[0];
+					// attention: target might be none!
 					Node target = map.getEntity2();
-
-					if (!UFLSelectionMap.containsKey(source.getLocalName())) {
-						VAUFLPairs newPair = new VAUFLPairs(source);
-						newPair.addToTargetList(target);
-						UFLSelectionMap.put(source.getLocalName(), newPair);
-					} else {
-						VAUFLPairs oldPair = UFLSelectionMap.get(source.getLocalName());
-						if (!oldPair.containTarget(target.getLocalName())) {
-							oldPair.addToTargetList(target);
+					if (target != null) {
+						if (!UFLSelectionMap.containsKey(source.getLocalName())) {
+							VAUFLPairs newPair = new VAUFLPairs(source);
+							newPair.addToTargetList(target);
+							UFLSelectionMap.put(source.getLocalName(), newPair);
+						} else {
+							VAUFLPairs oldPair = UFLSelectionMap.get(source.getLocalName());
+							if (!oldPair.containTarget(target.getLocalName())) {
+								oldPair.addToTargetList(target);
+							}
 						}
+					} else {
+						System.out.println("source=" + source.getLocalName() + ", target is null");
 					}
 				}
 			}

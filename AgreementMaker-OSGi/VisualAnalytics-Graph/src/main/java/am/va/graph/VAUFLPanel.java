@@ -278,8 +278,12 @@ public class VAUFLPanel {
 		}
 		// Set question label
 		String qSourceName = lstPairs.get(qnumber).getSourceNode().getLocalName();
+		String qSourceLabel = lstPairs.get(qnumber).getSourceNode().getLabel();
 		String indexOfQuestion = "(" + (qnumber + 1) + "/" + lstPairs.size() + ") ";
-		lblQuestion.setText(indexOfQuestion + "Select the concept that best matches \"" + qSourceName + "\":");
+		// lblQuestion.setText(indexOfQuestion +
+		// "Select the concept that best matches \"" + qSourceName + "|"
+		// + qSourceLabel + "\":");
+		lblQuestion.setText(indexOfQuestion + "\"" + qSourceName + "|" + qSourceLabel + "\":");
 		// Set question body (choices)
 		ObservableList<String> cListData = FXCollections.observableArrayList();
 		HashMap<String, Node> t = lstPairs.get(qnumber).getTargetNodes();
