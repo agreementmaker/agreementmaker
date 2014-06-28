@@ -41,6 +41,7 @@ public class VAUFLPairs {
 	}
 
 	public void addToTargetList(Node n) { // set name here
+		//n must not be null
 		targetNodes.put(n.getLocalName() + "|" + n.getLabel(), n);
 	}
 
