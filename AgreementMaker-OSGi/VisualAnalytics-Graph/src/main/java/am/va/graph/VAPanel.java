@@ -122,8 +122,12 @@ public class VAPanel {
 		myScene.getStylesheets().add(sceneCss);
 		setLayout();
 		fxPanel.setScene(myScene);
-		for (int i = 0; i < 2; i++)
-			chartLeft[i].updateMainPieChart(ontologyType.Source);
+		//bug here
+//		for (int i = 0; i < 2; i++)
+//			chartLeft[i].updateMainPieChart(ontologyType.Source);
+		for (int i = 0; i < 2; i++) {
+			updateAllWithNewGroup(val.getRootGroupLeft(i), i, true);
+		}
 		generateNewTreeView();
 
 		// test set status
