@@ -112,7 +112,7 @@ public class UFLBatchModeGUI extends AMTabSupportPanel implements UFLProgressDis
 			proBar.setValue(runNumber);
 			
 			runNumber++;
-			Thread thread = new Thread(runner);
+			Thread thread = new UIThread(runner);
 			thread.start();
 		}
 		else {

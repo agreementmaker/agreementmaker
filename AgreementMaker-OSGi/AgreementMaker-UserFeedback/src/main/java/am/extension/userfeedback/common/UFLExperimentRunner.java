@@ -18,6 +18,7 @@ import am.extension.userfeedback.logic.UFLControlLogic;
 import am.extension.userfeedback.preset.ExperimentPreset;
 import am.extension.userfeedback.preset.MatchingTaskPreset;
 import am.extension.userfeedback.ui.UFLProgressDisplay;
+import am.utility.ArchiveManager;
 import am.utility.Pair;
 import am.utility.referenceAlignment.AlignmentUtilities;
 
@@ -63,7 +64,11 @@ public class UFLExperimentRunner implements Runnable {
 			fireChange();
 			return;
 		}
-				
+		
+		ArchiveManager ex = new ArchiveManager();
+		ex.checkOntologyFile(task.getSourceOntology());
+		ex.checkOntologyFile(task.getTargetOntology());
+		
 		final Ontology sourceOntology = OntoTreeBuilder.loadOWLOntology(task.getSourceOntology());
 		final Ontology targetOntology = OntoTreeBuilder.loadOWLOntology(task.getTargetOntology());
 		
