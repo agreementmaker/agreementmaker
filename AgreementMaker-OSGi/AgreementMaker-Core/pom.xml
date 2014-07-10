@@ -16,6 +16,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<bundle.symbolicName>${project.artifactId}</bundle.symbolicName>
 		<bundle.namespace>am</bundle.namespace>
+		<skipTests>true</skipTests>
 	</properties>
 
 	<name>${bundle.symbolicName} [${bundle.namespace}]</name>
@@ -156,6 +157,18 @@
 			<artifactId>apache-jena-libs</artifactId>
 			<version>2.11.2</version>
 			<type>pom</type>
+ 			<exclusions>
+				<exclusion>
+					<groupId>xml-apis</groupId>
+					<artifactId>xml-apis</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		
+		<dependency>
+			<groupId>xml-apis</groupId>
+			<artifactId>element-traversal</artifactId>
+			<version>1.4.01</version>
 		</dependency>
 
 		<!-- At some point move from Jena JSON to Jackson
@@ -176,6 +189,12 @@
 			<groupId>org.apache.jena</groupId>
 			<artifactId>jena-sdb</artifactId>
 			<version>1.4.2</version>
+			<exclusions>
+				<exclusion>
+					<groupId>xml-apis</groupId>
+					<artifactId>xml-apis</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<dependency>

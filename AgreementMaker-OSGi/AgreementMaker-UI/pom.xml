@@ -42,6 +42,8 @@
 							!sun.misc.*,
 							!sun.reflect.*,
 							!sun.swing.*,
+							org.xml.sax;version="0.0.0",
+							org.w3c.dom;version="0.0.0",
 							org.osgi.*,am.*,org.apache.log4j.*,com.hp.hpl.*,*</Import-Package>
 						<Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
 						<Embed-Directory>target/dependency</Embed-Directory>
