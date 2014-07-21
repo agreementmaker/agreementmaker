@@ -22,7 +22,7 @@ public class RestfulDataInizialization extends FeedbackLoopInizialization<MLFExp
 	private static Logger LOG = Logger.getLogger(RestfulDataInizialization.class);
 	
 	@Override
-	public void inizialize(MLFExperiment exp) {
+	public void initialize(MLFExperiment exp) {
 		//this.experiment=exp;
 		
 		inputMatchers = exp.initialMatcher.getComponentMatchers();

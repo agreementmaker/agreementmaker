@@ -21,7 +21,7 @@ import am.extension.userfeedback.evaluation.CandidateSelectionEvaluation;
 import am.extension.userfeedback.evaluation.PropagationEvaluation;
 import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
 import am.extension.userfeedback.inizialization.FeedbackLoopInizialization;
-import am.extension.userfeedback.logic.UFLControlLogic;
+import am.extension.userfeedback.logic.api.UFLControlLogic;
 import am.extension.userfeedback.propagation.FeedbackPropagation;
 import am.extension.userfeedback.selection.CandidateSelection;
 import am.extension.userfeedback.ui.UFLProgressDisplay;
@@ -30,7 +30,7 @@ public abstract class UFLExperiment {
 
 	private static final Logger LOG = LogManager.getLogger(UFLExperiment.class);
 	
-	public final UFLExperimentSetup							setup;  
+	public final UFLExperimentSetup							setup;
 	
 	public ExecutionSemantics 								initialMatcher;
 	public FeedbackLoopInizialization<UFLExperiment>        dataInizialization;
@@ -60,7 +60,7 @@ public abstract class UFLExperiment {
 	 * A shared object store, that is used to keep objects. NOTE: This object is
 	 * needed because of the way the UFLControlLogic has evolved. The
 	 * UFLControlLogics we implemented did not allow UFL objects to persist
-	 * beyond one iteration. On each iteration, new objects are instantitated.
+	 * beyond one iteration. On each iteration, new objects are instantiated.
 	 * So we moved a lot of the data structures we wanted to persist into the
 	 * UFLExperiment subclasses. This object is an attempt to simplify that
 	 * task. Instead of adding a new field every time we want to save a new data
@@ -112,12 +112,19 @@ public abstract class UFLExperiment {
 	public abstract Alignment<Mapping>  getFinalAlignment();
 	public abstract void				info(String line);   // FIXME: Change this, or get rid of it. Or learn how to use log4j.
 	
-	public abstract UFLControlLogic<? extends UFLExperiment>	getControlLogic();
+	public abstract UFLControlLogic	getControlLogic();
 	
-	public abstract boolean 			experimentHasCompleted();  // return true if the experiment is done, false otherwise.
+	/**
+	 * @return true if the experiment is done, false otherwise
+	 */
+	public boolean experimentHasCompleted() {
+		if( userFeedback != null && userFeedback.getUserFeedback() == Validation.END_EXPERIMENT ) { // we're done when the user says so
+			return true;
+		}
+		return false;
+	}
 	
-	public int getIterationNumber() 
-	{ 
+	public int getIterationNumber() { 
 		return iterationNumber; 
 	}
 	

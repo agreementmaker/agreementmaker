@@ -22,28 +22,16 @@ public class CandidateMappingEvaluation extends CandidateSelectionEvaluation {
 		
 		Mapping candidateMapping = exp.candidateSelection.getSelectedMapping();
 		if(candidateMapping == null) {
-			log.info("Candidate Selection presented NULL mapping.");
+			log.info("\tCandidate Selection presented NULL mapping.");
 			return;
 		}
 
-		// candidate mapping is contained in the reference alignment?
-		boolean mappingIsInReference = false;
-		if( referenceAlignment.contains(candidateMapping) ) mappingIsInReference = true;
-		
-		// candidate mapping is contained in the current alignment?
 		Alignment<Mapping> finalAlignment = exp.getFinalAlignment();
-		boolean mappingIsInAlignment = false;
-		if( finalAlignment.contains(candidateMapping) ) mappingIsInAlignment = true;
 				
-		log.info("Candidate selection mapping: " + 
-				(mappingIsInReference ? "(in reference: yes) " : "(in reference: no) ") + 
-				(mappingIsInAlignment ? "(in alignment: yes) " : "(in alignment: no) ") + 
+		log.info("\tCandidate selection mapping: " + 
+				(referenceAlignment.contains(candidateMapping) ? "(in reference: yes) " : "(in reference: no) ") + 
+				(finalAlignment.contains(candidateMapping) ? "(in alignment: yes) " : "(in alignment: no) ") + 
 				candidateMapping );
-		log.info("");
-		
-		if (mappingIsInReference!=mappingIsInAlignment)
-			System.out.println("");
-		
 		done();
 	}
 }

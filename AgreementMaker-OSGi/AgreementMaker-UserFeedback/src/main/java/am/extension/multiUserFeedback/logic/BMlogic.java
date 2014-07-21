@@ -6,10 +6,10 @@ import org.apache.log4j.Logger;
 
 import am.extension.multiUserFeedback.experiment.BMexperiment;
 import am.extension.userfeedback.logic.IndependentSequentialLogicMultiUser;
-import am.extension.userfeedback.logic.UFLControlLogic;
+import am.extension.userfeedback.logic.NonPersistentUFLControlLogic;
 import am.extension.userfeedback.ui.UFLControlGUI.ActionCommands;
 
-public class BMlogic  extends UFLControlLogic<BMexperiment> {
+public class BMlogic  extends NonPersistentUFLControlLogic<BMexperiment> {
 	
 	private static Logger LOG = Logger.getLogger(IndependentSequentialLogicMultiUser.class);
 	

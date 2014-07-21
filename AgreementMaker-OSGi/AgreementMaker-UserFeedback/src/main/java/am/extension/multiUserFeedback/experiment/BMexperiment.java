@@ -21,7 +21,7 @@ import am.extension.userfeedback.UserFeedback.Validation;
 import am.extension.userfeedback.experiments.UFLExperiment;
 import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
 import am.extension.userfeedback.experiments.UFLExperimentSetup;
-import am.extension.userfeedback.logic.UFLControlLogic;
+import am.extension.userfeedback.logic.NonPersistentUFLControlLogic;
 import am.ui.UIUtility;
 
 public class BMexperiment extends UFLExperiment {
@@ -181,12 +181,6 @@ public void setMLAlignment(Alignment<Mapping> mLAlignment) {
 }
 
 	@Override
-	public boolean experimentHasCompleted() {
-		if( userFeedback != null && userFeedback.getUserFeedback() == Validation.END_EXPERIMENT ) return true;  // we're done when the user says so
-		return false;
-	}
-
-	@Override
 	public void	newIteration() {
 		if( userFeedback.getUserFeedback() == Validation.CORRECT ) {
 			if( correctMappings == null ) {
@@ -223,7 +217,7 @@ public void setMLAlignment(Alignment<Mapping> mLAlignment) {
 	}
 
 	@Override
-	public UFLControlLogic getControlLogic() {
+	public NonPersistentUFLControlLogic getControlLogic() {
 		return new BMlogic();
 		//return new IndependentSequentialLogic();
 	}

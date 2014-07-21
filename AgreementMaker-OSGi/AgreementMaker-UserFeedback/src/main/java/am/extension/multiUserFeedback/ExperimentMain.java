@@ -20,7 +20,7 @@ import am.extension.userfeedback.UFLRegistry.PropagationEvaluationRegistry;
 import am.extension.userfeedback.UFLRegistry.SaveFeedbackRegistry;
 import am.extension.userfeedback.UFLRegistry.UserValidationRegistry;
 import am.extension.userfeedback.experiments.UFLExperimentSetup;
-import am.extension.userfeedback.logic.UFLControlLogic;
+import am.extension.userfeedback.logic.NonPersistentUFLControlLogic;
 import am.ui.UIUtility;
 
 public class ExperimentMain {
@@ -70,7 +70,7 @@ public class ExperimentMain {
 			newExperiment = new BMexperiment(setup);
 			newExperiment.usersNumber = clientNumber;
 				
-			final UFLControlLogic<BMexperiment> logic = newExperiment.getControlLogic();
+			final NonPersistentUFLControlLogic<BMexperiment> logic = newExperiment.getControlLogic();
 				
 			Thread thread = new Thread(new Runnable(){
 

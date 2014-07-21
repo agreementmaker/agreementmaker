@@ -9,16 +9,13 @@ import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.DefaultSelectionParameters;
 import am.app.mappingEngine.MatchingTask;
-import am.app.mappingEngine.SelectionAlgorithm;
 import am.app.mappingEngine.SelectionResult;
 import am.app.mappingEngine.oneToOneSelection.MwbmSelection;
 import am.extension.userfeedback.UserFeedback.Validation;
 import am.extension.userfeedback.experiments.MLFExperiment;
 import am.extension.userfeedback.ui.UFLControlGUI.ActionCommands;
-import am.ui.MatcherProgressDialog;
-import am.ui.UICore;
 
-public class IndependentSequentialLogicMultiUser extends UFLControlLogic<MLFExperiment> {
+public class IndependentSequentialLogicMultiUser extends NonPersistentUFLControlLogic<MLFExperiment> {
 	
 	private static Logger LOG = Logger.getLogger(IndependentSequentialLogicMultiUser.class);
 	
@@ -30,9 +27,7 @@ public class IndependentSequentialLogicMultiUser extends UFLControlLogic<MLFExpe
 
 	/* actionPerformed.  Almost all the real work is done here. */
 	public void actionPerformed(ActionEvent e) {
-		
-		System.out.println(e.getActionCommand());  // TODO: Remove this.
-		
+				
 		if( experiment != null && experiment.experimentHasCompleted() ) { // check stop condition
 			//runSaveFeedback();
 			System.out.println("Experiment has completed.  Ignoring further actions.");

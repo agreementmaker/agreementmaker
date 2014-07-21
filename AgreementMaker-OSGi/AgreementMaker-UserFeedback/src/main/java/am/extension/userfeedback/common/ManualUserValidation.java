@@ -5,7 +5,7 @@ import am.extension.userfeedback.UserFeedback;
 import am.extension.userfeedback.experiments.UFLExperiment;
 import am.extension.userfeedback.ui.ManualUserValidationPanel;
 
-public class ManualUserValidation<T extends UFLExperiment> extends UserFeedback<T> {
+public class ManualUserValidation extends UserFeedback {
 	
 	private Validation userFeedback;
 	private Mapping candidateMapping;

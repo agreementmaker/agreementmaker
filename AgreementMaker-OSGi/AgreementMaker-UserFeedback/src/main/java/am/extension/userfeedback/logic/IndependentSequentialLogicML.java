@@ -7,7 +7,7 @@ import org.apache.log4j.Logger;
 import am.extension.userfeedback.experiments.MLFExperiment;
 import am.extension.userfeedback.ui.UFLControlGUI.ActionCommands;
 
-public class IndependentSequentialLogicML  extends UFLControlLogic<MLFExperiment> {
+public class IndependentSequentialLogicML  extends NonPersistentUFLControlLogic<MLFExperiment> {
 	
 	private static Logger LOG = Logger.getLogger(IndependentSequentialLogicMultiUser.class);
 	

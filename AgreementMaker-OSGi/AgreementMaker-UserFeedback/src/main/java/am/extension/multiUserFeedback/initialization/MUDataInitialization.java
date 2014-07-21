@@ -19,33 +19,25 @@ import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.evaluation.alignment.AlignmentMetrics;
 import am.evaluation.alignment.DeltaFromReference;
-import am.extension.multiUserFeedback.evaluation.ServerFeedbackEvaluation;
 import am.extension.multiUserFeedback.experiment.MUExperiment;
 import am.extension.userfeedback.UserFeedback.Validation;
-import am.extension.userfeedback.common.ServerFeedbackEvaluationData;
-import am.extension.userfeedback.evaluation.PropagationEvaluation;
 import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
 import am.extension.userfeedback.inizialization.FeedbackLoopInizialization;
 
-public class MUDataInitialization  extends FeedbackLoopInizialization<MUExperiment> {
+public class MUDataInitialization extends FeedbackLoopInizialization<MUExperiment> {
 	
 	private static final Logger LOG = Logger.getLogger(MUDataInitialization.class);
 	
-	List<AbstractMatcher> inputMatchers = new ArrayList<AbstractMatcher>();
-	MUExperiment experiment;
-	int count_vsv=0;
-	public MUDataInitialization()
-	{
-		super();
-	}
+	List<AbstractMatcher> inputMatchers = new ArrayList<>();
+	private MUExperiment experiment;
 	
 	@Override
-	public void inizialize(MUExperiment exp) {
+	public void initialize(MUExperiment exp) {
 		// TODO Auto-generated method stub
-		this.experiment=exp;
-		inputMatchers=exp.initialMatcher.getComponentMatchers();
+		this.experiment = exp;
+		inputMatchers = exp.initialMatcher.getComponentMatchers();
 		
-		SignatureVectorStats svs=new SignatureVectorStats(exp);
+		SignatureVectorStats svs = new SignatureVectorStats(exp);
 		try {
 			svs.printSV(exp.initialMatcher.getFinalMatcher().getClassesMatrix(), alignType.aligningClasses);
 			svs.printSV(exp.initialMatcher.getFinalMatcher().getPropertiesMatrix(), alignType.aligningProperties);
@@ -55,14 +47,14 @@ public class MUDataInitialization  extends FeedbackLoopInizialization<MUExperime
 		}
 		
 		
-		SimilarityMatrix smClass=exp.initialMatcher.getFinalMatcher().getClassesMatrix().clone();
-		SimilarityMatrix smProperty=exp.initialMatcher.getFinalMatcher().getPropertiesMatrix().clone();
+		SimilarityMatrix smClass = exp.initialMatcher.getFinalMatcher().getClassesMatrix().clone();
+		SimilarityMatrix smProperty = exp.initialMatcher.getFinalMatcher().getPropertiesMatrix().clone();
 		
 		//SimilarityMatrix am=exp.initialMatcher.getFinalMatcher().getClassesMatrix();
-		smClass=prepare(smClass);
+		smClass = prepare(smClass);
 		
 		//am=exp.initialMatcher.getFinalMatcher().getPropertiesMatrix();
-		smProperty=prepare(smProperty);
+		smProperty = prepare(smProperty);
 		
 
 		computeAlignment(smClass, smProperty);
@@ -137,18 +129,18 @@ public class MUDataInitialization  extends FeedbackLoopInizialization<MUExperime
 		// output the experiment description
 		StringBuilder d = new StringBuilder();
 		
-		d.append("============================ Running UFL Experiment: =================================\n");
-		d.append("         NUM_USERS:" + exp.setup.parameters.getIntParameter(Parameter.NUM_USERS) + "\n");
-		d.append("    NUM_ITERATIONS:" + exp.setup.parameters.getIntParameter(Parameter.NUM_ITERATIONS) + "\n");
-		d.append("        ERROR_RATE:" + exp.setup.parameters.getDoubleParameter(Parameter.ERROR_RATE) + "\n");
-		d.append(" REVALIDATION_RATE:" + exp.setup.parameters.getParameter(Parameter.REVALIDATION_RATE) + "\n");
-		d.append("         STATIC_CS:" + exp.setup.parameters.getBooleanParameter(Parameter.STATIC_CANDIDATE_SELECTION) + "\n");
-		d.append("PROPAGATION_METHOD:" + exp.setup.parameters.getParameter(Parameter.PROPAGATION_METHOD) + "\n");
+		d.append("\n\n============================ Running UFL Experiment: =================================\n");
+		d.append("         NUM_USERS: " + exp.setup.parameters.getIntParameter(Parameter.NUM_USERS) + "\n");
+		d.append("    NUM_ITERATIONS: " + exp.setup.parameters.getIntParameter(Parameter.NUM_ITERATIONS) + "\n");
+		d.append("        ERROR_RATE: " + exp.setup.parameters.getDoubleParameter(Parameter.ERROR_RATE) + "\n");
+		d.append(" REVALIDATION_RATE: " + exp.setup.parameters.getParameter(Parameter.REVALIDATION_RATE) + "\n");
+		d.append("         STATIC_CS: " + exp.setup.parameters.getBooleanParameter(Parameter.STATIC_CANDIDATE_SELECTION) + "\n");
+		d.append("PROPAGATION_METHOD: " + exp.setup.parameters.getParameter(Parameter.PROPAGATION_METHOD) + "\n");
 		d.append("======================================================================================\n");
 		
 		String sourceFile = Core.getInstance().getSourceOntology().getFilename();
 		if( sourceFile.length() >= 51 ) {
-			d.append("Source Ont: ..." + sourceFile.substring(sourceFile.length()-50-1, sourceFile.length()-1) + "\n");
+			d.append("Source Ont: ..." + sourceFile.substring(sourceFile.length()-50-1, sourceFile.length()) + "\n");
 		}
 		else {
 			d.append("Source Ont: " + sourceFile + "\n");
@@ -156,7 +148,7 @@ public class MUDataInitialization  extends FeedbackLoopInizialization<MUExperime
 		
 		String targetFile = Core.getInstance().getTargetOntology().getFilename();
 		if( targetFile.length() >= 51 ) {
-			d.append("Target Ont: ..." + targetFile.substring(targetFile.length()-50-1, targetFile.length()-1) + "\n");
+			d.append("Target Ont: ..." + targetFile.substring(targetFile.length()-50-1, targetFile.length()) + "\n");
 		}
 		else {
 			d.append("Target Ont: " + targetFile + "\n");
@@ -198,7 +190,6 @@ public class MUDataInitialization  extends FeedbackLoopInizialization<MUExperime
 	
 	private SimilarityMatrix prepare(SimilarityMatrix sm)
 	{
-		double sim=0;
 		Mapping mp;
 		//Object[] ssv;
 		for(int i=0;i<sm.getRows();i++)
@@ -246,6 +237,7 @@ public class MUDataInitialization  extends FeedbackLoopInizialization<MUExperime
 		
 		DeltaFromReference deltaFromReference = new DeltaFromReference(experiment.getReferenceAlignment());
 		
+		experiment.info("Reference Alignment:");
 		experiment.info(experiment.getReferenceAlignment().toString());
 		
 		int initialDelta = deltaFromReference.getDelta(experiment.getFinalAlignment());
@@ -253,14 +245,15 @@ public class MUDataInitialization  extends FeedbackLoopInizialization<MUExperime
 		
 		int currentIteration = experiment.getIterationNumber();
 		
-		if( currentIteration != 0 )
+		if( currentIteration != 0 ) {
 			throw new AssertionError("Data initialization can only run at iteration 0.");
+		}
 		
 		experiment.info("Iteration: " + currentIteration + 
-				", Delta from reference: " + initialDelta + 
-				", Precision: " + initialMetrics.getPrecisionPercent() + 
-				", Recall: " + initialMetrics.getRecallPercent() + 
-				", FMeasure: " + initialMetrics.getFMeasurePercent());
+				"\tDelta from reference: " + initialDelta + 
+				"\tPrecision: " + initialMetrics.getPrecisionPercent() + 
+				"\tRecall: " + initialMetrics.getRecallPercent() + 
+				"\tFMeasure: " + initialMetrics.getFMeasurePercent());
 		experiment.info("");
 		
 		experiment.feedbackEvaluationData.precisionArray[0] = initialMetrics.getPrecision(); 
@@ -295,11 +288,8 @@ public class MUDataInitialization  extends FeedbackLoopInizialization<MUExperime
 			}
 		}
 		
-		experiment.info("Number of FalsePositive mapping in initial alignment: "+falsePositive);
-		experiment.info("");
-		experiment.info("Number of FalseNegative mapping in initial alignment: "+falseNegative);
-		experiment.info("");
-
+		experiment.info("\tNumber of FalsePositive mappings in initial alignment: "+ falsePositive);
+		experiment.info("\tNumber of FalseNegative mappings in initial alignment: "+ falseNegative);
 	}
 
 

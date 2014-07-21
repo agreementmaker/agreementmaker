@@ -26,7 +26,7 @@ public class DataInizialization extends FeedbackLoopInizialization<SUExperiment>
 	}
 	
 	@Override
-	public void inizialize(SUExperiment exp) {
+	public void initialize(SUExperiment exp) {
 		// TODO Auto-generated method stub
 		inputMatchers=exp.initialMatcher.getComponentMatchers();
 		SimilarityMatrix smClass=exp.initialMatcher.getFinalMatcher().getClassesMatrix().clone();

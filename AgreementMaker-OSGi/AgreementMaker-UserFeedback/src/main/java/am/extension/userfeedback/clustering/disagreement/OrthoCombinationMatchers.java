@@ -17,6 +17,7 @@ import am.app.ontology.Ontology;
 import am.app.ontology.profiling.manual.ManualOntologyProfiler;
 import am.extension.userfeedback.ExecutionSemantics;
 import am.extension.userfeedback.experiments.UFLExperiment;
+import am.extension.userfeedback.utility.UFLutility;
 import am.matcher.Combination.CombinationMatcher;
 import am.matcher.Combination.CombinationParameters;
 import am.matcher.LexicalSynonymMatcher.LexicalSynonymMatcher;
@@ -288,15 +289,7 @@ public class OrthoCombinationMatchers extends ExecutionSemantics {
 		Alignment<Mapping> referenceAlignment = exp.getReferenceAlignment();
 		
 		//FIXME: We should not be looking at the reference alignment here.
-		if( referenceAlignment != null ) {
-			log.info("Referene alignment has " + referenceAlignment.size() + " mappings.");
-			for( int i = 0; i < referenceAlignment.size(); i++ ) {
-				Mapping currentMapping = referenceAlignment.get(i);
-				log.info( i + ". " + currentMapping.toString() );
-			}
-			
-			log.info("");
-		}
+		UFLutility.logReferenceAlignment(referenceAlignment, exp);
 		
 		// save to log file the alignment we start with.
 		

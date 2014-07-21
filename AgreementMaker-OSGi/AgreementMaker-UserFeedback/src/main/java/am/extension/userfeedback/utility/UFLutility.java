@@ -363,4 +363,16 @@ public class UFLutility {
 		return lst;
 	}
 	
+	
+	public static void logReferenceAlignment(Alignment<Mapping> referenceAlignment, UFLExperiment experiment) {
+		if( referenceAlignment != null ) {
+			experiment.info("Reference alignment has " + referenceAlignment.size() + " mappings.");
+			for( int i = 0; i < referenceAlignment.size(); i++ ) {
+				Mapping currentMapping = referenceAlignment.get(i);
+				experiment.info((i+1) + ". " + currentMapping.toString() );
+			}
+			
+			experiment.info("");
+		}
+	}
 }

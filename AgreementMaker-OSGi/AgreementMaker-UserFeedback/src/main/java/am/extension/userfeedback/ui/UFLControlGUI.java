@@ -25,7 +25,7 @@ import am.extension.userfeedback.UFLRegistry.SaveFeedbackRegistry;
 import am.extension.userfeedback.UFLRegistry.UserValidationRegistry;
 import am.extension.userfeedback.experiments.UFLExperiment;
 import am.extension.userfeedback.experiments.UFLExperimentSetup;
-import am.extension.userfeedback.logic.UFLControlLogic;
+import am.extension.userfeedback.logic.api.UFLControlLogic;
 import am.ui.UI;
 import am.ui.UIUtility;
 import am.ui.api.impl.AMTabSupportPanel;

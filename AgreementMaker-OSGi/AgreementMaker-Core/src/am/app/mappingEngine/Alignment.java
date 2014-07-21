@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.LogManager;
@@ -254,6 +255,19 @@ public class Alignment<E extends Mapping> extends ArrayList<E> implements Ontolo
 		}
 	}
       
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		Iterator<? extends Mapping> iter = iterator();
+		int i = 1;
+		while(iter.hasNext()) {
+			sb.append(i)
+			  .append(". ")
+			  .append(iter.next()).append("\n");
+			i++;
+		}
+		return sb.toString();
+	}
     
 /*    @SuppressWarnings("unchecked")
 	@Override

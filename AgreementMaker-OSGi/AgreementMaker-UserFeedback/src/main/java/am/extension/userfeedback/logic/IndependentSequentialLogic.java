@@ -5,7 +5,7 @@ import java.awt.event.ActionEvent;
 import am.extension.userfeedback.experiments.UFLExperiment;
 import am.extension.userfeedback.ui.UFLControlGUI.ActionCommands;
 
-public class IndependentSequentialLogic extends UFLControlLogic<UFLExperiment> {
+public class IndependentSequentialLogic extends NonPersistentUFLControlLogic<UFLExperiment> {
 	
 	@Override
 	public void runExperiment(UFLExperiment exp) {

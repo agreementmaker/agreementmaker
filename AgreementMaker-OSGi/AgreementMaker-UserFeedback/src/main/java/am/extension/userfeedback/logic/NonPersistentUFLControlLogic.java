@@ -1,30 +1,9 @@
 package am.extension.userfeedback.logic;
 
-import java.awt.event.ActionListener;
-import java.lang.Thread.UncaughtExceptionHandler;
-
 import am.extension.userfeedback.experiments.UFLExperiment;
+import am.extension.userfeedback.logic.api.AbstractUFLControlLogic;
 
-public abstract class UFLControlLogic<T extends UFLExperiment>  implements ActionListener {
-	
-	protected T experiment;
-	
-	
-	public abstract void runExperiment(T experiment);
-	
-	/**
-	 * Starts a separate thread for running a piece of the experiment.
-	 */
-	protected void startThread(Runnable runnable) {
-		Thread initialMatchersThread = new Thread(runnable);
-		initialMatchersThread.setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
-			@Override
-			public void uncaughtException(Thread t, Throwable e) {
-				e.printStackTrace();
-			}
-		});
-		initialMatchersThread.start();
-	}
+public abstract class NonPersistentUFLControlLogic<T extends UFLExperiment> extends AbstractUFLControlLogic<T> {
 	
 	protected void runInitialMatchers() {
 		// Run the initial matchers in a separate thread.
@@ -48,7 +27,7 @@ public abstract class UFLControlLogic<T extends UFLExperiment>  implements Actio
 			experiment.dataInizialization.addActionListener(this);
 			startThread(new Runnable(){
 				@Override public void run() {
-					experiment.dataInizialization.inizialize(experiment);	
+					experiment.dataInizialization.initialize(experiment);	
 				}
 			});
 		} catch (InstantiationException | IllegalAccessException e) {

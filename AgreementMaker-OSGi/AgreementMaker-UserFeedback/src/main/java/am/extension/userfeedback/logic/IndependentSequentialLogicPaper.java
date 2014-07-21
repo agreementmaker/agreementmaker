@@ -16,7 +16,7 @@ import am.extension.userfeedback.UserFeedback.Validation;
 import am.extension.userfeedback.ui.UFLControlGUI.ActionCommands;
 
 
-public class IndependentSequentialLogicPaper extends UFLControlLogic<MUExperiment> {
+public class IndependentSequentialLogicPaper extends NonPersistentUFLControlLogic<MUExperiment> {
 	
 	private static Logger LOG = Logger.getLogger(IndependentSequentialLogicMultiUser.class);
 	

@@ -18,7 +18,7 @@ import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.extension.userfeedback.UserFeedback.Validation;
 import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
 import am.extension.userfeedback.logic.IndipendentSequentialLogicSU;
-import am.extension.userfeedback.logic.UFLControlLogic;
+import am.extension.userfeedback.logic.NonPersistentUFLControlLogic;
 import am.ui.UIUtility;
 
 
@@ -173,18 +173,6 @@ public void setMLAlignment(Alignment<Mapping> mLAlignment) {
 	}
 
 	@Override
-	public boolean experimentHasCompleted() {
-		if( userFeedback != null && userFeedback.getUserFeedback() == Validation.END_EXPERIMENT ) return true;  // we're done when the user says so
-		return false;
-	}
-
-	@Override
-	public void newIteration() {
-		super.newIteration();
-		// TODO: Save all the objects that we used in the previous iteration.
-	}
-
-	@Override
 	public Alignment<Mapping> getFinalAlignment() {
 		return initialMatcher.getAlignment();
 	}
@@ -202,7 +190,7 @@ public void setMLAlignment(Alignment<Mapping> mLAlignment) {
 	}
 
 	@Override
-	public UFLControlLogic getControlLogic() {
+	public NonPersistentUFLControlLogic getControlLogic() {
 		return new IndipendentSequentialLogicSU();
 		//return new IndependentSequentialLogic();
 	}
