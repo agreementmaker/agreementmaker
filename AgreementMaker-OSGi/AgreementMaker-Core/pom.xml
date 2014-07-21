@@ -16,7 +16,6 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<bundle.symbolicName>${project.artifactId}</bundle.symbolicName>
 		<bundle.namespace>am</bundle.namespace>
-		<skipTests>true</skipTests>
 	</properties>
 
 	<name>${bundle.symbolicName} [${bundle.namespace}]</name>
@@ -169,6 +168,12 @@
 			<groupId>xml-apis</groupId>
 			<artifactId>element-traversal</artifactId>
 			<version>1.4.01</version>
+		</dependency>
+
+		<dependency>
+			<groupId>SevenZip</groupId>
+			<artifactId>SevenZip</artifactId>
+			<version>9.20</version>
 		</dependency>
 
 		<!-- At some point move from Jena JSON to Jackson
