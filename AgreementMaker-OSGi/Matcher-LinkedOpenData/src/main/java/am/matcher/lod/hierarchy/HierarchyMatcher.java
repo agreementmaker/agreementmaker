@@ -3,7 +3,6 @@ package am.matcher.lod.hierarchy;
 import java.util.ArrayList;
 import java.util.List;
 
-import am.Utility;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.Mapping;
