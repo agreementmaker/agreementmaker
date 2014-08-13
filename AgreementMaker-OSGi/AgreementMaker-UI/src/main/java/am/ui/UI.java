@@ -107,6 +107,8 @@ public class UI {
 		//catch (Exception e) { System.out.println(e); }
 
 		// Create a swing frame
+		System.setProperty("apple.laf.useScreenMenuBar", "false");
+		
 		frame = new JFrame("AgreementMaker");
 		frame.getContentPane().setLayout(new BorderLayout());
 
