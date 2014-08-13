@@ -1,14 +1,10 @@
 package am.extension.userfeedback.analysis;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.hp.hpl.jena.rdf.model.impl.RDFDefaultErrorHandler;
-
-import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
@@ -17,6 +13,8 @@ import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.extension.multiUserFeedback.MatchingTasks2014;
 import am.extension.userfeedback.preset.MatchingTaskPreset;
 import am.utility.referenceAlignment.AlignmentUtilities;
+
+import com.hp.hpl.jena.rdf.model.impl.RDFDefaultErrorHandler;
 
 /**
  * Analyze the experiments for our UFL tests.

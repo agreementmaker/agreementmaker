@@ -2,10 +2,8 @@ package am.extension.userfeedback.analysis;
 
 import static org.junit.Assert.assertEquals;
 
-import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
 import org.junit.Test;
 
 import am.Utility;
