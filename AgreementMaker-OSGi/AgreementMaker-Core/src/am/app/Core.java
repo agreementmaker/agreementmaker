@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.management.InstanceAlreadyExistsException;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.osgi.framework.Bundle;
@@ -151,6 +152,8 @@ public class Core {
 				}
 			}
 		}
+		
+		amRoot = FilenameUtils.normalize(amRoot);
 		
 		log.info("AgreementMaker root directory: " + amRoot);
 		

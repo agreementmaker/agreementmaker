@@ -53,7 +53,7 @@ public class RankingAccuracy extends CandidateSelectionEvaluation {
 		}
 	
 		// save all the values
-		int currentIndex = exp.getIterationNumber()-1;
+		int currentIndex = exp.getIterationNumber();
 		data.accuracy[currentIndex]      = accuracy;
 		data.falsePositive[currentIndex] = falsePositive;
 		data.falseNegative[currentIndex] = falseNegative;

@@ -718,7 +718,6 @@ public class OntoTreeBuilder extends TreeBuilder<OntologyDefinition> {
     /** Loads an OWL ontology in RDF/XML syntax. */
     public static Ontology loadOWLOntology( String ontURI ) {
     	return loadOWLOntology(ontURI, null);
-    	
     }
     
     public static Ontology loadOWLOntology( String ontURI, LocationMapper mapper ) {

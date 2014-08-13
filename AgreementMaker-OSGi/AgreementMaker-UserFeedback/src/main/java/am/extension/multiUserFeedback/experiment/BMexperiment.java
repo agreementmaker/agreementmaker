@@ -17,7 +17,6 @@ import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.extension.multiUserFeedback.logic.BMlogic;
-import am.extension.userfeedback.UserFeedback.Validation;
 import am.extension.userfeedback.experiments.UFLExperiment;
 import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
 import am.extension.userfeedback.experiments.UFLExperimentSetup;
@@ -181,22 +180,8 @@ public void setMLAlignment(Alignment<Mapping> mLAlignment) {
 }
 
 	@Override
-	public void	newIteration() {
-		if( userFeedback.getUserFeedback() == Validation.CORRECT ) {
-			if( correctMappings == null ) {
-				correctMappings = new Alignment<Mapping>(getSourceOntology().getID(), getTargetOntology().getID());
-			}
-			correctMappings.add( userFeedback.getCandidateMapping() );
-		} else if( userFeedback.getUserFeedback() == Validation.INCORRECT ) {
-			if( incorrectMappings == null ) {
-				incorrectMappings = new Alignment<Mapping>(getSourceOntology().getID(), getTargetOntology().getID());
-			}
-			incorrectMappings.add( userFeedback.getCandidateMapping() );
-		}
-		realIteration++;
-		int tmpIter=realIteration/usersNumber;
-		currentUser=realIteration%usersNumber;
-		setIterationNumber(tmpIter); 
+	public void	beginIteration() {
+		currentUser = getIterationNumber() % usersNumber;
 	}
 
 	@Override

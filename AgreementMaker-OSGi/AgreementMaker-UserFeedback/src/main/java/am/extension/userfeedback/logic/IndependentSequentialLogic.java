@@ -24,7 +24,7 @@ public class IndependentSequentialLogic extends NonPersistentUFLControlLogic<UFL
 			return;
 		}
 		
-		if( e.getActionCommand().equals(ActionCommands.EXECUTION_SEMANTICS_DONE.name()) ) {
+		if( e.getActionCommand().equals(ActionCommands.INITIAL_MATCHERS_DONE.name()) ) {
 			runCandidateSelection();
 		}
 		
@@ -45,7 +45,7 @@ public class IndependentSequentialLogic extends NonPersistentUFLControlLogic<UFL
 		}
 		
 		if( e.getActionCommand().equals(ActionCommands.PROPAGATION_EVALUATION_DONE.name()) ) {
-			experiment.newIteration();
+			experiment.beginIteration();
 			runCandidateSelection(); // back to top /\
 		}
 	}

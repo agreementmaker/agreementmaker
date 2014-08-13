@@ -273,4 +273,13 @@ public abstract class AbstractSimilarityMatrix implements SimilarityMatrix, Seri
 	public abstract List<Mapping> toMappingArray();
 	public abstract List<Mapping> toMappingArray(FileWriter fw, int round);
 	public abstract List<Double> toSimilarityArray(List<Mapping> mapsArray);
+	
+	@Override
+	public void clearAll() {
+		for (int i = 0; i < getRows(); i++) {
+			for (int j = 0; j < getColumns(); j++) {
+				set(i, j, null);
+			}
+		}
+	}
 }

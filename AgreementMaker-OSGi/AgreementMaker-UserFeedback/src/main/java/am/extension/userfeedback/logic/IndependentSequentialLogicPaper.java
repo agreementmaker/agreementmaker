@@ -45,7 +45,7 @@ public class IndependentSequentialLogicPaper extends NonPersistentUFLControlLogi
 			return;
 		}
 		
-		if( e.getActionCommand() == ActionCommands.EXECUTION_SEMANTICS_DONE.name() ) {
+		if( e.getActionCommand() == ActionCommands.INITIAL_MATCHERS_DONE.name() ) {
 			runInizialization();
 		}
 		
@@ -80,7 +80,7 @@ public class IndependentSequentialLogicPaper extends NonPersistentUFLControlLogi
 		}
 		
 		if( e.getActionCommand() == ActionCommands.PROPAGATION_EVALUATION_DONE.name() ) {
-			experiment.newIteration();
+			experiment.beginIteration();
 			runCandidateSelection();
 		}
 		

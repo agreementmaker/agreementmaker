@@ -161,4 +161,13 @@ public class AggregativeSparseMatrix implements SimilarityMatrix {
 			List<Node> targetList) {
 		m.fillMatrix(sim, sourceList, targetList);
 	}
+	
+	@Override
+	public void clearAll() {
+		for (int i = 0; i < getRows(); i++) {
+			for (int j = 0; j < getColumns(); j++) {
+				set(i, j, null);
+			}
+		}
+	}
 }

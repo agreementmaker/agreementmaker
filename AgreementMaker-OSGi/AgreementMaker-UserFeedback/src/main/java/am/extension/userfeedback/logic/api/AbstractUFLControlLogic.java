@@ -13,13 +13,13 @@ public abstract class AbstractUFLControlLogic<T extends UFLExperiment> implement
 	 * Starts a separate thread for running a piece of the experiment.
 	 */
 	protected void startThread(Runnable runnable) {
-		Thread initialMatchersThread = new Thread(runnable);
-		initialMatchersThread.setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+		Thread t = new Thread(runnable);
+		t.setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
 			@Override
 			public void uncaughtException(Thread t, Throwable e) {
 				e.printStackTrace();
 			}
 		});
-		initialMatchersThread.start();
+		t.start();
 	}
 }

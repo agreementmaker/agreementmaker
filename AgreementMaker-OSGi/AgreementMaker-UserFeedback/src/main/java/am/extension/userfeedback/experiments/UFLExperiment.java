@@ -1,5 +1,6 @@
 package am.extension.userfeedback.experiments;
 
+import java.io.BufferedWriter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,6 +10,8 @@ import org.apache.log4j.Logger;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.ontology.Ontology;
+import am.evaluation.alignment.AlignmentMetrics;
+import am.evaluation.alignment.DeltaFromReference;
 import am.extension.multiUserFeedback.storage.FeedbackAgregation;
 import am.extension.multiUserFeedback.validation.ProbabilisticErrorAutomaticValidation;
 import am.extension.userfeedback.ExecutionSemantics;
@@ -16,7 +19,8 @@ import am.extension.userfeedback.SaveFeedback;
 import am.extension.userfeedback.UFLStatistics;
 import am.extension.userfeedback.UserFeedback;
 import am.extension.userfeedback.UserFeedback.Validation;
-import am.extension.userfeedback.common.ServerFeedbackEvaluationData;
+import am.extension.userfeedback.common.ExperimentData;
+import am.extension.userfeedback.common.ExperimentIteration;
 import am.extension.userfeedback.evaluation.CandidateSelectionEvaluation;
 import am.extension.userfeedback.evaluation.PropagationEvaluation;
 import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
@@ -42,7 +46,11 @@ public abstract class UFLExperiment {
 	public UFLProgressDisplay								gui;
 	public SaveFeedback< UFLExperiment>						saveFeedback;
 	public FeedbackAgregation<UFLExperiment>				feedbackAggregation;
-	public UFLStatistics<UFLExperiment>						uflStatistics; 
+	public UFLStatistics									uflStatistics; 
+	
+	public BufferedWriter logFile;
+	
+	public ExperimentData experimentData = new ExperimentData();
 	
 	/**
 	 * Keep count of how many incorrect validations were generated for a
@@ -80,10 +88,6 @@ public abstract class UFLExperiment {
      */
     public Alignment<Mapping>				incorrectMappings;
     
-    private int iterationNumber = 0;
-
-    public ServerFeedbackEvaluationData feedbackEvaluationData;
-    
     public UFLExperiment(UFLExperimentSetup setup) {
 		this.setup = setup;
 		
@@ -95,9 +99,6 @@ public abstract class UFLExperiment {
 		}
 		
 		sharedObjectStore = new HashMap<>();
-		
-		int numIterations = setup.parameters.getIntParameter(Parameter.NUM_ITERATIONS);
-		feedbackEvaluationData = new ServerFeedbackEvaluationData(numIterations);
 	}
     
 	public Ontology getSourceOntology()             { return sourceOntology; }
@@ -118,17 +119,42 @@ public abstract class UFLExperiment {
 	 * @return true if the experiment is done, false otherwise
 	 */
 	public boolean experimentHasCompleted() {
-		if( userFeedback != null && userFeedback.getUserFeedback() == Validation.END_EXPERIMENT ) { // we're done when the user says so
-			return true;
-		}
-		return false;
+		return !canBeginIteration();
 	}
 	
 	public int getIterationNumber() { 
-		return iterationNumber; 
+		return experimentData.numIterations(); 
 	}
 	
-	public void	newIteration() {
+	/**
+	 * @return true if we should do another iteration, false if the experiment has ended
+	 */
+	public boolean canBeginIteration() {
+		int numIterations = setup.parameters.getIntParameter(Parameter.NUM_ITERATIONS);
+  		return experimentData.numIterations() <= numIterations;
+	}
+	
+	public void beginIteration() {
+		LOG.info("New iteration: " + getIterationNumber());
+	}
+	
+	public void endIteration() {
+		// compute the delta from reference
+		DeltaFromReference deltaFromReference = new DeltaFromReference(getReferenceAlignment());
+		int delta = deltaFromReference.getDelta(getFinalAlignment());
+		
+		// alignment metrics: precision, recall, fmeasure.
+		AlignmentMetrics metrics = new AlignmentMetrics(getReferenceAlignment(), getFinalAlignment());
+		
+		// save all the values
+		ExperimentIteration currentIteration = 
+				new ExperimentIteration(metrics.getPrecision(), metrics.getRecall(), delta);
+		experimentData.addIteration(currentIteration);
+		
+		info(currentIteration.toString());
+		info("");
+		
+		// save user feedback
 		if( userFeedback.getUserFeedback() == Validation.CORRECT ) {
 			if( correctMappings == null ) {
 				correctMappings = new Alignment<Mapping>(getSourceOntology().getID(), getTargetOntology().getID());
@@ -141,15 +167,10 @@ public abstract class UFLExperiment {
 			}
 			if (!incorrectMappings.contains(userFeedback.getCandidateMapping()))
 				incorrectMappings.add( userFeedback.getCandidateMapping() );
-		}		
-		
-		setIterationNumber(getIterationNumber() + 1); 
+		}
 	}
 	
 	public void setGUI(UFLProgressDisplay gui) { this.gui = gui; }
-	public void setIterationNumber(int iterationNumber) {
-		this.iterationNumber = iterationNumber;
-	}
 	
 	/**
 	 * @return A human-readable description of the experiment that is displayed
@@ -183,4 +204,6 @@ public abstract class UFLExperiment {
 		if( incorrectMappings != null ) a.addAll(incorrectMappings);
 		return a;
 	}
+	
+	
 }

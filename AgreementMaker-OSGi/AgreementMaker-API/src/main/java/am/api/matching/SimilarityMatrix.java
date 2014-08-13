@@ -60,6 +60,11 @@ public interface SimilarityMatrix {
 	 * @param value must range from 0 to 1.0
 	 */
 	public void setSimilarity(int sourceIndex, int targetIndex, double value);
+	
+	/**
+	 * Remove all the mappings from this matrix.
+	 */
+	public void clearAll();
 }
 
 /*

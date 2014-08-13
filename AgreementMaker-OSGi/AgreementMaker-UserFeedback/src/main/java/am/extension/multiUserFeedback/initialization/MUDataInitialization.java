@@ -21,6 +21,7 @@ import am.evaluation.alignment.AlignmentMetrics;
 import am.evaluation.alignment.DeltaFromReference;
 import am.extension.multiUserFeedback.experiment.MUExperiment;
 import am.extension.userfeedback.UserFeedback.Validation;
+import am.extension.userfeedback.common.ExperimentIteration;
 import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
 import am.extension.userfeedback.inizialization.FeedbackLoopInizialization;
 
@@ -256,13 +257,9 @@ public class MUDataInitialization extends FeedbackLoopInizialization<MUExperimen
 				"\tFMeasure: " + initialMetrics.getFMeasurePercent());
 		experiment.info("");
 		
-		experiment.feedbackEvaluationData.precisionArray[0] = initialMetrics.getPrecision(); 
-		experiment.feedbackEvaluationData.recallArray[0]    = initialMetrics.getRecall();
-		experiment.feedbackEvaluationData.fmeasureArray[0]  = initialMetrics.getFMeasure();
-		experiment.feedbackEvaluationData.deltaArray[0]     = initialDelta;	
-		
-		// set the iteration number.
-		experiment.setIterationNumber(1);
+		ExperimentIteration iteration = 
+				new ExperimentIteration(initialMetrics.getPrecision(), initialMetrics.getRecall(), initialDelta);
+		experiment.experimentData.addIteration(iteration);
 	}
 	
 	private void falseMappingCount()

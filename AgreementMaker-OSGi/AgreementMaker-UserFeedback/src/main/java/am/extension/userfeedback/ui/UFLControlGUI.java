@@ -54,7 +54,7 @@ public class UFLControlGUI extends AMTabSupportPanel implements ActionListener, 
     	INITSCREEN_btnStart,
     	
     	LOOP_INIZIALIZATION_DONE,
-    	EXECUTION_SEMANTICS_DONE, 
+    	INITIAL_MATCHERS_DONE, 
     	CANDIDATE_SELECTION_DONE, 
     	CS_EVALUATION_DONE, 
     	USER_STORAGE_DONE, 

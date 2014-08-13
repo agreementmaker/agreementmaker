@@ -32,8 +32,7 @@ import com.tomgibara.cluster.gvm.dbl.DblResult;
  * Multi-User UFL Experiment.
  */
 public class MUExperiment extends UFLExperiment {
-	
-	public BufferedWriter logFile;
+
 	private Alignment<Mapping> MLAlignment;
 	private Object[][] trainingSet_classes;
 	private Object[][] trainingSet_property;
