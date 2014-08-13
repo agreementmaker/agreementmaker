@@ -24,7 +24,7 @@ import am.utility.referenceAlignment.AlignmentUtilities;
  * @author cosmin
  *
  */
-public class ReferenceAlignmentAnalysis {
+public class ReferenceAlignmentAnalysis extends AnalysisBase {
 	
 	private static final Logger LOG = LogManager.getLogger(ReferenceAlignmentAnalysis.class);
 	
@@ -36,9 +36,11 @@ public class ReferenceAlignmentAnalysis {
 	 */
 	@Test
 	public void analyzeReferenceAlignments() {
+		// setup a basic log4j configuration that logs to the console
+		setupLogging();
+	    
 		// silence all the other loggers
-		Logger coreLog = LogManager.getLogger(Core.class);
-		coreLog.setLevel(Level.OFF);
+		silenceNoisyLoggers(noisyLoggers);
 		RDFDefaultErrorHandler.silent = true;
 		
 		LOG.info(" Analysis of the mappings in the various reference alignments.");
@@ -53,8 +55,8 @@ public class ReferenceAlignmentAnalysis {
 		LOG.info(" totEq  : Total number of equivalent mappings.");
 		LOG.info("");
 		LOG.info(" Experiment\t\t\t" + 
-					"clsEQ\tclsSC\tclsO\tclsTot\t" +
-					"propEQ\tpropSP\tpropO\tpropTot\ttotEQ");
+					"clsEQ\tclsSC\tclsO\tclsTot\t|\t" +
+					"propEQ\tpropSP\tpropO\tpropTot\t|\ttotEQ");
 		
 		for(MatchingTaskPreset p : MatchingTasks2014.paperTasks) {
 			analyzeReferenceAlignment(p);
@@ -115,11 +117,11 @@ public class ReferenceAlignmentAnalysis {
 		Assert.assertEquals(propertiesTotalMappings, propertiesEquivalentMappings + propertiesSubPropertyMappings + propertiesOtherMappings);
 		
 		String initialTab = S;
-		if( p.getName().length() <= "ConferenceEkawIaste".length() ) initialTab = S + S;
+		if( p.getName().length() <= "ConferenceEkawIasted".length() ) initialTab = S + S;
 
 		LOG.info(p.getName() +
-				initialTab + classesEquivalentMappings + S + classesSubClassMappings + S + classesOtherMappings + S + classesTotalMappings +
-				S + propertiesEquivalentMappings + S + propertiesSubPropertyMappings + S + propertiesOtherMappings + S + propertiesTotalMappings +
+				initialTab + classesEquivalentMappings + S + classesSubClassMappings + S + classesOtherMappings + S + classesTotalMappings + S + "|" +
+				S + propertiesEquivalentMappings + S + propertiesSubPropertyMappings + S + propertiesOtherMappings + S + propertiesTotalMappings + S + "|" +
 				S + (classesEquivalentMappings + propertiesEquivalentMappings));
 	}
 	
