@@ -1,0 +1,131 @@
+PARSER_BEGIN(GigaWordParser)
+
+public class GigaWordParser {
+	public static void main(String args[]) throws ParseException {
+		GigaWordParser parser = new GigaWordParser(System.in);
+		parser.start();
+	}
+}
+
+PARSER_END(GigaWordParser)
+
+SKIP :
+{
+" " | "\t" | "\n" | "\r"
+}
+
+TOKEN :
+{
+  <TYPE_ATTR: "type="> | <ID_ATTR: "id=">
+| <GT: ">"> | <LT: "<"> | <QUOTE: "\"">
+| <GWENG_TAG: "<GWENG>"> | <GWENG_END_TAG: "</GWENG>">
+| <DOC_TAG: "DOC"> | <DOC_END_TAG: "</DOC>">
+| <HEADLINE_TAG: "<HEADLINE>"> | <HEADLINE_END_TAG: "</HEADLINE>">
+| <DATELINE_TAG: "<DATELINE>"> | <DATELINE_END_TAG: "</DATELINE>">
+| <TEXT_TAG: "<TEXT>"> | <TEXT_END_TAG: "</TEXT>">
+| <P_TAG: "<P>"> | <P_END_TAG: "</P>">
+| <corruption_TAG: "<corruption>"> | <corruption_END_TAG: "</corruption>">
+| <CHAR: (["!"]|["="]|["#"-";"]|["?"-"~"])+>
+}
+
+void start() : {String txt;}
+{
+{txt = new String();}
+( (<GWENG_TAG> {System.out.println(doc(txt));} <GWENG_END_TAG>) | {System.out.println(doc(txt));} )
+}
+
+String pcdata(String txt) : {Token n;}
+{
+( n=<CHAR> {txt+=(n.image + " ");} {txt=pcdata(txt);} | {txt+=" ";} )
+{return txt;}
+}
+
+String doc(String txt) : {}
+{
+{txt=doc_tag_begin(txt);}
+{txt+=doc_content();}
+<DOC_END_TAG>
+( <EOF> | {txt+=doc(txt);} )
+{return txt;}
+}
+
+String doc_content() : {String hdl="", dtl="", txt="";}
+{ hdl=headline() dtl=dateline() txt=text_section() {return hdl + " " + dtl + " " + txt;} }
+
+String doc_tag_begin(String txt) : {}
+{
+<LT>
+<DOC_TAG>
+{txt=doc_attributes();}
+<GT>
+{return txt;} }
+
+String doc_attributes() : {String id="", type="";}
+{
+   ( {id+=id_attribute();} {type+=type_attribute();} {return id + " " + type;} ) |
+   ( {type+=type_attribute();} {id+=id_attribute();} {return id + " " + type;} )
+}
+
+String id_attribute() : {String txt; Token n;}
+{
+n=<ID_ATTR>
+{txt=(n.image);}
+{txt+=doc_attributes_value();}
+{return txt;} }
+
+String type_attribute() : {String txt; Token n;}
+{
+n=<TYPE_ATTR>
+{txt=(n.image);}
+{txt+=doc_attributes_value();}
+{return txt;}
+}
+
+String doc_attributes_value() : {String txt = "";}
+{
+<QUOTE>
+{txt+=pcdata(txt);}
+<QUOTE>
+{return txt;}
+}
+
+String headline() : {String txt = ""; Token n;}
+{ ((n=<HEADLINE_TAG> {txt=(n.image + ": " + pcdata(txt));} <HEADLINE_END_TAG> headline()) | {})
+{return txt;}
+}
+
+String dateline() : {String txt = ""; Token n;}
+{ ((n=<DATELINE_TAG> {txt=(n.image + ": " + pcdata(txt));} <DATELINE_END_TAG> dateline()) | {})
+{return txt;}
+}
+
+String text_section() : {String txt = "";}
+{ ((<TEXT_TAG> txt=text_content() <TEXT_END_TAG> {txt+=text_section();} ) | {})
+{return txt;}
+}
+
+String text_content() : {String txt = "";}
+{
+(txt=p_section() | txt=corrupt_section() | txt=pcdata(txt))
+{return txt;}
+}
+
+String p_section() : {String cont = "", sect = "";}
+{
+<P_TAG>
+cont=p_content()
+<P_END_TAG>
+(sect=p_section() | {sect = " ";})
+{return cont + sect;}
+}
+
+String p_content() : {String txt = "";}
+{ (txt=corrupt_section() | txt=pcdata(txt))
+{return txt;}
+}
+
+String corrupt_section() : {Token n;}
+{ n=<corruption_TAG> (<corruption_END_TAG> | {})
+{return n.image;}
+}
+

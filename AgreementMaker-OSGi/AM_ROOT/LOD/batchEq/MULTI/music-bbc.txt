@@ -1,0 +1,69 @@
+AGREEMENT DOCUMENT
+
+Date: Mon Nov 14 11:07:02 CST 2011
+Source Ontology: http://purl.org/ontology/mo/
+Target Ontology: http://purl.org/ontology/po/
+
+Class Alignments: 60
+Source Concept	 ->	Target Concept	Similarity	Relation	Provenance
+
+Person	--->	Person	1.0	 = 
+Organization	--->	Organization	1.0	 = 
+Document	--->	Document	1.0	 = 
+Agent	--->	Agent	1.0	 = 
+TimeZone	--->	TimeZone	1.0	 = 
+TemporalUnit	--->	TemporalUnit	1.0	 = 
+TemporalThing	--->	TemporalThing	1.0	 = 
+TemporalEntity	--->	TemporalEntity	1.0	 = 
+ProperIntervalThing	--->	ProperIntervalThing	1.0	 = 
+ProperInterval	--->	ProperInterval	1.0	 = 
+IntervalThing	--->	IntervalThing	1.0	 = 
+IntervalEvent	--->	IntervalEvent	1.0	 = 
+Interval	--->	Interval	1.0	 = 
+InstantThingPair	--->	InstantThingPair	1.0	 = 
+InstantThing	--->	InstantThing	1.0	 = 
+InstantEvent	--->	InstantEvent	1.0	 = 
+Instant	--->	Instant	1.0	 = 
+Event	--->	Event	1.0	 = 
+DurationDescription	--->	DurationDescription	1.0	 = 
+CalendarClockInterval	--->	CalendarClockInterval	1.0	 = 
+CalendarClockDescription	--->	CalendarClockDescription	1.0	 = 
+Year	--->	Year	1.0	 = 
+TemporalUnit	--->	TemporalUnit	1.0	 = 
+TemporalEntity	--->	TemporalEntity	1.0	 = 
+ProperInterval	--->	ProperInterval	1.0	 = 
+January	--->	January	1.0	 = 
+Interval	--->	Interval	1.0	 = 
+Instant	--->	Instant	1.0	 = 
+DurationDescription	--->	DurationDescription	1.0	 = 
+DayOfWeek	--->	DayOfWeek	1.0	 = 
+DateTimeInterval	--->	DateTimeInterval	1.0	 = 
+DateTimeDescription	--->	DateTimeDescription	1.0	 = 
+SpatialThing	--->	SpatialThing	1.0	 = 
+Person	--->	Person	1.0	 = 
+Track	--->	Track	1.0	 = 
+UniformWindowingMap	--->	UniformWindowingMap	1.0	 = 
+UniformSamplingWindowingMap	--->	UniformSamplingWindowingMap	1.0	 = 
+UniformSamplingMap	--->	UniformSamplingMap	1.0	 = 
+UTInterval	--->	UTInterval	1.0	 = 
+UTInstant	--->	UTInstant	1.0	 = 
+TimeLineMap	--->	TimeLineMap	1.0	 = 
+TimeLine	--->	TimeLine	1.0	 = 
+ShiftMap	--->	ShiftMap	1.0	 = 
+RelativeTimeLine	--->	RelativeTimeLine	1.0	 = 
+RelativeInterval	--->	RelativeInterval	1.0	 = 
+RelativeInstant	--->	RelativeInstant	1.0	 = 
+PhysicalTimeLine	--->	PhysicalTimeLine	1.0	 = 
+OriginMap	--->	OriginMap	1.0	 = 
+Interval	--->	Interval	1.0	 = 
+Instant	--->	Instant	1.0	 = 
+DiscreteTimeLine	--->	DiscreteTimeLine	1.0	 = 
+DiscreteInterval	--->	DiscreteInterval	1.0	 = 
+DiscreteInstant	--->	DiscreteInstant	1.0	 = 
+ContinuousTimeLine	--->	ContinuousTimeLine	1.0	 = 
+AbstractTimeLine	--->	AbstractTimeLine	1.0	 = 
+AbstractInterval	--->	AbstractInterval	1.0	 = 
+AbstractInstant	--->	AbstractInstant	1.0	 = 
+Product	--->	Product	1.0	 = 
+Factor	--->	Factor	1.0	 = 
+Event	--->	Event	1.0	 = 
