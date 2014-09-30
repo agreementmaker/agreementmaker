@@ -322,6 +322,9 @@ public class Core {
 	@Deprecated
 	public List<AbstractMatcher> getMatcherInstances() { return getMatchingAlgorithms(); }
 	
+	/**
+	 * @deprecated You probably want to use {@link #getMatchingTasks()}.
+	 */
 	@Deprecated
 	public List<MatcherResult> getMatcherResults(){ return matcherResults;}
 	

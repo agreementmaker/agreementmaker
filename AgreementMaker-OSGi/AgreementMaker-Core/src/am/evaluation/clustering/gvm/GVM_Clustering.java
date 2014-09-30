@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.MatcherResult;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.evaluation.clustering.Cluster;
 import am.evaluation.clustering.ClusteringMethod;
@@ -32,7 +32,7 @@ public class GVM_Clustering extends ClusteringMethod {
 	int numClusters;
 	private SimilarityMatrix[] matrices;
 
-	public GVM_Clustering(List<AbstractMatcher> matchers, int numClusters) {
+	public GVM_Clustering(List<MatcherResult> matchers, int numClusters) {
 		super(matchers);
 		this.numClusters = numClusters;
 	}

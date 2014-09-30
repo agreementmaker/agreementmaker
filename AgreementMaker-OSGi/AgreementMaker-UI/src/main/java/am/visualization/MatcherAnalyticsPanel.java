@@ -25,6 +25,8 @@ import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherChangeListener;
+import am.app.mappingEngine.MatcherResult;
+import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.MatchingTaskChangeEvent;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
@@ -68,7 +70,7 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 	
 	private SimilarityMatrix disagreementMatrix = null;
 	private SimilarityMatrix feedbackMatrix = null;
-	private AbstractMatcher feedbackMatcher = null;
+	private MatchingTask feedbackMatcher = null;
 	private boolean[][] filteredCells = null;
 	
 	private JComboBox<String> cmbTopK;
@@ -113,20 +115,25 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 	/**
 	 * If the panel is started after matchers have run, add the matchers that currently exist.
 	 */
-	private void initializeMatchers() {
-		
-		List<AbstractMatcher> matcherList = Core.getInstance().getMatchingAlgorithms();
-		for( AbstractMatcher a : matcherList ) {
+	
+	private void initializeMatchers() {		
+		List<MatchingTask> taskList = Core.getInstance().getMatchingTasks();
+
+		for( MatchingTask a : taskList ) {
 			switch( type ) {
 			case aligningClasses:
-				if( a.getClassesMatrix() != null ) {
-					addPlot(a, a.getClassesMatrix());
+				if( a.matcherResult.getClassesMatrix() != null ) {
+					System.out.println("Amruta matcher selected: "+a.getShortLabel());
+					System.out.println("Amruta: class matrix is not null");
+					addPlot(a, a.matcherResult.getClassesMatrix());
+				}else{
+					System.out.println("Amruta: class matrix is null");
 				}
 				break;
 				
 			case aligningProperties:
-				if( a.getPropertiesMatrix() != null ) {
-					addPlot(a, a.getPropertiesMatrix());
+				if( a.matchingAlgorithm.getPropertiesMatrix() != null ) {
+					addPlot(a, a.matchingAlgorithm.getPropertiesMatrix());
 				}
 				break;
 			}
@@ -230,20 +237,21 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 	@Override
 	public void matcherChanged(final MatchingTaskChangeEvent e) {
 	
+		System.out.println("Amruta: Matcher Changed");
+		MatchingTask task = e.getTask();
 		switch( e.getEvent() ) {
 		case MATCHER_ADDED:
 			// when a matcher is added to the main
-			AbstractMatcher a = e.getTask().matchingAlgorithm;
 			switch( type ) {
 			case aligningClasses:
-				if( a.getClassesMatrix() != null ) {
-					addPlot(a, a.getClassesMatrix());
+				if( task.matchingAlgorithm.getClassesMatrix() != null ) {
+					addPlot(task, task.matchingAlgorithm.getClassesMatrix());
 				}
 				break;
 				
 			case aligningProperties:
-				if( a.getPropertiesMatrix() != null ) {
-					addPlot(a, a.getPropertiesMatrix());
+				if( task.matchingAlgorithm.getPropertiesMatrix() != null ) {
+					addPlot(task, task.matchingAlgorithm.getPropertiesMatrix());
 				}
 				break;
 			}
@@ -265,12 +273,16 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 			
 	}
 
-	private MatrixPlotPanel addPlot(AbstractMatcher a, SimilarityMatrix matrix) {
+	private MatrixPlotPanel addPlot(MatchingTask a, SimilarityMatrix matrix) {
 		
 		
 		MatrixPlotPanel newPlot = new MatrixPlotPanel(a, matrix, this);
 		newPlot.getPlot().draw(false);
 		
+		if(newPlot == null)
+			System.out.println("Amruta: newPlot is null");
+		else
+			System.out.println("Amruta: new Plot is not null");
 		addMatcherAnalyticsEventListener(newPlot);
 		
 		pnlPlots.add(newPlot);
@@ -312,9 +324,9 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 		
 		if( e.type == EventType.SET_FEEDBACK ) {
 			// the feedback matcher has been set
-			feedbackMatcher = ((AbstractMatcher)e.payload);
-			if( type == alignType.aligningClasses ) feedbackMatrix = ((AbstractMatcher)e.payload).getClassesMatrix();
-			if( type == alignType.aligningProperties ) feedbackMatrix = ((AbstractMatcher)e.payload).getPropertiesMatrix();
+			feedbackMatcher = ((MatchingTask)e.payload);
+			if( type == alignType.aligningClasses ) feedbackMatrix = ((MatchingTask)e.payload).matcherResult.getClassesMatrix();
+			if( type == alignType.aligningProperties ) feedbackMatrix = ((MatchingTask)e.payload).matcherResult.getPropertiesMatrix();
 			
 			if( feedbackMatrix == null ) {
 				System.err.println("Feedback matrix is null, this should not happen.");
@@ -390,8 +402,8 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 					source = Core.getInstance().getSourceOntology();
 					target = Core.getInstance().getTargetOntology();
 				} else {
-					source = plotPanel.getMatcher().getSourceOntology();
-					target = plotPanel.getMatcher().getTargetOntology();
+					source = plotPanel.getMatcher().matchingAlgorithm.getSourceOntology();
+					target = plotPanel.getMatcher().matchingAlgorithm.getTargetOntology();
 				}
 				if( source != null && target != null ) {
 					if( type == alignType.aligningClasses ) {
@@ -418,12 +430,12 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 
 		// make a list of the available matchers
 		
-		ArrayList<AbstractMatcher> matcherList = new ArrayList<AbstractMatcher>();
+		ArrayList<MatcherResult> resultList = new ArrayList<MatcherResult>();
 		for( MatcherAnalyticsEventListener l : eventListeners ) {
-			if( l.getMatcher() != null ) matcherList.add(l.getMatcher());
+			if( l.getMatcher() != null ) resultList.add(l.getMatcher().matcherResult);
 		}
 		
-		ClusteringMethod method = ClusterFactory.createClusteringMethod(t, matcherList);
+		ClusteringMethod method = ClusterFactory.createClusteringMethod(t, resultList);
 		
 		if( method == null ) return; 
 		Cluster<Mapping> c = method.getCluster(currentSelectedMapping.x, currentSelectedMapping.y, type);
@@ -487,6 +499,11 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 			
 			disagreementMatrix = disMethod.getDisagreementMatrix( type );
 			
+			if(disagreementMatrix == null)
+				System.out.println("disagreementMatrix is null");
+			else
+				System.out.println("disagreementMatrix is  not null");
+			
 			Gradient g = new Gradient(Color.BLACK, Color.WHITE);
 			g.setMax( disagreementMatrix.getMaxValue() );
 			
@@ -512,8 +529,10 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 			
 			int k = 10;
 
+			
 			if( filteredCells != null ) { topK = disagreementMatrix.getTopK(k, filteredCells); } 
 			else { topK = disagreementMatrix.getTopK(k); }
+			
 			
 			topKClusters = new ArrayList<Cluster<Mapping>>(k);
 			

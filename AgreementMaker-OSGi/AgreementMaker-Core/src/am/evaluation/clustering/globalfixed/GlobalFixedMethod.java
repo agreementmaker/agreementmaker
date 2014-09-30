@@ -2,9 +2,9 @@ package am.evaluation.clustering.globalfixed;
 
 import java.util.List;
 
-import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.MatcherResult;
 import am.evaluation.clustering.Cluster;
 import am.evaluation.clustering.ClusteringMethod;
 import am.evaluation.clustering.ClusteringParameters;
@@ -12,7 +12,7 @@ import am.evaluation.clustering.ClusteringParametersPanel;
 
 public class GlobalFixedMethod extends ClusteringMethod {
 
-	public GlobalFixedMethod(List<AbstractMatcher> availableMatchers) {
+	public GlobalFixedMethod(List<MatcherResult> availableMatchers) {
 		super(availableMatchers);
 		// TODO Auto-generated constructor stub
 	}

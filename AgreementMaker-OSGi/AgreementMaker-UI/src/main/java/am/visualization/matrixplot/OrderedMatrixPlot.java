@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
@@ -29,7 +29,7 @@ public class OrderedMatrixPlot extends MatrixPlot {
 	ArrayList<Integer> colLines;
 	ArrayList<Integer> rowLines;	
 	
-	public OrderedMatrixPlot(AbstractMatcher matcher, SimilarityMatrix mtx, MatrixPlotPanel mpnl) {
+	public OrderedMatrixPlot(MatchingTask matcher, SimilarityMatrix mtx, MatrixPlotPanel mpnl) {
 		super(matcher, mtx, mpnl);
 		autoDrawCrosshairs = false;
 		

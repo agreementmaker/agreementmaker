@@ -3,17 +3,15 @@ package am.evaluation.clustering;
 import java.util.ArrayList;
 import java.util.List;
 
-import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.MatcherResult;
 
 public abstract class ClusteringParameters {
 	
-	private List<AbstractMatcher> matchersToConsider;
+	private List<MatcherResult> matchersToConsider = new ArrayList<MatcherResult>();
 	
-	public ClusteringParameters() {
-		matchersToConsider = new ArrayList<AbstractMatcher>();
-	}
+	public ClusteringParameters() {}
 	
-	public void addMatcher(AbstractMatcher abstractMatcher) { matchersToConsider.add(abstractMatcher); }
-	public List<AbstractMatcher> getMatchers() { return matchersToConsider; }
-	public void setMatchers( List<AbstractMatcher> m ) { matchersToConsider = m; }
+	public void addMatcher(MatcherResult abstractMatcher) { matchersToConsider.add(abstractMatcher); }
+	public List<MatcherResult> getMatchers() { return matchersToConsider; }
+	public void setMatchers( List<MatcherResult> m ) { matchersToConsider = m; }
 }

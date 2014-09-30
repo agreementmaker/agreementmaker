@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
 
-import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.MatcherResult;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.evaluation.clustering.Cluster;
 import am.evaluation.clustering.ClusteringMethod;
@@ -24,7 +24,7 @@ public class LocalByThresholdMethod extends ClusteringMethod {
 
 	protected LocalByThresholdParameters 		params;
 	
-	public LocalByThresholdMethod(List<AbstractMatcher> availableMatchers) {
+	public LocalByThresholdMethod(List<MatcherResult> availableMatchers) {
 		super(availableMatchers);
 		
 	}
@@ -42,8 +42,8 @@ public class LocalByThresholdMethod extends ClusteringMethod {
 		// build all the sets
 		ArrayList<TreeSet<Point>> setList = new ArrayList<TreeSet<Point>>();
 		
-		List<AbstractMatcher> matcherList = params.getMatchers();
-		for( AbstractMatcher m : matcherList ) {
+		List<MatcherResult> matcherList = params.getMatchers();
+		for( MatcherResult m : matcherList ) {
 			setList.add( buildSet( m, t, row, col ) );
 		}
 		
@@ -85,7 +85,7 @@ public class LocalByThresholdMethod extends ClusteringMethod {
 	
 
 
-	private TreeSet<Point> buildSet(AbstractMatcher m, alignType t,
+	private TreeSet<Point> buildSet(MatcherResult m, alignType t,
 			int row, int col) {
 		
 		TreeSet<Point> currentSet = new TreeSet<Point>( new PointComparator() );
