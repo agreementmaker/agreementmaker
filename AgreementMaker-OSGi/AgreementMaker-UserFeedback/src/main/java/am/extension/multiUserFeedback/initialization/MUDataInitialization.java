@@ -137,6 +137,7 @@ public class MUDataInitialization extends FeedbackLoopInizialization<MUExperimen
 		d.append(" REVALIDATION_RATE: " + exp.setup.parameters.getParameter(Parameter.REVALIDATION_RATE) + "\n");
 		d.append("         STATIC_CS: " + exp.setup.parameters.getBooleanParameter(Parameter.STATIC_CANDIDATE_SELECTION) + "\n");
 		d.append("PROPAGATION_METHOD: " + exp.setup.parameters.getParameter(Parameter.PROPAGATION_METHOD) + "\n");
+		d.append("          LOG FILE: " + exp.setup.parameters.getParameter(Parameter.LOGFILE) + "\n");
 		d.append("======================================================================================\n");
 		
 		String sourceFile = Core.getInstance().getSourceOntology().getFilename();
