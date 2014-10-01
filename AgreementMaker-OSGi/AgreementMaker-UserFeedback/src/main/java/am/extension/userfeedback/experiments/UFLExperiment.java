@@ -14,7 +14,7 @@ import am.evaluation.alignment.AlignmentMetrics;
 import am.evaluation.alignment.DeltaFromReference;
 import am.extension.multiUserFeedback.storage.FeedbackAgregation;
 import am.extension.multiUserFeedback.validation.ProbabilisticErrorAutomaticValidation;
-import am.extension.userfeedback.ExecutionSemantics;
+import am.extension.userfeedback.InitialMatchers;
 import am.extension.userfeedback.SaveFeedback;
 import am.extension.userfeedback.UFLStatistics;
 import am.extension.userfeedback.UserFeedback;
@@ -36,7 +36,7 @@ public abstract class UFLExperiment {
 	
 	public final UFLExperimentSetup							setup;
 	
-	public ExecutionSemantics 								initialMatcher;
+	public InitialMatchers 								initialMatcher;
 	public FeedbackLoopInizialization<UFLExperiment>        dataInizialization;
 	public CandidateSelection<UFLExperiment> 				candidateSelection;
 	public CandidateSelectionEvaluation 					csEvaluation;
@@ -135,7 +135,7 @@ public abstract class UFLExperiment {
 	}
 	
 	public void beginIteration() {
-		LOG.info("New iteration: " + getIterationNumber());
+		LOG.trace("Iteration: " + getIterationNumber());
 	}
 	
 	public void endIteration() {

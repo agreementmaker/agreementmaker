@@ -15,9 +15,8 @@ import am.app.mappingEngine.MatchingProgressListener;
 import am.app.mappingEngine.utility.OAEI_Track;
 import am.app.ontology.Ontology;
 import am.app.ontology.profiling.manual.ManualOntologyProfiler;
-import am.extension.userfeedback.ExecutionSemantics;
+import am.extension.userfeedback.InitialMatchers;
 import am.extension.userfeedback.experiments.UFLExperiment;
-import am.extension.userfeedback.utility.UFLutility;
 import am.matcher.Combination.CombinationMatcher;
 import am.matcher.Combination.CombinationParameters;
 import am.matcher.LexicalSynonymMatcher.LexicalSynonymMatcher;
@@ -39,7 +38,7 @@ import am.ui.UIUtility;
  * @author Cosmin Stroe - Jan 29th, 2011.
  *
  */
-public class OrthoCombinationMatchers extends ExecutionSemantics {
+public class OrthoCombinationMatchers extends InitialMatchers {
 
 	private static final Logger LOG = Logger.getLogger(OrthoCombinationMatchers.class);
 	
@@ -79,9 +78,7 @@ public class OrthoCombinationMatchers extends ExecutionSemantics {
 	//private IterativeInstanceStructuralMatcher m_iism;
 	
 	private MatchingProgressListener progressDisplay;
-	
-	private UFLExperiment exp;
-	
+		
 	@Override
 	public void run(UFLExperiment experiment) {
 				
@@ -274,82 +271,5 @@ public class OrthoCombinationMatchers extends ExecutionSemantics {
 	
 	@Override public AbstractMatcher getFinalMatcher() {
 		return m_lwc;
-	}
-	
-	@Override
-	protected void done() {
-		
-		//Logger log = Logger.getLogger(this.getClass().toString());
-		
-		UFLExperiment log = exp;
-		
-		
-		
-		// output the reference alignment
-		Alignment<Mapping> referenceAlignment = exp.getReferenceAlignment();
-		
-		//FIXME: We should not be looking at the reference alignment here.
-		UFLutility.logReferenceAlignment(referenceAlignment, exp);
-		
-		// save to log file the alignment we start with.
-		
-		Alignment<Mapping> finalAlignment = getFinalMatcher().getAlignment();
-		Alignment<Mapping> classAlignment = getFinalMatcher().getClassAlignmentSet();
-		Alignment<Mapping> propertiesAlignment = getFinalMatcher().getPropertyAlignmentSet();
-		
-		log.info("Initial matchers have finished running.");
-		log.info("Alignment contains " + finalAlignment.size() + " mappings. " + 
-				  classAlignment.size() + " class mappings, " + propertiesAlignment.size() + " property mappings.");
-		
-		log.info("Class mappings:");
-		for( int i = 0; i < classAlignment.size(); i++ ) {
-			Mapping currentMapping = classAlignment.get(i);
-			boolean mappingCorrect = false;
-			
-			if( referenceAlignment != null && 
-					referenceAlignment.contains(currentMapping.getEntity1(),currentMapping.getEntity2(), currentMapping.getRelation()) ) {
-				mappingCorrect = true;
-			}
-			
-			String mappingAnnotation = "X";
-			if( mappingCorrect || referenceAlignment == null ) mappingAnnotation = " ";
-			
-			log.info( i + ". " + mappingAnnotation + " " + currentMapping.toString() );
-		}
-		
-		log.info("");
-		
-		log.info("Property mappings:");
-		for( int i = 0; i < propertiesAlignment.size(); i++ ) {
-			Mapping currentMapping = propertiesAlignment.get(i);
-			boolean mappingCorrect = false;
-			
-			if( referenceAlignment != null && 
-					referenceAlignment.contains(currentMapping.getEntity1(), currentMapping.getEntity2(), currentMapping.getRelation()) ) {
-				mappingCorrect = true;
-			}
-			
-			String mappingAnnotation = "X";
-			if( mappingCorrect || referenceAlignment == null ) mappingAnnotation = " ";
-			
-			log.info( i + ". " + mappingAnnotation + " " + currentMapping.toString() );
-		}
-		
-		log.info("");
-		
-		if( referenceAlignment != null ) {
-			log.info("Missed mappings:");
-			int missedMappingNumber = 0;
-			for( Mapping referenceMapping : referenceAlignment ) {
-				if( !finalAlignment.contains(referenceMapping.getEntity1(), referenceMapping.getEntity2(), referenceMapping.getRelation()) ) {
-					log.info( missedMappingNumber + ". " + referenceMapping );
-					missedMappingNumber++;
-				}
-			}
-			
-			log.info("");
-		}
-		
-		super.done();
 	}
 }

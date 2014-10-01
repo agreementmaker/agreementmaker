@@ -24,7 +24,7 @@ public class PersistentSequentialControlLogic extends PersistentControlLogic<MUE
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		
-		LOG.info(e.getActionCommand());
+		LOG.trace(e.getActionCommand());
 		
 		if (e.getActionCommand().equals(ActionCommands.INITIAL_MATCHERS_DONE.name())) {
 			runInizialization();

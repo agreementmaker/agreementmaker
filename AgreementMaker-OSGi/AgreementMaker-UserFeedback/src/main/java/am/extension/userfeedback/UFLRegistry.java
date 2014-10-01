@@ -36,10 +36,10 @@ public class UFLRegistry {
 		OrthoCombination ( am.extension.userfeedback.clustering.disagreement.OrthoCombinationMatchers.class );
 			
 		/* *********************** DO NOT EDIT BELOW THIS LINE **************************** */
-		Class<? extends ExecutionSemantics> clazz;
+		Class<? extends InitialMatchers> clazz;
 		
-		InitialMatcherRegistry( Class<? extends ExecutionSemantics> cs ) { clazz = cs; }
-		public Class<? extends ExecutionSemantics> getEntryClass() { return clazz; }
+		InitialMatcherRegistry( Class<? extends InitialMatchers> cs ) { clazz = cs; }
+		public Class<? extends InitialMatchers> getEntryClass() { return clazz; }
 	}
 	
 	public enum LoopInizializationRegistry {

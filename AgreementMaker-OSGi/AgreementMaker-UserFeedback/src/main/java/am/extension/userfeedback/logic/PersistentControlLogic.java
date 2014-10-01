@@ -1,7 +1,7 @@
 package am.extension.userfeedback.logic;
 
 import am.extension.multiUserFeedback.storage.FeedbackAgregation;
-import am.extension.userfeedback.ExecutionSemantics;
+import am.extension.userfeedback.InitialMatchers;
 import am.extension.userfeedback.SaveFeedback;
 import am.extension.userfeedback.UFLRegistry.UFLStatisticRegistry;
 import am.extension.userfeedback.UFLStatistics;
@@ -21,7 +21,7 @@ public abstract class PersistentControlLogic<T extends UFLExperiment> extends Ab
 		try {
 			if( experiment.initialMatcher == null ) {
 	
-				Class<? extends ExecutionSemantics> c = experiment.setup.im.getEntryClass();
+				Class<? extends InitialMatchers> c = experiment.setup.im.getEntryClass();
 				experiment.info("Instantiating InitialMatchers: " + c.getName());
 				experiment.initialMatcher = c.newInstance();
 				experiment.initialMatcher.addActionListener(this);
@@ -134,7 +134,7 @@ public abstract class PersistentControlLogic<T extends UFLExperiment> extends Ab
 		try {
 			if( experiment.feedbackPropagation == null ) {
 				Class<? extends FeedbackPropagation> c = experiment.setup.fp.getEntryClass();
-				experiment.info("Instantiating FeedbackAgregation: " + c.getName());
+				experiment.info("Instantiating FeedbackPropagation: " + c.getName());
 				experiment.feedbackPropagation = c.newInstance();
 				experiment.feedbackPropagation.addActionListener(this);
 			}
@@ -154,7 +154,7 @@ public abstract class PersistentControlLogic<T extends UFLExperiment> extends Ab
 			if( experiment.propagationEvaluation == null ) {
 				// evaluate the propagation!
 				Class<? extends PropagationEvaluation> c = experiment.setup.pe.getEntryClass();
-				experiment.info("Instantiating FeedbackAgregation: " + c.getName());
+				experiment.info("Instantiating PropagationEvaluation: " + c.getName());
 				experiment.propagationEvaluation = c.newInstance();
 				experiment.propagationEvaluation.addActionListener(this);
 			}
@@ -173,7 +173,7 @@ public abstract class PersistentControlLogic<T extends UFLExperiment> extends Ab
 		try {
 			if( experiment.saveFeedback == null ) {
 				Class<? extends SaveFeedback> c = experiment.setup.sf.getEntryClass();
-				experiment.info("Instantiating FeedbackAgregation: " + c.getName());
+				experiment.info("Instantiating SaveFeedback: " + c.getName());
 				experiment.saveFeedback = c.newInstance();
 				experiment.saveFeedback.addActionListener(this);
 			}
@@ -191,7 +191,7 @@ public abstract class PersistentControlLogic<T extends UFLExperiment> extends Ab
 		try {
 			if( experiment.uflStatistics == null ) {
 				Class<? extends UFLStatistics> c = UFLStatisticRegistry.ServerStatistics.getEntryClass();
-				experiment.info("Instantiating FeedbackAgregation: " + c.getName());
+				experiment.info("Instantiating ServerStatistics: " + c.getName());
 				experiment.uflStatistics = c.newInstance();
 				experiment.uflStatistics.addActionListener(this);
 			}
