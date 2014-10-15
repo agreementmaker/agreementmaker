@@ -7,10 +7,10 @@ package am.extension.multiUserFeedback.propagation;
 import java.io.IOException;
 import java.util.List;
 
-import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.qualityEvaluation.metrics.InverseOf;
 import am.app.mappingEngine.qualityEvaluation.metrics.ufl.ConsensusQuality;
 import am.app.mappingEngine.qualityEvaluation.metrics.ufl.PropagationImpactMetric;
@@ -33,7 +33,7 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 	final double dist_perc=3.0;
 	
 	private MUExperiment experiment;
-	private List<AbstractMatcher> inputMatchers;
+	private List<MatchingTask> inputMatchers;
 	
 	public static final String PROPAGATION_NONE 		= "none";
 	public static final String PROPAGATION_EUCLIDEAN 	= "euzero";
@@ -42,17 +42,17 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 	public static final String PROPAGATION_QUALITY 		= "quality";
 	public static final String PROPAGATION_CRC 	= "crc";
 	
-	private Object[] getSignatureVector(Mapping mp)
+	private double[] getSignatureVector(Mapping mp)
 	{
 		int size=inputMatchers.size();
 		Node sourceNode=mp.getEntity1();
 		Node targetNode=mp.getEntity2();
-		AbstractMatcher a;
-		Object[] ssv=new Object[size];
+		MatchingTask a;
+		double[] ssv=new double[size];
 		for (int i=0;i<size;i++)
 		{
 			a = inputMatchers.get(i);
-			ssv[i]=a.getAlignment().getSimilarity(sourceNode, targetNode);
+			ssv[i]=a.selectionResult.getAlignment().getSimilarity(sourceNode, targetNode);
 			
 		}
 		return ssv;
@@ -60,12 +60,12 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 	
 	
 	//check if the signature vector is valid. A valid signature vector must have at least one non zero element.
-	private boolean validSsv(Object[] ssv)
+	private boolean validSsv(double[] ssv)
 	{
-		Object obj=0.0;
+		double obj=0.0;
 		for(int i=0;i<ssv.length;i++)
 		{
-			if (!ssv[i].equals(obj))
+			if (!(ssv[i] == obj))
 				return true;
 		}
 		return false;
@@ -157,12 +157,12 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 	
 
 	
-	private SimilarityMatrix euclideanDistance(SparseMatrix forbidden_pos, SimilarityMatrix sm,Object[][] trainingSet, alignType type)
+	private SimilarityMatrix euclideanDistance(SparseMatrix forbidden_pos, SimilarityMatrix sm, double[][] trainingSet, alignType type)
 	{
 		if (trainingSet==null)
 			return sm;
 		Mapping mp;
-		Object[] ssv;
+		double[] ssv;
 		double threshold=(trainingSet.length-1)*0.0/100;
 		double distance=0;
 		double min=Double.MAX_VALUE;
@@ -206,7 +206,7 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 		return sm;
 	}
 	
-	private SimilarityMatrix wekaRegression(SparseMatrix sparse,SimilarityMatrix sm,Object[][] trainingSet)
+	private SimilarityMatrix wekaRegression(SparseMatrix sparse,SimilarityMatrix sm, double[][] trainingSet)
 	{
 		if (trainingSet==null)
 			return sm;
@@ -214,7 +214,7 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 		wk.setTrainingSet(trainingSet);
 		
 		Mapping mp;
-		Object[] ssv;
+		double[] ssv;
 		double sim;
 
 		for(int k=0;k<sm.getRows();k++)
@@ -245,12 +245,12 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 	
 
 	
-	private SimilarityMatrix logDistance(SparseMatrix forbidden_pos, SimilarityMatrix sm,Object[][] trainingSet, alignType type)
+	private SimilarityMatrix logDistance(SparseMatrix forbidden_pos, SimilarityMatrix sm, double[][] trainingSet, alignType type)
 	{
 		if (trainingSet==null)
 			return sm;
 		Mapping mp;
-		Object[] ssv;
+		double[] ssv;
 		double threshold=(trainingSet.length-1)*dist_perc/100;
 		double sim=0;
 		double distance=0;
@@ -264,7 +264,7 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 				if(forbidden_pos.getSimilarity(k, h)==1)
 					continue;
 				mp = sm.get(k, h);
-				ssv=getSignatureVector(mp);
+				ssv = getSignatureVector(mp);
 				if (!validSsv(ssv))
 					continue;
 				minDistance=Double.MAX_VALUE;
@@ -316,12 +316,12 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 	
 	
 
-	private SimilarityMatrix qualityPropagation(SparseMatrix forbidden_pos, SimilarityMatrix sm,Object[][] trainingSet, alignType type)
+	private SimilarityMatrix qualityPropagation(SparseMatrix forbidden_pos, SimilarityMatrix sm, double[][] trainingSet, alignType type)
 	{
 		if (trainingSet==null)
 			return sm;
 		Mapping mp;
-		Object[] ssv;
+		double[] ssv;
 		double threshold=(trainingSet[0].length-1)*dist_perc/100;
 		double distance=0;
 		double min=Double.MAX_VALUE;
@@ -360,7 +360,7 @@ public class ServerFeedbackPropagation extends FeedbackPropagation<MUExperiment>
 				{
 					ts_quality=getTSquality(experiment.feedbackAggregation.getCandidateMapping(),type);
 					mp_quality=getMquality(sm.get(k, h), type);
-					double label=trainingSet[index][trainingSet[0].length-1].equals(1.0)?1.0:-1.0;
+					double label=trainingSet[index][trainingSet[0].length-1] == 1.0 ? 1.0 : -1.0;
 					
 					
 					double delta=ts_quality*(1-(mp_quality)/2)*label;

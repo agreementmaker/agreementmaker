@@ -7,7 +7,7 @@ import java.util.TreeSet;
 
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.MatcherResult;
+import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.evaluation.clustering.Cluster;
 import am.evaluation.clustering.ClusteringMethod;
@@ -24,7 +24,7 @@ public class LocalByThresholdMethod extends ClusteringMethod {
 
 	protected LocalByThresholdParameters 		params;
 	
-	public LocalByThresholdMethod(List<MatcherResult> availableMatchers) {
+	public LocalByThresholdMethod(List<MatchingTask> availableMatchers) {
 		super(availableMatchers);
 		
 	}
@@ -42,8 +42,8 @@ public class LocalByThresholdMethod extends ClusteringMethod {
 		// build all the sets
 		ArrayList<TreeSet<Point>> setList = new ArrayList<TreeSet<Point>>();
 		
-		List<MatcherResult> matcherList = params.getMatchers();
-		for( MatcherResult m : matcherList ) {
+		List<MatchingTask> matcherList = params.getMatchers();
+		for( MatchingTask m : matcherList ) {
 			setList.add( buildSet( m, t, row, col ) );
 		}
 		
@@ -71,7 +71,9 @@ public class LocalByThresholdMethod extends ClusteringMethod {
 		
 		if( intersectionSet != null ) {
 			// create the cluster
-			c = new Cluster<Mapping>(intersectionSet, matcherList.get(0).getSourceOntology(), matcherList.get(0).getTargetOntology(), t );
+			c = new Cluster<Mapping>(intersectionSet, 
+					matcherList.get(0).matcherParameters.getSourceOntology(), 
+					matcherList.get(0).matcherParameters.getTargetOntology(), t );
 		}
 		
 		return c;
@@ -85,7 +87,7 @@ public class LocalByThresholdMethod extends ClusteringMethod {
 	
 
 
-	private TreeSet<Point> buildSet(MatcherResult m, alignType t,
+	private TreeSet<Point> buildSet(MatchingTask m, alignType t,
 			int row, int col) {
 		
 		TreeSet<Point> currentSet = new TreeSet<Point>( new PointComparator() );
@@ -93,9 +95,9 @@ public class LocalByThresholdMethod extends ClusteringMethod {
 		SimilarityMatrix mtx = null;
 		
 		if( t == alignType.aligningClasses ) {
-			mtx = m.getClassesMatrix();
+			mtx = m.matcherResult.getClassesMatrix();
 		} else if ( t == alignType.aligningProperties ) {
-			mtx = m.getPropertiesMatrix();
+			mtx = m.matcherResult.getPropertiesMatrix();
 		}
 		
 		// get the similarity of the selected mapping

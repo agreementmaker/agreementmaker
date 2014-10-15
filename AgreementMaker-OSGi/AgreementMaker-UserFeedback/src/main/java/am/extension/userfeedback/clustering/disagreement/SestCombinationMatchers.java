@@ -9,13 +9,19 @@ import am.app.Core;
 import am.app.lexicon.LexiconBuilderParameters;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.DefaultSelectionParameters;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherResult;
 import am.app.mappingEngine.MatchingProgressListener;
-import am.app.mappingEngine.persistance.PersistanceUtility;
+import am.app.mappingEngine.MatchingTask;
+import am.app.mappingEngine.SelectionAlgorithm;
+import am.app.mappingEngine.oneToOneSelection.MwbmSelection;
+import am.app.mappingEngine.persistance.PersistenceUtility;
 import am.app.mappingEngine.utility.OAEI_Track;
 import am.app.ontology.Ontology;
 import am.app.ontology.profiling.manual.ManualOntologyProfiler;
+import am.extension.batchmode.matchingTask.FluentMatchingTaskRunner;
+import am.extension.batchmode.matchingTask.SimpleMatchingTaskRunner;
 import am.extension.userfeedback.InitialMatchers;
 import am.extension.userfeedback.experiments.UFLExperiment;
 import am.extension.userfeedback.experiments.UFLExperimentParameters;
@@ -74,16 +80,16 @@ public class SestCombinationMatchers extends InitialMatchers {
 	public SestCombinationMatchers() { super(); }
 	
 	@Override
-	public List<AbstractMatcher> getComponentMatchers() {
-		ArrayList<AbstractMatcher> l = new ArrayList<AbstractMatcher>();
+	public List<MatchingTask> getComponentMatchers() {
+		ArrayList<MatchingTask> l = new ArrayList<>();
 		
-		l.add(m_bsm);
-		l.add(m_asm);
-		l.add(m_psm);
-		l.add(m_vmm);
-		l.add(m_lsm);
-		l.add(m_ssc);
-		l.add(m_dsi);
+		l.add(bsm);
+		l.add(asm);
+		l.add(psm);
+		l.add(vmm);
+		l.add(lsm);
+		l.add(ssc);
+		l.add(dsi);
 		//l.add(m_iism);
 		
 		return l;
@@ -108,6 +114,8 @@ public class SestCombinationMatchers extends InitialMatchers {
 	private SiblingsSimilarityContributionMatcher m_ssc;
 	private DescendantsSimilarityInheritanceMatcher m_dsi;
 	
+	private MatchingTask bsm, asm, psm, vmm, lsm, ssc, dsi;
+	
 	private CombinationMatcher			m_lwc;
 	private CombinationMatcher			m_lwc2;
 	//private IterativeInstanceStructuralMatcher m_iism;
@@ -117,6 +125,8 @@ public class SestCombinationMatchers extends InitialMatchers {
 	private UFLExperimentParameters eparam;
 	
 	private boolean p = false;
+	
+	private SelectionAlgorithm selector;
 	
 	@Override
 	public void run(UFLExperiment experiment) {
@@ -137,6 +147,66 @@ public class SestCombinationMatchers extends InitialMatchers {
 			p = false;
 			if( progressDisplay != null ) p = true;	
 			if(p) progressDisplay.ignoreComplete(true);
+
+			FluentMatchingTaskRunner runner;
+			
+			progressDisplay.setProgressLabel("BSM (1/5)");
+			exp.info("Running BSM..."); LOG.info("Running BSM...");
+			runner = new SimpleMatchingTaskRunner();
+			runner.with(param_bsm)
+			      .and(m_bsm)
+			      .and(new DefaultSelectionParameters())
+			      .and(selector)
+			      .matching(exp.getSourceOntology(), exp.getTargetOntology());
+			runner.run();
+			bsm = runner.getTask();
+			
+			progressDisplay.setProgressLabel("ASM (2/5)");
+			exp.info("Running ASM..."); LOG.info("Running ASM...");
+			if (m_asm != null) {
+				runner = new SimpleMatchingTaskRunner();
+				runner.with(param_asm)
+				      .and(m_asm)
+				      .and(new DefaultSelectionParameters())
+				      .and(selector)
+				      .matching(exp.getSourceOntology(),  exp.getTargetOntology());
+				runner.run();
+				asm = runner.getTask();
+			}
+			
+			exp.info("Running PSM..."); LOG.info("Running PSM...");
+			progressDisplay.setProgressLabel("PSM (3/5)");
+			runner = new SimpleMatchingTaskRunner();
+			runner.with(param_psm)
+			      .and(m_psm)
+			      .and(new DefaultSelectionParameters())
+			      .and(selector)
+			      .matching(exp.getSourceOntology(),  exp.getTargetOntology());
+			runner.run();
+			psm = runner.getTask();
+			
+			exp.info("Running VMM..."); LOG.info("Running VMM...");
+			progressDisplay.setProgressLabel("VMM (4/5)");
+			runner = new SimpleMatchingTaskRunner();
+			runner.with(param_vmm)
+			      .and(m_vmm)
+			      .and(new DefaultSelectionParameters())
+			      .and(selector)
+			      .matching(exp.getSourceOntology(),  exp.getTargetOntology());
+			runner.run();
+			vmm = runner.getTask();
+			
+			exp.info("Running LSM..."); LOG.info("Running LSM...");
+			progressDisplay.setProgressLabel("LSM");
+			runner = new SimpleMatchingTaskRunner();
+			runner.with(param_lsm)
+			      .and(m_lsm)
+			      .and(new DefaultSelectionParameters())
+			      .and(selector)
+			      .matching(exp.getSourceOntology(),  exp.getTargetOntology());
+			runner.run();
+			lsm = runner.getTask();
+
 			
 			runMatcher(m_bsm, Parameter.IM_BSM_LOADFILE, Parameter.IM_BSM_SAVEFILE);
 			runMatcher(m_asm, Parameter.IM_ASM_LOADFILE, Parameter.IM_ASM_SAVEFILE);
@@ -187,7 +257,7 @@ public class SestCombinationMatchers extends InitialMatchers {
 		if(p) progressDisplay.setProgressLabel(matcher.getName());
 
 		String matcherLoadFile = eparam.getParameter(loadFileParameter);
-		MatcherResult result = PersistanceUtility.loadMatcherResult(matcherLoadFile);
+		MatcherResult result = PersistenceUtility.loadMatcherResult(matcherLoadFile);
 		if( result != null ) { 
 			result.setSourceOntology(matcher.getSourceOntology());
 			result.setTargetOntology(matcher.getTargetOntology());
@@ -207,9 +277,9 @@ public class SestCombinationMatchers extends InitialMatchers {
 			if( matcherSaveFile != null ) {
 				exp.info("Saving " + matcher.getName() + " result to: " + matcherSaveFile);
 				LOG.info("Saving " + matcher.getName() + " result to: " + matcherSaveFile);
-				PersistanceUtility.saveMatcherResult(matcher.getResult(), matcherSaveFile);
+				PersistenceUtility.saveMatcherResult(matcher.getResult(), matcherSaveFile);
 			}
-		}
+		}		
 	}
 	
 	private void initializeVariables( Ontology sourceOntology, Ontology targetOntology ) {
@@ -336,6 +406,8 @@ public class SestCombinationMatchers extends InitialMatchers {
 			lexParam.detectStandardProperties();
 			Core.getLexiconStore().setParameters(lexParam);
 		}
+		
+		selector = new MwbmSelection();
 	}
 
 	@Override public Alignment<Mapping> getAlignment() { 

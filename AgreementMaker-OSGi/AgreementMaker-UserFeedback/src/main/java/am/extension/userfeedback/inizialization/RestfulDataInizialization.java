@@ -5,9 +5,9 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import am.app.Core;
-import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.app.ontology.Node;
@@ -15,7 +15,7 @@ import am.extension.userfeedback.experiments.MLFExperiment;
 
 public class RestfulDataInizialization extends FeedbackLoopInizialization<MLFExperiment>{
 	
-	private List<AbstractMatcher> inputMatchers;
+	private List<MatchingTask> inputMatchers;
 	
 	//private MUExperiment experiment;
 	
@@ -79,12 +79,12 @@ public class RestfulDataInizialization extends FeedbackLoopInizialization<MLFExp
 		int size=inputMatchers.size();
 		Node sourceNode=mp.getEntity1();
 		Node targetNode=mp.getEntity2();
-		AbstractMatcher a;
+		MatchingTask a;
 		Object[] ssv=new Object[size];
 		for (int i=0;i<size;i++)
 		{
 			a = inputMatchers.get(i);
-			ssv[i]=a.getAlignment().getSimilarity(sourceNode, targetNode);
+			ssv[i]=a.selectionResult.getAlignment().getSimilarity(sourceNode, targetNode);
 			
 		}
 		return ssv;

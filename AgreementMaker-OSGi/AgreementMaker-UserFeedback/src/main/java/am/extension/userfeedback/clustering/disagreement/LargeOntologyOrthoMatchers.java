@@ -10,11 +10,16 @@ import am.app.Core;
 import am.app.lexicon.LexiconBuilderParameters;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.DefaultSelectionParameters;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatchingProgressListener;
+import am.app.mappingEngine.MatchingTask;
+import am.app.mappingEngine.SelectionAlgorithm;
+import am.app.mappingEngine.oneToOneSelection.MwbmSelection;
 import am.app.mappingEngine.utility.OAEI_Track;
 import am.app.ontology.Ontology;
 import am.app.ontology.profiling.manual.ManualOntologyProfiler;
+import am.extension.batchmode.matchingTask.SimpleMatchingTaskRunner;
 import am.extension.userfeedback.InitialMatchers;
 import am.extension.userfeedback.experiments.UFLExperiment;
 import am.matcher.Combination.CombinationMatcher;
@@ -33,20 +38,6 @@ import am.ui.UIUtility;
 
 public class LargeOntologyOrthoMatchers extends InitialMatchers {
 private static final Logger LOG = Logger.getLogger(OrthoCombinationMatchers.class);
-	
-	@Override
-	public List<AbstractMatcher> getComponentMatchers() {
-		ArrayList<AbstractMatcher> l = new ArrayList<AbstractMatcher>();
-		
-		l.add(m_bsm);
-		l.add(m_asm);
-		l.add(m_psm);
-		l.add(m_vmm);
-		l.add(m_lsm);
-		//l.add(m_iism);
-		
-		return l;
-	}
 
 	private BaseSimilarityParameters    param_bsm;  // the parameters that will be used for the BSM
 	private AdvancedSimilarityParameters param_asm; // parameters for ASM
@@ -64,8 +55,12 @@ private static final Logger LOG = Logger.getLogger(OrthoCombinationMatchers.clas
 	private MultiWordsMatcher			m_vmm;
 	private LexicalSynonymMatcher       m_lsm;
 	
+	private MatchingTask bsm, asm, psm, vmm, lsm;
+	
 	private CombinationMatcher			m_lwc;
 	//private IterativeInstanceStructuralMatcher m_iism;
+	
+	private SelectionAlgorithm	        selector;
 	
 	private MatchingProgressListener progressDisplay;
 	
@@ -79,6 +74,7 @@ private static final Logger LOG = Logger.getLogger(OrthoCombinationMatchers.clas
 		
 		this.exp = experiment;
 		
+		SimpleMatchingTaskRunner runner = null;
 		try {
 			
 			progressDisplay = experiment.gui;
@@ -91,27 +87,67 @@ private static final Logger LOG = Logger.getLogger(OrthoCombinationMatchers.clas
 				
 				progressDisplay.setProgressLabel("BSM (1/5)");
 				exp.info("Running BSM..."); LOG.info("Running BSM...");
-				m_bsm.match();
+				runner = new SimpleMatchingTaskRunner();
+				runner.with(param_bsm)
+				      .and(m_bsm)
+				      .and(new DefaultSelectionParameters())
+				      .and(selector)
+				      .matching(exp.getSourceOntology(), exp.getTargetOntology());
+				runner.run();
+				bsm = runner.getTask();
 				
 				progressDisplay.setProgressLabel("ASM (2/5)");
 				exp.info("Running ASM..."); LOG.info("Running ASM...");
-				if( m_asm != null ) 
-					m_asm.match();
+				if (m_asm != null) {
+					runner = new SimpleMatchingTaskRunner();
+					runner.with(param_asm)
+					      .and(m_asm)
+					      .and(new DefaultSelectionParameters())
+					      .and(selector)
+					      .matching(exp.getSourceOntology(),  exp.getTargetOntology());
+					runner.run();
+					asm = runner.getTask();
+				}
 				
 				exp.info("Running PSM..."); LOG.info("Running PSM...");
 				progressDisplay.setProgressLabel("PSM (3/5)");
-				m_psm.match();
+				runner = new SimpleMatchingTaskRunner();
+				runner.with(param_psm)
+				      .and(m_psm)
+				      .and(new DefaultSelectionParameters())
+				      .and(selector)
+				      .matching(exp.getSourceOntology(),  exp.getTargetOntology());
+				runner.run();
+				psm = runner.getTask();
 				
 				exp.info("Running VMM..."); LOG.info("Running VMM...");
 				progressDisplay.setProgressLabel("VMM (4/5)");
-				m_vmm.match();
+				runner = new SimpleMatchingTaskRunner();
+				runner.with(param_vmm)
+				      .and(m_vmm)
+				      .and(new DefaultSelectionParameters())
+				      .and(selector)
+				      .matching(exp.getSourceOntology(),  exp.getTargetOntology());
+				runner.run();
+				vmm = runner.getTask();
 				
 				exp.info("Running LSM..."); LOG.info("Running LSM...");
 				progressDisplay.setProgressLabel("LSM");
-				m_lsm.match();
+				runner = new SimpleMatchingTaskRunner();
+				runner.with(param_lsm)
+				      .and(m_lsm)
+				      .and(new DefaultSelectionParameters())
+				      .and(selector)
+				      .matching(exp.getSourceOntology(),  exp.getTargetOntology());
+				runner.run();
+				lsm = runner.getTask();
 				
 				exp.info("Running LWC..."); LOG.info("Running LWC...");
 				progressDisplay.setProgressLabel("LWC (5/5)");
+				
+				
+				
+				
 				m_lwc.addInputMatcher(m_bsm);
 				if( m_asm != null ) m_lwc.addInputMatcher(m_asm);
 				m_lwc.addInputMatcher(m_psm);
@@ -257,8 +293,24 @@ private static final Logger LOG = Logger.getLogger(OrthoCombinationMatchers.clas
 			lexParam.detectStandardProperties();
 			Core.getLexiconStore().setParameters(lexParam);
 		}
+		
+		selector = new MwbmSelection();
 	}
 
+	@Override
+	public List<MatchingTask> getComponentMatchers() {
+		ArrayList<MatchingTask> l = new ArrayList<>();
+		
+		l.add(bsm);
+		l.add(asm);
+		l.add(psm);
+		l.add(vmm);
+		l.add(lsm);
+		//l.add(m_iism);
+		
+		return l;
+	}
+	
 	@Override public Alignment<Mapping> getAlignment() { 
 		return getFinalMatcher().getAlignment(); }
 	

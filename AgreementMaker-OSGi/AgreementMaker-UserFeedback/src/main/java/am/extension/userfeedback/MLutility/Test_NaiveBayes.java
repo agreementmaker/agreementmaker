@@ -6,7 +6,7 @@ package am.extension.userfeedback.MLutility;
  */
 public class Test_NaiveBayes extends NaiveBayes{
 	
-	static Object[][] trainingTest1={{0.224535,0.124435,0.84532,1.0},{1.0,0.824435,0.44532,0.0},{0.224535,0.924435,0.84532,1.0}};
+	static double[][] trainingTest1={{0.224535,0.124435,0.84532,1.0},{1.0,0.824435,0.44532,0.0},{0.224535,0.924435,0.84532,1.0}};
 	static Object[][] trainingTest2={{"rainy", "cool", "normal", "TRUE", 0.0},
 		{"rainy", "mild", "high", "TRUE", 0.0},{"sunny", "hot", "high", "FALSE", 0.0},
 		{"sunny", "hot", "high", "TRUE", 0.0},{"sunny", "mild", "high", "FALSE", 0.0},
@@ -21,7 +21,7 @@ public class Test_NaiveBayes extends NaiveBayes{
 		{0.21244,0.547747,0.84566}};
 	static Object[][] dataTest2={{"sunny", "cool", "high", "TRUE"}};
 	static Object[][] dataTest3={{"linux","on","website"},{"hollywood","fashion","website"}};
-	static Object[] svmdataTest1={0.23535,0.13644,0.82213};
+	static double[] svmdataTest1={0.23535,0.13644,0.82213};
 	static Object[][] regressionTraining={
 		{1076,2801,6,0,0,324500},{990,3067,5,1,1,466000},{1229,3094,5,0,1,425900},{731,4315,4,1,0,387120},
 		{671,2926,4,0,1,312100},{1078,6094,6,1,1,603000},{909,2854,5,0,1,383400}

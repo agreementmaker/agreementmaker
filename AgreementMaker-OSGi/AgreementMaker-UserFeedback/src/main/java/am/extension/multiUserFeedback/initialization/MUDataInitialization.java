@@ -7,7 +7,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import am.app.Core;
-import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.DefaultSelectionParameters;
@@ -29,7 +28,7 @@ public class MUDataInitialization extends FeedbackLoopInizialization<MUExperimen
 	
 	private static final Logger LOG = Logger.getLogger(MUDataInitialization.class);
 	
-	List<AbstractMatcher> inputMatchers = new ArrayList<>();
+	List<MatchingTask> inputMatchers = new ArrayList<>();
 	private MUExperiment experiment;
 	
 	@Override
@@ -65,8 +64,8 @@ public class MUDataInitialization extends FeedbackLoopInizialization<MUExperimen
 		
 		for (int i=0;i<inputMatchers.size();i++)
 		{
-			lstC.add(inputMatchers.get(i).getClassesMatrix());
-			lstP.add(inputMatchers.get(i).getPropertiesMatrix());
+			lstC.add(inputMatchers.get(i).matcherResult.getClassesMatrix());
+			lstP.add(inputMatchers.get(i).matcherResult.getPropertiesMatrix());
 		}
 		
 		

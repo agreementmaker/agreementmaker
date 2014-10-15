@@ -7,9 +7,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
@@ -100,7 +100,7 @@ public class MaxInformationRanking extends CandidateSelection<SUExperiment> {
 //		if (ex.getIterationNumber()==0)
 //			initializeRankedMatrix();
 		// get the matchers from the execution semantics
-		List<AbstractMatcher> matchers = ex.initialMatcher.getComponentMatchers();
+		List<MatchingTask> matchers = ex.initialMatcher.getComponentMatchers();
 		
 
 		//if (ex.getIterationNumber()<=1)
@@ -402,16 +402,16 @@ public class MaxInformationRanking extends CandidateSelection<SUExperiment> {
 	
 	private Object[] getSignatureVector(Mapping mp)
 	{
-		List<AbstractMatcher> inputMatchers=experiment.initialMatcher.getComponentMatchers();
+		List<MatchingTask> inputMatchers=experiment.initialMatcher.getComponentMatchers();
 		int size=inputMatchers.size();
 		Node sourceNode=mp.getEntity1();
 		Node targetNode=mp.getEntity2();
-		AbstractMatcher a;
+		MatchingTask a;
 		Object[] ssv=new Object[size];
 		for (int i=0;i<size;i++)
 		{
 			a = inputMatchers.get(i);
-			ssv[i]=a.getAlignment().getSimilarity(sourceNode, targetNode);
+			ssv[i]=a.selectionResult.getAlignment().getSimilarity(sourceNode, targetNode);
 			
 		}
 		return ssv;

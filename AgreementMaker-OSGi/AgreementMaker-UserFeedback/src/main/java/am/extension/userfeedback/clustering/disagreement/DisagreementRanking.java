@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MappingSimilarityComparator;
+import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.ontology.Ontology;
 import am.evaluation.disagreement.variance.VarianceDisagreement;
@@ -39,12 +39,12 @@ public class DisagreementRanking<T extends UFLExperiment> extends CandidateSelec
 		this.experiment = ex;
 
 		// get the matchers from the execution semantics
-		List<AbstractMatcher> matchers = ex.initialMatcher.getComponentMatchers();
+		List<MatchingTask> matchers = ex.initialMatcher.getComponentMatchers();
 		
 		rank(matchers);
 	}
 	
-	public void rank(List<AbstractMatcher> matchers) {
+	public void rank(List<MatchingTask> matchers) {
 				
 		if( allRanked == null ) {
 			initializeRankedList(matchers);
@@ -73,7 +73,7 @@ public class DisagreementRanking<T extends UFLExperiment> extends CandidateSelec
 		done();
 	}
 
-	private void initializeRankedList(List<AbstractMatcher> matchers) {
+	private void initializeRankedList(List<MatchingTask> matchers) {
 		// setup the variance disagreement calculation
 		VarianceDisagreementParameters disagreementParams = new VarianceDisagreementParameters();
 		disagreementParams.setMatchers(matchers);

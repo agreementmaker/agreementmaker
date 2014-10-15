@@ -47,7 +47,7 @@ public class MatchingTask {
 		this.selectionAlgorithm = selectionAlgorithm;
 		this.selectionParameters = selectionParams;
 	}
-	
+		
 	/**
 	 * Run the matching algorithm.
 	 */

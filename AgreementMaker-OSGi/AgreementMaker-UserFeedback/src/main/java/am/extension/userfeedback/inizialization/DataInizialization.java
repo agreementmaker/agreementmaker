@@ -6,9 +6,9 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import am.app.Core;
-import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.app.ontology.Node;
@@ -19,7 +19,7 @@ public class DataInizialization extends FeedbackLoopInizialization<SUExperiment>
 	
 	private static final Logger LOG = Logger.getLogger(DataInizialization.class);
 	
-	List<AbstractMatcher> inputMatchers = new ArrayList<AbstractMatcher>();
+	List<MatchingTask> inputMatchers = new ArrayList<>();
 	public DataInizialization()
 	{
 		super();
@@ -28,7 +28,7 @@ public class DataInizialization extends FeedbackLoopInizialization<SUExperiment>
 	@Override
 	public void initialize(SUExperiment exp) {
 		// TODO Auto-generated method stub
-		inputMatchers=exp.initialMatcher.getComponentMatchers();
+		inputMatchers = exp.initialMatcher.getComponentMatchers();
 		SimilarityMatrix smClass=exp.initialMatcher.getFinalMatcher().getClassesMatrix().clone();
 		SimilarityMatrix smProperty=exp.initialMatcher.getFinalMatcher().getPropertiesMatrix().clone();
 		
@@ -127,12 +127,12 @@ public class DataInizialization extends FeedbackLoopInizialization<SUExperiment>
 		int size=inputMatchers.size();
 		Node sourceNode=mp.getEntity1();
 		Node targetNode=mp.getEntity2();
-		AbstractMatcher a;
+		MatchingTask a;
 		Object[] ssv=new Object[size];
 		for (int i=0;i<size;i++)
 		{
 			a = inputMatchers.get(i);
-			ssv[i]=a.getAlignment().getSimilarity(sourceNode, targetNode);
+			ssv[i]=a.selectionResult.getAlignment().getSimilarity(sourceNode, targetNode);
 			
 		}
 		return ssv;

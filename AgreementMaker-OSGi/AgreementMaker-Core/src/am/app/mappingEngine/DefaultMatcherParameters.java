@@ -5,8 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import am.app.mappingEngine.threaded.AbstractMatcherRunner;
-
-import com.hp.hpl.jena.ontology.OntModel;
+import am.app.ontology.Ontology;
 
 /**
  * This class contains all the common matcher parameters:
@@ -34,13 +33,8 @@ public class DefaultMatcherParameters implements Serializable {
 	 * ontology. If the list contains more than two ontologies, then it is
 	 * assumed that this is a multi-ontology matching task.
 	 * </p>
-	 * 
-	 * <p>
-	 * NOTE: We have moded to using the Jena datastructures directly in our
-	 * code, instead of hiding them behind the Ontology class.
-	 * </p>
 	 */
-	public OntModel[] ontologies;
+	public Ontology[] ontologies;
 	
 	// fields are initialized to their defaults.
 	public double threshold = 0.6;
@@ -172,10 +166,10 @@ public class DefaultMatcherParameters implements Serializable {
 	 *            If more than two ontologies, we assume a multi-ontology
 	 *            matching task.
 	 */
-	public void setOntologies(OntModel ... ontologies) {
+	public void setOntologies(Ontology ... ontologies) {
 		this.ontologies = ontologies;
 	}
 	
-	public OntModel getSourceOntology() { return ontologies[0]; }
-	public OntModel getTargetOntology() { return ontologies[1]; }
+	public Ontology getSourceOntology() { return ontologies[0]; }
+	public Ontology getTargetOntology() { return ontologies[1]; }
 }

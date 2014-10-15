@@ -53,6 +53,7 @@ import am.ui.sidebar.duplicatepane.DuplicateSidebar;
 import am.ui.sidebar.provenance.ProvenanceSidebar;
 import am.utility.AppPreferences;
 import am.utility.numeric.AvgMinMaxNumber;
+import am.visualization.MatcherAnalyticsEventDispatch;
 import am.visualization.MatcherAnalyticsPanel;
 import am.visualization.ClusteringEvaluation.ClusteringEvaluationPanel;
 import am.visualization.WordNetLookup.WordNetLookupPanel;
@@ -642,19 +643,22 @@ public class UIMenuListener implements ActionListener {
 				UICore.getUI().addTab(mp);
 			} else if( obj == menu.TEMP_viewPropMatrix ) {
 				// get the currently selected matcher
-				List<AbstractMatcher> list = Core.getInstance().getMatcherInstances();
-				AbstractMatcher selectedMatcher;
+				List<MatchingTask> list = Core.getInstance().getMatchingTasks();
+				MatchingTask selectedMatcher;
 				int[] rowsIndex = UICore.getUI().getControlPanel().getTablePanel().getTable().getSelectedRows();
 				if( rowsIndex.length == 0 ) { UIUtility.displayErrorPane("No matcher is selected.", "Error"); return; }
 				selectedMatcher = list.get(rowsIndex[0]); // we only care about the first matcher selected
 
-				if( selectedMatcher.getPropertiesMatrix() == null ) { UIUtility.displayErrorPane("The matcher has not computed a classes similarity matrix.", "Error"); return; }
+				if( selectedMatcher.matcherResult.getPropertiesMatrix() == null ) { 
+					UIUtility.displayErrorPane("The matcher has not computed a classes similarity matrix.", "Error"); 
+					return; 
+				}
 
-				MatrixPlotPanel mp = new MatrixPlotPanel( selectedMatcher, selectedMatcher.getPropertiesMatrix(), null);
+				MatrixPlotPanel mp = new MatrixPlotPanel( selectedMatcher, selectedMatcher.matcherResult.getPropertiesMatrix(), null);
 
 				mp.getPlot().draw(false);
 				mp.setLabel("MatrixPlot Properties");
-				mp.setTooltip(selectedMatcher.getName());
+				mp.setTooltip(selectedMatcher.getShortLabel());
 				UICore.getUI().addTab(mp);
 			} else if( obj == menu.TEMP_matcherAnalysisClasses ) {
 				final MatcherAnalyticsPanel ma = new MatcherAnalyticsPanel( alignType.aligningClasses );

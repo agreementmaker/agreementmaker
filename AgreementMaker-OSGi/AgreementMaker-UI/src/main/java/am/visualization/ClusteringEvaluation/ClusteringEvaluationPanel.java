@@ -54,7 +54,7 @@ public class ClusteringEvaluationPanel 	extends AMTabSupportPanel
 		
 	}
 
-	private void evaluateLocalbyThresholdClustering(MatchingTask reference, List<MatcherResult> matchers) {
+	private void evaluateLocalbyThresholdClustering(MatchingTask reference, List<MatchingTask> matchers) {
 
 		LocalByThresholdMethod clm = new LocalByThresholdMethod(matchers);
 		LocalByThresholdParameters clmp = new LocalByThresholdParameters();

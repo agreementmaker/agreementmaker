@@ -10,6 +10,7 @@ import javax.swing.event.EventListenerList;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.MatchingTask;
 import am.extension.userfeedback.experiments.UFLExperiment;
 import am.extension.userfeedback.ui.UFLControlGUI;
 import am.extension.userfeedback.utility.UFLutility;
@@ -32,7 +33,7 @@ public abstract class InitialMatchers {
 	}
 	
 	public abstract void run(UFLExperiment exp);
-	public abstract List<AbstractMatcher> getComponentMatchers();
+	public abstract List<MatchingTask> getComponentMatchers();
 	public abstract Alignment<Mapping> getAlignment();
 	public abstract Alignment<Mapping> getClassAlignment();
 	public abstract Alignment<Mapping> getPropertyAlignment();

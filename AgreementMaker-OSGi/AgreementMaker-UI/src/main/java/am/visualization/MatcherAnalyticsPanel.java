@@ -25,7 +25,6 @@ import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherChangeListener;
-import am.app.mappingEngine.MatcherResult;
 import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.MatchingTaskChangeEvent;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
@@ -430,9 +429,9 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 
 		// make a list of the available matchers
 		
-		ArrayList<MatcherResult> resultList = new ArrayList<MatcherResult>();
+		ArrayList<MatchingTask> resultList = new ArrayList<>();
 		for( MatcherAnalyticsEventListener l : eventListeners ) {
-			if( l.getMatcher() != null ) resultList.add(l.getMatcher().matcherResult);
+			if( l.getMatcher() != null ) resultList.add(l.getMatcher());
 		}
 		
 		ClusteringMethod method = ClusterFactory.createClusteringMethod(t, resultList);
@@ -479,7 +478,7 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 		
 		if( e.getSource() == btnDisagreementMeasure ) {
 			// make a list of available matchers
-			ArrayList<AbstractMatcher> matcherList = new ArrayList<AbstractMatcher>();
+			ArrayList<MatchingTask> matcherList = new ArrayList<>();
 			for( MatcherAnalyticsEventListener l : eventListeners ) {
 				matcherList.add(l.getMatcher());
 			}
@@ -518,7 +517,7 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 			// initialize the clustering method
 			if( clusterMethod == null ) {
 			
-				ArrayList<AbstractMatcher> matcherList = new ArrayList<AbstractMatcher>();
+				ArrayList<MatchingTask> matcherList = new ArrayList<>();
 				for( MatcherAnalyticsEventListener l : eventListeners ) {
 					if( l.getMatcher() != null ) matcherList.add(l.getMatcher());
 				}

@@ -11,6 +11,7 @@ import javax.swing.JMenuItem;
 
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.MatchingTask;
 import am.evaluation.clustering.gvm.GVM_Clustering_Panel;
 import am.ui.UICore;
 import am.ui.UIMenu;
@@ -51,8 +52,8 @@ public class GVMClusterMenuItem extends JMenuItem implements AMMenuItem {
 			return;
 		}
 
-		List<AbstractMatcher> selectedMatchers = new ArrayList<AbstractMatcher>();
-		List<AbstractMatcher> matcherInstances = Core.getInstance().getMatcherInstances();
+		List<MatchingTask> selectedMatchers = new ArrayList<>();
+		List<MatchingTask> matcherInstances = Core.getInstance().getMatchingTasks();
 
 		for( int i : selectedRows ) {
 			selectedMatchers.add(matcherInstances.get(i));

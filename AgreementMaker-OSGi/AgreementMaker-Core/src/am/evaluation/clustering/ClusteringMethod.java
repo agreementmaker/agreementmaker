@@ -7,7 +7,7 @@ import java.util.List;
 
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.MatcherResult;
+import am.app.mappingEngine.MatchingTask;
 
 /**
  * A clustering method is used to cluster similar mappings.
@@ -18,9 +18,9 @@ public abstract class ClusteringMethod {
 	
 	protected final PropertyChangeSupport propertyChangeSupport;
 
-	protected List<MatcherResult> availableMatchers = new ArrayList<MatcherResult>();
+	protected List<MatchingTask> availableMatchers = new ArrayList<>();
 	
-	public ClusteringMethod(List<MatcherResult> availableMatchers) {
+	public ClusteringMethod(List<MatchingTask> availableMatchers) {
 		
 		propertyChangeSupport = new PropertyChangeSupport(this);
 		
@@ -28,8 +28,8 @@ public abstract class ClusteringMethod {
 			this.availableMatchers.addAll(availableMatchers);
 	}
 
-	public void setAvailableMatchers(List<MatcherResult> availableMatchers) {	this.availableMatchers = availableMatchers; }
-	public List<MatcherResult> getAvailableMatchers() { return availableMatchers; }
+	public void setAvailableMatchers(List<MatchingTask> availableMatchers) {	this.availableMatchers = availableMatchers; }
+	public List<MatchingTask> getAvailableMatchers() { return availableMatchers; }
 	
 	public abstract void cluster();
 	

@@ -7,6 +7,7 @@ import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.ontology.Node;
 import am.extension.multiUserFeedback.experiment.MUExperiment;
@@ -22,7 +23,7 @@ public class MUFeedbackPropagation  extends FeedbackPropagation<MUExperiment> {
 		final double penalize_ratio=0.9;
 		private MUExperiment experiment;
 		final double alpha=0.2;
-		List<AbstractMatcher> inputMatchers = new ArrayList<AbstractMatcher>();
+		List<MatchingTask> inputMatchers = new ArrayList<>();
 		
 
 		private Object[] addToSV(Mapping mp, Boolean label)
@@ -31,13 +32,13 @@ public class MUFeedbackPropagation  extends FeedbackPropagation<MUExperiment> {
 			int size=inputMatchers.size();
 			Node sourceNode=mp.getEntity1();
 			Node targetNode=mp.getEntity2();
-			AbstractMatcher a;
+			MatchingTask a;
 			Object obj=new Object();
 			Object[] ssv=new Object[size+1];
 			for (int i=0;i<size;i++)
 			{
 				a = inputMatchers.get(i);
-				obj=a.getAlignment().getSimilarity(sourceNode, targetNode);
+				obj=a.selectionResult.getAlignment().getSimilarity(sourceNode, targetNode);
 				if (obj!=null)
 					ssv[i]=obj;
 				else
@@ -57,12 +58,12 @@ public class MUFeedbackPropagation  extends FeedbackPropagation<MUExperiment> {
 			int size=inputMatchers.size();
 			Node sourceNode=mp.getEntity1();
 			Node targetNode=mp.getEntity2();
-			AbstractMatcher a;
+			MatchingTask a;
 			Object[] ssv=new Object[size];
 			for (int i=0;i<size;i++)
 			{
 				a = inputMatchers.get(i);
-				ssv[i]=a.getAlignment().getSimilarity(sourceNode, targetNode);
+				ssv[i]=a.selectionResult.getAlignment().getSimilarity(sourceNode, targetNode);
 				
 			}
 			return ssv;
@@ -98,7 +99,7 @@ public class MUFeedbackPropagation  extends FeedbackPropagation<MUExperiment> {
 			
 			inputMatchers=experiment.initialMatcher.getComponentMatchers();
 			Mapping candidateMapping = experiment.selectedMapping;
-			List<AbstractMatcher> availableMatchers = experiment.initialMatcher.getComponentMatchers();
+			//List<MatchingTask> availableMatchers = experiment.initialMatcher.getComponentMatchers();
 			Object[][] trainingSet = null;
 			
 			Validation userFeedback = experiment.userFeedback.getUserFeedback();
