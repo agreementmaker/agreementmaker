@@ -381,7 +381,13 @@ public class MatrixPlotPanel extends AMTabSupportPanel
 		
 	}
 
-	public void setName(String newName) { lblName.setText(newName); }
+	@Override
+	public void setName(String newName) {
+		super.setName(newName);
+		if (lblName != null) {
+			lblName.setText(newName);
+		}
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override

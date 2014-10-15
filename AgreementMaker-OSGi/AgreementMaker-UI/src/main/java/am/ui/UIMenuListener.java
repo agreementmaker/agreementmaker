@@ -115,6 +115,8 @@ public class UIMenuListener implements ActionListener {
 				if( Core.getInstance().ontologiesLoaded() ) {
 					// create the User Manual Matcher
 					DefaultMatcherParameters matcherParams = new DefaultMatcherParameters();
+					matcherParams.setOntologies(Core.getInstance().getSourceOntology(), Core.getInstance().getTargetOntology());
+					
 					AbstractMatcher matcher = new UserManualMatcher();
 					
 					DefaultSelectionParameters selectionParams = new DefaultSelectionParameters();

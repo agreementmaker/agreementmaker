@@ -170,6 +170,11 @@ public class DefaultMatcherParameters implements Serializable {
 		this.ontologies = ontologies;
 	}
 	
-	public Ontology getSourceOntology() { return ontologies[0]; }
-	public Ontology getTargetOntology() { return ontologies[1]; }
+	public Ontology getSourceOntology() { 
+		return ontologies[0]; 
+	}
+	
+	public Ontology getTargetOntology() { 
+		return ontologies[1];
+	}
 }
