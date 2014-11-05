@@ -20,11 +20,11 @@ public interface VAVariables {
 
 	HashMap<String, String> ColorRange = new HashMap<String, String>() {
 		{
-			put("0-20%", "#ffcc99");
-			put("20-40%", "#ffccff");
-			put("40-60%", "#66b2ff");
-			put("60-80%", "#ff66ff");
-			put("80-100%", "#ffff33");
+			put("0-20%", "#D6F5FF");
+			put("20-40%", "#ADEBFF");
+			put("40-60%", "#85E0FF");
+			put("60-80%", "#5CD6FF");
+			put("80-100%", "#33CCFF");
 		}
 	};
 
