@@ -44,4 +44,10 @@ public interface VAVariables {
 		mainSetEmpty, subSetEmpty, noEmpty;
 	}
 
+	String keywordsLabel_Property = "testProperty";
+	boolean testPropertyBelongsTo = false;
+	boolean testPropertyLists = true;
+	
+	String keywordsLabel_InitData = "testInitData";
+	boolean testInitData = false;
 }

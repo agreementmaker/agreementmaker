@@ -416,6 +416,7 @@ public class VAPanel {
 		ArrayList<VAData> data = parentGroup.getVADataArray();
 		for (VAData d : data) {
 			String name = d.getNodeName();
+			//String name = d.getNodeNameAndLabel();
 			if (!d.isLeaf())
 				name = VAVariables.nodeWithChildren + name;
 			listTreeLeftRoot.getChildren().add(new TreeItem<String>(name));
