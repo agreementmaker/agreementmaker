@@ -12,6 +12,10 @@ public class VASearcher {
 	private VAData searchFrom(String name, VAData rootNode, int set) {
 		// TODO Auto-generated method stub
 		// System.out.println("Search from " + rootNode.getNodeName());
+		
+		//get the first part
+		//name = name.split("|")[0];
+		
 		return VASyncData.searchFrom(name, rootNode, set);
 	}
 }

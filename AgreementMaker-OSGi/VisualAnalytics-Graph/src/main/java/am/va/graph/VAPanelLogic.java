@@ -67,9 +67,14 @@ public class VAPanelLogic {
 	public void InitData(int i) {
 		rootGroupLeft[i] = initRootGroup(rootGroupLeft[i], VAVariables.ontologyType.Source, i);
 		rootGroupRight[i] = initRootGroup(rootGroupRight[i], VAVariables.ontologyType.Target, i);
-		System.out.println("i=" + i);
-		rootGroupLeft[i].printData();
-		System.out.println();
+
+		if (VAVariables.testInitData) {
+			System.out.println("---------------" + VAVariables.keywordsLabel_InitData + "-----------------");
+			System.out.println("i=" + i);
+			rootGroupLeft[i].printData();
+			System.out.println();
+		}
+
 	}
 
 	private VAGroup initRootGroup(VAGroup rootGroup, VAVariables.ontologyType type, int currentSet) {

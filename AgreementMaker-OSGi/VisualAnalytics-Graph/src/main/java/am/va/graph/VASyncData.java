@@ -13,6 +13,8 @@ import am.va.graph.VAVariables.ontologyType;
 
 public class VASyncData {
 
+	public static VATest test = new VATest();
+
 	private static int totalDisplayNum = 0;
 	// private static int currentDisplayNum = 1; //default value = the first
 	// loaded algorithm
@@ -96,6 +98,9 @@ public class VASyncData {
 	private static Node getRootNode(VAVariables.ontologyType ontologyType, int set) {
 		Node rootNode = null;
 		MatchingTask currentTask = getCurrentMatchingTask(set);
+
+		// set currentTask for VAtest class
+		test.setCurrentTask(currentTask);
 
 		if (ontologyType == VAVariables.ontologyType.Source) {
 
@@ -210,10 +215,35 @@ public class VASyncData {
 		// TODO Auto-generated method stub
 		// System.out.println("Search from " + rootNode.getNodeName());
 
+		// name = name.split("|")[0];
+
 		if (rootNode != null) {
 			// find ontology
 			if (rootNode.getNodeName() != null && rootNode.getNodeName().equals(name)) {
-				System.out.println("VASearch - Return " + rootNode.getNodeName());
+				//System.out.println("VASearch - Return " + rootNode.getNodeName());
+
+				/**
+				 * Show node's info
+				 */
+				if (VAVariables.testPropertyBelongsTo) {
+					System.out.println("---------------" + VAVariables.keywordsLabel_Property + "-----------------");
+					test.setNode(rootNode.getSourceNode());
+					test.showNodeProperties();
+				}
+
+				if (VAVariables.testPropertyLists) {
+					String nodeName = rootNode.getSourceNode().getLocalName();
+					if (nodeName.equals("ConferenceEvent") || nodeName.equals("Conference")
+							|| nodeName.equals("Event")) {
+						System.out
+								.println("---------------" + VAVariables.keywordsLabel_Property + "-----------------");
+						test.showNodePropertyLists("ConferenceEvent", ontologyType.Source);
+						test.showNodePropertyLists("Conference", ontologyType.Target);
+						test.showNodePropertyLists("Event", ontologyType.Target);
+						
+					}
+				}
+
 				return rootNode;
 			}
 
