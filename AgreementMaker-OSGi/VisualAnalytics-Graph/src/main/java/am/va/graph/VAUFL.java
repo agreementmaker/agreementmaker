@@ -131,6 +131,11 @@ public class VAUFL {
 
 		// Get the list multi-matchings by remove single value matchings
 		for (String key : UFLSelectionMap.keySet()) {
+			// add limits here
+			VAUFLPairs vp = UFLSelectionMap.get(key);
+			if (vp.getSimValue() < 0.6) {	//we do not consider values that < 60%
+				continue;
+			}
 			if (UFLSelectionMap.get(key).getTargetNodes().size() > 1) {
 				lstPairs.add(UFLSelectionMap.get(key));// add to list
 			}

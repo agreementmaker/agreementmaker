@@ -70,24 +70,33 @@ public class VAUFLPanel {
 																			// lstPairs
 		pointer = 0;
 
+		frameSub = new JFrame("VA-UFL"); // init UFL panel
+		fxPanelSub = new JFXPanel();
+		frameSub.setSize(FrameWidth, FrameHeight);
+		frameSub.setLocation(500, 200);
+		frameSub.setVisible(true);
+		frameSub.add(fxPanelSub);
+
+		// frameSub.setAlwaysOnTop(true); //place the panel on the very top
+		frameSub.addWindowListener(new java.awt.event.WindowAdapter() {
+			public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+				VAPanel.enableUFL(true);
+			}
+		});
+
 		if (lstPairs != null && lstPairs.size() > 0) { // if Amb pairs exist
-			frameSub = new JFrame("VA-UFL"); // init UFL panel
-			fxPanelSub = new JFXPanel();
-			frameSub.setSize(FrameWidth, FrameHeight);
-			frameSub.setLocation(500, 200);
-			frameSub.setVisible(true);
-			frameSub.add(fxPanelSub);
-			// frameSub.setAlwaysOnTop(true); //place the panel on the very top
-			frameSub.addWindowListener(new java.awt.event.WindowAdapter() {
-				public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-					VAPanel.enableUFL(true);
-				}
-			});
 
 			Platform.runLater(new Runnable() {
 				@Override
 				public void run() {
-					InitUFLFX();
+					InitUFLFX(true);
+				}
+			});
+		} else {
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					InitUFLFX(false);
 				}
 			});
 		}
@@ -96,14 +105,23 @@ public class VAUFLPanel {
 	/**
 	 * Init UFL Panel
 	 */
-	public void InitUFLFX() {
+	public void InitUFLFX(boolean exist) {
+
 		rootSub = new Group();
 		mySubScene = new Scene(rootSub);
 		fxPanelSub.setScene(mySubScene);
 		String subSceneCss = VAUFLPanel.class.getResource("VA.css").toExternalForm();
 		mySubScene.getStylesheets().add(subSceneCss);
-		VBox vbox = setUFLLayout();
-		rootSub.getChildren().add(vbox);
+
+		if (!exist) {
+			// add a label here
+			Label lblEmpty = new Label("No ambiguous matching found");
+			rootSub.getChildren().add(lblEmpty);
+			return;
+		} else {
+			VBox vbox = setUFLLayout();
+			rootSub.getChildren().add(vbox);
+		}
 		fxPanelSub.setScene(mySubScene);
 	}
 

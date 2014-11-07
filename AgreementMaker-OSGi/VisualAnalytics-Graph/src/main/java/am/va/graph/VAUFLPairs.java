@@ -60,6 +60,10 @@ public class VAUFLPairs {
 	public void setSim(double sim) {
 		this.sim = sim;
 	}
+	
+	public double getSimValue(){
+		return sim;
+	}
 
 	public String getSim() {
 		return String.valueOf(sim);
