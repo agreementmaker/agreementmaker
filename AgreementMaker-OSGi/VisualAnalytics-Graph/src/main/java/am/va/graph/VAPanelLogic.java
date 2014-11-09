@@ -74,7 +74,6 @@ public class VAPanelLogic {
 			rootGroupLeft[i].printData();
 			System.out.println();
 		}
-
 	}
 
 	private VAGroup initRootGroup(VAGroup rootGroup, VAVariables.ontologyType type, int currentSet) {
@@ -165,5 +164,32 @@ public class VAPanelLogic {
 	public void updateCurrentGroup(VAGroup group, int currentSet) {
 		updatePreviousGroup(currentGroup[currentSet], currentSet);
 		currentGroup[currentSet] = group;
+	}
+
+	public void checkForAmbiguousMatchings() {
+		// get two pairs
+		System.out.println("---------" + VAVariables.keywordsLabel_findAmbiguous + "----------");
+		String source = null, target1 = null, target2 = null;
+		double sim1 = 0, sim2 = 0;
+		try {
+			if (currentGroup[0] != null) {
+				source = currentGroup[0].getRootNodeName();
+				target1 = currentGroup[0].getRootNode().getTargetNode().getLocalName();
+				sim1 = currentGroup[0].getRootNode().getSimilarity();
+			}
+			if (currentGroup[1] != null) {
+				target2 = currentGroup[1].getRootNode().getTargetNode().getLocalName();
+				sim2 = currentGroup[1].getRootNode().getSimilarity();
+			}
+		} catch (Exception e) {
+			// when loading the rootnodes, getRootNode function returns null
+			// use try-catch here to save codes
+			e.printStackTrace();
+		}
+		if (target1 != null && target2 != null && !target1.equals(target2) && sim1 != sim2) {
+			System.out.println("Ambiguous found! source=" + source);
+			System.out.println("target1=" + target1 + ", sim=" + sim1);
+			System.out.println("target2=" + target2 + ", sim=" + sim2);
+		}
 	}
 }

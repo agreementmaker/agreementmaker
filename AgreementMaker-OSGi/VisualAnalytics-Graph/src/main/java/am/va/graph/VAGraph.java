@@ -97,7 +97,8 @@ public class VAGraph {
 		}
 		if (vap.getStop() != -1) {
 			vap.getRightPie(currentSet).updateSubRightPieChart();
-			String newLabel = currentGroup.getRootNodeNameWithLabel() + ": " + currentGroup.getRootNode().getSimilarity();
+			String newLabel = currentGroup.getRootNodeNameWithLabel() + ": "
+					+ currentGroup.getRootNode().getSimilarity();
 			if (currentGroup.getParent() == 0)
 				newLabel = VAVariables.sourceRoot + ":" + String.valueOf(VASyncData.getCurrentDisplayNum(currentSet));
 			if (currentGroup.hasChildren())
@@ -108,6 +109,11 @@ public class VAGraph {
 		customPieChartColor();
 		if (vap.getStop() == -1) {
 			vap.setStop(0);
+		}
+
+		// here, check for ambiguous matchings when updating sub-charts
+		if (VAVariables.testFindAmb && currentSet != 0) {
+			vap.getVal().checkForAmbiguousMatchings();
 		}
 	}
 
