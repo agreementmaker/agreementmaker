@@ -57,4 +57,5 @@ public interface VAVariables {
 	
 	String keywordsLabel_findAmbiguous = "testAmbiguous";
 	boolean testFindAmb = true;	//test pass 11/7/2014
+	boolean testClustering = true;
 }

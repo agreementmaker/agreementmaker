@@ -1,5 +1,6 @@
 package am.va.graph;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import am.app.mappingEngine.Mapping;
@@ -65,10 +66,11 @@ public class VATest {
 	 * 
 	 * @param domain
 	 */
-	public void showNodePropertyLists(String domain, ontologyType type) {
+	public ArrayList<String> showNodePropertyLists(String domain, ontologyType type) {
+		ArrayList<String> cluster = new ArrayList<String>();
 		if (currentTask == null) {
 			System.out.println("Error! Current task NULL");
-			return;
+			return cluster;
 		}
 		MatcherResult mr = currentTask.matcherResult;
 		Ontology source = mr.getSourceOntology();
@@ -97,15 +99,19 @@ public class VATest {
 				if (map != null) {
 					matchingNode = map[0].getEntity2();
 					sim = map[0].getSimilarity();
+				} else {
+					continue;
 				}
 				if (n.getPropertyDomain().getLocalName().equals(domain)) {
+					cluster.add(n.getLocalName());
 					System.out.println("node=" + n.getLocalName() + ", domain=" + domain + ", range="
 							+ n.getPropertyRange().getLocalName() + ", match=" + matchingNode.getLocalName() + ", sim="
 							+ sim);
 				}
 			} catch (Exception e) { // null pointer exception will happen
-				System.out.println(e.getMessage());
+				//System.out.println(e.getMessage());
 			}
 		}
+		return cluster;
 	}
 }
