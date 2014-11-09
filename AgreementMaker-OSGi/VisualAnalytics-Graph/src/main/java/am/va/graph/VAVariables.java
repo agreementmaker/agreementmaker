@@ -44,10 +44,17 @@ public interface VAVariables {
 		mainSetEmpty, subSetEmpty, noEmpty;
 	}
 
+	/**
+	 * Testing part
+	 */
 	String keywordsLabel_Property = "testProperty";
 	boolean testPropertyBelongsTo = false;
-	boolean testPropertyLists = true;
+	boolean testPropertyLists = false;
+	boolean testPropertyClustering = true;
 	
 	String keywordsLabel_InitData = "testInitData";
 	boolean testInitData = false;
+	
+	String keywordsLabel_findAmbiguous = "testAmbiguous";
+	boolean testFindAmb = true;	//test pass 11/7/2014
 }
