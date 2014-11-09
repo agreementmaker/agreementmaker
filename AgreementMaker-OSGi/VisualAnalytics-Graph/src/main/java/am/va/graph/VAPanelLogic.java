@@ -1,6 +1,9 @@
 package am.va.graph;
 
+import java.util.ArrayList;
+
 import am.va.graph.VAVariables.nodeType;
+import am.va.graph.VAVariables.ontologyType;
 
 /**
  * Data related logic
@@ -166,7 +169,8 @@ public class VAPanelLogic {
 		currentGroup[currentSet] = group;
 	}
 
-	public void checkForAmbiguousMatchings() {
+	public ArrayList<ArrayList<String>> checkForAmbiguousMatchings() {
+		ArrayList<ArrayList<String>> clusters = new ArrayList<ArrayList<String>>();
 		// get two pairs
 		System.out.println("---------" + VAVariables.keywordsLabel_findAmbiguous + "----------");
 		String source = null, target1 = null, target2 = null;
@@ -190,6 +194,15 @@ public class VAPanelLogic {
 			System.out.println("Ambiguous found! source=" + source);
 			System.out.println("target1=" + target1 + ", sim=" + sim1);
 			System.out.println("target2=" + target2 + ", sim=" + sim2);
+
+			// get the clusters for two targets
+			ArrayList<String> s = VASyncData.test.showNodePropertyLists(source, VAVariables.ontologyType.Source);
+			ArrayList<String> t1 = VASyncData.test.showNodePropertyLists(target1, VAVariables.ontologyType.Target);
+			ArrayList<String> t2 = VASyncData.test.showNodePropertyLists(target2, VAVariables.ontologyType.Target);
+			clusters.add(s);
+			clusters.add(t1);
+			clusters.add(t2);
 		}
+		return clusters;
 	}
 }

@@ -113,7 +113,8 @@ public class VAGraph {
 
 		// here, check for ambiguous matchings when updating sub-charts
 		if (VAVariables.testFindAmb && currentSet != 0) {
-			vap.getVal().checkForAmbiguousMatchings();
+			ArrayList<ArrayList<String>> clusters = vap.getVal().checkForAmbiguousMatchings();
+			
 		}
 	}
 
