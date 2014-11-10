@@ -667,16 +667,19 @@ public class VAPanel {
 
 					@Override
 					public void run() {
-						int x = 1150;
-						int y[] = new int[2];
-						y[0] = 200;
-						y[1] = 550;
+						int x[] = new int[3];
+						x[0] = 450;
+						x[1] = x[2] = 1150;
+						int y[] = new int[3];
+						y[1] = 300;
+						y[2] = 650;
+						y[0] = (y[1] + y[2]) / 2;
 						// TODO Auto-generated method stub
-						for (int i = 0; i < 2; i++) {
+						for (int i = 0; i < clusters.size(); i++) {
 							if (clusters.get(i) != null && clusters.get(i).size() > 0) {
 								if (selectedToggle != null && CLPanel[i] == null) {
 									CLPanel[i] = new VAClustersPanel(clusters.get(i));
-									CLPanel[i].setPosition(x, y[i]);
+									CLPanel[i].setPosition(x[i], y[i]);
 								} else if (selectedToggle != null) {
 									CLPanel[i].setCluster(clusters.get(i));
 									CLPanel[i].showFrame(true);

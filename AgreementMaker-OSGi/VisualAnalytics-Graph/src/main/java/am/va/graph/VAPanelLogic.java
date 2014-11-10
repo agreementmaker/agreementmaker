@@ -199,8 +199,8 @@ public class VAPanelLogic {
 			ArrayList<String> s = VASyncData.test.showNodePropertyLists(source, VAVariables.ontologyType.Source);
 			ArrayList<String> t1 = VASyncData.test.showNodePropertyLists(target1, VAVariables.ontologyType.Target);
 			ArrayList<String> t2 = VASyncData.test.showNodePropertyLists(target2, VAVariables.ontologyType.Target);
-			//clusters.add(s);
-			clusters.add(t1);//for now only add the target properties
+			clusters.add(s);
+			clusters.add(t1);
 			clusters.add(t2);
 		}else{
 			clusters = null;

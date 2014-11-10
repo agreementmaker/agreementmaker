@@ -19,7 +19,7 @@ public class VAClustersPanel {
 	private Label lblCluster;
 
 	private int FrameWidth = 200;
-	private int FrameHeight = 200;
+	private int FrameHeight = 120;
 
 	private ArrayList<String> cluster;
 
