@@ -32,7 +32,7 @@ public class VAClustersPanel {
 	}
 
 	private void updateLabel() {
-		String tmp = null;
+		String tmp = "";
 		// construct cluster
 		for (int i = 0; i < cluster.size(); i++) {
 			tmp += cluster.get(i);
