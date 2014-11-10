@@ -85,7 +85,6 @@ public class VAPanel {
 	private VAUFLPanel UFLPanel;
 	private VAClustersPanel CLPanel[] = new VAClustersPanel[2];
 	ArrayList<ArrayList<String>> clusters;
-	
 
 	public ArrayList<ArrayList<String>> getClusters() {
 		return clusters;
@@ -94,8 +93,8 @@ public class VAPanel {
 	public void setClusters(ArrayList<ArrayList<String>> clusters) {
 		this.clusters = clusters;
 	}
-	
-	public void disableClusterBtn(boolean onoff){
+
+	public void disableClusterBtn(boolean onoff) {
 		this.btnClusters.setDisable(onoff);
 	}
 
@@ -674,14 +673,16 @@ public class VAPanel {
 						y[1] = 550;
 						// TODO Auto-generated method stub
 						for (int i = 0; i < 2; i++) {
-							if (selectedToggle != null && CLPanel[i] == null) {
-								CLPanel[i] = new VAClustersPanel(clusters.get(i));
-								CLPanel[i].setPosition(x, y[i]);
-							} else if (selectedToggle != null) {
-								CLPanel[i].setCluster(clusters.get(i));
-								CLPanel[i].showFrame(true);
-							} else if (CLPanel != null) {
-								CLPanel[i].showFrame(false);
+							if (clusters.get(i) != null && clusters.get(i).size() > 0) {
+								if (selectedToggle != null && CLPanel[i] == null) {
+									CLPanel[i] = new VAClustersPanel(clusters.get(i));
+									CLPanel[i].setPosition(x, y[i]);
+								} else if (selectedToggle != null) {
+									CLPanel[i].setCluster(clusters.get(i));
+									CLPanel[i].showFrame(true);
+								} else if (CLPanel != null) {
+									CLPanel[i].showFrame(false);
+								}
 							}
 						}
 					}

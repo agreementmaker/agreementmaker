@@ -103,13 +103,16 @@ public class VATest {
 					continue;
 				}
 				if (n.getPropertyDomain().getLocalName().equals(domain)) {
-					cluster.add(n.getLocalName());
+
 					System.out.println("node=" + n.getLocalName() + ", domain=" + domain + ", range="
 							+ n.getPropertyRange().getLocalName() + ", match=" + matchingNode.getLocalName() + ", sim="
 							+ sim);
+					if (n.getLocalName() != null) {
+						cluster.add(n.getLocalName());
+					}
 				}
 			} catch (Exception e) { // null pointer exception will happen
-				//System.out.println(e.getMessage());
+				// System.out.println(e.getMessage());
 			}
 		}
 		return cluster;
