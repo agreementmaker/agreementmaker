@@ -114,12 +114,14 @@ public class VAGraph {
 		// here, check for ambiguous matchings when updating sub-charts
 		if (VAVariables.testFindAmb && currentSet != 0) {
 			ArrayList<ArrayList<String>> clusters = vap.getVal().checkForAmbiguousMatchings();
-			if (clusters != null) {
-				vap.setClusters(clusters);
-				vap.disableClusterBtn(false);
-			} else {
-				vap.disableClusterBtn(true);
+			if (clusters != null) {	//enable cluster panel
+				if (clusters.get(0).size() > 0 || clusters.get(1).size() > 0) {
+					vap.setClusters(clusters);
+					vap.disableClusterBtn(false);
+					return;
+				}
 			}
+			vap.disableClusterBtn(true);
 		}
 	}
 

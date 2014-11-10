@@ -15,7 +15,7 @@ public class VAClustersPanel {
 	private JFXPanel fxPanelSub;
 	private Group rootSub;
 	private Scene mySubScene;
-	
+
 	private Label lblCluster;
 
 	private int FrameWidth = 200;
@@ -23,7 +23,6 @@ public class VAClustersPanel {
 
 	private ArrayList<String> cluster;
 
-	
 	public ArrayList<String> getCluster() {
 		return cluster;
 	}
@@ -31,15 +30,23 @@ public class VAClustersPanel {
 	public void setCluster(ArrayList<String> cluster) {
 		this.cluster = cluster;
 	}
-	
-	private void updateLabel(){
-		String msg = null;
+
+	private void updateLabel() {
+		String tmp = null;
 		// construct cluster
 		for (int i = 0; i < cluster.size(); i++) {
-			msg += cluster.get(i);
-			msg += "\n";
+			tmp += cluster.get(i);
+			tmp += "\n";
 		}
-		lblCluster.setText(msg);
+		final String msg = tmp;
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				// javaFX operations should go here
+				lblCluster.setText(msg);
+			}
+		});
+
 	}
 
 	public VAClustersPanel(ArrayList<String> cluster) {
@@ -51,6 +58,8 @@ public class VAClustersPanel {
 		frameSub.setLocation(500, 200);
 		frameSub.setVisible(true);
 		frameSub.add(fxPanelSub);
+		
+		
 
 		// frameSub.setAlwaysOnTop(true); //place the panel on the very top
 		frameSub.addWindowListener(new java.awt.event.WindowAdapter() {
@@ -81,7 +90,7 @@ public class VAClustersPanel {
 	}
 
 	public void showFrame(boolean show) {
-		if(show){
+		if (show) {
 			updateLabel();
 		}
 		frameSub.setVisible(show);
