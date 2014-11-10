@@ -50,7 +50,7 @@ public interface VAVariables {
 	String keywordsLabel_Property = "testProperty";
 	boolean testPropertyBelongsTo = false;
 	boolean testPropertyLists = false;
-	boolean testPropertyClustering = true;
+	boolean testPropertyClustering = false;
 	
 	String keywordsLabel_InitData = "testInitData";
 	boolean testInitData = false;
