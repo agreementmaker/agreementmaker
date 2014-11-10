@@ -2,6 +2,8 @@ package am.va.graph;
 
 import java.util.ArrayList;
 import javax.swing.SwingUtilities;
+
+import am.va.graph.VAVariables.ChartType;
 import am.va.graph.VAVariables.ontologyType;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -63,6 +65,7 @@ public class VAPanel {
 	private Button btnUp;
 	private static Button btnUFL;
 	private ToggleButton btnPages[] = new ToggleButton[5];
+	private ToggleButton btnClusters = new ToggleButton();
 
 	private RadioButton rbClass;
 	private RadioButton rbProperity;
@@ -80,6 +83,7 @@ public class VAPanel {
 	private VAPanelLogic val;
 
 	private VAUFLPanel UFLPanel;
+	private VAClustersPanel CLPanel;
 
 	public VAPanel(VAPanelLogic v) {
 		this.val = v;
@@ -122,9 +126,9 @@ public class VAPanel {
 		myScene.getStylesheets().add(sceneCss);
 		setLayout();
 		fxPanel.setScene(myScene);
-		//bug here
-//		for (int i = 0; i < 2; i++)
-//			chartLeft[i].updateMainPieChart(ontologyType.Source);
+		// bug here
+		// for (int i = 0; i < 2; i++)
+		// chartLeft[i].updateMainPieChart(ontologyType.Source);
 		for (int i = 0; i < 2; i++) {
 			updateAllWithNewGroup(val.getRootGroupLeft(i), i, true);
 		}
@@ -234,7 +238,6 @@ public class VAPanel {
 		lblSource[i].setContentDisplay(ContentDisplay.CENTER);
 		lblTarget[i] = new Label(VAVariables.targetRoot, chartRight[i].getPieChart());
 		lblTarget[i].setContentDisplay(ContentDisplay.CENTER);
-
 		tilePane.getChildren().addAll(lblSource[i], lblTarget[i]);
 		chartGroup.getChildren().add(tilePane);
 		if (i == 0)
@@ -271,6 +274,7 @@ public class VAPanel {
 		HBox buttonBar = new HBox();
 		initButtons(buttonBar);
 		initRadioButtons(buttonBar);
+		initClusterButton(buttonBar);
 		BorderPane searchboxborderPane = new BorderPane();
 		initSearchBox();
 		searchboxborderPane.setRight(searchBox);
@@ -304,6 +308,14 @@ public class VAPanel {
 		rbProperity.setUserData("Properity");
 		buttonBar.getChildren().addAll(rbClass, rbProperity);
 		setRadioButtonActions(tg);
+	}
+
+	private void initClusterButton(HBox buttonBar) {
+		Region spacer = new Region();
+		spacer.setStyle("-fx-padding: 0 5em 0 0;");
+		btnClusters = new ToggleButton("Show clusters");
+		buttonBar.getChildren().addAll(spacer, btnClusters);
+		setToggleButtonForCluster();
 	}
 
 	/**
@@ -343,6 +355,30 @@ public class VAPanel {
 		setToggleButtonStatus(true);
 		setPageButtonActions();
 		borderPane.setRight(flow);
+	}
+
+	// ============Clusters============
+	public void addClusters(ArrayList<String> cluster, ChartType ct) {
+		String clusterMsg = null;
+		// construct the cluster
+		if (cluster.size() == 0) {
+			return;
+		}
+		for (int i = 0; i < cluster.size(); i++) {
+			clusterMsg += cluster.get(i);
+			clusterMsg += '\n';
+		}
+		if (ct == ChartType.LeftMain) {
+
+		} else if (ct == ChartType.LeftSub) {
+
+		} else if (ct == ChartType.RightMain) {
+
+		} else if (ct == ChartType.RightSub) {
+
+		} else {
+			// error
+		}
 	}
 
 	// ============Pie Chart, tree/list views related logic============
@@ -416,7 +452,7 @@ public class VAPanel {
 		ArrayList<VAData> data = parentGroup.getVADataArray();
 		for (VAData d : data) {
 			String name = d.getNodeName();
-			//String name = d.getNodeNameAndLabel();
+			// String name = d.getNodeNameAndLabel();
 			if (!d.isLeaf())
 				name = VAVariables.nodeWithChildren + name;
 			listTreeLeftRoot.getChildren().add(new TreeItem<String>(name));
@@ -605,6 +641,33 @@ public class VAPanel {
 				btnPages[i].setDisable(disable);
 			}
 		}
+	}
+
+	private void setToggleButtonForCluster() {
+		ToggleGroup group = new ToggleGroup();
+		btnClusters.setToggleGroup(group);
+		group.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
+			@Override
+			public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue,
+					final Toggle selectedToggle) {
+				SwingUtilities.invokeLater(new Runnable() {
+
+					@Override
+					public void run() {
+						int x = 1150, y1 = 200, y2=550;
+						// TODO Auto-generated method stub
+						if (selectedToggle != null && CLPanel == null) {
+							CLPanel = new VAClustersPanel();
+							CLPanel.setPosition(x, y1);
+						} else if (selectedToggle != null) {
+							CLPanel.showFrame(true);
+						} else if (CLPanel != null) {
+							CLPanel.showFrame(false);
+						}
+					}
+				});
+			}
+		});
 	}
 
 	/**
