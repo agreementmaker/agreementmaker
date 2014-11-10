@@ -83,7 +83,7 @@ public class VAPanel {
 	private VAPanelLogic val;
 
 	private VAUFLPanel UFLPanel;
-	private VAClustersPanel CLPanel;
+	private VAClustersPanel CLPanel[] = new VAClustersPanel[2];
 
 	public VAPanel(VAPanelLogic v) {
 		this.val = v;
@@ -654,15 +654,20 @@ public class VAPanel {
 
 					@Override
 					public void run() {
-						int x = 1150, y1 = 200, y2=550;
+						int x = 1150;
+						int y[] = new int[2];
+						y[0] = 200;
+						y[1] = 550;
 						// TODO Auto-generated method stub
-						if (selectedToggle != null && CLPanel == null) {
-							CLPanel = new VAClustersPanel();
-							CLPanel.setPosition(x, y1);
-						} else if (selectedToggle != null) {
-							CLPanel.showFrame(true);
-						} else if (CLPanel != null) {
-							CLPanel.showFrame(false);
+						for (int i = 0; i < 2; i++) {
+							if (selectedToggle != null && CLPanel[i] == null) {
+								CLPanel[i] = new VAClustersPanel();
+								CLPanel[i].setPosition(x, y[i]);
+							} else if (selectedToggle != null) {
+								CLPanel[i].showFrame(true);
+							} else if (CLPanel != null) {
+								CLPanel[i].showFrame(false);
+							}
 						}
 					}
 				});
