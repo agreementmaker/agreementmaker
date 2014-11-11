@@ -400,6 +400,11 @@ public class MatrixPlotPanel extends AMTabSupportPanel
 			lblSimilaritySelected.setText( Double.toString( Utility.roundDouble( plot.getMatrix().getSimilarity(sel.x, sel.y), 4) ) );
 		}
 		
+		if (e.type == EventType.CLEAR_MAPPING_SELECTION) {
+			plot.clearSelectedMapping();
+			lblSimilaritySelected.setText("");
+		}
+		
 		if( e.type == EventType.SET_REFERENCE ) {
 			MatchingTask ref = (MatchingTask)e.payload;
 			// we have set the reference alignment.
