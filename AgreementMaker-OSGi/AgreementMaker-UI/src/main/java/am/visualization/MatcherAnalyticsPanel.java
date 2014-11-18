@@ -75,7 +75,7 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 	
 	private JComboBox<String> cmbTopK;
 	
-	private AbstractMatcher refMatcher = null;
+	private MatchingTask refMatcher = null;
 	private ClusteringMethod clusterMethod = null;
 	private Mapping[] topK;
 	private JTextField txtE;
@@ -115,7 +115,7 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 			@Override
 			public void receiveEvent(MatcherAnalyticsEvent e) {
 				if (e.type == EventType.LOG_MESSAGE) {
-					UIUtility.displayConfirmPane(e.payload.toString(), "MESSAGE");
+					UIUtility.displayInfoPane(e.payload.toString());
 				}
 			}
 			
@@ -377,7 +377,7 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 		}
 		
 		if( e.type == EventType.SET_REFERENCE ) {
-			refMatcher = (AbstractMatcher)e.payload;
+			refMatcher = (MatchingTask)e.payload;
 		}
 		
 		for( int i = eventListeners.size()-1; i >= 0; i-- ) {  // count DOWN from max (for a very good reason, http://book.javanb.com/swing-hacks/swinghacks-chp-12-sect-8.html )
@@ -552,8 +552,8 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 			
 			//String[] topKDescription = new String[k];
 			Alignment<Mapping> refAlignment = null;
-			if( refMatcher != null && type == alignType.aligningClasses ) refAlignment = refMatcher.getClassAlignmentSet();
-			if( refMatcher != null && type == alignType.aligningProperties ) refAlignment = refMatcher.getPropertyAlignmentSet();
+			if( refMatcher != null && type == alignType.aligningClasses ) refAlignment = refMatcher.selectionResult.getClassAlignmentSet();
+			if( refMatcher != null && type == alignType.aligningProperties ) refAlignment = refMatcher.selectionResult.getPropertyAlignmentSet();
 			
 			cmbTopK.removeAllItems();
 			for( int i = 0; i < k; i++ ) {
@@ -675,7 +675,8 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 			 .append(": ")
 			 .append(sim)
 			 .append(" updated to ")
-			 .append(newsim);
+			 .append(newsim)
+			 .append("\n");
 			//filteredCells[m.getSourceKey()][m.getTargetKey()] = true;
 		}
 		

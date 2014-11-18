@@ -349,6 +349,8 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		
 		setupSubMatcher(lwc, lwcParam);
 		runSubMatcher(lwc, "LWC");
+		
+		
 
 		return lwc;
 	}

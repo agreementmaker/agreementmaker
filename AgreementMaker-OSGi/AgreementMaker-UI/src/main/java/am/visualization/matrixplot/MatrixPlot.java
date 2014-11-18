@@ -27,7 +27,7 @@ public class MatrixPlot extends JPanel {
 	protected final SimilarityMatrix matrix;
 	private final alignType type;
 	
-	protected int squareSize = 10;
+	protected int squareSize = 5;
 	private int border = 0;
 	private BufferedImage I;
 	private Point selected = null;
