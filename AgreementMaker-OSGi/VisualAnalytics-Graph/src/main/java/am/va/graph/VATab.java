@@ -15,7 +15,7 @@ public class VATab extends JFXPanel implements AMTab {
 
 	public VATab() {
 		super();
-		setName("Visual Analytics");
+		setName("Visualization System");
 	}
 
 	public VATab(String label) {

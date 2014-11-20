@@ -21,7 +21,7 @@ public class VAMenuItem implements AMMenuItem, ActionListener {
 	@Override
 	public JMenuItem getMenuItem() {
 		JMenuItem menuVisualAanalytics = new JMenuItem(
-				"Show Visual Analytics Panel");
+				"Show Visualization System");
 		menuVisualAanalytics.addActionListener(this);
 		return menuVisualAanalytics;
 	}
