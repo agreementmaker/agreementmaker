@@ -21,7 +21,7 @@ public class VAMenuItem implements AMMenuItem, ActionListener {
 	@Override
 	public JMenuItem getMenuItem() {
 		JMenuItem menuVisualAanalytics = new JMenuItem(
-				"Show Visualization System");
+				"Pie Chart Visualization");
 		menuVisualAanalytics.addActionListener(this);
 		return menuVisualAanalytics;
 	}
