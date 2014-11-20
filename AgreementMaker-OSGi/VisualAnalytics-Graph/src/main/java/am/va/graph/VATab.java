@@ -15,7 +15,7 @@ public class VATab extends JFXPanel implements AMTab {
 
 	public VATab() {
 		super();
-		setName("Visualization System");
+		setName("Pie Chart Visualization");
 	}
 
 	public VATab(String label) {
