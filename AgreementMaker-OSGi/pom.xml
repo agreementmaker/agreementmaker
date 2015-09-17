@@ -47,7 +47,7 @@
 	<repositories>
 		<repository>
 			<id>AgreementMaker Maven Repo</id>
-			<url>http://agreementmaker.org/maven2</url>
+			<url>http://cdn.agreementmaker.org/m2</url>
 		</repository>
 		<repository>
 			<id>bliki</id>

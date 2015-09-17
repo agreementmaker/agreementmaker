@@ -47,10 +47,10 @@ public class ArchiveManager {
 				throw new Exception("input .lzma file isb too short");
 			}
 
-			SevenZip.Compression.LZMA.Decoder decoder = new SevenZip.Compression.LZMA.Decoder();
-			if (!decoder.SetDecoderProperties(properties)) {
-				throw new Exception("Incorrect stream properties");
-			}
+			//SevenZip.Compression.LZMA.Decoder decoder = new SevenZip.Compression.LZMA.Decoder();
+			//if (!decoder.SetDecoderProperties(properties)) {
+			//	throw new Exception("Incorrect stream properties");
+			//}
 
 			long outSize = 0;
 			for (int i = 0; i < 8; i++) {
@@ -61,9 +61,9 @@ public class ArchiveManager {
 				outSize |= ((long) v) << (8 * i);
 			}
 
-			if (!decoder.Code(inStream, outStream, outSize)) {
-				throw new Exception("Error in data stream");
-			}
+			//if (!decoder.Code(inStream, outStream, outSize)) {
+			//	throw new Exception("Error in data stream");
+			//}
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
