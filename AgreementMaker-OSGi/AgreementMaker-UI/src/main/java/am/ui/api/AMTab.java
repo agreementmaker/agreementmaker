@@ -1,7 +1,7 @@
 package am.ui.api;
 
 import javax.swing.ImageIcon;
-import javax.swing.JComponent;
+import javax.swing.JPanel;
 
 /**
  * This panel will be viewed as a Tab in the main AgreementMaker pane.
@@ -20,5 +20,5 @@ public interface AMTab extends AMVisualizationComponent {
 	public void      setIcon(ImageIcon icon);
 	public ImageIcon getIcon();
 	
-	public JComponent getTab();
+	public JPanel getTab();
 }

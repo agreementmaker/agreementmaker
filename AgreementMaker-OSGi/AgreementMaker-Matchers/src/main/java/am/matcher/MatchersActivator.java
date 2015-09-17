@@ -69,8 +69,6 @@ public class MatchersActivator implements BundleActivator {
 		regIism.unregister();
 		regFilterMatcher.unregister();
 		regGroupFinderMatcher.unregister();
-
-		regGroupFinderMatcher.unregister();
 	}
 
 }

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  
+	<parent>
+		<groupId>edu.uic.cs.advis.am</groupId>
+		<version>0.3.0-SNAPSHOT</version>
+		<artifactId>AgreementMaker-OSGi</artifactId>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+
+
+  <artifactId>AgreementMaker-Distribution</artifactId>
+
+  <packaging>pom</packaging>
+
+  <!-- NOTE: These dependency declarations are only required to sort this project to the 
+       end of the line in the multimodule build. 
+       
+       Since we only include the child1 module in our assembly, we only need to ensure this
+       distribution project builds AFTER that one...
+  -->
+  <dependencies>
+    <dependency>
+      <groupId>${project.parent.groupId}</groupId>
+      <artifactId>AgreementMaker-Core</artifactId>
+      <version>${project.parent.version}</version>
+    </dependency>
+<dependency>
+                        <groupId>${project.parent.groupId}</groupId>
+                        <artifactId>AgreementMaker-UI</artifactId>
+                        <version>1.0.0-SNAPSHOT</version>
+                </dependency>
+                <dependency>
+                        <groupId>${project.parent.groupId}</groupId>
+                        <artifactId>AgreementMaker-BatchMode</artifactId>
+                        <version>1.0.0-SNAPSHOT</version>
+                </dependency>
+                <dependency>
+                        <groupId>${project.parent.groupId}</groupId>
+                        <artifactId>Matcher-LinkedOpenData</artifactId>
+                        <version>1.0.0-SNAPSHOT</version>
+                </dependency>
+                <dependency>
+                        <groupId>${project.parent.groupId}</groupId>
+                        <artifactId>Matcher-IMEI2013</artifactId>
+                        <version>1.0.0-SNAPSHOT</version>
+                </dependency>
+
+<dependency>
+                        <groupId>${project.parent.groupId}</groupId>
+                        <artifactId>AgreementMaker-UIGlue</artifactId>
+                        <version>1.0.0-SNAPSHOT</version>
+                </dependency>
+	
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>distro-assembly</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <descriptors>
+                <descriptor>src/assemble/bin.xml</descriptor>
+              </descriptors>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>
