@@ -46,6 +46,7 @@
 							!javax.xml.namespace,
 							!com.ctc.wstx.stax,
 							!javax.xml.transform,
+							!javax.xml.stream,
 							*
 						</Import-Package>
 						<Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
