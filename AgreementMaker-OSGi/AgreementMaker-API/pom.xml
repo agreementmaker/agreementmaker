@@ -1,15 +1,20 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>edu.uic.cs.advis.am</groupId>
+	<parent>
+		<groupId>edu.uic.cs.advis.am</groupId>
+		<version>0.3.0-SNAPSHOT</version>
+		<artifactId>AgreementMaker-OSGi</artifactId>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+
 	<artifactId>AgreementMaker-API</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>bundle</packaging>
-
+	
 	<name>AgreementMaker API</name>
-
+	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<bundle.namespace>am.api</bundle.namespace>
@@ -27,11 +32,13 @@
 					<instructions>
 						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
 						<Bundle-Version>${project.version}</Bundle-Version>
-						<Export-Package>${bundle.namespace}.ontology.*,${bundle.namespace}.alignment.*</Export-Package>
+						<Export-Package>${bundle.namespace}.*</Export-Package>
+						<!-- <Bundle-Activator>${bundle.namespace}.Activator</Bundle-Activator> -->
+						<Import-Package>*</Import-Package>
 					</instructions>
 				</configuration>
 			</plugin>
-
+    
 			<!-- Specify our Java version here. -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
