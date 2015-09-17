@@ -7,3 +7,7 @@ It has competed multiple times in the [Ontology Alignment Evaluation Initiative]
 and presented impressive results.
 
 The currently supported version of AgreementMaker is under the [AgreementMaker-OSGi](AgreementMaker-OSGi) directory.
+
+# Getting Started
+
+Please read the [wiki on GitHub](https://github.com/agreementmaker/agreementmaker/wiki) for information on how to run AgreementMaker.
