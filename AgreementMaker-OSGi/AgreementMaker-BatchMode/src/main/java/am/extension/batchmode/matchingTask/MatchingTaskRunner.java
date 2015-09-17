@@ -21,7 +21,7 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 public class MatchingTaskRunner {
 
 	public static final String DOCUMENTS_DIR = 
-			"/home/cosmin/Documents/ADVIS/OAEI 2013/LargeBioMed_dataset_oaei2012/";
+			"C:/dws_workspace/";
 	
 	public static void main(String argv[]) {
 

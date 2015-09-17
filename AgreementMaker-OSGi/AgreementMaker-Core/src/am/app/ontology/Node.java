@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.rdf.model.Resource;
 
@@ -11,6 +12,10 @@ public interface Node extends Comparable<Node> {
 
 	//void setResource(Resource res);
 	Resource getResource();
+	
+	//Amruta
+//	OntClass getDisjointWith();
+	//Amruta ends
 
 	String getLocalName();
 
@@ -50,6 +55,8 @@ public interface Node extends Comparable<Node> {
 	OntResource getPropertyDomain();
 	OntResource getPropertyRange();
 
+	
+	
 	String getLabel();
 
 	// Used in VertexDescriptionPane
