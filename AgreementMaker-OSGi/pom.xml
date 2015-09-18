@@ -1,238 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-	<!--
-		run: mvn dependency:sources
-		to: download all source jars for the project 
-	 -->
+  <organization>
+    <name>AgreementMaker Ontology Matching System</name>
+    <url>http://agreementmaker.github.io</url>
+  </organization>
 
-	<groupId>edu.uic.cs.advis.am</groupId>
-	<artifactId>AgreementMaker-OSGi</artifactId>
-	<version>0.3.0-SNAPSHOT</version>
-	<packaging>pom</packaging>
+  <licenses>
+    <license>
+      <name>Affero GNU General Public License version 3</name>
+      <url>http://www.gnu.org/licenses/agpl-3.0.en.html</url>
+    </license>
+  </licenses>
 
-	<properties>
-		<skipTests>true</skipTests>
-	</properties>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>edu.uic.cs.advis.am</groupId>
+  <artifactId>AgreementMaker-OSGi</artifactId>
+  <version>0.3.0-SNAPSHOT</version>
 
-	<modules>
-		<module>AgreementMaker-API</module>
-		<module>AgreementMaker-Core</module>
-		<module>Matcher-BaseSimilarity</module>
-		<module>AgreementMaker-Matchers</module>
-		<module>Matcher-PRA</module>
-		<module>Matcher-AdvancedSimilarity</module>
-		<module>Matcher-OAEI</module>
-		<module>AgreementMaker-UI</module>
-		<module>Matcher-LinkedOpenData</module>
-		<module>AgreementMaker-BatchMode</module>
-		<module>AgreementMaker-CollaborationClient</module>
-		<module>AgreementMaker-UserFeedback</module>
-		<module>AgreementMaker-SemanticExplanation</module>
-		<module>AgreementMaker-UIGlue</module>
-		<!-- <module>VisualAnalytics-Graph</module> -->
-		<module>Matcher-Benchmarks2013</module>
-		<module>AgreementMaker-IntegrationTests</module>
-		<module>Matcher-IMEI2013</module>
-		<!-- <module>AM_ROOT</module> -->
-		<!-- <module>AgreementMaker-Distribution</module> -->
-	</modules>
+  <name>AgreementMaker-OSGi</name>
 
-	<name>AgreementMaker OSGi</name>
-	<description>OSGi version of AgreementMaker</description>
+  <description>AgreementMaker Ontology Matching System</description>
 
-	<!-- Repositories from where we get our dependencies. -->
-	<repositories>
-		<repository>
-			<id>AgreementMaker Maven Repo</id>
-			<url>http://cdn.agreementmaker.org/m2</url>
-		</repository>
-		<repository>
-			<id>bliki</id>
-			<url>https://gwtwiki.googlecode.com/svn/maven-repository/</url>
-		</repository>
-	</repositories>
-	
-	<build>
-		<plugins>
-			<!-- Specify our Java version here. -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.0</version>
-				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
-				</configuration>
-			</plugin>
-			<!-- This is NECESSARY for maven-bundle-plugin to work properly inside 
-				Eclipse. -->
-			<plugin>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>copy-dependencies</id>
-						<phase>package</phase>
-						<configuration>
-							<excludeTypes>pom</excludeTypes>
-						</configuration>
-						<goals>
-							<goal>copy-dependencies</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
+  <properties>
+    <org.osgi.service.http.port>8080</org.osgi.service.http.port>
+    <org.osgi.service.http.port.secure>8443</org.osgi.service.http.port.secure>
+  </properties>
 
-		<pluginManagement>
-			<plugins>
-				<!-- Ignore/Execute plugin execution -->
-				<plugin>
-					<groupId>org.eclipse.m2e</groupId>
-					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.0</version>
-					<configuration>
-						<lifecycleMappingMetadata>
-							<pluginExecutions>
-								<!-- copy-dependency plugin -->
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>org.apache.maven.plugins</groupId>
-										<artifactId>maven-dependency-plugin</artifactId>
-										<versionRange>[1.0.0,)</versionRange>
-										<goals>
-											<goal>copy-dependencies</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore />
-									</action>
-								</pluginExecution>
-							</pluginExecutions>
-						</lifecycleMappingMetadata>
-					</configuration>
-				</plugin>
-        <plugin>
-          <!-- Used for the AgreementMaker-Distribution module -->
-          <artifactId>maven-assembly-plugin</artifactId>
-          <version>2.4</version>
-          <configuration>
-            <descriptors>
-              <descriptor>src/assemble/bin.xml</descriptor>
-            </descriptors>
-          </configuration>
-        </plugin>
-			</plugins>
-		</pluginManagement>
-	</build>
-	
-	<!-- Put the OSGi manifest where Eclipse Plugin Development Environment (PDE) expects it. -->
-	<profiles>
-		<profile>
-			<activation>
-				<property>
-					<name>m2e.version</name>
-				</property>
-			</activation>
-			<properties>
-				<osgi-version-qualifier>qualifier</osgi-version-qualifier>
-			</properties>
-			<build>
-				<pluginManagement>
-					<plugins>
-						<plugin>
-							<groupId>org.apache.felix</groupId>
-							<artifactId>maven-bundle-plugin</artifactId>
-							<configuration>
-								<!-- PDE does not honour custom manifest location -->
-								<manifestLocation>META-INF</manifestLocation>
-							</configuration>
-						</plugin>
-					</plugins>
-				</pluginManagement>
-			</build>
-		</profile>
+  <packaging>pom</packaging>
 
-<!-- Profile for creating the source jars -->
-<profile>
-      <id>release</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-source-plugin</artifactId>
-            <version>2.2.1</version>
-            <executions>
-              <execution>
-                <id>attach-sources</id>
-                <goals>
-                  <goal>jar-no-fork</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
+  <modules>
+    <module>poms</module>
+    <module>provision</module>
+  </modules>
 
-		<!-- Maven Graph Plugin: http://mvnplugins.fusesource.org/maven/1.4/maven-graph-plugin/index.html 
-			To generate the dependency graphs, use: 
-			$ mvn -P graph graph:project
-		OR
-			$ mvn -P graph graph:reactor
-			
-			dot must be on your PATH.
-		-->
-		<profile>
-			<id>graph</id>
-			<pluginRepositories>
-				<pluginRepository>
-					<id>mvnplugins.fusesource.org</id>
-					<url>http://mvnplugins.fusesource.org/repo/release</url>
-					<releases>
-						<enabled>true</enabled>
-					</releases>
-				</pluginRepository>
-			</pluginRepositories>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.fusesource.mvnplugins</groupId>
-						<artifactId>maven-graph-plugin</artifactId>
-						<version>1.5</version>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-		
-	</profiles>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.ops4j</groupId>
+        <artifactId>maven-pax-plugin</artifactId>
+        <version>1.5</version>
+        <configuration>
+          <provision>
+            <param>--platform=felix</param>
+          </provision>
+        </configuration>
+        <executions>
+          <!--
+           | uncomment to auto-generate IDE files
+          <execution>
+            <id>ide-support</id>
+            <goals>
+              <goal>eclipse</goal>
+            </goals>
+          </execution>
+          -->
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 
-	<!-- Dependencies common to ALL modules of this project. -->
-	<dependencies>
-		<!-- OSGi dependencies -->
-		<dependency>
-			<groupId>org.osgi</groupId>
-			<artifactId>org.osgi.core</artifactId>
-			<version>4.3.1</version>
-			<scope>provided</scope>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.osgi</groupId>
-			<artifactId>org.osgi.compendium</artifactId>
-			<version>4.3.1</version>
-			<scope>provided</scope>
-			<optional>true</optional>
-		</dependency>
-		
-		<!-- Unit Test dependencies -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.8.1</version>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
 </project>
