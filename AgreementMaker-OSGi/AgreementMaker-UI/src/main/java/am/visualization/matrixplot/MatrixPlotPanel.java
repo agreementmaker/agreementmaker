@@ -16,13 +16,12 @@ import javax.swing.SpringLayout;
 import javax.swing.SwingUtilities;
 
 import am.Utility;
-import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.evaluation.clustering.Cluster;
 import am.evaluation.clustering.ClusterFactory;
 import am.evaluation.clustering.ClusterFactory.ClusteringType;
-import am.ui.api.AMTab;
 import am.ui.api.impl.AMTabSupportPanel;
 import am.visualization.Gradient;
 import am.visualization.MatcherAnalyticsEvent;
@@ -39,9 +38,9 @@ public class MatrixPlotPanel extends AMTabSupportPanel
 	private final MatrixPlot plot;
 	private final JLabel lblName;
 	private final JLabel lblSimilaritySelected;
-	private final AbstractMatcher matcher;
+	private final MatchingTask matchingTask;
 	
-	private AbstractMatcher referenceMatcher = null;
+	private MatchingTask referenceMatcher = null;
 
 	private String tooltip;
 
@@ -53,29 +52,26 @@ public class MatrixPlotPanel extends AMTabSupportPanel
 	
 	//private VisualizationType type;
 	
-	public MatrixPlotPanel(AbstractMatcher a, SimilarityMatrix mtx, MatcherAnalyticsEventDispatch d ) {
+	public MatrixPlotPanel(MatchingTask a, SimilarityMatrix mtx, MatcherAnalyticsEventDispatch d ) {
 		super("MatrixPlot");
-
 		dispatch = d;
-		
-		
+
 		plot = new MatrixPlot(a, mtx, this);
-		
 		plot.addMouseListener(this);
 		plot.draw(false);
 		
-		if( a != null ) { lblName = new JLabel(a.getName()); }
+		if( a != null ) { lblName = new JLabel(a.matchingAlgorithm.getName()); }
 		else { lblName = new JLabel("--"); }
 		
 		lblSimilaritySelected = new JLabel("", JLabel.TRAILING);
 		
-		matcher = a;
+		matchingTask = a;
 		
 		initThisPanel();		
 		
 	}
 	
-	public MatrixPlotPanel(AbstractMatcher a, MatcherAnalyticsEventDispatch d , MatrixPlot plot) {
+	public MatrixPlotPanel(MatchingTask a, MatcherAnalyticsEventDispatch d , MatrixPlot plot) {
 		super("MatrixPlot");
 
 		dispatch = d;
@@ -86,18 +82,18 @@ public class MatrixPlotPanel extends AMTabSupportPanel
 		plot.addMouseListener(this);
 		plot.draw(false);
 		
-		if( a != null ) { lblName = new JLabel(a.getRegistryEntry().getMatcherName()); }
+		if( a != null ) { lblName = new JLabel(a.getShortLabel()); }
 		else { lblName = new JLabel("--"); }
 		
 		lblSimilaritySelected = new JLabel("", JLabel.TRAILING);
 		
-		matcher = a;
+		matchingTask = a;
 		
 		initThisPanel();		
 		
 	}
 	
-	public MatrixPlotPanel(AbstractMatcher a, SimilarityMatrix mtx, MatcherAnalyticsEventDispatch d, Gradient g ) {
+	public MatrixPlotPanel(MatchingTask a, SimilarityMatrix mtx, MatcherAnalyticsEventDispatch d, Gradient g ) {
 		super("MatrixPlot");
 
 		dispatch = d;
@@ -105,12 +101,12 @@ public class MatrixPlotPanel extends AMTabSupportPanel
 		plot.addMouseListener(this);
 		plot.draw(false);
 		
-		if( a != null ) { lblName = new JLabel(a.getRegistryEntry().getMatcherName()); }
+		if( a != null ) { lblName = new JLabel(a.getShortLabel()); }
 		else { lblName = new JLabel("--"); }
 		
 		lblSimilaritySelected = new JLabel("", JLabel.TRAILING);
 		
-		matcher = a;
+		matchingTask = a;
 		
 		initThisPanel();		
 		
@@ -127,10 +123,8 @@ public class MatrixPlotPanel extends AMTabSupportPanel
 		lblName = new JLabel(name);
 		lblSimilaritySelected = new JLabel("", JLabel.TRAILING);
 		
-		matcher = null;
-		
-		
-		
+		matchingTask = null;
+
 		initThisPanel();
 	}
 
@@ -240,7 +234,11 @@ public class MatrixPlotPanel extends AMTabSupportPanel
 	}
 
 	public MatrixPlot getPlot() { return plot; }
-	public AbstractMatcher getMatcher() { return matcher; }
+	
+	@Override
+	public MatchingTask getMatcher() {
+		return matchingTask;
+	}
 	public SimilarityMatrix getMatrix() { return plot.getMatrix(); }
 	//public boolean popupMenuActive() { return popupMenuActive; }
 	public boolean getViewAlignmentOnly() { return plot.getViewAlignmentOnly(); }
@@ -261,14 +259,16 @@ public class MatrixPlotPanel extends AMTabSupportPanel
 		if( e.getActionCommand().equals( MatrixPlotPopupMenu.ActionCommands.SET_REFERENCE.name() ) ) {
 			// set this matcher as the reference
 			//popupMenuActive = false;
-			if( matcher != null ) {
-				setReference(matcher);
+			
+			
+			if( matchingTask != null ) {
+				setReference(matchingTask);
 				
 				if( dispatch != null ) {
 					// broadcast this event to the other MatrixPlot objects.
 					Runnable fire = new Runnable() {
 						public void run() {
-							dispatch.broadcastEvent( new MatcherAnalyticsEvent( this,  EventType.SET_REFERENCE,  matcher ));
+							dispatch.broadcastEvent( new MatcherAnalyticsEvent( this,  EventType.SET_REFERENCE,  matchingTask ));
 						}
 					};
 					
@@ -341,7 +341,7 @@ public class MatrixPlotPanel extends AMTabSupportPanel
 				// broadcast this event to the other MatrixPlot objects.
 				Runnable fire = new Runnable() {
 					public void run() {
-						dispatch.broadcastEvent( new MatcherAnalyticsEvent( this,  EventType.SET_FEEDBACK,  matcher ));
+						dispatch.broadcastEvent( new MatcherAnalyticsEvent( this,  EventType.SET_FEEDBACK,  matchingTask ));
 					}
 				};
 				
@@ -365,23 +365,29 @@ public class MatrixPlotPanel extends AMTabSupportPanel
 		
 	}
 	
-	private void setReference(AbstractMatcher matcher2) {
+	private void setReference(MatchingTask matcher2) {
 		if( dispatch == null ) return;
 
 		referenceMatcher = matcher2;
 		
 		switch( dispatch.getType() ) {
 		case aligningClasses:
-			plot.setReferenceAlignment( matcher2.getClassAlignmentSet() );
+			plot.setReferenceAlignment( matcher2.selectionResult.getClassAlignmentSet() );
 			break;
 		case aligningProperties:
-			plot.setReferenceAlignment( matcher2.getPropertyAlignmentSet() );
+			plot.setReferenceAlignment( matcher2.selectionResult.getPropertyAlignmentSet() );
 			break;
 		}
 		
 	}
 
-	public void setName(String newName) { lblName.setText(newName); }
+	@Override
+	public void setName(String newName) {
+		super.setName(newName);
+		if (lblName != null) {
+			lblName.setText(newName);
+		}
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -394,15 +400,20 @@ public class MatrixPlotPanel extends AMTabSupportPanel
 			lblSimilaritySelected.setText( Double.toString( Utility.roundDouble( plot.getMatrix().getSimilarity(sel.x, sel.y), 4) ) );
 		}
 		
+		if (e.type == EventType.CLEAR_MAPPING_SELECTION) {
+			plot.clearSelectedMapping();
+			lblSimilaritySelected.setText("");
+		}
+		
 		if( e.type == EventType.SET_REFERENCE ) {
-			AbstractMatcher ref = (AbstractMatcher)e.payload;
+			MatchingTask ref = (MatchingTask)e.payload;
 			// we have set the reference alignment.
 			setReference(ref);
-			if( ref == matcher ) lblName.setText(lblName.getText() + " (reference)");
+			if( ref == matchingTask ) lblName.setText(lblName.getText() + " (reference)");
 		}
 		
 		if( e.type == EventType.MATRIX_UPDATED ) {
-			if( (matcher != null && e.payload == matcher) || e.payload == referenceMatcher ) {
+			if( (matchingTask != null && e.payload == matchingTask) || e.payload == referenceMatcher ) {
 				if( e.payload == referenceMatcher ) setReference(referenceMatcher);
 				plot.createImage(true);
 				plot.repaint();				

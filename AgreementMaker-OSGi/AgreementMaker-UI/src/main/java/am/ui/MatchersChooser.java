@@ -23,7 +23,7 @@ import javax.swing.JRootPane;
 import javax.swing.KeyStroke;
 
 import am.app.Core;
-import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.MatchingTask;
 
 
 /**
@@ -42,7 +42,7 @@ public class MatchersChooser {
 	 * and a list of the matchers corresponding to the checkboxes is returned.
 	 * @return Null if the dialog is canceled.  Empty list if nothing is selected.
 	 */
-	public static List<AbstractMatcher> getManyMatchers(String message) {
+	public static List<MatchingTask> getManyMatchers(String message) {
 		
 		MatchersChooserCheckboxPanel checkBoxPanel = new MatchersChooserCheckboxPanel();
 		MatchersChooserDialog dialog = new MatchersChooserDialog(checkBoxPanel);
@@ -57,13 +57,13 @@ public class MatchersChooser {
 	 * in the system so the user can choose a single one.
 	 * @return Null if the dialog is canceled, or if nothing is selected.
 	 */
-	public static AbstractMatcher getOneMatcher(String message) {
+	public static MatchingTask getOneMatcher(String message) {
 		MatchersChooserRadioPanel radioPanel = new MatchersChooserRadioPanel();
 		MatchersChooserDialog dialog = new MatchersChooserDialog(radioPanel);
 		dialog.setMessage(message);
 		dialog.setVisible(true);
 		
-		List<AbstractMatcher> l =  dialog.getMatchers();
+		List<MatchingTask> l =  dialog.getMatchers();
 		if( l == null || l.isEmpty() ) return null;
 		return l.get(0);
 	}
@@ -77,7 +77,7 @@ public class MatchersChooser {
 
 		private static final long serialVersionUID = -4199567169803000678L;
 		
-		List<AbstractMatcher> matchers;
+		List<MatchingTask> matchers;
 		private JRadioButton[] matcherRadios;
 		
 		
@@ -85,7 +85,7 @@ public class MatchersChooser {
 			super();
 			
 			
-			matchers = Core.getInstance().getMatcherInstances();
+			matchers = Core.getInstance().getMatchingTasks();
 			
 			setLayout(new BorderLayout());
 			
@@ -98,8 +98,8 @@ public class MatchersChooser {
 			ButtonGroup grpMatchers = new ButtonGroup(); 
 			
 			for( int i = 0; i < matchers.size(); i++ ) {
-				AbstractMatcher currentMatcher = matchers.get(i);
-				JRadioButton radMatcher = new JRadioButton(currentMatcher.getRegistryEntry().getMatcherName());
+				MatchingTask currentMatcher = matchers.get(i);
+				JRadioButton radMatcher = new JRadioButton(currentMatcher.getShortLabel());
 				radMatcher.setSelected(true);
 				matcherRadios[i] = radMatcher;
 				grpMatchers.add(radMatcher);
@@ -114,10 +114,10 @@ public class MatchersChooser {
 		 * Return a list of matchers corresponding to the selected checkboxes.
 		 * @return Null if no matcher was selected.
 		 */
-		public List<AbstractMatcher> getMatchers() {
+		public List<MatchingTask> getMatchers() {
 			if( matcherRadios == null ) { return null; }
 			
-			List<AbstractMatcher> matcherSelected = new ArrayList<AbstractMatcher>();
+			List<MatchingTask> matcherSelected = new ArrayList<>();
 			for( int i = 0; i < matcherRadios.length; i++ ) {
 				if( matcherRadios[i] != null && matcherRadios[i].isSelected() ) {
 					matcherSelected.add(matchers.get(i));
@@ -141,7 +141,7 @@ public class MatchersChooser {
 
 		private static final long serialVersionUID = -4199567169803000678L;
 		
-		List<AbstractMatcher> matchers;
+		List<MatchingTask> matchers;
 		private JCheckBox[] matcherCheckboxes;
 		
 		
@@ -149,7 +149,7 @@ public class MatchersChooser {
 			super();
 			
 			
-			matchers = Core.getInstance().getMatcherInstances();
+			matchers = Core.getInstance().getMatchingTasks();
 			
 			setLayout(new BorderLayout());
 			
@@ -160,8 +160,8 @@ public class MatchersChooser {
 			selectionPanel.setLayout( new GridLayout( matchers.size(), 1) );
 			
 			for( int i = 0; i < matchers.size(); i++ ) {
-				AbstractMatcher currentMatcher = matchers.get(i);
-				JCheckBox chkMatcher = new JCheckBox(currentMatcher.getRegistryEntry().getMatcherName());
+				MatchingTask currentMatcher = matchers.get(i);
+				JCheckBox chkMatcher = new JCheckBox(currentMatcher.getShortLabel());
 				chkMatcher.setSelected(true);
 				matcherCheckboxes[i] = chkMatcher;
 				selectionPanel.add(chkMatcher);
@@ -175,10 +175,10 @@ public class MatchersChooser {
 		 * Return a list of matchers corresponding to the selected checkboxes.
 		 * @return
 		 */
-		public List<AbstractMatcher> getMatchers() {
+		public List<MatchingTask> getMatchers() {
 			if( matcherCheckboxes == null ) { return null; }
 			
-			List<AbstractMatcher> matchersSelected = new ArrayList<AbstractMatcher>();
+			List<MatchingTask> matchersSelected = new ArrayList<>();
 			for( int i = 0; i < matcherCheckboxes.length; i++ ) {
 				if( matcherCheckboxes[i] != null && matcherCheckboxes[i].isSelected() ) matchersSelected.add( matchers.get(i) );
 			}
@@ -269,7 +269,7 @@ public class MatchersChooser {
 			setVisible(false);
 		}
 		
-		public List<AbstractMatcher> getMatchers() {
+		public List<MatchingTask> getMatchers() {
 			if( canceled ) return null;
 			else {
 				if( checkboxPanel instanceof MatchersChooserCheckboxPanel ) return ((MatchersChooserCheckboxPanel)checkboxPanel).getMatchers();

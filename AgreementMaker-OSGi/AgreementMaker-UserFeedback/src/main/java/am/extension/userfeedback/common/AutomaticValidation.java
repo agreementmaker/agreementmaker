@@ -5,11 +5,15 @@ import am.app.mappingEngine.Mapping;
 import am.extension.userfeedback.UserFeedback;
 import am.extension.userfeedback.experiments.UFLExperiment;
 
-public class AutomaticValidation<T extends UFLExperiment> extends UserFeedback<T> {
+public class AutomaticValidation extends UserFeedback {
 
 	Validation userValidation;
 	Mapping candidateMapping;
 
+	public AutomaticValidation() {
+		super();
+	}
+	
 	/**
 	 * If false, the user validation will ignore the relation type of the mapping.
 	 * TODO: Make this be a parameter that can be changed programatically.
@@ -23,7 +27,7 @@ public class AutomaticValidation<T extends UFLExperiment> extends UserFeedback<T
 	}
 
 	@Override
-	public void validate(T experiment) {
+	public void validate(UFLExperiment experiment) {
 		
 		//Logger log = Logger.getLogger(this.getClass());
 		UFLExperiment log = experiment;

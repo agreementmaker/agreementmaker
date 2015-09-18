@@ -17,11 +17,10 @@ import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.extension.multiUserFeedback.logic.BMlogic;
-import am.extension.userfeedback.UserFeedback.Validation;
 import am.extension.userfeedback.experiments.UFLExperiment;
 import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
 import am.extension.userfeedback.experiments.UFLExperimentSetup;
-import am.extension.userfeedback.logic.UFLControlLogic;
+import am.extension.userfeedback.logic.NonPersistentUFLControlLogic;
 import am.ui.UIUtility;
 
 public class BMexperiment extends UFLExperiment {
@@ -181,28 +180,8 @@ public void setMLAlignment(Alignment<Mapping> mLAlignment) {
 }
 
 	@Override
-	public boolean experimentHasCompleted() {
-		if( userFeedback != null && userFeedback.getUserFeedback() == Validation.END_EXPERIMENT ) return true;  // we're done when the user says so
-		return false;
-	}
-
-	@Override
-	public void	newIteration() {
-		if( userFeedback.getUserFeedback() == Validation.CORRECT ) {
-			if( correctMappings == null ) {
-				correctMappings = new Alignment<Mapping>(getSourceOntology().getID(), getTargetOntology().getID());
-			}
-			correctMappings.add( userFeedback.getCandidateMapping() );
-		} else if( userFeedback.getUserFeedback() == Validation.INCORRECT ) {
-			if( incorrectMappings == null ) {
-				incorrectMappings = new Alignment<Mapping>(getSourceOntology().getID(), getTargetOntology().getID());
-			}
-			incorrectMappings.add( userFeedback.getCandidateMapping() );
-		}
-		realIteration++;
-		int tmpIter=realIteration/usersNumber;
-		currentUser=realIteration%usersNumber;
-		setIterationNumber(tmpIter); 
+	public void	beginIteration() {
+		currentUser = getIterationNumber() % usersNumber;
 	}
 
 	@Override
@@ -223,7 +202,7 @@ public void setMLAlignment(Alignment<Mapping> mLAlignment) {
 	}
 
 	@Override
-	public UFLControlLogic getControlLogic() {
+	public NonPersistentUFLControlLogic getControlLogic() {
 		return new BMlogic();
 		//return new IndependentSequentialLogic();
 	}

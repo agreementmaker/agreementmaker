@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MappingSimilarityComparator;
+import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.evaluation.disagreement.variance.VarianceDisagreement;
 import am.evaluation.disagreement.variance.VarianceDisagreementParameters;
@@ -281,7 +281,7 @@ public class MultiStrategyRanking extends CandidateSelection<MUExperiment>{
 	
 	private void disagreementRanking()
 	{
-		List<AbstractMatcher> matchers = experiment.initialMatcher.getComponentMatchers();
+		List<MatchingTask> matchers = experiment.initialMatcher.getComponentMatchers();
 		List<Mapping> rankedClassMappings=null;
 		List<Mapping> rankedPropertyMappings=null;
 		

@@ -5,11 +5,11 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
-import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MappingSimilarityComparator;
+import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.qualityEvaluation.metrics.ufl.CrossCountQuality;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
@@ -131,7 +131,7 @@ public class ServerCandidateSelection extends MUCandidateSelection<MUExperiment>
 	//Automatic Matcher Disagreement
 	private void disagreementRanking()
 	{
-		List<AbstractMatcher> matchers = experiment.initialMatcher.getComponentMatchers();
+		List<MatchingTask> matchers = experiment.initialMatcher.getComponentMatchers();
 		List<Mapping> rankedClassMappings=null;
 		List<Mapping> rankedPropertyMappings=null;
 		

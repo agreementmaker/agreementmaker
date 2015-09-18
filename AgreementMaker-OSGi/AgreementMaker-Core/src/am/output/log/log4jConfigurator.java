@@ -1,5 +1,6 @@
 package am.output.log;
 
+import java.io.InputStream;
 import java.net.URL;
 
 import org.apache.log4j.spi.Configurator;
@@ -15,6 +16,12 @@ public class log4jConfigurator implements Configurator {
 
 	@Override
 	public void doConfigure(URL arg0, LoggerRepository arg1) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void doConfigure(InputStream arg0, LoggerRepository arg1) {
 		// TODO Auto-generated method stub
 		
 	}

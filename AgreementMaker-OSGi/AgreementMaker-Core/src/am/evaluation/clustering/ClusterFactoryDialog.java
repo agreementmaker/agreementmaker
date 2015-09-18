@@ -15,8 +15,8 @@ import javax.swing.JPanel;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import am.Utility;
-import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.MatcherResult;
+import am.app.mappingEngine.MatchingTask;
 
 
 public class ClusterFactoryDialog extends JDialog implements ActionListener {
@@ -30,7 +30,7 @@ public class ClusterFactoryDialog extends JDialog implements ActionListener {
 	private JButton btnCancel;
 	private JButton btnOK;
 	private JCheckBox[] matcherCheckboxes;
-	private List<AbstractMatcher> matchers;
+	private List<MatchingTask> matchers;
 	private boolean userCanceled = false;
 	
 	public ClusterFactoryDialog( ClusteringMethod method ) {
@@ -47,8 +47,8 @@ public class ClusterFactoryDialog extends JDialog implements ActionListener {
 		selectionPanel.setLayout( new GridLayout( matchers.size(), 1) );
 		
 		for( int i = 0; i < matchers.size(); i++ ) {
-			AbstractMatcher currentMatcher = matchers.get(i);
-			JCheckBox chkMatcher = new JCheckBox(currentMatcher.getRegistryEntry().getMatcherName());
+			MatchingTask currentMatcher = matchers.get(i);
+			JCheckBox chkMatcher = new JCheckBox(currentMatcher.getShortLabel());
 			chkMatcher.setSelected(true);
 			matcherCheckboxes[i] = chkMatcher;
 			selectionPanel.add(chkMatcher);

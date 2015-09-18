@@ -52,8 +52,13 @@ public class MatchingTaskCreatorDialog extends JDialog implements MessageDispatc
 	private SelectionAlgorithmParametersPanel pnlSelectionAlgorithm;
 	private OntologyProfilerPanel pnlAnnotationProfiling;
 	
+	private Ontology sourceOntology, targetOntology;
+	
 	public MatchingTaskCreatorDialog(Ontology sourceOntology, Ontology targetOntology) {
 		super(UICore.getUI().getUIFrame());
+		
+		this.sourceOntology = sourceOntology;
+		this.targetOntology = targetOntology;
 		
 		MatchingTaskOverviewPanel overviewPanel = new MatchingTaskOverviewPanel(sourceOntology, targetOntology);
 		messageDispatch.addConsumer(overviewPanel);
@@ -121,6 +126,7 @@ public class MatchingTaskCreatorDialog extends JDialog implements MessageDispatc
 			e.printStackTrace();
 		}
 		DefaultMatcherParameters matcherParameters = pnlMatchingAlgorithm.getMatcherParameters();
+		matcherParameters.setOntologies(sourceOntology, targetOntology);
 		
 		SelectionAlgorithm selectionAlgorithm = pnlSelectionAlgorithm.getSelectionAlgorithm();
 		DefaultSelectionParameters selectionParameters = pnlSelectionAlgorithm.getSelectionParameters();

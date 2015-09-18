@@ -1,24 +1,21 @@
 package am.extension.userfeedback.analysis;
 
-import org.apache.log4j.Level;
+import static org.junit.Assert.assertEquals;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import static org.junit.Assert.*;
 import org.junit.Test;
 
 import am.Utility;
-import am.app.Core;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.ReferenceEvaluationData;
 import am.app.mappingEngine.referenceAlignment.ReferenceEvaluator;
-import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.extension.multiUserFeedback.MatchingTasks2014;
 import am.extension.multiUserFeedback.experiment.MUExperiment;
 import am.extension.userfeedback.clustering.disagreement.SestCombinationMatchers;
-import am.extension.userfeedback.experiments.UFLExperiment;
 import am.extension.userfeedback.experiments.UFLExperimentParameters;
 import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
 import am.extension.userfeedback.experiments.UFLExperimentSetup;
@@ -33,7 +30,7 @@ import com.hp.hpl.jena.rdf.model.impl.RDFDefaultErrorHandler;
  * @author <a href="http://cstroe.com">Cosmin Stroe</a>
  *
  */
-public class InitialMatcherAnalysis {
+public class InitialMatcherAnalysis extends AnalysisBase {
 	private static final Logger LOG = LogManager.getLogger(InitialMatcherAnalysis.class);
 	
 	/**
@@ -42,15 +39,11 @@ public class InitialMatcherAnalysis {
 	
 	@Test
 	public void analyzeMatchingTasksInitialMatchers() {
+		// setup a basic log4j configuration that logs to the console
+		setupLogging();
+	    
 		// silence all the other loggers
-		Logger sestLog = LogManager.getLogger(SestCombinationMatchers.class);
-		sestLog.setLevel(Level.OFF);
-		Logger uflexpLogger = LogManager.getLogger(UFLExperiment.class);
-		uflexpLogger.setLevel(Level.OFF);
-		Logger mtxLogger = LogManager.getLogger(ArraySimilarityMatrix.class);
-		mtxLogger.setLevel(Level.OFF);
-		Logger coreLogger = LogManager.getLogger(Core.class);
-		coreLogger.setLevel(Level.OFF);
+		silenceNoisyLoggers(noisyLoggers);
 		RDFDefaultErrorHandler.silent = true;
 		
 		LOG.info("Analysis of initial matchers at different thresholds for each test case.");
@@ -196,7 +189,7 @@ public class InitialMatcherAnalysis {
 		analyzeSestMatcher(MatchingTasks2014.conferenceConfOfEkaw, 0.1);
 		analyzeSestMatcher(MatchingTasks2014.conferenceConfOfEkaw, 0.001);
 	}
-	
+
 	private void analyzeSestMatcher(MatchingTaskPreset p, double threshold) {
 		
 		UFLExperimentSetup setup = new UFLExperimentSetup();

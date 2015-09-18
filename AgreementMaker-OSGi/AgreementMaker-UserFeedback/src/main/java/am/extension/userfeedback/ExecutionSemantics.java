@@ -58,7 +58,7 @@ public abstract class ExecutionSemantics {
 	}
 	
 	protected void done() {
-		ActionEvent e = new ActionEvent(this, 0, UFLControlGUI.ActionCommands.EXECUTION_SEMANTICS_DONE.name() );
+		ActionEvent e = new ActionEvent(this, 0, UFLControlGUI.ActionCommands.INITIAL_MATCHERS_DONE.name() );
 		fireEvent(e);
 	}
 	

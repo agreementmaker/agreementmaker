@@ -29,6 +29,8 @@ import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.MatcherResult;
+import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.ontology.Node;
 
@@ -48,14 +50,14 @@ public class GVM_Clustering_Panel extends JPanel implements PropertyChangeListen
 	
 	JTextArea txtResult = new JTextArea();
 	
-	List<AbstractMatcher> matchers;
+	List<MatchingTask> matchers;
 	GVM_Clustering gvmcl;
 	
 	JScrollPane scrResult = new JScrollPane();
 	
 	Thread clusteringThread;
 	
-	public GVM_Clustering_Panel(List<AbstractMatcher> matchers) {
+	public GVM_Clustering_Panel(List<MatchingTask> matchers) {
 		super();
 		
 		this.matchers = matchers;
@@ -66,8 +68,8 @@ public class GVM_Clustering_Panel extends JPanel implements PropertyChangeListen
 		txtResult.setFont(new Font("Monospaced", Font.PLAIN, 12));
 		if( matchers != null ) {
 			txtResult.setText("Input is " + matchers.size() + " matchers.\n\n");
-			for( AbstractMatcher m : matchers ) {
-				txtResult.append(m.getName() + "\n");
+			for( MatchingTask m : matchers ) {
+				txtResult.append(m.getShortLabel() + "\n");
 			}
 		} else {
 			txtResult.setText("No input matchers.");

@@ -30,29 +30,29 @@ public class UFLutility {
 	
 	public static final Logger LOG = LogManager.getLogger(UFLutility.class);
 	
-	static public Object[] getSignatureVector(Mapping mp, List<AbstractMatcher> inputMatchers)
+	static public double[] getSignatureVector(Mapping mp, List<MatchingTask> inputMatchers)
 	{
 		int size=inputMatchers.size();
 		Node sourceNode=mp.getEntity1();
 		Node targetNode=mp.getEntity2();
-		AbstractMatcher a;
-		Object[] ssv=new Object[size];
+		MatchingTask a;
+		double[] ssv=new double[size];
 		for (int i=0;i<size;i++)
 		{
 			a = inputMatchers.get(i);
-			ssv[i]=a.getAlignment().getSimilarity(sourceNode, targetNode);
+			ssv[i] = a.selectionResult.getAlignment().getSimilarity(sourceNode, targetNode);
 				
 		}
 		return ssv;
 	}
 	
 	//check if the signature vector is valid. A valid signature vector must have at least one non zero element.
-	static public boolean validSsv(Object[] ssv)
+	static public boolean validSsv(double[] ssv)
 	{
-		Object obj=0.0;
+		double obj=0.0d;
 		for(int i=0;i<ssv.length;i++)
 		{
-			if (!ssv[i].equals(obj))
+			if (!(ssv[i] == obj))
 				return true;
 		}
 		return false;
@@ -89,22 +89,22 @@ public class UFLutility {
 		return alg;
 	}
 	
-	static public double distanceSV(Object[] sv1, Object[] sv2)
+	static public double distanceSV(double[] sv1, double[] sv2)
 	{
 		double distance=0.0d;
 		for (int i=0;i<sv1.length;i++)
 		{
-			distance+=Math.pow((double)sv1[i]-(double)sv2[i],2);
+			distance+=Math.pow(sv1[i] - sv2[i],2);
 		}
 		distance=Math.sqrt(distance);
 		return distance;
 	}
 	
 	
-	static public double distanceMP(Mapping m1, Mapping m2, List<AbstractMatcher> inputMatchers)
+	static public double distanceMP(Mapping m1, Mapping m2, List<MatchingTask> inputMatchers)
 	{
-		Object[] sv1=getSignatureVector(m1, inputMatchers);
-		Object[] sv2=getSignatureVector(m2, inputMatchers);
+		double[] sv1=getSignatureVector(m1, inputMatchers);
+		double[] sv2=getSignatureVector(m2, inputMatchers);
 		return distanceSV(sv1, sv2);
 	}
 	
@@ -116,7 +116,7 @@ public class UFLutility {
 	    return bd.doubleValue();
 	}
 	
-	static public List<List<Mapping>> getRelations(SimilarityMatrix sm, List<AbstractMatcher> inputMatchers)
+	static public List<List<Mapping>> getRelations(SimilarityMatrix sm, List<MatchingTask> inputMatchers)
 	{
 		Mapping mp=null;
 		List<List<Mapping>> lst=new ArrayList<>();
@@ -145,7 +145,7 @@ public class UFLutility {
 		return false;
 	}
 	
-	static List<Mapping> addToList(Mapping mp, SimilarityMatrix sm, List<AbstractMatcher> inputMatchers)
+	static List<Mapping> addToList(Mapping mp, SimilarityMatrix sm, List<MatchingTask> inputMatchers)
 	{
 		List<Mapping> lst=new ArrayList<>();
 		Mapping m;
@@ -179,18 +179,18 @@ public class UFLutility {
 		return sim;
 	}
 	
-	static public List<SimilarityMatrix> extractList(List<AbstractMatcher> lst, alignType type)
+	static public List<SimilarityMatrix> extractList(List<MatchingTask> lst, alignType type)
 	{
 		List<SimilarityMatrix> mList=new ArrayList<SimilarityMatrix>();
 		if (type.equals(alignType.aligningClasses))
 		{
 			for (int i=0;i<lst.size();i++)
-				mList.add(lst.get(i).getClassesMatrix());
+				mList.add(lst.get(i).matcherResult.getClassesMatrix());
 		}
 		else
 		{
 			for (int i=0;i<lst.size();i++)
-				mList.add(lst.get(i).getPropertiesMatrix());
+				mList.add(lst.get(i).matcherResult.getPropertiesMatrix());
 		}
 		return mList;
 	}
@@ -363,4 +363,16 @@ public class UFLutility {
 		return lst;
 	}
 	
+	
+	public static void logReferenceAlignment(Alignment<Mapping> referenceAlignment, UFLExperiment experiment) {
+		if( referenceAlignment != null ) {
+			experiment.info("Reference alignment has " + referenceAlignment.size() + " mappings.");
+			for( int i = 0; i < referenceAlignment.size(); i++ ) {
+				Mapping currentMapping = referenceAlignment.get(i);
+				experiment.info((i+1) + ". " + currentMapping.toString() );
+			}
+			
+			experiment.info("");
+		}
+	}
 }

@@ -7,8 +7,8 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.List;
 
-import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.MatchingTask;
 import am.evaluation.clustering.Cluster;
 import am.evaluation.clustering.localByThreshold.LocalByThresholdMethod;
 import am.evaluation.clustering.localByThreshold.LocalByThresholdParameters;
@@ -23,7 +23,7 @@ public class ClusterBoostEvaluation extends PropagationEvaluation {
 		
 		// Step 1.  For every ranked mapping, calculate the clustering threshold change
 		//			plot.
-		List<AbstractMatcher> availableMatchers = exp.initialMatcher.getComponentMatchers();
+		List<MatchingTask> availableMatchers = exp.initialMatcher.getComponentMatchers();
 		LocalByThresholdMethod clusteringMethod = new LocalByThresholdMethod(availableMatchers);
 		
 		LocalByThresholdParameters clusteringParameters = new LocalByThresholdParameters();

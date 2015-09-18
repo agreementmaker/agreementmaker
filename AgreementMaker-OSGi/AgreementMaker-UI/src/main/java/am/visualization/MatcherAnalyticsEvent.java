@@ -8,13 +8,15 @@ public class MatcherAnalyticsEvent extends EventObject {
 
 	public static enum EventType {
 		SELECT_MAPPING,  // implies that the payload is a Point, representing the row, and column of the mapping.
+		CLEAR_MAPPING_SELECTION, // unselect any mappings
 		SET_REFERENCE,	 // Set this matcher as the reference matcher.  Implies that the payload is an AbstractMatcher.
 		MATRIX_UPDATED,   // when a matrix is updated
 		DISPLAY_CLUSTER,	  // display a cluster, payload is inferred to be the cluster
 		CLEAR_CLUSTER,		// clear the cluster display
 		REMOVE_PLOT,			// remove the plot from the analytics panel
 		SET_FEEDBACK,		// set the feedback matcher that will be updated when the user generates feedback (payload == the matcher)
-		VIEW_ORDERED_PLOT	// event is fired when adding the ordered matrix plot (payload == MatrixPlotPanel of the unordered plot)
+		VIEW_ORDERED_PLOT,	// event is fired when adding the ordered matrix plot (payload == MatrixPlotPanel of the unordered plot)
+		LOG_MESSAGE
 	}
 	
 	public final EventType type;

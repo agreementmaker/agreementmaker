@@ -14,10 +14,8 @@ import org.apache.log4j.Logger;
 import org.junit.Test;
 
 import am.app.Core;
-import am.extension.multiUserFeedback.evaluation.ServerFeedbackEvaluation;
-import am.extension.userfeedback.common.ServerFeedbackEvaluationData;
+import am.extension.userfeedback.common.ExperimentData;
 import am.extension.userfeedback.common.UFLExperimentRunner;
-import am.extension.userfeedback.evaluation.PropagationEvaluation;
 import am.extension.userfeedback.preset.ExperimentPreset;
 import am.extension.userfeedback.preset.MatchingTaskPreset;
 import am.extension.userfeedback.preset.PresetStorage;
@@ -29,7 +27,7 @@ public class UFLTests {
 
 	private static final Logger LOG = LogManager.getLogger(UFLTests.class);
 
-	private static final String ADVIS_AVG = "UFL/experiments/ADVIS_AVG_strategy.xml";
+	//private static final String ADVIS_AVG = "UFL/experiments/ADVIS_AVG_strategy.xml";
 	
 	private static final String BM301_CS_STATIC = "UFL/experiments/301-static-cs.xml";
 	private static final String BM302_CS_STATIC = "UFL/experiments/302-static-cs.xml";
@@ -41,6 +39,10 @@ public class UFLTests {
 	private static final String BM303_CS_STATIC_DATA = "UFL/experiments/UnitTestData/303-static-cs.data.xml";
 	private static final String BM304_CS_STATIC_DATA = "UFL/experiments/UnitTestData/304-static-cs.data.xml";
 	
+	/** 
+	 * If set to true, this replaces the datafiles for these tests with new ones.
+	 * You should use this when you have made a willful change to the UFL pipeline.
+	 */
 	private static final boolean CREATE_FILES = false;
 	
 	@Test
@@ -86,7 +88,7 @@ public class UFLTests {
 		UFLExperimentRunner runner = new UFLExperimentRunner(run);
 		runner.run();
 		
-		ServerFeedbackEvaluationData data = runner.getExperiment().feedbackEvaluationData;
+		ExperimentData data = runner.getExperiment().experimentData;
 		
 		XStream xs = new XStream();
 		
@@ -114,17 +116,17 @@ public class UFLTests {
 		UFLExperimentRunner runner = new UFLExperimentRunner(run);
 		runner.run();
 		
-		ServerFeedbackEvaluationData data = runner.getExperiment().feedbackEvaluationData;
+		ExperimentData data = runner.getExperiment().experimentData;
 		
 		XStream xs = new XStream();
 		
-		ServerFeedbackEvaluationData testData = null;
+		ExperimentData testData = null;
 		
 		try {
 			String fileName = root + dataFile;
 			File inputFile = new File(fileName);
 			assertTrue(inputFile.exists());
-			testData = (ServerFeedbackEvaluationData) xs.fromXML(inputFile);
+			testData = (ExperimentData) xs.fromXML(inputFile);
 		}
 		catch (Exception ioex) {
 			LOG.error(ioex);

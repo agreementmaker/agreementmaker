@@ -1,14 +1,10 @@
 package am.extension.userfeedback.analysis;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.hp.hpl.jena.rdf.model.impl.RDFDefaultErrorHandler;
-
-import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
@@ -18,13 +14,15 @@ import am.extension.multiUserFeedback.MatchingTasks2014;
 import am.extension.userfeedback.preset.MatchingTaskPreset;
 import am.utility.referenceAlignment.AlignmentUtilities;
 
+import com.hp.hpl.jena.rdf.model.impl.RDFDefaultErrorHandler;
+
 /**
  * Analyze the experiments for our UFL tests.
  * 
  * @author cosmin
  *
  */
-public class ReferenceAlignmentAnalysis {
+public class ReferenceAlignmentAnalysis extends AnalysisBase {
 	
 	private static final Logger LOG = LogManager.getLogger(ReferenceAlignmentAnalysis.class);
 	
@@ -36,9 +34,11 @@ public class ReferenceAlignmentAnalysis {
 	 */
 	@Test
 	public void analyzeReferenceAlignments() {
+		// setup a basic log4j configuration that logs to the console
+		setupLogging();
+	    
 		// silence all the other loggers
-		Logger coreLog = LogManager.getLogger(Core.class);
-		coreLog.setLevel(Level.OFF);
+		silenceNoisyLoggers(noisyLoggers);
 		RDFDefaultErrorHandler.silent = true;
 		
 		LOG.info(" Analysis of the mappings in the various reference alignments.");
@@ -53,8 +53,8 @@ public class ReferenceAlignmentAnalysis {
 		LOG.info(" totEq  : Total number of equivalent mappings.");
 		LOG.info("");
 		LOG.info(" Experiment\t\t\t" + 
-					"clsEQ\tclsSC\tclsO\tclsTot\t" +
-					"propEQ\tpropSP\tpropO\tpropTot\ttotEQ");
+					"clsEQ\tclsSC\tclsO\tclsTot\t|\t" +
+					"propEQ\tpropSP\tpropO\tpropTot\t|\ttotEQ");
 		
 		for(MatchingTaskPreset p : MatchingTasks2014.paperTasks) {
 			analyzeReferenceAlignment(p);
@@ -115,11 +115,11 @@ public class ReferenceAlignmentAnalysis {
 		Assert.assertEquals(propertiesTotalMappings, propertiesEquivalentMappings + propertiesSubPropertyMappings + propertiesOtherMappings);
 		
 		String initialTab = S;
-		if( p.getName().length() <= "ConferenceEkawIaste".length() ) initialTab = S + S;
+		if( p.getName().length() <= "ConferenceEkawIasted".length() ) initialTab = S + S;
 
 		LOG.info(p.getName() +
-				initialTab + classesEquivalentMappings + S + classesSubClassMappings + S + classesOtherMappings + S + classesTotalMappings +
-				S + propertiesEquivalentMappings + S + propertiesSubPropertyMappings + S + propertiesOtherMappings + S + propertiesTotalMappings +
+				initialTab + classesEquivalentMappings + S + classesSubClassMappings + S + classesOtherMappings + S + classesTotalMappings + S + "|" +
+				S + propertiesEquivalentMappings + S + propertiesSubPropertyMappings + S + propertiesOtherMappings + S + propertiesTotalMappings + S + "|" +
 				S + (classesEquivalentMappings + propertiesEquivalentMappings));
 	}
 	

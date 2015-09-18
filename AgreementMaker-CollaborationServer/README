@@ -1,0 +1,15 @@
+This is your new Play application
+=====================================
+
+This file will be packaged with your application, when using `play dist`.
+
+
+To manually download Maven dependencies:
+
+http://stackoverflow.com/questions/1776496/a-simple-command-line-to-download-a-remote-maven2-artifact-to-the-local-reposito
+
+mvn org.apache.maven.plugins:maven-dependency-plugin:2.1:get \
+    -DrepoUrl=http://download.java.net/maven/2/ \
+    -Dartifact=robo-guice:robo-guice:0.4-SNAPSHOT
+
+    

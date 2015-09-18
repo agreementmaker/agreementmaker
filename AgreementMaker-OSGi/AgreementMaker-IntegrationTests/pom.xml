@@ -9,13 +9,14 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<artifactId>AgreementMaker-Tests</artifactId>
+	<artifactId>AgreementMaker-IntegrationTests</artifactId>
 	<packaging>jar</packaging>
 
 	<properties>
 	    <exam.version>3.4.0</exam.version>
         <url.version>1.5.2</url.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<skipTests>true</skipTests>
 	</properties>
 
 	<dependencies>

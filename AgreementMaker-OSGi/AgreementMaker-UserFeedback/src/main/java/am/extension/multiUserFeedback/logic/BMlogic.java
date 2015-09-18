@@ -6,10 +6,10 @@ import org.apache.log4j.Logger;
 
 import am.extension.multiUserFeedback.experiment.BMexperiment;
 import am.extension.userfeedback.logic.IndependentSequentialLogicMultiUser;
-import am.extension.userfeedback.logic.UFLControlLogic;
+import am.extension.userfeedback.logic.NonPersistentUFLControlLogic;
 import am.extension.userfeedback.ui.UFLControlGUI.ActionCommands;
 
-public class BMlogic  extends UFLControlLogic<BMexperiment> {
+public class BMlogic  extends NonPersistentUFLControlLogic<BMexperiment> {
 	
 	private static Logger LOG = Logger.getLogger(IndependentSequentialLogicMultiUser.class);
 	
@@ -30,7 +30,7 @@ public class BMlogic  extends UFLControlLogic<BMexperiment> {
 			return;
 		}
 		
-		if( e.getActionCommand() == ActionCommands.EXECUTION_SEMANTICS_DONE.name() ) {
+		if( e.getActionCommand() == ActionCommands.INITIAL_MATCHERS_DONE.name() ) {
 			runInizialization();
 		}
 		
@@ -55,7 +55,7 @@ public class BMlogic  extends UFLControlLogic<BMexperiment> {
 		}
 		
 		if( e.getActionCommand() == ActionCommands.PROPAGATION_EVALUATION_DONE.name() ) {
-			experiment.newIteration();
+			experiment.beginIteration();
 			runCandidateSelection(); // back to top /\
 		}
 	}

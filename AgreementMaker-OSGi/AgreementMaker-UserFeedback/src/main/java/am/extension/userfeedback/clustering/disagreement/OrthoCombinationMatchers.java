@@ -10,12 +10,18 @@ import am.app.Core;
 import am.app.lexicon.LexiconBuilderParameters;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.DefaultSelectionParameters;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatchingProgressListener;
+import am.app.mappingEngine.MatchingTask;
+import am.app.mappingEngine.SelectionAlgorithm;
+import am.app.mappingEngine.oneToOneSelection.MwbmSelection;
 import am.app.mappingEngine.utility.OAEI_Track;
 import am.app.ontology.Ontology;
 import am.app.ontology.profiling.manual.ManualOntologyProfiler;
-import am.extension.userfeedback.ExecutionSemantics;
+import am.extension.batchmode.matchingTask.FluentMatchingTaskRunner;
+import am.extension.batchmode.matchingTask.SimpleMatchingTaskRunner;
+import am.extension.userfeedback.InitialMatchers;
 import am.extension.userfeedback.experiments.UFLExperiment;
 import am.matcher.Combination.CombinationMatcher;
 import am.matcher.Combination.CombinationParameters;
@@ -38,21 +44,21 @@ import am.ui.UIUtility;
  * @author Cosmin Stroe - Jan 29th, 2011.
  *
  */
-public class OrthoCombinationMatchers extends ExecutionSemantics {
+public class OrthoCombinationMatchers extends InitialMatchers {
 
 	private static final Logger LOG = Logger.getLogger(OrthoCombinationMatchers.class);
 	
 	public OrthoCombinationMatchers() { super(); }
 	
 	@Override
-	public List<AbstractMatcher> getComponentMatchers() {
-		ArrayList<AbstractMatcher> l = new ArrayList<AbstractMatcher>();
+	public List<MatchingTask> getComponentMatchers() {
+		ArrayList<MatchingTask> l = new ArrayList<>();
 		
-		l.add(m_bsm);
-		l.add(m_asm);
-		l.add(m_psm);
-		l.add(m_vmm);
-		l.add(m_lsm);
+		l.add(bsm);
+		l.add(asm);
+		l.add(psm);
+		l.add(vmm);
+		l.add(lsm);
 		//l.add(m_iism);
 		
 		return l;
@@ -79,8 +85,9 @@ public class OrthoCombinationMatchers extends ExecutionSemantics {
 	
 	private MatchingProgressListener progressDisplay;
 	
-	private UFLExperiment exp;
-	
+	private SelectionAlgorithm	        selector;
+	private MatchingTask bsm, asm, psm, vmm, lsm;
+
 	@Override
 	public void run(UFLExperiment experiment) {
 				
@@ -98,28 +105,66 @@ public class OrthoCombinationMatchers extends ExecutionSemantics {
 			
 			// TODO: Run Multiple Threads.
 			// run matchers.
+			FluentMatchingTaskRunner runner;
 			if( progressDisplay != null ) {	
 				progressDisplay.ignoreComplete(true);
 				
 				progressDisplay.setProgressLabel("BSM (1/5)");
 				exp.info("Running BSM..."); LOG.info("Running BSM...");
-				m_bsm.match();
+ 				runner = new SimpleMatchingTaskRunner();
+				runner.with(param_bsm)
+				      .and(m_bsm)
+				      .and(new DefaultSelectionParameters())
+				      .and(selector)
+				      .matching(exp.getSourceOntology(), exp.getTargetOntology());
+				runner.run();
+				bsm = runner.getTask();
 				
 				progressDisplay.setProgressLabel("ASM (2/5)");
 				exp.info("Running ASM..."); LOG.info("Running ASM...");
-				m_asm.match();
+				if (m_asm != null) {
+					runner = new SimpleMatchingTaskRunner();
+					runner.with(param_asm)
+					      .and(m_asm)
+					      .and(new DefaultSelectionParameters())
+					      .and(selector)
+					      .matching(exp.getSourceOntology(),  exp.getTargetOntology());
+					runner.run();
+					asm = runner.getTask();
+				}
 				
 				exp.info("Running PSM..."); LOG.info("Running PSM...");
 				progressDisplay.setProgressLabel("PSM (3/5)");
-				m_psm.match();
+				runner = new SimpleMatchingTaskRunner();
+				runner.with(param_psm)
+				      .and(m_psm)
+				      .and(new DefaultSelectionParameters())
+				      .and(selector)
+				      .matching(exp.getSourceOntology(),  exp.getTargetOntology());
+				runner.run();
+				psm = runner.getTask();
 				
 				exp.info("Running VMM..."); LOG.info("Running VMM...");
 				progressDisplay.setProgressLabel("VMM (4/5)");
-				m_vmm.match();
+				runner = new SimpleMatchingTaskRunner();
+				runner.with(param_vmm)
+				      .and(m_vmm)
+				      .and(new DefaultSelectionParameters())
+				      .and(selector)
+				      .matching(exp.getSourceOntology(),  exp.getTargetOntology());
+				runner.run();
+				vmm = runner.getTask();
 				
 				exp.info("Running LSM..."); LOG.info("Running LSM...");
 				progressDisplay.setProgressLabel("LSM");
-				m_lsm.match();
+				runner = new SimpleMatchingTaskRunner();
+				runner.with(param_lsm)
+				      .and(m_lsm)
+				      .and(new DefaultSelectionParameters())
+				      .and(selector)
+				      .matching(exp.getSourceOntology(),  exp.getTargetOntology());
+				runner.run();
+				lsm = runner.getTask();
 				
 				exp.info("Running LWC..."); LOG.info("Running LWC...");
 				progressDisplay.setProgressLabel("LWC (5/5)");
@@ -260,6 +305,8 @@ public class OrthoCombinationMatchers extends ExecutionSemantics {
 			lexParam.detectStandardProperties();
 			Core.getLexiconStore().setParameters(lexParam);
 		}
+		
+		selector = new MwbmSelection();
 	}
 
 	@Override public Alignment<Mapping> getAlignment() { 
@@ -273,90 +320,5 @@ public class OrthoCombinationMatchers extends ExecutionSemantics {
 	
 	@Override public AbstractMatcher getFinalMatcher() {
 		return m_lwc;
-	}
-	
-	@Override
-	protected void done() {
-		
-		//Logger log = Logger.getLogger(this.getClass().toString());
-		
-		UFLExperiment log = exp;
-		
-		
-		
-		// output the reference alignment
-		Alignment<Mapping> referenceAlignment = exp.getReferenceAlignment();
-		
-		//FIXME: We should not be looking at the reference alignment here.
-		if( referenceAlignment != null ) {
-			log.info("Referene alignment has " + referenceAlignment.size() + " mappings.");
-			for( int i = 0; i < referenceAlignment.size(); i++ ) {
-				Mapping currentMapping = referenceAlignment.get(i);
-				log.info( i + ". " + currentMapping.toString() );
-			}
-			
-			log.info("");
-		}
-		
-		// save to log file the alignment we start with.
-		
-		Alignment<Mapping> finalAlignment = getFinalMatcher().getAlignment();
-		Alignment<Mapping> classAlignment = getFinalMatcher().getClassAlignmentSet();
-		Alignment<Mapping> propertiesAlignment = getFinalMatcher().getPropertyAlignmentSet();
-		
-		log.info("Initial matchers have finished running.");
-		log.info("Alignment contains " + finalAlignment.size() + " mappings. " + 
-				  classAlignment.size() + " class mappings, " + propertiesAlignment.size() + " property mappings.");
-		
-		log.info("Class mappings:");
-		for( int i = 0; i < classAlignment.size(); i++ ) {
-			Mapping currentMapping = classAlignment.get(i);
-			boolean mappingCorrect = false;
-			
-			if( referenceAlignment != null && 
-					referenceAlignment.contains(currentMapping.getEntity1(),currentMapping.getEntity2(), currentMapping.getRelation()) ) {
-				mappingCorrect = true;
-			}
-			
-			String mappingAnnotation = "X";
-			if( mappingCorrect || referenceAlignment == null ) mappingAnnotation = " ";
-			
-			log.info( i + ". " + mappingAnnotation + " " + currentMapping.toString() );
-		}
-		
-		log.info("");
-		
-		log.info("Property mappings:");
-		for( int i = 0; i < propertiesAlignment.size(); i++ ) {
-			Mapping currentMapping = propertiesAlignment.get(i);
-			boolean mappingCorrect = false;
-			
-			if( referenceAlignment != null && 
-					referenceAlignment.contains(currentMapping.getEntity1(), currentMapping.getEntity2(), currentMapping.getRelation()) ) {
-				mappingCorrect = true;
-			}
-			
-			String mappingAnnotation = "X";
-			if( mappingCorrect || referenceAlignment == null ) mappingAnnotation = " ";
-			
-			log.info( i + ". " + mappingAnnotation + " " + currentMapping.toString() );
-		}
-		
-		log.info("");
-		
-		if( referenceAlignment != null ) {
-			log.info("Missed mappings:");
-			int missedMappingNumber = 0;
-			for( Mapping referenceMapping : referenceAlignment ) {
-				if( !finalAlignment.contains(referenceMapping.getEntity1(), referenceMapping.getEntity2(), referenceMapping.getRelation()) ) {
-					log.info( missedMappingNumber + ". " + referenceMapping );
-					missedMappingNumber++;
-				}
-			}
-			
-			log.info("");
-		}
-		
-		super.done();
 	}
 }

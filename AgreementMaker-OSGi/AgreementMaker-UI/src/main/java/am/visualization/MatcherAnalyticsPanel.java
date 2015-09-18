@@ -25,6 +25,7 @@ import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherChangeListener;
+import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.MatchingTaskChangeEvent;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
@@ -37,6 +38,7 @@ import am.evaluation.clustering.ClusteringMethod;
 import am.evaluation.disagreement.DisagreementCalculationDialog;
 import am.evaluation.disagreement.DisagreementCalculationMethod;
 import am.evaluation.disagreement.variance.VarianceDisagreement;
+import am.ui.UIUtility;
 import am.utility.WrapLayout;
 import am.visualization.MatcherAnalyticsEvent.EventType;
 import am.visualization.matrixplot.MatrixPlotPanel;
@@ -68,16 +70,16 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 	
 	private SimilarityMatrix disagreementMatrix = null;
 	private SimilarityMatrix feedbackMatrix = null;
-	private AbstractMatcher feedbackMatcher = null;
+	private MatchingTask feedbackMatcher = null;
 	private boolean[][] filteredCells = null;
 	
 	private JComboBox<String> cmbTopK;
 	
-	private AbstractMatcher refMatcher = null;
+	private MatchingTask refMatcher = null;
 	private ClusteringMethod clusterMethod = null;
 	private Mapping[] topK;
 	private JTextField txtE;
-	private List<Cluster<Mapping>> topKClusters;
+	private Cluster[] topKClusters;
 	
 	private WrapLayout wrap;
 	
@@ -108,25 +110,44 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 		
 		//Core.getInstance().addMatcherChangeListener(this);
 		
+		// TODO: Make this a proper class someday.
+		addMatcherAnalyticsEventListener(new MatcherAnalyticsEventListener() {			
+			@Override
+			public void receiveEvent(MatcherAnalyticsEvent e) {
+				if (e.type == EventType.LOG_MESSAGE) {
+					UIUtility.displayInfoPane(e.payload.toString());
+				}
+			}
+			
+			@Override 
+			public MatchingTask getMatcher() {
+				return null;
+			}
+		});
 	}
 	
 	/**
 	 * If the panel is started after matchers have run, add the matchers that currently exist.
 	 */
-	private void initializeMatchers() {
-		
-		List<AbstractMatcher> matcherList = Core.getInstance().getMatchingAlgorithms();
-		for( AbstractMatcher a : matcherList ) {
+	
+	private void initializeMatchers() {		
+		List<MatchingTask> taskList = Core.getInstance().getMatchingTasks();
+
+		for( MatchingTask a : taskList ) {
 			switch( type ) {
 			case aligningClasses:
-				if( a.getClassesMatrix() != null ) {
-					addPlot(a, a.getClassesMatrix());
+				if( a.matcherResult.getClassesMatrix() != null ) {
+					System.out.println("Amruta matcher selected: "+a.getShortLabel());
+					System.out.println("Amruta: class matrix is not null");
+					addPlot(a, a.matcherResult.getClassesMatrix());
+				}else{
+					System.out.println("Amruta: class matrix is null");
 				}
 				break;
 				
 			case aligningProperties:
-				if( a.getPropertiesMatrix() != null ) {
-					addPlot(a, a.getPropertiesMatrix());
+				if( a.matchingAlgorithm.getPropertiesMatrix() != null ) {
+					addPlot(a, a.matchingAlgorithm.getPropertiesMatrix());
 				}
 				break;
 			}
@@ -230,20 +251,21 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 	@Override
 	public void matcherChanged(final MatchingTaskChangeEvent e) {
 	
+		System.out.println("Amruta: Matcher Changed");
+		MatchingTask task = e.getTask();
 		switch( e.getEvent() ) {
 		case MATCHER_ADDED:
 			// when a matcher is added to the main
-			AbstractMatcher a = e.getTask().matchingAlgorithm;
 			switch( type ) {
 			case aligningClasses:
-				if( a.getClassesMatrix() != null ) {
-					addPlot(a, a.getClassesMatrix());
+				if( task.matchingAlgorithm.getClassesMatrix() != null ) {
+					addPlot(task, task.matchingAlgorithm.getClassesMatrix());
 				}
 				break;
 				
 			case aligningProperties:
-				if( a.getPropertiesMatrix() != null ) {
-					addPlot(a, a.getPropertiesMatrix());
+				if( task.matchingAlgorithm.getPropertiesMatrix() != null ) {
+					addPlot(task, task.matchingAlgorithm.getPropertiesMatrix());
 				}
 				break;
 			}
@@ -265,12 +287,16 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 			
 	}
 
-	private MatrixPlotPanel addPlot(AbstractMatcher a, SimilarityMatrix matrix) {
+	private MatrixPlotPanel addPlot(MatchingTask a, SimilarityMatrix matrix) {
 		
 		
 		MatrixPlotPanel newPlot = new MatrixPlotPanel(a, matrix, this);
 		newPlot.getPlot().draw(false);
 		
+		if(newPlot == null)
+			System.out.println("Amruta: newPlot is null");
+		else
+			System.out.println("Amruta: new Plot is not null");
 		addMatcherAnalyticsEventListener(newPlot);
 		
 		pnlPlots.add(newPlot);
@@ -312,9 +338,9 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 		
 		if( e.type == EventType.SET_FEEDBACK ) {
 			// the feedback matcher has been set
-			feedbackMatcher = ((AbstractMatcher)e.payload);
-			if( type == alignType.aligningClasses ) feedbackMatrix = ((AbstractMatcher)e.payload).getClassesMatrix();
-			if( type == alignType.aligningProperties ) feedbackMatrix = ((AbstractMatcher)e.payload).getPropertiesMatrix();
+			feedbackMatcher = ((MatchingTask)e.payload);
+			if( type == alignType.aligningClasses ) feedbackMatrix = ((MatchingTask)e.payload).matcherResult.getClassesMatrix();
+			if( type == alignType.aligningProperties ) feedbackMatrix = ((MatchingTask)e.payload).matcherResult.getPropertiesMatrix();
 			
 			if( feedbackMatrix == null ) {
 				System.err.println("Feedback matrix is null, this should not happen.");
@@ -351,7 +377,7 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 		}
 		
 		if( e.type == EventType.SET_REFERENCE ) {
-			refMatcher = (AbstractMatcher)e.payload;
+			refMatcher = (MatchingTask)e.payload;
 		}
 		
 		for( int i = eventListeners.size()-1; i >= 0; i-- ) {  // count DOWN from max (for a very good reason, http://book.javanb.com/swing-hacks/swinghacks-chp-12-sect-8.html )
@@ -390,8 +416,8 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 					source = Core.getInstance().getSourceOntology();
 					target = Core.getInstance().getTargetOntology();
 				} else {
-					source = plotPanel.getMatcher().getSourceOntology();
-					target = plotPanel.getMatcher().getTargetOntology();
+					source = plotPanel.getMatcher().matchingAlgorithm.getSourceOntology();
+					target = plotPanel.getMatcher().matchingAlgorithm.getTargetOntology();
 				}
 				if( source != null && target != null ) {
 					if( type == alignType.aligningClasses ) {
@@ -418,12 +444,12 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 
 		// make a list of the available matchers
 		
-		ArrayList<AbstractMatcher> matcherList = new ArrayList<AbstractMatcher>();
+		ArrayList<MatchingTask> resultList = new ArrayList<>();
 		for( MatcherAnalyticsEventListener l : eventListeners ) {
-			if( l.getMatcher() != null ) matcherList.add(l.getMatcher());
+			if( l.getMatcher() != null ) resultList.add(l.getMatcher());
 		}
 		
-		ClusteringMethod method = ClusterFactory.createClusteringMethod(t, matcherList);
+		ClusteringMethod method = ClusterFactory.createClusteringMethod(t, resultList);
 		
 		if( method == null ) return; 
 		Cluster<Mapping> c = method.getCluster(currentSelectedMapping.x, currentSelectedMapping.y, type);
@@ -467,7 +493,7 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 		
 		if( e.getSource() == btnDisagreementMeasure ) {
 			// make a list of available matchers
-			ArrayList<AbstractMatcher> matcherList = new ArrayList<AbstractMatcher>();
+			ArrayList<MatchingTask> matcherList = new ArrayList<>();
 			for( MatcherAnalyticsEventListener l : eventListeners ) {
 				matcherList.add(l.getMatcher());
 			}
@@ -487,6 +513,11 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 			
 			disagreementMatrix = disMethod.getDisagreementMatrix( type );
 			
+			if(disagreementMatrix == null)
+				System.out.println("disagreementMatrix is null");
+			else
+				System.out.println("disagreementMatrix is  not null");
+			
 			Gradient g = new Gradient(Color.BLACK, Color.WHITE);
 			g.setMax( disagreementMatrix.getMaxValue() );
 			
@@ -501,7 +532,7 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 			// initialize the clustering method
 			if( clusterMethod == null ) {
 			
-				ArrayList<AbstractMatcher> matcherList = new ArrayList<AbstractMatcher>();
+				ArrayList<MatchingTask> matcherList = new ArrayList<>();
 				for( MatcherAnalyticsEventListener l : eventListeners ) {
 					if( l.getMatcher() != null ) matcherList.add(l.getMatcher());
 				}
@@ -512,22 +543,24 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 			
 			int k = 10;
 
+			
 			if( filteredCells != null ) { topK = disagreementMatrix.getTopK(k, filteredCells); } 
 			else { topK = disagreementMatrix.getTopK(k); }
 			
-			topKClusters = new ArrayList<Cluster<Mapping>>(k);
+			
+			topKClusters = new Cluster[k];
 			
 			//String[] topKDescription = new String[k];
 			Alignment<Mapping> refAlignment = null;
-			if( refMatcher != null && type == alignType.aligningClasses ) refAlignment = refMatcher.getClassAlignmentSet();
-			if( refMatcher != null && type == alignType.aligningProperties ) refAlignment = refMatcher.getPropertyAlignmentSet();
+			if( refMatcher != null && type == alignType.aligningClasses ) refAlignment = refMatcher.selectionResult.getClassAlignmentSet();
+			if( refMatcher != null && type == alignType.aligningProperties ) refAlignment = refMatcher.selectionResult.getPropertyAlignmentSet();
 			
 			cmbTopK.removeAllItems();
 			for( int i = 0; i < k; i++ ) {
 				String inReference = "";
 				if( refAlignment != null && refAlignment.contains(topK[i].getSourceKey() , topK[i].getTargetKey() ) ) inReference = "*";
 				Cluster<Mapping> cl = clusterMethod.getCluster(topK[i].getSourceKey(), topK[i].getTargetKey(), type);
-				topKClusters.set(i, cl);
+				topKClusters[i] = cl;
 				String topKDescription = topK[i].getEntity1().toString() +"<->" + topK[i].getEntity2().toString() + 
 									     " Cl:(" + cl.size() + ") " + inReference;
 				cmbTopK.insertItemAt(topKDescription, i);
@@ -537,17 +570,22 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 		}
 		
 		if( e.getSource() == btnConfirmMapping ) {
+			if (feedbackMatrix == null) {
+				UIUtility.displayErrorPane("You did not select a feedback matcher.", "ERROR");
+				return;
+			}
+			
 			// TODO: the user has clicked to confirm a mapping.
 			
 			// the user has selected a mapping from the drop down box.
-			int sel = cmbTopK.getSelectedIndex();
+			int selIndex = cmbTopK.getSelectedIndex();
 			
-			Mapping selectedMapping = topK[sel];
+			Mapping selectedMapping = topK[selIndex];
 			
 			// build the cluster for the mapping.
 			//Cluster<Mapping> cl = clusterMethod.getCluster(selectedMapping.getSourceKey(), selectedMapping.getTargetKey(), VisualizationType.CLASS_MATRIX);
 			
-			Cluster<Mapping> cl = topKClusters.get(sel);
+			Cluster<Mapping> cl = topKClusters[selIndex];
 			
 			double eValue = Double.parseDouble( txtE.getText() );
 			
@@ -566,12 +604,17 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 		}
 		
 		if( e.getSource() == btnRefuteMapping ) {
+			if (feedbackMatrix == null) {
+				UIUtility.displayErrorPane("You did not select a feedback matcher.", "ERROR");
+				return;
+			}
+
 			// TODO: the user has clicked to refute a mapping.
-			int sel = cmbTopK.getSelectedIndex();
+			int selIndex = cmbTopK.getSelectedIndex();
 			
-			Mapping selectedMapping = topK[sel];// build the cluster for the mapping.
+			Mapping selectedMapping = topK[selIndex];// build the cluster for the mapping.
 			//Cluster<Mapping> cl = clusterMethod.getCluster(selectedMapping.getSourceKey(), selectedMapping.getTargetKey(), VisualizationType.CLASS_MATRIX);
-			Cluster<Mapping> cl = topKClusters.get(sel);
+			Cluster<Mapping> cl = topKClusters[selIndex];
 			
 			double eValue = Double.parseDouble( txtE.getText() );
 			
@@ -591,7 +634,10 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 		if( e.getSource() == cmbTopK ) {
 			// The user selected a mapping.  Select this mapping in all the panels.
 			int sel = cmbTopK.getSelectedIndex();
-			
+			if (sel == -1) {
+				broadcastEvent(new MatcherAnalyticsEvent(this, EventType.CLEAR_MAPPING_SELECTION, null));
+				return;
+			}
 			Mapping selectedMapping = topK[sel];
 			
 			
@@ -615,6 +661,8 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 	
 	private void punishCluster(Cluster<Mapping> cl, double eValue, SimilarityMatrix feedbackMatrix2) {
 		
+		StringBuilder b = new StringBuilder();
+		
 		for( Mapping m : cl ) {
 			double sim = feedbackMatrix2.getSimilarity(m.getSourceKey(), m.getTargetKey());
 			double newsim = (1 - eValue) * sim;
@@ -622,9 +670,17 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 			if( feedbackMapping == null ) feedbackMatrix2.set(m.getSourceKey(), m.getTargetKey(), new Mapping(m.getEntity1(), m.getEntity2(), newsim));
 			else feedbackMapping.setSimilarity(newsim);
 			
-			System.out.println("Punishing " + m + ": " + sim + " updated to " + newsim );
+			b.append("Punishing ")
+			 .append(m)
+			 .append(": ")
+			 .append(sim)
+			 .append(" updated to ")
+			 .append(newsim)
+			 .append("\n");
 			//filteredCells[m.getSourceKey()][m.getTargetKey()] = true;
 		}
+		
+		broadcastEvent(new MatcherAnalyticsEvent(this, EventType.LOG_MESSAGE, b));
 		
 	}
 

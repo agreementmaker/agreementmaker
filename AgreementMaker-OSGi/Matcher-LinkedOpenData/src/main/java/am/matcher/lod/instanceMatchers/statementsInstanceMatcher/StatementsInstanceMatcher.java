@@ -1,5 +1,6 @@
 package am.matcher.lod.instanceMatchers.statementsInstanceMatcher;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -9,7 +10,6 @@ import am.app.similarity.AMSubstringSim;
 import am.matcher.lod.instanceMatchers.BaseInstanceMatcher;
 
 import com.hp.hpl.jena.rdf.model.Statement;
-import com.ibm.icu.text.DecimalFormat;
 
 public class StatementsInstanceMatcher extends BaseInstanceMatcher {
 	

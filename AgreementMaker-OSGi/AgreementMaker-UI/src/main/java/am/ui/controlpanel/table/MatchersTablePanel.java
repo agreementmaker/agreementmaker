@@ -18,15 +18,10 @@ import javax.swing.table.TableColumn;
 import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.DefaultSelectionParameters;
 import am.app.mappingEngine.MatcherChangeListener;
-import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.MatchingTaskChangeEvent;
 import am.app.mappingEngine.MatchingTaskChangeEvent.EventType;
-import am.app.mappingEngine.manualMatcher.UserManualMatcher;
-import am.app.mappingEngine.oneToOneSelection.MwbmSelection;
-import am.app.osgi.MatcherNotFoundException;
 
 public class MatchersTablePanel extends JPanel implements MatcherChangeListener {
 

@@ -162,6 +162,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		case GENERAL_PURPOSE: {
 			finalResult = runGeneralPurpose();
 		}
+		break;
 		case GENERAL_PURPOSE_FILTERED: {
 			finalResult = runGeneralPurposeFiltered();
 		}
@@ -348,6 +349,8 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		
 		setupSubMatcher(lwc, lwcParam);
 		runSubMatcher(lwc, "LWC");
+		
+		
 
 		return lwc;
 	}
@@ -355,14 +358,40 @@ public class OAEI2011Matcher extends AbstractMatcher {
 	private AbstractMatcher runGeneralPurposeFiltered() throws Exception {
 		
 		AbstractMatcher gpm = runGeneralPurposeMatchers();
-
+		AbstractMatcher fm=MatcherFactory.getMatcherInstance(FilterMatcher.class);
+		
 		if( isCancelled() ) return null;
-				
-		AbstractMatcher fm = MatcherFactory.getMatcherInstance(FilterMatcher.class);
+		
+		// Filter Matcher
 		fm.addInputMatcher(gpm);
 		setupSubMatcher(fm, new DefaultMatcherParameters());
 		runSubMatcher(fm, "FM");
-		return fm;
+
+		if( isCancelled() ) return null;
+		
+		// IISM
+		AbstractMatcher iism = MatcherFactory.getMatcherInstance(IterativeInstanceStructuralMatcher.class);
+		
+		iism.addInputMatcher(fm);
+		
+		IterativeInstanceStructuralParameters iismParam = 
+				new IterativeInstanceStructuralParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign);
+		
+		iismParam.allBoost();
+		iismParam.setConsiderIndividuals(true);
+		iismParam.setPropertyUsageThreshold(0.6);
+		iismParam.setPropertyValuesThreshold(0.5);
+		iismParam.setRangeDomainThreshold(0.89);
+		iismParam.setSuperclassThreshold(0.6);
+		iismParam.setUsePropertyUsage(true);
+		iismParam.setUsePropertyValues(true);
+		iismParam.setUseRangeDomain(true);
+		iismParam.setUseSuperclasses(true);
+		
+		setupSubMatcher(iism, iismParam);
+		runSubMatcher(iism, "IISM");
+		
+		return iism;
 	}
 	
 	private AbstractMatcher runGeneralPurposeAdvanced() throws Exception {

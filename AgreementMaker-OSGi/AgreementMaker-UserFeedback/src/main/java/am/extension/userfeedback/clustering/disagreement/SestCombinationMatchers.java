@@ -9,14 +9,20 @@ import am.app.Core;
 import am.app.lexicon.LexiconBuilderParameters;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.DefaultSelectionParameters;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherResult;
 import am.app.mappingEngine.MatchingProgressListener;
-import am.app.mappingEngine.persistance.PersistanceUtility;
+import am.app.mappingEngine.MatchingTask;
+import am.app.mappingEngine.SelectionAlgorithm;
+import am.app.mappingEngine.oneToOneSelection.MwbmSelection;
+import am.app.mappingEngine.persistance.PersistenceUtility;
 import am.app.mappingEngine.utility.OAEI_Track;
 import am.app.ontology.Ontology;
 import am.app.ontology.profiling.manual.ManualOntologyProfiler;
-import am.extension.userfeedback.ExecutionSemantics;
+import am.extension.batchmode.matchingTask.FluentMatchingTaskRunner;
+import am.extension.batchmode.matchingTask.SimpleMatchingTaskRunner;
+import am.extension.userfeedback.InitialMatchers;
 import am.extension.userfeedback.experiments.UFLExperiment;
 import am.extension.userfeedback.experiments.UFLExperimentParameters;
 import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
@@ -67,23 +73,23 @@ import am.ui.UIUtility;
  * @author Cosmin Stroe (cstroe@gmail.com) @date Jan 28th, 2014.
  * 
  */
-public class SestCombinationMatchers extends ExecutionSemantics {
+public class SestCombinationMatchers extends InitialMatchers {
 
 	private static final Logger LOG = Logger.getLogger(SestCombinationMatchers.class);
 	
 	public SestCombinationMatchers() { super(); }
 	
 	@Override
-	public List<AbstractMatcher> getComponentMatchers() {
-		ArrayList<AbstractMatcher> l = new ArrayList<AbstractMatcher>();
+	public List<MatchingTask> getComponentMatchers() {
+		ArrayList<MatchingTask> l = new ArrayList<>();
 		
-		l.add(m_bsm);
-		l.add(m_asm);
-		l.add(m_psm);
-		l.add(m_vmm);
-		l.add(m_lsm);
-		l.add(m_ssc);
-		l.add(m_dsi);
+		l.add(bsm);
+		l.add(asm);
+		l.add(psm);
+		l.add(vmm);
+		l.add(lsm);
+		l.add(ssc);
+		l.add(dsi);
 		//l.add(m_iism);
 		
 		return l;
@@ -108,17 +114,19 @@ public class SestCombinationMatchers extends ExecutionSemantics {
 	private SiblingsSimilarityContributionMatcher m_ssc;
 	private DescendantsSimilarityInheritanceMatcher m_dsi;
 	
+	private MatchingTask bsm, asm, psm, vmm, lsm, ssc, dsi;
+	
 	private CombinationMatcher			m_lwc;
 	private CombinationMatcher			m_lwc2;
 	//private IterativeInstanceStructuralMatcher m_iism;
 	
 	private MatchingProgressListener progressDisplay;
-	
-	private UFLExperiment exp;
-	
+		
 	private UFLExperimentParameters eparam;
 	
 	private boolean p = false;
+	
+	private SelectionAlgorithm selector;
 	
 	@Override
 	public void run(UFLExperiment experiment) {
@@ -139,6 +147,66 @@ public class SestCombinationMatchers extends ExecutionSemantics {
 			p = false;
 			if( progressDisplay != null ) p = true;	
 			if(p) progressDisplay.ignoreComplete(true);
+
+			FluentMatchingTaskRunner runner;
+			
+			progressDisplay.setProgressLabel("BSM (1/5)");
+			exp.info("Running BSM..."); LOG.info("Running BSM...");
+			runner = new SimpleMatchingTaskRunner();
+			runner.with(param_bsm)
+			      .and(m_bsm)
+			      .and(new DefaultSelectionParameters())
+			      .and(selector)
+			      .matching(exp.getSourceOntology(), exp.getTargetOntology());
+			runner.run();
+			bsm = runner.getTask();
+			
+			progressDisplay.setProgressLabel("ASM (2/5)");
+			exp.info("Running ASM..."); LOG.info("Running ASM...");
+			if (m_asm != null) {
+				runner = new SimpleMatchingTaskRunner();
+				runner.with(param_asm)
+				      .and(m_asm)
+				      .and(new DefaultSelectionParameters())
+				      .and(selector)
+				      .matching(exp.getSourceOntology(),  exp.getTargetOntology());
+				runner.run();
+				asm = runner.getTask();
+			}
+			
+			exp.info("Running PSM..."); LOG.info("Running PSM...");
+			progressDisplay.setProgressLabel("PSM (3/5)");
+			runner = new SimpleMatchingTaskRunner();
+			runner.with(param_psm)
+			      .and(m_psm)
+			      .and(new DefaultSelectionParameters())
+			      .and(selector)
+			      .matching(exp.getSourceOntology(),  exp.getTargetOntology());
+			runner.run();
+			psm = runner.getTask();
+			
+			exp.info("Running VMM..."); LOG.info("Running VMM...");
+			progressDisplay.setProgressLabel("VMM (4/5)");
+			runner = new SimpleMatchingTaskRunner();
+			runner.with(param_vmm)
+			      .and(m_vmm)
+			      .and(new DefaultSelectionParameters())
+			      .and(selector)
+			      .matching(exp.getSourceOntology(),  exp.getTargetOntology());
+			runner.run();
+			vmm = runner.getTask();
+			
+			exp.info("Running LSM..."); LOG.info("Running LSM...");
+			progressDisplay.setProgressLabel("LSM");
+			runner = new SimpleMatchingTaskRunner();
+			runner.with(param_lsm)
+			      .and(m_lsm)
+			      .and(new DefaultSelectionParameters())
+			      .and(selector)
+			      .matching(exp.getSourceOntology(),  exp.getTargetOntology());
+			runner.run();
+			lsm = runner.getTask();
+
 			
 			runMatcher(m_bsm, Parameter.IM_BSM_LOADFILE, Parameter.IM_BSM_SAVEFILE);
 			runMatcher(m_asm, Parameter.IM_ASM_LOADFILE, Parameter.IM_ASM_SAVEFILE);
@@ -189,7 +257,7 @@ public class SestCombinationMatchers extends ExecutionSemantics {
 		if(p) progressDisplay.setProgressLabel(matcher.getName());
 
 		String matcherLoadFile = eparam.getParameter(loadFileParameter);
-		MatcherResult result = PersistanceUtility.loadMatcherResult(matcherLoadFile);
+		MatcherResult result = PersistenceUtility.loadMatcherResult(matcherLoadFile);
 		if( result != null ) { 
 			result.setSourceOntology(matcher.getSourceOntology());
 			result.setTargetOntology(matcher.getTargetOntology());
@@ -209,9 +277,9 @@ public class SestCombinationMatchers extends ExecutionSemantics {
 			if( matcherSaveFile != null ) {
 				exp.info("Saving " + matcher.getName() + " result to: " + matcherSaveFile);
 				LOG.info("Saving " + matcher.getName() + " result to: " + matcherSaveFile);
-				PersistanceUtility.saveMatcherResult(matcher.getResult(), matcherSaveFile);
+				PersistenceUtility.saveMatcherResult(matcher.getResult(), matcherSaveFile);
 			}
-		}
+		}		
 	}
 	
 	private void initializeVariables( Ontology sourceOntology, Ontology targetOntology ) {
@@ -338,6 +406,8 @@ public class SestCombinationMatchers extends ExecutionSemantics {
 			lexParam.detectStandardProperties();
 			Core.getLexiconStore().setParameters(lexParam);
 		}
+		
+		selector = new MwbmSelection();
 	}
 
 	@Override public Alignment<Mapping> getAlignment() { 
@@ -351,90 +421,5 @@ public class SestCombinationMatchers extends ExecutionSemantics {
 	
 	@Override public AbstractMatcher getFinalMatcher() {
 		return m_lwc; //return m_lwc2;
-	}
-	
-	@Override
-	protected void done() {
-		
-		//Logger log = Logger.getLogger(this.getClass().toString());
-		
-		UFLExperiment log = exp;
-		
-		
-		
-		// output the reference alignment
-		Alignment<Mapping> referenceAlignment = exp.getReferenceAlignment();
-		
-		//FIXME: We should not be looking at the reference alignment here.
-		if( referenceAlignment != null ) {
-			log.info("Referene alignment has " + referenceAlignment.size() + " mappings.");
-			for( int i = 0; i < referenceAlignment.size(); i++ ) {
-				Mapping currentMapping = referenceAlignment.get(i);
-				log.info( i + ". " + currentMapping.toString() );
-			}
-			
-			log.info("");
-		}
-		
-		// save to log file the alignment we start with.
-		
-		Alignment<Mapping> finalAlignment = getFinalMatcher().getAlignment();
-		Alignment<Mapping> classAlignment = getFinalMatcher().getClassAlignmentSet();
-		Alignment<Mapping> propertiesAlignment = getFinalMatcher().getPropertyAlignmentSet();
-		
-		log.info("Initial matchers have finished running.");
-		log.info("Alignment contains " + finalAlignment.size() + " mappings. " + 
-				  classAlignment.size() + " class mappings, " + propertiesAlignment.size() + " property mappings.");
-		
-		log.info("Class mappings:");
-		for( int i = 0; i < classAlignment.size(); i++ ) {
-			Mapping currentMapping = classAlignment.get(i);
-			boolean mappingCorrect = false;
-			
-			if( referenceAlignment != null && 
-					referenceAlignment.contains(currentMapping.getEntity1(),currentMapping.getEntity2(), currentMapping.getRelation()) ) {
-				mappingCorrect = true;
-			}
-			
-			String mappingAnnotation = "X";
-			if( mappingCorrect || referenceAlignment == null ) mappingAnnotation = " ";
-			
-			log.info( i + ". " + mappingAnnotation + " " + currentMapping.toString() );
-		}
-		
-		log.info("");
-		
-		log.info("Property mappings:");
-		for( int i = 0; i < propertiesAlignment.size(); i++ ) {
-			Mapping currentMapping = propertiesAlignment.get(i);
-			boolean mappingCorrect = false;
-			
-			if( referenceAlignment != null && 
-					referenceAlignment.contains(currentMapping.getEntity1(), currentMapping.getEntity2(), currentMapping.getRelation()) ) {
-				mappingCorrect = true;
-			}
-			
-			String mappingAnnotation = "X";
-			if( mappingCorrect || referenceAlignment == null ) mappingAnnotation = " ";
-			
-			log.info( i + ". " + mappingAnnotation + " " + currentMapping.toString() );
-		}
-		
-		log.info("");
-		
-		if( referenceAlignment != null ) {
-			log.info("Missed mappings:");
-			int missedMappingNumber = 0;
-			for( Mapping referenceMapping : referenceAlignment ) {
-				if( !finalAlignment.contains(referenceMapping.getEntity1(), referenceMapping.getEntity2(), referenceMapping.getRelation()) ) {
-					log.info( missedMappingNumber + ". " + referenceMapping );
-					missedMappingNumber++;
-				}
-			}
-			
-			log.info("");
-		}
-		
-		super.done();
 	}
 }

@@ -2,22 +2,24 @@ package am.extension.userfeedback;
 
 import java.io.IOException;
 
-import am.extension.multiUserFeedback.experiment.MUExperiment;
-import am.extension.userfeedback.common.ServerFeedbackEvaluationData;
+import am.extension.userfeedback.common.ExperimentData;
+import am.extension.userfeedback.common.ExperimentData.DataSeries;
 import am.extension.userfeedback.evaluation.CandidateSelectionEvaluation;
 import am.extension.userfeedback.evaluation.MultiplexCandidateSelectionEvaluation;
 import am.extension.userfeedback.evaluation.RankingAccuracy;
 import am.extension.userfeedback.evaluation.RankingAccuracy.ServerCSEvaluationData;
+import am.extension.userfeedback.experiments.UFLExperiment;
 
 
-public class ServerStatistics extends UFLStatistics<MUExperiment>{
-	MUExperiment experiment;
+public class ServerStatistics extends UFLStatistics {
+	
+	private UFLExperiment experiment;
+	
 	@Override
-	public void compute(MUExperiment exp) 
+	public void compute(UFLExperiment exp) 
 	{
 		this.experiment=exp;
-		// TODO Auto-generated method stub
-		ServerFeedbackEvaluationData dataPE = exp.feedbackEvaluationData;
+		ExperimentData data = exp.experimentData;
 		
 		CandidateSelectionEvaluation cse=exp.csEvaluation;
 		ServerCSEvaluationData dataCS=null;
@@ -26,13 +28,11 @@ public class ServerStatistics extends UFLStatistics<MUExperiment>{
 			MultiplexCandidateSelectionEvaluation multiplexeval = (MultiplexCandidateSelectionEvaluation) cse;
 			RankingAccuracy ra = (RankingAccuracy) multiplexeval.getEvaluation(RankingAccuracy.class);
 			dataCS = ra.getData();
-		}
-		else
-		{
+		} else {
 			throw new RuntimeException("Expecting server feedback evalution data");
 		}
 		
-		writeLog(dataPE, dataCS);
+		writeLog(data, dataCS);
 		
 		try {
 			experiment.logFile.close();
@@ -44,16 +44,12 @@ public class ServerStatistics extends UFLStatistics<MUExperiment>{
 	}
 	
 	
-	private double computeDelta(double[] array)
+	public double computeDelta(ExperimentData data, DataSeries series)
 	{
-		return array[array.length-1]-array[0];
+		double[] dataForSeries = data.getSeries(series);
+		return dataForSeries[dataForSeries.length-1] - dataForSeries[0];
 	}
-	
-	private int computeDelta(int[] array)
-	{
-		return array[0]-array[array.length-1];
-	}
-	
+		
 	private double computeAUC(double[] array)
 	{
 		double auc=0;
@@ -70,27 +66,33 @@ public class ServerStatistics extends UFLStatistics<MUExperiment>{
 	}
 	
 	
-	private void writeLog(ServerFeedbackEvaluationData dataFPE, ServerCSEvaluationData dataCSE)
+	private void writeLog(ExperimentData dataFPE, ServerCSEvaluationData dataCSE)
 	{
-		double dDelta=computeDelta(dataFPE.deltaArray);
-		double dRecall=computeDelta(dataFPE.recallArray)*100;
-		double dPrecision = computeDelta(dataFPE.precisionArray)*100;
-		double dFMeasure= computeDelta(dataFPE.fmeasureArray)*100;
+		double dDelta = computeDelta(dataFPE, DataSeries.DELTA_FROM_REF);
+		double dRecall = computeDelta(dataFPE, DataSeries.RECALL)*100;
+		double dPrecision = computeDelta(dataFPE, DataSeries.PRECISION)*100;
+		double dFMeasure = computeDelta(dataFPE, DataSeries.FMEASURE)*100;
 		
-		double auc=computeAUC(dataCSE.accuracy);
-		int falsePositive=getFeedbackNumber(dataCSE.falsePositive);
-		int falseNegative=getFeedbackNumber(dataCSE.falseNegative);
-		int totalFeedback=getFeedbackNumber(dataCSE.totalFeedback);
+		double auc = computeAUC(dataCSE.accuracy);
+		int falsePositive = getFeedbackNumber(dataCSE.falsePositive);
+		int falseNegative = getFeedbackNumber(dataCSE.falseNegative);
+		int totalFeedback = getFeedbackNumber(dataCSE.totalFeedback);
 		
-		experiment.info("");
-		experiment.info("------------------------------SUMMARY------------------------------");
-		experiment.info("");
-		experiment.info("Candidate Selection Evaluation Data");
-		experiment.info("AUC: "+auc+" ,#FalsePositive: "+falsePositive+" ,#FalseBegative: "+falseNegative+" ,#TotalFeedback: "+totalFeedback);
-		experiment.info("");
-		experiment.info("Feedback propagation Evaluation Data");
-		experiment.info("DoD: "+dDelta+" ,PrecisionDelta: "+dPrecision+" ,RecacallDelta: "+dRecall+" ,FMeasureDelata: "+dFMeasure);
+		StringBuilder sb = new StringBuilder();
 		
+		sb.append("\n------------------------------SUMMARY------------------------------\n\n")
+		  .append("Candidate Selection Evaluation Data\n")
+		  .append("Area Under Curve:  ").append(auc).append("\n")
+		  .append("# False Positive:  ").append(falsePositive).append("\n")
+		  .append("# False Negative:  ").append(falseNegative).append("\n")
+		  .append("# Total Feedback:  ").append(totalFeedback).append("\n");
+		
+		sb.append("\nFeedback propagation Evaluation Data\n")
+		  .append("    Delta Delta:  ").append(dDelta).append("\n")
+		  .append("Precision Delta:  ").append(dPrecision).append("\n")
+		  .append(" Recacall Delta:  ").append(dRecall).append("\n")
+		  .append(" FMeasure Delta:  ").append(dFMeasure).append("\n");
+		
+		experiment.info(sb.toString());
 	}
-
 }

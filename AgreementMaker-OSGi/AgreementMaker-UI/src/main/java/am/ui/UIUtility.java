@@ -1,5 +1,6 @@
 package am.ui;
 
+import java.awt.Component;
 import java.awt.HeadlessException;
 
 import javax.swing.JOptionPane;
@@ -33,4 +34,11 @@ public class UIUtility {
 		else return false;
 	}
 	
+	public static void displayInfoPane(Component parentComponent, String message) {
+		JOptionPane.showMessageDialog(parentComponent, message);
+	}
+	
+	public static void displayInfoPane(String message) {
+		displayInfoPane(null, message);
+	}
 }

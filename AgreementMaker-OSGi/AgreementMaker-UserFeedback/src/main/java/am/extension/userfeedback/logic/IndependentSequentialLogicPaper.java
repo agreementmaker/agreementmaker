@@ -16,7 +16,7 @@ import am.extension.userfeedback.UserFeedback.Validation;
 import am.extension.userfeedback.ui.UFLControlGUI.ActionCommands;
 
 
-public class IndependentSequentialLogicPaper extends UFLControlLogic<MUExperiment> {
+public class IndependentSequentialLogicPaper extends NonPersistentUFLControlLogic<MUExperiment> {
 	
 	private static Logger LOG = Logger.getLogger(IndependentSequentialLogicMultiUser.class);
 	
@@ -45,7 +45,7 @@ public class IndependentSequentialLogicPaper extends UFLControlLogic<MUExperimen
 			return;
 		}
 		
-		if( e.getActionCommand() == ActionCommands.EXECUTION_SEMANTICS_DONE.name() ) {
+		if( e.getActionCommand() == ActionCommands.INITIAL_MATCHERS_DONE.name() ) {
 			runInizialization();
 		}
 		
@@ -80,7 +80,7 @@ public class IndependentSequentialLogicPaper extends UFLControlLogic<MUExperimen
 		}
 		
 		if( e.getActionCommand() == ActionCommands.PROPAGATION_EVALUATION_DONE.name() ) {
-			experiment.newIteration();
+			experiment.beginIteration();
 			runCandidateSelection();
 		}
 		

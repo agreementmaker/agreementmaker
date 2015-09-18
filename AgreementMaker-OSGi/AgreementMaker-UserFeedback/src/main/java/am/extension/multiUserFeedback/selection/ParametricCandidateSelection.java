@@ -74,7 +74,6 @@ public class ParametricCandidateSelection extends CandidateSelection<MUExperimen
 				break;
 			}
 		}
-		System.out.println(experiment.selectedMapping);
 		done();
 	}
 		

@@ -25,7 +25,7 @@ public abstract class FeedbackAgregation <T extends UFLExperiment>{
 	}
 	public abstract void addFeedback(T exp);
 	
-	public abstract Object[][] getTrainingSet(alignType type, String quantity);
+	public abstract double[][] getTrainingSet(alignType type, String quantity);
 	
 	public void addActionListener( ActionListener l ) {
 		listeners.add(ActionListener.class, l);

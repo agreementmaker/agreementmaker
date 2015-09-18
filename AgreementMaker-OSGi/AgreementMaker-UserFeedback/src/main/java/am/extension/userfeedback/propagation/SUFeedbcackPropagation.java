@@ -7,29 +7,20 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import weka.classifiers.Classifier;
-import weka.classifiers.bayes.NaiveBayes;
-import weka.core.Instance;
-import weka.core.Instances;
-import weka.core.Attribute;
-import weka.core.FastVector;
-
-
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.app.ontology.Node;
-import am.extension.multiUserFeedback.experiment.MUExperiment;
-import am.extension.userfeedback.MLutility.WekaUtility;
 //import am.extension.userfeedback.MLutility.NaiveBayes;
 import am.extension.userfeedback.UserFeedback.Validation;
+import am.extension.userfeedback.MLutility.WekaUtility;
 import am.extension.userfeedback.experiments.SUExperiment;
 import am.extension.userfeedback.utility.UFLutility;
 import am.matcher.Combination.CombinationMatcher;
@@ -39,7 +30,7 @@ public class SUFeedbcackPropagation extends FeedbackPropagation<SUExperiment> {
 	final double treshold_down=0.01;
 	final double penalize_ratio=0.9;
 	private SUExperiment experiment;
-	List<AbstractMatcher> inputMatchers = new ArrayList<AbstractMatcher>();
+	List<MatchingTask> inputMatchers = new ArrayList<>();
 	
 
 	private Object[] addToSV(Mapping mp, Boolean label)
@@ -48,13 +39,13 @@ public class SUFeedbcackPropagation extends FeedbackPropagation<SUExperiment> {
 		int size=inputMatchers.size();
 		Node sourceNode=mp.getEntity1();
 		Node targetNode=mp.getEntity2();
-		AbstractMatcher a;
+		MatchingTask a;
 		Object obj=new Object();
 		Object[] ssv=new Object[size+1];
 		for (int i=0;i<size;i++)
 		{
 			a = inputMatchers.get(i);
-			obj=a.getAlignment().getSimilarity(sourceNode, targetNode);
+			obj=a.selectionResult.getAlignment().getSimilarity(sourceNode, targetNode);
 			if (obj!=null)
 				ssv[i]=obj;
 			else
@@ -69,17 +60,17 @@ public class SUFeedbcackPropagation extends FeedbackPropagation<SUExperiment> {
 		
 	}
 	
-	private Object[] getSignatureVector(Mapping mp)
+	private double[] getSignatureVector(Mapping mp)
 	{
 		int size=inputMatchers.size();
 		Node sourceNode=mp.getEntity1();
 		Node targetNode=mp.getEntity2();
-		AbstractMatcher a;
-		Object[] ssv=new Object[size];
+		MatchingTask a;
+		double[] ssv=new double[size];
 		for (int i=0;i<size;i++)
 		{
 			a = inputMatchers.get(i);
-			ssv[i]=a.getAlignment().getSimilarity(sourceNode, targetNode);
+			ssv[i]=a.selectionResult.getAlignment().getSimilarity(sourceNode, targetNode);
 			
 		}
 		return ssv;
@@ -152,12 +143,12 @@ public class SUFeedbcackPropagation extends FeedbackPropagation<SUExperiment> {
 	}
 	
 	//check if the signature vector is valid. A valid signature vector must have at least one non zero element.
-	private boolean validSsv(Object[] ssv)
+	private boolean validSsv(double[] ssv)
 	{
-		Object obj=0.0;
+		double obj=0.0;
 		for(int i=0;i<ssv.length;i++)
 		{
-			if (!ssv[i].equals(obj))
+			if (!(ssv[i] == obj))
 				return true;
 		}
 		return false;
@@ -168,9 +159,9 @@ public class SUFeedbcackPropagation extends FeedbackPropagation<SUExperiment> {
 	{
 		this.experiment=exp;
 		int iteration=experiment.getIterationNumber();
-		inputMatchers=experiment.initialMatcher.getComponentMatchers();
+		inputMatchers = experiment.initialMatcher.getComponentMatchers();
 		Mapping candidateMapping = experiment.userFeedback.getCandidateMapping();
-		List<AbstractMatcher> availableMatchers = experiment.initialMatcher.getComponentMatchers();
+		List<MatchingTask> availableMatchers = experiment.initialMatcher.getComponentMatchers();
 		Object[][] trainingSet=new Object[1][availableMatchers.size()];
 		int trainset_index=0;
 		
@@ -518,7 +509,7 @@ public class SUFeedbcackPropagation extends FeedbackPropagation<SUExperiment> {
 	private SimilarityMatrix euclideanDistance(SparseMatrix forbidden_pos, SimilarityMatrix sm,Object[][] trainingSet, String type)
 	{
 		Mapping mp;
-		Object[] ssv;
+		double[] ssv;
 		double tmp=0;
 		double sim;
 		double distance=0;
@@ -584,13 +575,13 @@ public class SUFeedbcackPropagation extends FeedbackPropagation<SUExperiment> {
 		return sm;
 	}
 	
-	private SimilarityMatrix wekaRegression(SparseMatrix sparse,SimilarityMatrix sm,Object[][] trainingSet)
+	private SimilarityMatrix wekaRegression(SparseMatrix sparse,SimilarityMatrix sm, double[][] trainingSet)
 	{
 		WekaUtility wk=new WekaUtility();
 		wk.setTrainingSet(trainingSet);
 		
 		Mapping mp;
-		Object[] ssv;
+		double[] ssv;
 		double sim;
 
 		for(int k=0;k<sm.getRows();k++)
@@ -600,7 +591,7 @@ public class SUFeedbcackPropagation extends FeedbackPropagation<SUExperiment> {
 				if(sparse.getSimilarity(k, h)==1)
 					continue;
 				mp = sm.get(k, h);
-				ssv=getSignatureVector(mp);
+				ssv = getSignatureVector(mp);
 				if (!validSsv(ssv))
 					continue;
 				sim=wk.runRegression(ssv);
@@ -616,13 +607,13 @@ public class SUFeedbcackPropagation extends FeedbackPropagation<SUExperiment> {
 		return sm;
 	}
 	
-	private SimilarityMatrix wekaSVM(SparseMatrix sparse,SimilarityMatrix sm,Object[][] trainingSet)
+	private SimilarityMatrix wekaSVM(SparseMatrix sparse,SimilarityMatrix sm, double[][] trainingSet)
 	{
 		WekaUtility wk=new WekaUtility();
 		wk.setTrainingSet(trainingSet);
 		
 		Mapping mp;
-		Object[] ssv;
+		double[] ssv;
 		double sim;
 
 		for(int k=0;k<sm.getRows();k++)
@@ -632,7 +623,7 @@ public class SUFeedbcackPropagation extends FeedbackPropagation<SUExperiment> {
 				if(sparse.getSimilarity(k, h)==1)
 					continue;
 				mp = sm.get(k, h);
-				ssv=getSignatureVector(mp);
+				ssv = getSignatureVector(mp);
 				if (!validSsv(ssv))
 					continue;
 				sim=wk.runKNN(ssv);
@@ -651,7 +642,7 @@ public class SUFeedbcackPropagation extends FeedbackPropagation<SUExperiment> {
 	private SimilarityMatrix logDistance(SparseMatrix forbidden_pos, SimilarityMatrix sm,Object[][] trainingSet, String type)
 	{
 		Mapping mp;
-		Object[] ssv;
+		double[] ssv;
 		double sim=0;
 		double distance=0;
 		int count=0;

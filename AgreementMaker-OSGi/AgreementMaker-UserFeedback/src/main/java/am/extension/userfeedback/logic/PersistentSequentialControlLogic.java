@@ -24,26 +24,16 @@ public class PersistentSequentialControlLogic extends PersistentControlLogic<MUE
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		
-		LOG.info(e.getActionCommand());
+		LOG.trace(e.getActionCommand());
 		
-		if( experiment != null && experiment.experimentHasCompleted() ) { // check stop condition
-			//runSaveFeedback();
-			System.out.println("Experiment has completed.  Ignoring further actions.");
-				
-			runStatistic();
-			
-			return;
-		}
-		
-		if( e.getActionCommand().equals(ActionCommands.EXECUTION_SEMANTICS_DONE.name()) ) {
+		if (e.getActionCommand().equals(ActionCommands.INITIAL_MATCHERS_DONE.name())) {
 			runInizialization();
-		}
-		
-		if( e.getActionCommand().equals(ActionCommands.LOOP_INIZIALIZATION_DONE.name()) ) {
-			runCandidateSelection();
-		}
-		
-		if( e.getActionCommand().equals(ActionCommands.CANDIDATE_SELECTION_DONE.name()) ) {
+		} else if (e.getActionCommand().equals(ActionCommands.LOOP_INIZIALIZATION_DONE.name())) {
+			if (experiment.canBeginIteration()) {
+				experiment.beginIteration();
+				runCandidateSelection();
+			}
+		} else if (e.getActionCommand().equals(ActionCommands.CANDIDATE_SELECTION_DONE.name())) {
 			runCandidateSelectionEvaluation();
 		}
 
@@ -69,9 +59,15 @@ public class PersistentSequentialControlLogic extends PersistentControlLogic<MUE
 		}
 		
 		if( e.getActionCommand().equals(ActionCommands.PROPAGATION_EVALUATION_DONE.name()) ) {
-			experiment.newIteration();
-			LOG.info("New iteration: " + experiment.getIterationNumber());
-			runCandidateSelection(); // back to top /\
+			experiment.endIteration();
+			if (experiment.canBeginIteration()) {
+				experiment.beginIteration();
+				runCandidateSelection(); // back to top /\
+			} else {
+				//runSaveFeedback();
+				System.out.println("Experiment has completed.  Ignoring further actions.");
+				runStatistic();
+			}
 		}
 	}
 

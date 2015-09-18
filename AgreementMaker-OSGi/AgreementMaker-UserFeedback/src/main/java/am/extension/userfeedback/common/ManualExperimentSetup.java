@@ -17,7 +17,7 @@ import am.extension.userfeedback.experiments.UFLExperiment;
 import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
 import am.extension.userfeedback.experiments.UFLExperimentSetup;
 import am.extension.userfeedback.logic.IndependentSequentialLogic;
-import am.extension.userfeedback.logic.UFLControlLogic;
+import am.extension.userfeedback.logic.NonPersistentUFLControlLogic;
 
 /**
  * This is a manual experiment setup.
@@ -69,18 +69,6 @@ public class ManualExperimentSetup extends UFLExperiment {
 	}
 
 	@Override
-	public boolean experimentHasCompleted() {
-		if( userFeedback != null && userFeedback.getUserFeedback() == Validation.END_EXPERIMENT ) return true;  // we're done when the user says so
-		return false;
-	}
-
-	@Override
-	public void newIteration() {
-		super.newIteration();
-		// TODO: Save all the objects that we used in the previous iteration.
-	}
-
-	@Override
 	public Alignment<Mapping> getFinalAlignment() {
 		return initialMatcher.getAlignment();
 	}
@@ -98,7 +86,7 @@ public class ManualExperimentSetup extends UFLExperiment {
 	}
 
 	@Override
-	public UFLControlLogic getControlLogic() {
+	public NonPersistentUFLControlLogic getControlLogic() {
 		return new IndependentSequentialLogic();
 	}
 	

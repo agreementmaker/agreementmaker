@@ -8,11 +8,10 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
-import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.qualityEvaluation.metrics.ufl.ExpandedConsensus;
+import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.app.ontology.Node;
@@ -66,18 +65,18 @@ public class ServerFeedbackAggregation extends FeedbackAgregation<MUExperiment>{
 	
 
 	
-	public Object[][] getSingleTrainingSet()
+	public double[][] getSingleTrainingSet()
 	{
-		Object[][] tmp= new Object[1][experiment.initialMatcher.getComponentMatchers().size()+1];
+		double[][] tmp= new double[1][experiment.initialMatcher.getComponentMatchers().size()+1];
 		double label=userFeedback==Validation.CORRECT?1.0:-1.0;
-		tmp[0]=getLabeledMapping(candidateMapping,label);
+		tmp[0] = getLabeledMapping(candidateMapping,label);
 		return tmp;
 	}
 	
-	public Object[][] getSingleCheckedTrainingSet(alignType type)
+	public double[][] getSingleCheckedTrainingSet(alignType type)
 	{
 		double sum=0.0d;
-		Object[][] tmp= new Object[1][experiment.initialMatcher.getComponentMatchers().size()+1];
+		double[][] tmp= new double[1][experiment.initialMatcher.getComponentMatchers().size()+1];
 		int i=candidateMapping.getSourceKey();
 		int j=candidateMapping.getTargetKey();
 		SparseMatrix positiveFeedback = experiment.getFeedbackMatrix(type, Validation.CORRECT);
@@ -92,9 +91,9 @@ public class ServerFeedbackAggregation extends FeedbackAgregation<MUExperiment>{
 	
 
 
-	private Object[][] getMultipleTrainingSet(alignType type) {
+	private double[][] getMultipleTrainingSet(alignType type) {
 		int sum=0;
-		List<Object[]> trainingSet = new ArrayList<Object[]>();
+		List<double[]> trainingSet = new ArrayList<>();
 		SparseMatrix positiveFeedback = experiment.getFeedbackMatrix(type, Validation.CORRECT);
 		SparseMatrix negativeFeedback = experiment.getFeedbackMatrix(type, Validation.INCORRECT);
 		/*ExpandedConsensus ec=new ExpandedConsensus(experiment.getFeedbackMatrix(type, Validation.CORRECT),
@@ -114,16 +113,16 @@ public class ServerFeedbackAggregation extends FeedbackAgregation<MUExperiment>{
 				}
 			}
 		}
-		List<Object[]> tt =addAMconfidentMapping(type);
+		List<double[]> tt =addAMconfidentMapping(type);
 		trainingSet.addAll(tt);
-		return trainingSet.toArray(new Object[0][0]);
+		return trainingSet.toArray(new double[0][0]);
 	}
 	
-	private List<Object[]> addAMconfidentMapping(alignType type)
+	private List<double[]> addAMconfidentMapping(alignType type)
 	{
 		int count=0;
 		Alignment<Mapping> amFinal=experiment.initialMatcher.getFinalMatcher().getAlignment();
-		List<Object[]> trainingSet = new ArrayList<Object[]>();
+		List<double[]> trainingSet = new ArrayList<>();
 		for(Mapping m : amFinal)
 		{
 			
@@ -187,15 +186,15 @@ public class ServerFeedbackAggregation extends FeedbackAgregation<MUExperiment>{
 	 *            The difference between the number of positive and negative
 	 *            validations.
 	 */
-	private Object[] getLabeledMapping(Mapping mp, double diff)
+	private double[] getLabeledMapping(Mapping mp, double diff)
 	{
 		if( diff == 0d ) {
 			throw new RuntimeException("The difference cannot be zero.");
 		}
 		
-		Object[] sv = getSignatureVector(mp);
+		double[] sv = getSignatureVector(mp);
 		
-		Object[] trainingElement = Arrays.copyOf(sv, sv.length+1);
+		double[] trainingElement = Arrays.copyOf(sv, sv.length+1);
 		if (diff > 0)
 			trainingElement[trainingElement.length-1] = 1.0;
 		if (diff < 0)
@@ -205,17 +204,17 @@ public class ServerFeedbackAggregation extends FeedbackAgregation<MUExperiment>{
 
 	}
 	
-	private Object[] getSignatureVector(Mapping mp)
+	private double[] getSignatureVector(Mapping mp)
 	{
 		int numMatchers = experiment.initialMatcher.getComponentMatchers().size();
 		Node sourceNode=mp.getEntity1();
 		Node targetNode=mp.getEntity2();
-		AbstractMatcher a;
-		Object[] signatureVector = new Object[numMatchers];
+		MatchingTask a;
+		double[] signatureVector = new double[numMatchers];
 		for (int i=0; i < numMatchers;i++)
 		{
 			a = experiment.initialMatcher.getComponentMatchers().get(i);
-			signatureVector[i] = a.getAlignment().getSimilarity(sourceNode, targetNode);
+			signatureVector[i] = a.selectionResult.getAlignment().getSimilarity(sourceNode, targetNode);
 		}
 		return signatureVector;
 	}
@@ -254,7 +253,7 @@ public class ServerFeedbackAggregation extends FeedbackAgregation<MUExperiment>{
 	}
 
 	@Override
-	public Object[][] getTrainingSet(alignType type, String quantity) {
+	public double[][] getTrainingSet(alignType type, String quantity) {
 		switch (quantity) {
 		case ("multi"):
 			return getMultipleTrainingSet(type);

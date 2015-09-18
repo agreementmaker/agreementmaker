@@ -25,7 +25,6 @@ import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.app.mappingEngine.threaded.AbstractMatcherRunner;
-import am.app.ontology.JenaBackedOntClassNode;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 
@@ -475,6 +474,12 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		return alignNodesOneByOne(sourceClassList, targetClassList, alignType.aligningClasses);
 	}
 
+	/**
+	 * This method is called to match classes when in large ontology mode.
+	 * 
+	 * @return
+	 * @throws Exception
+	 */
 	protected SimilarityMatrix alignManyClasses() throws Exception {
 		AggregativeSparseMatrix matrix = new AggregativeSparseMatrix(sourceOntology, targetOntology, getParam().threshold);
 		
@@ -488,11 +493,14 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 			int j = 0;
 			while( targetClasses.hasNext() ) {
 				OntClass targetClass = targetClasses.next();
-				Mapping alignment;
+				Mapping alignment = null;
 				if( !this.isCancelled() ) { 
-					alignment = alignTwoNodes(
-						new JenaBackedOntClassNode(sourceClass), new JenaBackedOntClassNode(targetClass), alignType.aligningClasses, matrix); }
+					//alignment = alignTwoNodes(
+					//	new JenaClass(sourceClass), new JenaClass(targetClass), alignType.aligningClasses, matrix); }
+					// FIXME: Update to work with AgreementMaker-API.
+				}
 				else { return matrix; }
+				
 				if(alignment != null && alignment.getSimilarity() >= param.threshold)
 					matrix.set(i,j,alignment);
 				if( isProgressDisplayed() ) {

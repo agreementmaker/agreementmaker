@@ -1,5 +1,6 @@
 package am.extension.userfeedback.experiments;
 
+import java.io.BufferedWriter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,19 +10,22 @@ import org.apache.log4j.Logger;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.ontology.Ontology;
+import am.evaluation.alignment.AlignmentMetrics;
+import am.evaluation.alignment.DeltaFromReference;
 import am.extension.multiUserFeedback.storage.FeedbackAgregation;
 import am.extension.multiUserFeedback.validation.ProbabilisticErrorAutomaticValidation;
-import am.extension.userfeedback.ExecutionSemantics;
+import am.extension.userfeedback.InitialMatchers;
 import am.extension.userfeedback.SaveFeedback;
 import am.extension.userfeedback.UFLStatistics;
 import am.extension.userfeedback.UserFeedback;
 import am.extension.userfeedback.UserFeedback.Validation;
-import am.extension.userfeedback.common.ServerFeedbackEvaluationData;
+import am.extension.userfeedback.common.ExperimentData;
+import am.extension.userfeedback.common.ExperimentIteration;
 import am.extension.userfeedback.evaluation.CandidateSelectionEvaluation;
 import am.extension.userfeedback.evaluation.PropagationEvaluation;
 import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
 import am.extension.userfeedback.inizialization.FeedbackLoopInizialization;
-import am.extension.userfeedback.logic.UFLControlLogic;
+import am.extension.userfeedback.logic.api.UFLControlLogic;
 import am.extension.userfeedback.propagation.FeedbackPropagation;
 import am.extension.userfeedback.selection.CandidateSelection;
 import am.extension.userfeedback.ui.UFLProgressDisplay;
@@ -30,9 +34,9 @@ public abstract class UFLExperiment {
 
 	private static final Logger LOG = LogManager.getLogger(UFLExperiment.class);
 	
-	public final UFLExperimentSetup							setup;  
+	public final UFLExperimentSetup							setup;
 	
-	public ExecutionSemantics 								initialMatcher;
+	public InitialMatchers 								initialMatcher;
 	public FeedbackLoopInizialization<UFLExperiment>        dataInizialization;
 	public CandidateSelection<UFLExperiment> 				candidateSelection;
 	public CandidateSelectionEvaluation 					csEvaluation;
@@ -42,7 +46,11 @@ public abstract class UFLExperiment {
 	public UFLProgressDisplay								gui;
 	public SaveFeedback< UFLExperiment>						saveFeedback;
 	public FeedbackAgregation<UFLExperiment>				feedbackAggregation;
-	public UFLStatistics<UFLExperiment>						uflStatistics; 
+	public UFLStatistics									uflStatistics; 
+	
+	public BufferedWriter logFile;
+	
+	public ExperimentData experimentData = new ExperimentData();
 	
 	/**
 	 * Keep count of how many incorrect validations were generated for a
@@ -60,7 +68,7 @@ public abstract class UFLExperiment {
 	 * A shared object store, that is used to keep objects. NOTE: This object is
 	 * needed because of the way the UFLControlLogic has evolved. The
 	 * UFLControlLogics we implemented did not allow UFL objects to persist
-	 * beyond one iteration. On each iteration, new objects are instantitated.
+	 * beyond one iteration. On each iteration, new objects are instantiated.
 	 * So we moved a lot of the data structures we wanted to persist into the
 	 * UFLExperiment subclasses. This object is an attempt to simplify that
 	 * task. Instead of adding a new field every time we want to save a new data
@@ -80,10 +88,6 @@ public abstract class UFLExperiment {
      */
     public Alignment<Mapping>				incorrectMappings;
     
-    private int iterationNumber = 0;
-
-    public ServerFeedbackEvaluationData feedbackEvaluationData;
-    
     public UFLExperiment(UFLExperimentSetup setup) {
 		this.setup = setup;
 		
@@ -95,9 +99,6 @@ public abstract class UFLExperiment {
 		}
 		
 		sharedObjectStore = new HashMap<>();
-		
-		int numIterations = setup.parameters.getIntParameter(Parameter.NUM_ITERATIONS);
-		feedbackEvaluationData = new ServerFeedbackEvaluationData(numIterations);
 	}
     
 	public Ontology getSourceOntology()             { return sourceOntology; }
@@ -112,16 +113,48 @@ public abstract class UFLExperiment {
 	public abstract Alignment<Mapping>  getFinalAlignment();
 	public abstract void				info(String line);   // FIXME: Change this, or get rid of it. Or learn how to use log4j.
 	
-	public abstract UFLControlLogic<? extends UFLExperiment>	getControlLogic();
+	public abstract UFLControlLogic	getControlLogic();
 	
-	public abstract boolean 			experimentHasCompleted();  // return true if the experiment is done, false otherwise.
-	
-	public int getIterationNumber() 
-	{ 
-		return iterationNumber; 
+	/**
+	 * @return true if the experiment is done, false otherwise
+	 */
+	public boolean experimentHasCompleted() {
+		return !canBeginIteration();
 	}
 	
-	public void	newIteration() {
+	public int getIterationNumber() { 
+		return experimentData.numIterations(); 
+	}
+	
+	/**
+	 * @return true if we should do another iteration, false if the experiment has ended
+	 */
+	public boolean canBeginIteration() {
+		int numIterations = setup.parameters.getIntParameter(Parameter.NUM_ITERATIONS);
+  		return experimentData.numIterations() <= numIterations;
+	}
+	
+	public void beginIteration() {
+		LOG.trace("Iteration: " + getIterationNumber());
+	}
+	
+	public void endIteration() {
+		// compute the delta from reference
+		DeltaFromReference deltaFromReference = new DeltaFromReference(getReferenceAlignment());
+		int delta = deltaFromReference.getDelta(getFinalAlignment());
+		
+		// alignment metrics: precision, recall, fmeasure.
+		AlignmentMetrics metrics = new AlignmentMetrics(getReferenceAlignment(), getFinalAlignment());
+		
+		// save all the values
+		ExperimentIteration currentIteration = 
+				new ExperimentIteration(metrics.getPrecision(), metrics.getRecall(), delta);
+		experimentData.addIteration(currentIteration);
+		
+		info(currentIteration.toString());
+		info("");
+		
+		// save user feedback
 		if( userFeedback.getUserFeedback() == Validation.CORRECT ) {
 			if( correctMappings == null ) {
 				correctMappings = new Alignment<Mapping>(getSourceOntology().getID(), getTargetOntology().getID());
@@ -134,15 +167,10 @@ public abstract class UFLExperiment {
 			}
 			if (!incorrectMappings.contains(userFeedback.getCandidateMapping()))
 				incorrectMappings.add( userFeedback.getCandidateMapping() );
-		}		
-		
-		setIterationNumber(getIterationNumber() + 1); 
+		}
 	}
 	
 	public void setGUI(UFLProgressDisplay gui) { this.gui = gui; }
-	public void setIterationNumber(int iterationNumber) {
-		this.iterationNumber = iterationNumber;
-	}
 	
 	/**
 	 * @return A human-readable description of the experiment that is displayed
@@ -176,4 +204,6 @@ public abstract class UFLExperiment {
 		if( incorrectMappings != null ) a.addAll(incorrectMappings);
 		return a;
 	}
+	
+	
 }
