@@ -11,5 +11,4 @@ AgreementMaker uses the Maven build system.  To build it type:
 
 in the `AgreementMaker-OSGi` directory.
 
-Run the bundles with your favorite OSGi implementation (for example, [Apache Felix](http://felix.apache.org/)).  To see how to run AgreementMaker in an IDE, please refer to the [wiki](AgreementMaker-OSGi/Matcher-OAEI/src/main/java/am/matcher/oaei/oaei2011/OAEI2011Matcher.java
-).
+Run the bundles with your favorite OSGi implementation (for example, [Apache Felix](http://felix.apache.org/)).  To see how to run AgreementMaker in an IDE, please refer to the [wiki](https://github.com/agreementmaker/agreementmaker/wiki).
