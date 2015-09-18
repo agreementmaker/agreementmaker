@@ -127,7 +127,6 @@ public class Core {
 	public static Core getInstance() {
 		return core;
 	}
-	
 	/**
 	 * It's private because it's not possible to create new instances of this class
 	 */
