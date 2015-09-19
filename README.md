@@ -8,6 +8,10 @@ and presented impressive results.
 
 The currently supported version of AgreementMaker is under the [AgreementMaker-OSGi](AgreementMaker-OSGi) directory.
 
-# Getting Started
+# Running
 
-Please read the [wiki on GitHub](https://github.com/agreementmaker/agreementmaker/wiki) for information on how to run AgreementMaker.
+You can run AgreementMaker using the Maven Pax Runner plugin:
+
+    cd AgreementMaker-OSGi
+    mvn install pax:provision
+

@@ -87,15 +87,12 @@
           </provision>
         </configuration>
         <executions>
-          <!--
-           | uncomment to auto-generate IDE files
           <execution>
             <id>ide-support</id>
             <goals>
               <goal>eclipse</goal>
             </goals>
           </execution>
-          -->
         </executions>
       </plugin>
     </plugins>

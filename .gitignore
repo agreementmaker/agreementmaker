@@ -33,7 +33,9 @@ AgreementMaker-OSGi/Matcher-OAEI/target/
 AgreementMaker-OSGi/Matcher-PRA/META-INF/
 AgreementMaker-OSGi/Matcher-PRA/target/
 AgreementMaker-OSGi/target/
+AgreementMaker-OSGi/provision/target/
 .settings/
 .project
 .classpath
+build.properties
 AgreementMaker-OSGi/runner

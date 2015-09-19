@@ -41,9 +41,6 @@
 					<instructions>
 						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
 						<Bundle-Version>${project.version}</Bundle-Version>
-						<!-- <Export-Package>${bundle.namespace}.*</Export-Package> -->
-						<!-- <Export-Package>*</Export-Package>
-						<_exportcontents>!org.osgi.*,!org.apache.felix.*,*</_exportcontents>  -->
 						<Import-Package>
 							!cern.colt.matrix.*,
 							!ch.toe.famix.*,
@@ -100,6 +97,16 @@
 							!javax.xml.bind.*,
 							!javax.xml.stream.util.*,
 							!javax.xml.stream.*,
+							!*.aut,
+							!image.informationmatching,
+							!image,
+							!jena-log4j.properties,
+							!JWNLResource_en.properties,
+							!ont-policy.rdf,
+							!sound,
+							!target.dependency,
+							!testpool.jocl,
+							!PrincetonResource_en.properties,
 							*
 						</_exportcontents>
 						<Bundle-Activator>${bundle.namespace}.app.osgi.AMActivator</Bundle-Activator>
