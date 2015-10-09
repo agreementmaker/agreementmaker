@@ -1,0 +1,2160 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:xsp="http://www.owl-ontologies.com/2005/08/07/xsp.owl#"
+    xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+    xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+    xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns="http://iasted#"
+  xml:base="http://iasted">
+  <owl:Ontology rdf:about=""/>
+  <owl:Class rdf:ID="Presenter_house">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Building"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="Presenter_state"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="is_situated_in"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="is_occupied_by"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="Delegate"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="Presenter_city"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_situated_in"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Hotel_registration_form">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="is_sent_before"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="Deadline_hotel_reservation"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Form"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Car">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Transport_vehicle"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Mailing_list">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="is_designed_for"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="#Delegate"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Document"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Renting">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Car"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="is_connected_with"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Activity_before_conference"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Dinner_banquet">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class>
+            <owl:complementOf>
+              <owl:Class rdf:ID="One_day_presenter"/>
+            </owl:complementOf>
+          </owl:Class>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_designed_for"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Social_program"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Activity"/>
+  <owl:Class rdf:ID="Person"/>
+  <owl:Class rdf:ID="PowerPoint_presentation">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Presentation"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Conference_restaurant">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_situated_in"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="Conference_city"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Building"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_situated_in"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="Conference_state"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_occupied_by"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="#Delegate"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Submissions_deadline">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Deadline"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Simulating">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Research"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Technic_activity">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Conference_activity"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="Technical_commitee"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="is_given_by"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Building">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Place"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Author_cd_proceedings_included">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Author"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="obtain"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="Cd_proceening"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Trip_day">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Time"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="#Delegate"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_designed_for"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Record_of_attendance">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Document"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="is_signed_by"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="Listener"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="Session_room"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_situated_in"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Brief_introduction_for_Session_chair">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_given_by"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="#Author"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Document"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="is_given_to"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="Session_chair"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Delegate">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="Invitation_letter"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#obtain"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="Registration_form"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="send"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="#Person"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="Viza"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="need"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Presenter_house"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="occupy"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Restriction>
+            <owl:someValuesFrom>
+              <owl:Class rdf:ID="Registration"/>
+            </owl:someValuesFrom>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:ID="go_through"/>
+            </owl:onProperty>
+          </owl:Restriction>
+          <owl:Restriction>
+            <owl:someValuesFrom>
+              <owl:Class rdf:ID="Conference_days"/>
+            </owl:someValuesFrom>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:ID="is_present_in"/>
+            </owl:onProperty>
+          </owl:Restriction>
+          <owl:Restriction>
+            <owl:someValuesFrom>
+              <owl:Class rdf:ID="Conference_building"/>
+            </owl:someValuesFrom>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:about="#is_present_in"/>
+            </owl:onProperty>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#occupy"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="#Presenter_city"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="#Presenter_state"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#occupy"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="Registration_fee"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="pay"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Departure">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Activity_after_conference"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Conference_airport">
+    <rdfs:subClassOf rdf:resource="#Building"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="#Conference_state"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_situated_in"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="#Conference_city"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_situated_in"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Worker_lecturer">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Lecturer"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Transparency">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="Speaker"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="is_prepared_by"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Document"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Presenter_city">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_occupied_by"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Delegate"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="City"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Card">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Item"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Author_attendee_book_registration_fee">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="is_paid_for"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="Book_proceeding"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Registration_fee"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Presentation">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Conference_activity"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Video_cassette_player">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Audiovisual_equipment"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Technical_commitee">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Technic_activity"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#go_through"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="#Delegate"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Video_presentation">
+    <rdfs:subClassOf rdf:resource="#Presentation"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Hotel_room">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Place"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_designed_for"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="Hotel_presenter"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_situated_in"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="Conference_hotel"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Money"/>
+  <owl:Class>
+    <owl:unionOf rdf:parseType="Collection">
+      <owl:Class rdf:about="#Time"/>
+      <owl:Class rdf:about="#Place"/>
+    </owl:unionOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Conference_state">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="State"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Delegate"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="is_visited_by"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Introduction">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Conference_activity"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Welcome_address">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Conference_activity"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Value_added_tax">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Tax"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Refusing_manuscript">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Activity_before_conference"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Final_manuscript">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="Accepting_manuscript"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#go_through"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Submission"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Sponsor_city">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#City"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="Sponsor"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_occupied_by"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Time_zone"/>
+  <owl:Class rdf:about="#Session_chair">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Brief_introduction_for_Session_chair"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#obtain"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="#Delegate"/>
+    <owl:equivalentClass>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#go_through"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="Introduction_of_speaker"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="Conference_hall">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Place"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_situated_in"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="#Conference_building"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Plenary_lecture">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Lecture"/>
+    </rdfs:subClassOf>
+    <owl:equivalentClass>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_given_by"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="Plenary_lecture_speaker"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="LCD_projector">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Audiovisual_equipment"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Deadline_for_notification_of_acceptance">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Deadline"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Tutorial">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Lecture"/>
+    </rdfs:subClassOf>
+    <owl:equivalentClass>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="Tutorial_speaker"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_given_by"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="Session">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_given_by"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class>
+            <owl:unionOf rdf:parseType="Collection">
+              <owl:Class rdf:about="#Author"/>
+              <owl:Class rdf:about="#Session_chair"/>
+            </owl:unionOf>
+          </owl:Class>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="#Session_room"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="is_held_in"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Lecture"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Registration_form">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Form"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_sent_before"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="Registation_deadline"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Delegate"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="is_sent_by"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Single_hotel_room">
+    <rdfs:subClassOf rdf:resource="#Hotel_room"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Speaker">
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Non_speaker"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="write"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Final_manuscript"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="#Delegate"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="give"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="#Lecture"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Author_information_form">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Form"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Deadline_for_notification_of_acceptance"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="is_sent_after"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Audiovisual_equipment">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="is_used_by"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Speaker"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="#Listener"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_designed_for"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_situated_in"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="#Session_room"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="#Item"/>
+  </owl:Class>
+  <owl:Class>
+    <owl:unionOf rdf:parseType="Collection">
+      <owl:Class rdf:about="#State"/>
+      <owl:Class rdf:about="#Building"/>
+      <owl:Class rdf:about="#City"/>
+      <owl:Class rdf:about="#Place"/>
+    </owl:unionOf>
+  </owl:Class>
+  <owl:Class>
+    <owl:unionOf rdf:parseType="Collection">
+      <owl:Class rdf:about="#Item"/>
+      <owl:Class rdf:about="#Activity"/>
+    </owl:unionOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Deadline">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Delegate"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_designed_for"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="#Time"/>
+  </owl:Class>
+  <owl:Class>
+    <owl:unionOf rdf:parseType="Collection">
+      <owl:Class rdf:about="#Activity"/>
+      <owl:Class rdf:about="#Money"/>
+    </owl:unionOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Registation_deadline">
+    <rdfs:subClassOf rdf:resource="#Deadline"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Nonmember_registration_fee">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Registration_fee"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_designed_for"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="IASTED_non_member"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Hotel_fee">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="#Hotel_presenter"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="is_paid_by"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Fee"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Author">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="prepare"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Transparency"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="#Speaker"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#give"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Brief_introduction_for_Session_chair"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Deadline_hotel_reservation">
+    <rdfs:subClassOf rdf:resource="#Deadline"/>
+  </owl:Class>
+  <owl:Class rdf:about="#IASTED_non_member">
+    <owl:equivalentClass>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Nonmember_registration_fee"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#pay"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </owl:equivalentClass>
+    <rdfs:subClassOf rdf:resource="#Delegate"/>
+  </owl:Class>
+  <owl:Class rdf:about="#One_day_presenter">
+    <owl:equivalentClass>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="is_present"/>
+        </owl:onProperty>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</owl:cardinality>
+      </owl:Restriction>
+    </owl:equivalentClass>
+    <rdfs:subClassOf rdf:resource="#Delegate"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Form">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Delegate"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_given_to"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Document"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Publication">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Final_manuscript"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="is_made_from"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="#Item"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Registration_fee">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="#Conference_activity"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_paid_for"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_paid_by"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Delegate"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Fee"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Taxi">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Transport_vehicle"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Sponsor_state">
+    <rdfs:subClassOf rdf:resource="#State"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Submission">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="is_writen_by"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Speaker"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Document"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Reviewer">
+    <owl:equivalentClass>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#give"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="Review"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </owl:equivalentClass>
+    <rdfs:subClassOf rdf:resource="#Speaker"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Presenter_state">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Delegate"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_occupied_by"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="#State"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Modelling">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Research"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Conference_building">
+    <rdfs:subClassOf rdf:resource="#Building"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_situated_in"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Conference_state"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Delegate"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_occupied_by"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="#Conference_city"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_situated_in"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class>
+    <owl:unionOf rdf:parseType="Collection">
+      <owl:Class rdf:about="#Item"/>
+      <owl:Class rdf:about="#Place"/>
+    </owl:unionOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Book_proceeding">
+    <rdfs:subClassOf rdf:resource="#Publication"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Non_speaker">
+    <rdfs:subClassOf rdf:resource="#Delegate"/>
+    <owl:disjointWith rdf:resource="#Speaker"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Hotel_presenter">
+    <rdfs:subClassOf rdf:resource="#Delegate"/>
+    <rdfs:subClassOf>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Restriction>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:about="#occupy"/>
+            </owl:onProperty>
+            <owl:someValuesFrom>
+              <owl:Class rdf:about="#Conference_hotel"/>
+            </owl:someValuesFrom>
+          </owl:Restriction>
+          <owl:Restriction>
+            <owl:someValuesFrom rdf:resource="#Hotel_fee"/>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:about="#pay"/>
+            </owl:onProperty>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Worker_non_speaker">
+    <owl:equivalentClass>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="Nonauthor_registration_fee"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#pay"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </owl:equivalentClass>
+    <rdfs:subClassOf rdf:resource="#Non_speaker"/>
+  </owl:Class>
+  <owl:Class>
+    <owl:unionOf rdf:parseType="Collection">
+      <owl:Class rdf:about="#Place"/>
+      <owl:Class rdf:about="#Time"/>
+    </owl:unionOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Social_program">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Conference_activity"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_designed_for"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Delegate"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Registration">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Delegate"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_designed_for"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Conference_activity"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Payment_document">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Document"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_designed_for"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class>
+            <owl:unionOf rdf:parseType="Collection">
+              <owl:Class rdf:about="#Fee"/>
+              <owl:Class rdf:about="#Tax"/>
+            </owl:unionOf>
+          </owl:Class>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Conference_activity">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Conference_state"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_held_in"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="#Activity"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="#Conference_days"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_held_in"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Review">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_writen_by"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Reviewer"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Document"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Activity_before_conference">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="is_held_before"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="#Conference_days"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="#Activity"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Camera_ready_manuscript_deadline">
+    <rdfs:subClassOf rdf:resource="#Deadline"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Accepting_manuscript">
+    <rdfs:subClassOf rdf:resource="#Activity_before_conference"/>
+  </owl:Class>
+  <owl:Class rdf:ID="One_conference_day">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Conference_days"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Cd_proceening">
+    <rdfs:subClassOf rdf:resource="#Publication"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Conference_hotel">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_situated_in"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Conference_state"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Hotel_presenter"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_designed_for"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="#Building"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_situated_in"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="#Conference_city"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Fee_for_extra_trip">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_paid_for"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="Full_day_tour"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Fee"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_paid_by"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="Conference_Hiker"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Computer">
+    <rdfs:subClassOf rdf:resource="#Audiovisual_equipment"/>
+  </owl:Class>
+  <owl:Class rdf:ID="IASTED_member">
+    <owl:equivalentClass>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="Memeber_registration_fee"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#pay"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </owl:equivalentClass>
+    <rdfs:subClassOf rdf:resource="#Delegate"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Author_book_proceedings_included">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Book_proceeding"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#obtain"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="#Author"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Conference_city">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#City"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Delegate"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_visited_by"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Session_room">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Place"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_situated_in"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Conference_building"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="is_equipped_by"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Audiovisual_equipment"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Sponsor">
+    <rdfs:subClassOf rdf:resource="#Person"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#occupy"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="Sponsor_company_house"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Sponsor_city"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#occupy"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#occupy"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Sponsor_state"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:equivalentClass>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="Sponzorship"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#give"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="Student_lecturer">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Lecturer"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Trip_city">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#City"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_visited_by"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="#Conference_Hiker"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Invitation_letter">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Delegate"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_designed_for"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Document"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Cheque">
+    <rdfs:subClassOf rdf:resource="#Payment_document"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Shuttle_bus">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Transport_vehicle"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Document">
+    <rdfs:subClassOf rdf:resource="#Item"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Student_non_speaker">
+    <rdfs:subClassOf rdf:resource="#Non_speaker"/>
+    <owl:equivalentClass>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="Student_registration_fee"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#pay"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class>
+    <owl:unionOf rdf:parseType="Collection">
+      <owl:Class rdf:about="#Person"/>
+      <owl:Class rdf:about="#Item"/>
+    </owl:unionOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Author_attendee_cd_registration_fee">
+    <rdfs:subClassOf rdf:resource="#Registration_fee"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Cd_proceening"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_paid_for"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Plenary_lecture_speaker">
+    <owl:equivalentClass>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Tutorial"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#give"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </owl:equivalentClass>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Conference_hall"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="speak_in"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="#Author"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Tip">
+    <rdfs:subClassOf rdf:resource="#Money"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Conference_restaurant"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="is_paid_in"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Listener">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class>
+            <owl:unionOf rdf:parseType="Collection">
+              <owl:Class rdf:about="#Session_room"/>
+              <owl:Class rdf:about="#Conference_hall"/>
+            </owl:unionOf>
+          </owl:Class>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_present_in"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="#Delegate"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="sign"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Record_of_attendance"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Full_day_tour">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Delegate"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_designed_for"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_held_in"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Trip_day"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Trip_city"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_held_in"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Activity_after_conference"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Nonauthor_registration_fee">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_designed_for"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Non_speaker"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="#Registration_fee"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Credit_card">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class>
+            <owl:unionOf rdf:parseType="Collection">
+              <owl:Class rdf:about="#Fee"/>
+              <owl:Class rdf:about="#Sponzorship"/>
+              <owl:Class rdf:about="#Tax"/>
+            </owl:unionOf>
+          </owl:Class>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_designed_for"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="#Card"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Conference_days">
+    <rdfs:subClassOf rdf:resource="#Time"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_designed_for"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Delegate"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Tutorial_speaker">
+    <rdfs:subClassOf rdf:resource="#Author"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Conference_hall"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#speak_in"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:equivalentClass>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Plenary_lecture"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#give"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:about="#City">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_situated_in"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#State"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Sponsor_company_house">
+    <rdfs:subClassOf rdf:resource="#Building"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Sponsor"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_occupied_by"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_situated_in"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Sponsor_state"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_situated_in"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Sponsor_city"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Place">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Conference_state"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_situated_in"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_situated_in"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Conference_city"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Van">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Transport_vehicle"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Main_office">
+    <rdfs:subClassOf rdf:resource="#Place"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Viza">
+    <rdfs:subClassOf rdf:resource="#Document"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="is_needed_for"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Delegate"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Activity_after_conference">
+    <rdfs:subClassOf rdf:resource="#Activity"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Conference_days"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="is_held_after"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Presenter_university">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_situated_in"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Presenter_state"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="#Building"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_situated_in"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Presenter_city"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Lecturer">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#speak_in"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Session_room"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="#Author"/>
+    <owl:equivalentClass>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#give"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Session"/>
+      </owl:Restriction>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="Departure_tax">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Departure"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_designed_for"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Tax"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Fee">
+    <rdfs:subClassOf rdf:resource="#Money"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="is_paid_with"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class>
+            <owl:unionOf rdf:parseType="Collection">
+              <owl:Class rdf:about="#Credit_card"/>
+              <owl:Class rdf:about="#Payment_document"/>
+            </owl:unionOf>
+          </owl:Class>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Transport_vehicle">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_used_by"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Delegate"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="#Item"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Receiving_manuscript">
+    <rdfs:subClassOf rdf:resource="#Activity_before_conference"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Double_hotel_room">
+    <rdfs:subClassOf rdf:resource="#Hotel_room"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Memeber_registration_fee">
+    <rdfs:subClassOf rdf:resource="#Registration_fee"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#IASTED_member"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_designed_for"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Introduction_of_speaker">
+    <rdfs:subClassOf rdf:resource="#Introduction"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Initial_manuscipt">
+    <rdfs:subClassOf rdf:resource="#Submission"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Refusing_manuscript"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#go_through"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Coffee_break">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Delegate"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_designed_for"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="#Conference_activity"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Student_registration_fee">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_designed_for"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class>
+            <owl:unionOf rdf:parseType="Collection">
+              <owl:Class rdf:about="#Student_non_speaker"/>
+              <owl:Class rdf:about="#Student_lecturer"/>
+            </owl:unionOf>
+          </owl:Class>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="#Registration_fee"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Bank_transfer">
+    <rdfs:subClassOf rdf:resource="#Payment_document"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Overhead_projector">
+    <rdfs:subClassOf rdf:resource="#Audiovisual_equipment"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Tax">
+    <rdfs:subClassOf rdf:resource="#Money"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Speaker_lecture">
+    <rdfs:subClassOf rdf:resource="#Session"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Sponzorship">
+    <rdfs:subClassOf rdf:resource="#Money"/>
+    <owl:equivalentClass>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Sponsor"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_paid_by"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:about="#Lecture">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Listener"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_designed_for"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="#Conference_activity"/>
+  </owl:Class>
+  <owl:Class>
+    <owl:unionOf rdf:parseType="Collection">
+      <owl:Class rdf:about="#Place"/>
+      <owl:Class rdf:about="#Time"/>
+    </owl:unionOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Conference_Hiker">
+    <rdfs:subClassOf rdf:resource="#Delegate"/>
+    <owl:equivalentClass>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Full_day_tour"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#go_through"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="Coctail_reception">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_designed_for"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Delegate"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="#Conference_activity"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Research">
+    <rdfs:subClassOf rdf:resource="#Activity_before_conference"/>
+  </owl:Class>
+  <owl:Class>
+    <owl:unionOf rdf:parseType="Collection">
+      <owl:Class rdf:about="#Place"/>
+      <owl:Class rdf:about="#Time"/>
+    </owl:unionOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Currency"/>
+  <owl:ObjectProperty rdf:about="#is_paid_with">
+    <rdfs:range rdf:resource="#Item"/>
+    <rdfs:domain rdf:resource="#Money"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#go_through">
+    <rdfs:range rdf:resource="#Activity"/>
+    <rdfs:domain rdf:resource="#Item"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_held_before">
+    <rdfs:domain rdf:resource="#Activity"/>
+    <rdfs:range rdf:resource="#Time"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_equipped_by">
+    <rdfs:range rdf:resource="#Item"/>
+    <rdfs:domain rdf:resource="#Place"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_occupied_by">
+    <rdfs:range rdf:resource="#Person"/>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:about="#occupy"/>
+    </owl:inverseOf>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Building"/>
+          <owl:Class rdf:about="#State"/>
+          <owl:Class rdf:about="#City"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#prepare">
+    <rdfs:range rdf:resource="#Item"/>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:about="#is_prepared_by"/>
+    </owl:inverseOf>
+    <rdfs:domain rdf:resource="#Person"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#occupy">
+    <rdfs:domain rdf:resource="#Person"/>
+    <rdfs:range>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Building"/>
+          <owl:Class rdf:about="#State"/>
+          <owl:Class rdf:about="#City"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:range>
+    <owl:inverseOf rdf:resource="#is_occupied_by"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="is_used_for">
+    <rdfs:range>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Activity"/>
+          <owl:Class rdf:about="#Money"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:range>
+    <rdfs:domain rdf:resource="#Item"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_signed_by">
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:about="#sign"/>
+    </owl:inverseOf>
+    <rdfs:range rdf:resource="#Person"/>
+    <rdfs:domain rdf:resource="#Item"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_present_in">
+    <rdfs:domain rdf:resource="#Person"/>
+    <rdfs:range>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Time"/>
+          <owl:Class rdf:about="#Place"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:range>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_made_from">
+    <rdfs:domain rdf:resource="#Item"/>
+    <rdfs:range rdf:resource="#Item"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_sent_after">
+    <rdfs:domain rdf:resource="#Item"/>
+    <rdfs:range rdf:resource="#Time"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_connected_with">
+    <rdfs:range>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Item"/>
+          <owl:Class rdf:about="#Place"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:range>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Activity"/>
+          <owl:Class rdf:about="#Person"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#write">
+    <rdfs:range rdf:resource="#Item"/>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:about="#is_writen_by"/>
+    </owl:inverseOf>
+    <rdfs:domain rdf:resource="#Person"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_needed_for">
+    <rdfs:domain rdf:resource="#Item"/>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:about="#need"/>
+    </owl:inverseOf>
+    <rdfs:range rdf:resource="#Person"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#obtain">
+    <rdfs:range rdf:resource="#Item"/>
+    <rdfs:domain rdf:resource="#Person"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_situated_in">
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Place"/>
+          <owl:Class rdf:about="#City"/>
+          <owl:Class rdf:about="#Building"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <rdfs:range>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#State"/>
+          <owl:Class rdf:about="#Place"/>
+          <owl:Class rdf:about="#Building"/>
+          <owl:Class rdf:about="#City"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:range>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#send">
+    <rdfs:domain rdf:resource="#Person"/>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:about="#is_sent_by"/>
+    </owl:inverseOf>
+    <rdfs:range rdf:resource="#Item"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_designed_for">
+    <rdfs:range>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Person"/>
+          <owl:Class rdf:about="#Activity"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:range>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Activity"/>
+          <owl:Class rdf:about="#Money"/>
+          <owl:Class rdf:about="#Time"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_sent_before">
+    <rdfs:domain rdf:resource="#Item"/>
+    <rdfs:range rdf:resource="#Time"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_held_in">
+    <rdfs:domain rdf:resource="#Activity"/>
+    <rdfs:range>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Time"/>
+          <owl:Class rdf:about="#Place"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:range>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_paid_by">
+    <rdfs:range rdf:resource="#Person"/>
+    <rdfs:domain rdf:resource="#Money"/>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:about="#pay"/>
+    </owl:inverseOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_held_after">
+    <rdfs:range rdf:resource="#Time"/>
+    <rdfs:domain rdf:resource="#Activity"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#speak_in">
+    <rdfs:range>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Place"/>
+          <owl:Class rdf:about="#Time"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:range>
+    <rdfs:domain rdf:resource="#Person"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_paid_in">
+    <rdfs:range rdf:resource="#Building"/>
+    <rdfs:domain rdf:resource="#Money"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_given_by">
+    <rdfs:range rdf:resource="#Person"/>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:about="#give"/>
+    </owl:inverseOf>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Item"/>
+          <owl:Class rdf:about="#Activity"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_prepared_by">
+    <rdfs:domain rdf:resource="#Item"/>
+    <rdfs:range rdf:resource="#Person"/>
+    <owl:inverseOf rdf:resource="#prepare"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#pay">
+    <owl:inverseOf rdf:resource="#is_paid_by"/>
+    <rdfs:range rdf:resource="#Money"/>
+    <rdfs:domain rdf:resource="#Person"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_used_by">
+    <rdfs:domain rdf:resource="#Item"/>
+    <rdfs:range rdf:resource="#Person"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#sign">
+    <owl:inverseOf rdf:resource="#is_signed_by"/>
+    <rdfs:domain rdf:resource="#Person"/>
+    <rdfs:range rdf:resource="#Item"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_present">
+    <rdfs:range rdf:resource="#Time"/>
+    <rdfs:domain rdf:resource="#Person"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_visited_by">
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#State"/>
+          <owl:Class rdf:about="#City"/>
+          <owl:Class rdf:about="#Building"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <rdfs:range rdf:resource="#Person"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#give">
+    <rdfs:domain rdf:resource="#Person"/>
+    <rdfs:range>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Item"/>
+          <owl:Class rdf:about="#Activity"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:range>
+    <owl:inverseOf rdf:resource="#is_given_by"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#need">
+    <owl:inverseOf rdf:resource="#is_needed_for"/>
+    <rdfs:range rdf:resource="#Item"/>
+    <rdfs:domain rdf:resource="#Person"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_given_to">
+    <rdfs:domain rdf:resource="#Item"/>
+    <rdfs:range rdf:resource="#Person"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_sent_by">
+    <rdfs:domain rdf:resource="#Item"/>
+    <rdfs:range rdf:resource="#Person"/>
+    <owl:inverseOf rdf:resource="#send"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_writen_by">
+    <rdfs:range rdf:resource="#Person"/>
+    <rdfs:domain rdf:resource="#Item"/>
+    <owl:inverseOf rdf:resource="#write"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_paid_for">
+    <rdfs:range>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Activity"/>
+          <owl:Class rdf:about="#Item"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:range>
+    <rdfs:domain rdf:resource="#Money"/>
+  </owl:ObjectProperty>
+  <owl:DatatypeProperty rdf:ID="is_dated_on">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+    <rdfs:domain rdf:resource="#Activity"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="has_amount_of">
+    <rdfs:domain rdf:resource="#Money"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="done_till">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#date"/>
+    <rdfs:domain rdf:resource="#Deadline"/>
+  </owl:DatatypeProperty>
+  <Currency rdf:ID="peso"/>
+  <Conference_state rdf:ID="Mexico"/>
+  <Trip_city rdf:ID="Chichen_Itza"/>
+  <Conference_city rdf:ID="Cancun"/>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 3.4, Build 501)  http://protege.stanford.edu -->

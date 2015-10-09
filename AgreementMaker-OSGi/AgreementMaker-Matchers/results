@@ -1,0 +1,6 @@
+
+Original:
+Evaulation results:
+Precision = Correct/Discovered: 82.3%
+Recall = Correct/Reference: 46.9%
+Fmeasure = 2(precision*recall)/(precision+recall): 58.1%

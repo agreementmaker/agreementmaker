@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF xmlns="http://knowledgeweb.semanticweb.org/heterogeneity/alignment" 
+	 xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
+	 xmlns:xsd="http://www.w3.org/2001/XMLSchema#">
+
+<Alignment>
+<xml>yes</xml>
+<level>0</level>
+<type>??</type>
+
+<onto1>
+<Ontology rdf:about="http://confOf">
+  <location>http://nb.vse.cz/~svabo/oaei2010/confOf.owl</location>
+</Ontology>
+</onto1>
+<onto2>
+<Ontology rdf:about="http://iasted">
+  <location>http://nb.vse.cz/~svabo/oaei2010/iasted.owl</location>
+</Ontology>
+</onto2>
+
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://confOf#Event"/>
+		<entity2 rdf:resource="http://iasted#Activity"/>
+		<measure rdf:datatype="xsd:float">1.0</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://confOf#Author"/>
+		<entity2 rdf:resource="http://iasted#Author"/>
+		<measure rdf:datatype="xsd:float">1.0</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://confOf#Person"/>
+		<entity2 rdf:resource="http://iasted#Person"/>
+		<measure rdf:datatype="xsd:float">1.0</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://confOf#Banquet"/>
+		<entity2 rdf:resource="http://iasted#Dinner_banquet"/>
+		<measure rdf:datatype="xsd:float">1.0</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://confOf#Administrative_event"/>
+		<entity2 rdf:resource="http://iasted#Activity_before_conference"/>
+		<measure rdf:datatype="xsd:float">1.0</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://confOf#Reception"/>
+		<entity2 rdf:resource="http://iasted#Coctail_reception"/>
+		<measure rdf:datatype="xsd:float">1.0</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://confOf#City"/>
+		<entity2 rdf:resource="http://iasted#City"/>
+		<measure rdf:datatype="xsd:float">1.0</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://confOf#Tutorial"/>
+		<entity2 rdf:resource="http://iasted#Tutorial"/>
+		<measure rdf:datatype="xsd:float">1.0</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+<map>
+	<Cell>
+		<entity1 rdf:resource="http://confOf#Country"/>
+		<entity2 rdf:resource="http://iasted#State"/>
+		<measure rdf:datatype="xsd:float">1.0</measure>
+		<relation>=</relation>
+	</Cell>
+</map>
+
+</Alignment>
+</rdf:RDF>
