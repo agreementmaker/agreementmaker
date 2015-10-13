@@ -2,7 +2,8 @@ package am.matcher.myMatcher;
 
 
 import java.util.ArrayList;
-
+import java.util.Arrays;
+import java.util.regex.Pattern;
 import am.Utility;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
@@ -40,27 +41,91 @@ public class MyMatcher  extends AbstractMatcher  {
 				StringSimilarity s=new StringSimilarity();
 				double sim=0.0d;
 				String sourceName=source.getLocalName();
+				sourceName = Character.toLowerCase(sourceName.charAt(0)) + sourceName.substring(1); 
 				String targetName=target.getLocalName();
+				targetName = Character.toLowerCase(targetName.charAt(0)) + targetName.substring(1); 
 				double score;
 				
 				if(sourceName.equalsIgnoreCase(targetName))
 					sim=1.0d;
 				
 				
+				
 				else
 				{
-					score=s.similarity(sourceName, targetName);
-					if (score>0.9)
-						sim=score;
-					else
-					{	
-						Boolean flag=s.isSynonym(sourceName, targetName);
-						if (flag)
+					ArrayList<String> sparts=new ArrayList<String>();
+					ArrayList<String> tparts=new ArrayList<String>();
+					String[] ps, pt;
+					if(sourceName.contains("_"))
+					{
+						String st[]=sourceName.toLowerCase().split("_");
+						for(String x:st)
 						{
-							//System.out.println(score);
-							sim=score;
+							sparts.add(x);
 						}
 					}
+					else
+					{
+						if(!sourceName.equals(sourceName.toLowerCase()))
+						{
+							ps=sourceName.split("(?=\\p{Upper})");	
+							for(String x:ps)
+							{
+								sparts.add(x.toLowerCase());
+							}
+						}
+						else
+						{
+						
+						sparts.add(sourceName);
+						}
+					}
+					if(targetName.contains("_"))
+					{	
+						String ts[]=targetName.toLowerCase().split("_");
+						for(String x:ts)
+						{
+							tparts.add(x);
+						}
+					}
+					else
+						if(!targetName.equals(targetName.toLowerCase()))
+						{
+							pt=targetName.split("(?=\\p{Upper})");	
+							for(String x:pt)
+							{
+								tparts.add(x.toLowerCase());
+							}
+						}
+						else
+						{
+						
+						tparts.add(targetName);
+						}
+				if(sparts.get(sparts.size()-1).equals((tparts).get(tparts.size()-1)))
+				{
+					sim=2.0d;
+				}
+				for(String t:tparts)
+				{
+			    
+					for(String sp:sparts)
+					{
+
+						
+							score=s.similarity(sp, t);
+							if(score>0.9)
+							{
+								sim=score/2;
+							}
+						
+					}
+					
+					
+				}
+				
+				
+					
 				}
 						
 					
@@ -136,20 +201,28 @@ public class MyMatcher  extends AbstractMatcher  {
 		// use the ReferenceEvaluator to actually compute the metrics
 		ReferenceEvaluationData rd = ReferenceEvaluator.compare(myAlignment,
 				referenceSet);
-		for (int i=0;i<referenceSet.size();i++)
+		int i,j;
+		for (i=0;i<referenceSet.size();i++)
 		{
 			Boolean flag=false;
-			for (int j=0;j<myAlignment.size();j++)
+			for (j=0;j<myAlignment.size();j++)
 			{
 				if (referenceSet.get(i).equals(myAlignment.get(j)))
 				{
 					writer.write(referenceSet.get(i).toString(), myAlignment.get(j).toString());
 					flag=true;
+					myAlignment.remove(j);
 				}
 					
 			}
 			if (!flag)
-				writer.write("Unmatched",referenceSet.get(i).toString());
+				writer.write("Unmatched "+referenceSet.get(i).toString(),"");
+				
+		}
+		
+		for (j=0;j<myAlignment.size();j++)
+		{
+			writer.write("False positives "+myAlignment.get(j).toString(),"");
 		}
 		
 		

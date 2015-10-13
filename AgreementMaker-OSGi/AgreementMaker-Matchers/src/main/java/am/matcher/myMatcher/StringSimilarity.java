@@ -1,9 +1,9 @@
 package am.matcher.myMatcher;
 
-import edu.cmu.lti.lexical_db.ILexicalDatabase;
+/*import edu.cmu.lti.lexical_db.ILexicalDatabase;
 import edu.cmu.lti.lexical_db.NictWordNet;
 import edu.cmu.lti.ws4j.impl.WuPalmer;
-import edu.cmu.lti.ws4j.util.WS4JConfiguration;
+import edu.cmu.lti.ws4j.util.WS4JConfiguration;*/
 import edu.smu.tspell.wordnet.Synset;
 import edu.smu.tspell.wordnet.WordNetDatabase;
 
@@ -11,7 +11,7 @@ import edu.smu.tspell.wordnet.WordNetDatabase;
 
 public class StringSimilarity {
 	
-	public double semanticSimilarity(String s1,String s2)
+	/*public double semanticSimilarity(String s1,String s2)
 	{
 		final ILexicalDatabase db = new NictWordNet();
 		WS4JConfiguration.getInstance().setMFS(true);
@@ -19,7 +19,7 @@ public class StringSimilarity {
 		return s;
 	
 		
-	}
+	}*/
 	public Boolean isSynonym(String s1,String s2)
 	{
 		WordNetDatabase database = WordNetDatabase.getFileInstance();
@@ -29,6 +29,7 @@ public class StringSimilarity {
 		       for (int i = 0; i < synsets.length; i++)
 		       {
 		    	   wordForms = synsets[i].getWordForms();
+		    	   
 		    	   
 		       }
 		  	}
