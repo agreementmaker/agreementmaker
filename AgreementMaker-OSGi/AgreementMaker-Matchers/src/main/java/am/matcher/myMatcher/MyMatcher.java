@@ -44,89 +44,71 @@ public class MyMatcher  extends AbstractMatcher  {
 				sourceName = Character.toLowerCase(sourceName.charAt(0)) + sourceName.substring(1); 
 				String targetName=target.getLocalName();
 				targetName = Character.toLowerCase(targetName.charAt(0)) + targetName.substring(1); 
-				double score;
+				double score,max;
 				
 				if(sourceName.equalsIgnoreCase(targetName))
 					sim=1.0d;
 				
-				
-				
 				else
 				{
-					ArrayList<String> sparts=new ArrayList<String>();
-					ArrayList<String> tparts=new ArrayList<String>();
-					String[] ps, pt;
-					if(sourceName.contains("_"))
+					int count=0;
+					ArrayList<String> sparts=getSparts(sourceName);
+					ArrayList<String> tparts=getTparts(targetName);
+					//check last word of the two array list
+					
+					double lscore=s.similarity(sparts.get(sparts.size()-1), tparts.get(tparts.size()-1));
+					if(lscore >0.8d && ((sparts.size()+tparts.size())==4||(sparts.size()+tparts.size())==3))
 					{
-						String st[]=sourceName.toLowerCase().split("_");
-						for(String x:st)
-						{
-							sparts.add(x);
-						}
+						sim=0.6;
+						
 					}
+					
+					// else count the number of matching words
 					else
 					{
-						if(!sourceName.equals(sourceName.toLowerCase()))
+						
+						for(String t:tparts)
 						{
-							ps=sourceName.split("(?=\\p{Upper})");	
-							for(String x:ps)
-							{
-								sparts.add(x.toLowerCase());
+							for(String sp:sparts)
+							{	
+									score=s.similarity(sp, t);
+									if(score>0.8)
+									{
+										count++;
+										
+									}
+								
 							}
 						}
-						else
-						{
-						
-						sparts.add(sourceName);
-						}
+						//find the ratio of matching words
+						float sizes=(sparts.size()+tparts.size());
+						float y=(2*count)/sizes;
+						if(y>0.7)
+							sim=y;
 					}
-					if(targetName.contains("_"))
-					{	
-						String ts[]=targetName.toLowerCase().split("_");
-						for(String x:ts)
-						{
-							tparts.add(x);
-						}
-					}
-					else
-						if(!targetName.equals(targetName.toLowerCase()))
-						{
-							pt=targetName.split("(?=\\p{Upper})");	
-							for(String x:pt)
-							{
-								tparts.add(x.toLowerCase());
-							}
-						}
-						else
-						{
-						
-						tparts.add(targetName);
-						}
-				if(sparts.get(sparts.size()-1).equals((tparts).get(tparts.size()-1)))
-				{
-					sim=2.0d;
 				}
-				for(String t:tparts)
-				{
-			    
-					for(String sp:sparts)
-					{
+				
 
-						
-							score=s.similarity(sp, t);
-							if(score>0.9)
-							{
-								sim=score/2;
-							}
-						
-					}
 					
 					
-				}
-				
+					
+					
 				
 					
-				}
+/*				
+*/				/*if(sparts.get(sparts.size()-1).equals((tparts).get(tparts.size()-1)))
+				{
+					sim=0.7d;
+					
+					
+				}*/
+					
+					
+			
+				
+
+					
+				
 						
 					
 				 
@@ -134,9 +116,65 @@ public class MyMatcher  extends AbstractMatcher  {
 					return new Mapping(source, target, sim);
 						
 	}
-							
-		
 	
+	public ArrayList<String> getTparts(String targetName)
+	{
+		ArrayList<String> tparts=new ArrayList<String>();	
+		String[] pt;
+		if(targetName.contains("_"))
+		{	
+			String ts[]=targetName.toLowerCase().split("_");
+			for(String x:ts)
+			{
+				tparts.add(x);
+			}
+		}
+		else
+			if(!targetName.equals(targetName.toLowerCase()))
+			{
+				pt=targetName.split("(?=\\p{Upper})");	
+				for(String x:pt)
+				{
+					tparts.add(x.toLowerCase());
+				}
+			}
+			else
+			{
+			
+			tparts.add(targetName);
+			}
+		return tparts;
+	}
+	public ArrayList<String> getSparts(String sourceName)
+	{
+		ArrayList<String> sparts=new ArrayList<String>();
+		String[] ps;
+		if(sourceName.contains("_"))
+		{
+			String st[]=sourceName.toLowerCase().split("_");
+			for(String x:st)
+			{
+				sparts.add(x);
+			}
+		}
+		else
+		{
+			if(!sourceName.equals(sourceName.toLowerCase()))
+			{
+				ps=sourceName.split("(?=\\p{Upper})");	
+				for(String x:ps)
+				{
+					sparts.add(x.toLowerCase());
+				}
+			}
+			else
+			{
+			
+			sparts.add(sourceName);
+			}
+		}
+		return sparts;
+	}
 
 
 	private ArrayList<Double> referenceEvaluation(String pathToReferenceAlignment)
@@ -261,7 +299,7 @@ public class MyMatcher  extends AbstractMatcher  {
 	
 		String ONTOLOGY_BASE_PATH ="conference_dataset/"; // Use your base path
 		//String[] confs = {"cmt","conference","confOf","edas","ekaw","iasted","sigkdd"};
-		String[] confs = {"conference","sigkdd"};
+		String[] confs = {"conference","ekaw"};
 	/*	 static String SOURCE_ONTOLOGY = "cmt";  // Change this for TESTING
 		 static String TARGET_ONTOLOGY = "confOf";// Change this for TESTING
 	*/
