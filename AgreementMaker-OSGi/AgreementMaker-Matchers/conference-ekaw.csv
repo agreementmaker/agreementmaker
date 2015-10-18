@@ -1,41 +1,42 @@
 Reference Alignment,My Alignment
 Unmatched (27 Information_for_participants -> 49 Programme_Brochure: 1.0  =  ),
-(37 Person -> 41 Person: 1.0  =  ),(37 Person -> 41 Person: 1.0  =  )
-(56 Tutorial -> 64 Tutorial: 1.0  =  ),(56 Tutorial -> 64 Tutorial: 1.0  =  )
-(46 Review -> 55 Review: 1.0  =  ),(46 Review -> 55 Review: 1.0  =  )
-(57 Workshop -> 69 Workshop: 1.0  =  ),(57 Workshop -> 69 Workshop: 1.0  =  )
+(37 Person -> 41 Person: 1.0  =  ),(37 Person -> 41 Person: 2.0  =  )
+(56 Tutorial -> 64 Tutorial: 1.0  =  ),(56 Tutorial -> 64 Tutorial: 2.0  =  )
+(46 Review -> 55 Review: 1.0  =  ),(46 Review -> 55 Review: 2.0  =  )
+(57 Workshop -> 69 Workshop: 1.0  =  ),(57 Workshop -> 69 Workshop: 2.0  =  )
 Unmatched (30 Late_paid_applicant -> 28 Late-Registered_Participant: 1.0  =  ),
 Unmatched (24 Early_paid_applicant -> 18 Early-Registered_Participant: 1.0  =  ),
-(31 Organization -> 35 Organisation: 1.0  =  ),(31 Organization -> 35 Organisation: 1.0  =  )
+Unmatched (31 Organization -> 35 Organisation: 1.0  =  ),
 Unmatched (55 Track-workshop_chair -> 70 Workshop_Chair: 1.0  =  ),
-(0 Abstract -> 0 Abstract: 1.0  =  ),(0 Abstract -> 0 Abstract: 1.0  =  )
-(19 Conference_proceedings -> 10 Conference_Proceedings: 1.0  =  ),(19 Conference_proceedings -> 10 Conference_Proceedings: 1.0  =  )
+(0 Abstract -> 0 Abstract: 1.0  =  ),(0 Abstract -> 0 Abstract: 2.0  =  )
+(19 Conference_proceedings -> 10 Conference_Proceedings: 1.0  =  ),(19 Conference_proceedings -> 10 Conference_Proceedings: 2.0  =  )
 Unmatched (20 Conference_volume -> 6 Conference: 1.0  =  ),
 Unmatched (45 Rejected_contribution -> 52 Rejected_Paper: 1.0  =  ),
 Unmatched (38 Poster -> 44 Poster_Paper: 1.0  =  ),
-(54 Track -> 63 Track: 1.0  =  ),(54 Track -> 63 Track: 1.0  =  )
+(54 Track -> 63 Track: 1.0  =  ),(54 Track -> 63 Track: 2.0  =  )
 (53 Topic -> 54 Research_Topic: 1.0  =  ),(53 Topic -> 54 Research_Topic: 0.6  =  )
 Unmatched (21 Conference_www -> 68 Web_Site: 1.0  =  ),
-(28 Invited_speaker -> 25 Invited_Speaker: 1.0  =  ),(28 Invited_speaker -> 25 Invited_Speaker: 1.0  =  )
+(28 Invited_speaker -> 25 Invited_Speaker: 1.0  =  ),(28 Invited_speaker -> 25 Invited_Speaker: 2.0  =  )
 Unmatched (1 Accepted_contribution -> 2 Accepted_Paper: 1.0  =  ),
 (15 Conference_document -> 17 Document: 1.0  =  ),(15 Conference_document -> 17 Document: 0.6  =  )
 Unmatched (49 Reviewed_contribution -> 19 Evaluated_Paper: 1.0  =  ),
 Unmatched (52 Submitted_contribution -> 62 Submitted_Paper: 1.0  =  ),
 (43 Regular_author -> 40 Paper_Author: 1.0  =  ),(43 Regular_author -> 40 Paper_Author: 0.6  =  )
-(15 has_a_review -> 5 hasReview: 1.0  =  ),(15 has_a_review -> 5 hasReview: 0.800000011920929  =  )
+Unmatched (15 has_a_review -> 5 hasReview: 1.0  =  ),
 Unmatched (3 contributes -> 0 authorOf: 1.0  =  ),
 False positives (41 Publisher -> 48 Proceedings_Publisher: 0.6  =  ),
-False positives (3 Call_for_paper -> 39 Paper: 0.6  =  ),
 False positives (20 Conference_volume -> 30 Multi-author_Volume: 0.6  =  ),
-False positives (35 Paper -> 71 Workshop_Paper: 0.6  =  ),
 False positives (9 Committee_member -> 56 SC_Member: 0.6  =  ),
-False positives (29 Invited_talk -> 26 Invited_Talk: 1.0  =  ),
+False positives (29 Invited_talk -> 26 Invited_Talk: 2.0  =  ),
+False positives (38 Poster -> 45 Poster_Session: 0.65  =  ),
 False positives (55 Track-workshop_chair -> 37 PC_Chair: 0.6  =  ),
+False positives (18 Conference_participant -> 9 Conference_Participant: 2.0  =  ),
 False positives (50 Reviewer -> 43 Possible_Reviewer: 0.6  =  ),
-False positives (2 Active_conference_participant -> 9 Conference_Participant: 0.800000011920929  =  ),
-False positives (10 Conference -> 6 Conference: 1.0  =  ),
+False positives (10 Conference -> 6 Conference: 2.0  =  ),
 False positives (39 Presentation -> 22 Individual_Presentation: 0.6  =  ),
 False positives (6 Chair -> 70 Workshop_Chair: 0.6  =  ),
 False positives (25 Extended_abstract -> 65 Tutorial_Abstract: 0.6  =  ),
-False positives (18 Conference_participant -> 28 Late-Registered_Participant: 0.6  =  ),
+False positives (35 Paper -> 39 Paper: 2.0  =  ),
+False positives (55 reviews -> 23 reviewWrittenBy: 0.65  =  ),
 False positives (41 invited_by -> 32 writtenBy: 0.6  =  ),
+False positives (17 has_a_review_reference_or_expertise -> 21 references: 0.65  =  ),

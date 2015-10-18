@@ -1,0 +1,20 @@
+Reference Alignment,My Alignment
+Unmatched (12 Event -> 1 Activity: 1.0  =  ),
+(3 Author -> 5 Author: 1.0  =  ),(3 Author -> 5 Author: 2.0  =  )
+(18 Person -> 77 Person: 1.0  =  ),(18 Person -> 77 Person: 2.0  =  )
+(4 Banquet -> 42 Dinner_banquet: 1.0  =  ),(4 Banquet -> 42 Dinner_banquet: 0.6  =  )
+Unmatched (0 Administrative_event -> 3 Activity_before_conference: 1.0  =  ),
+(20 Reception -> 21 Coctail_reception: 1.0  =  ),(20 Reception -> 21 Coctail_reception: 0.6  =  )
+(7 City -> 20 City: 1.0  =  ),(7 City -> 20 City: 2.0  =  )
+(33 Tutorial -> 130 Tutorial: 1.0  =  ),(33 Tutorial -> 130 Tutorial: 2.0  =  )
+Unmatched (11 Country -> 113 State: 1.0  =  ),
+False positives (30 Submission_event -> 117 Submission: 0.65  =  ),
+False positives (29 Student -> 116 Student_registration_fee: 0.65  =  ),
+False positives (8 Company -> 110 Sponsor_company_house: 0.65  =  ),
+False positives (9 Conference -> 73 One_conference_day: 0.65  =  ),
+False positives (21 Registration_of_participants_event -> 92 Registration: 0.65  =  ),
+False positives (32 Trip -> 129 Trip_day: 0.65  =  ),
+False positives (34 University -> 86 Presenter_university: 0.6  =  ),
+False positives (6 Chair_PC -> 100 Session_chair: 2.0  =  ),
+False positives (13 Member -> 67 Memeber_registration_fee: 0.65  =  ),
+False positives (34 writes -> 31 is_writen_by: 0.65  =  ),

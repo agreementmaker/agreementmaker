@@ -1,0 +1,39 @@
+Reference Alignment,My Alignment
+Unmatched (32 Trip -> 41 Excursion: 1.0  =  ),
+(28 Social_event -> 89 SocialEvent: 1.0  =  ),(28 Social_event -> 89 SocialEvent: 2.0  =  )
+(15 Organization -> 57 Organization: 1.0  =  ),(15 Organization -> 57 Organization: 2.0  =  )
+Unmatched (36 Working_event -> 1 AcademicEvent: 1.0  =  ),
+(20 Reception -> 75 Reception: 1.0  =  ),(20 Reception -> 75 Reception: 2.0  =  )
+(37 Workshop -> 102 Workshop: 1.0  =  ),(37 Workshop -> 102 Workshop: 2.0  =  )
+(3 Author -> 9 Author: 1.0  =  ),(3 Author -> 9 Author: 2.0  =  )
+Unmatched (12 Event -> 33 ConferenceEvent: 1.0  =  ),
+(31 Topic -> 95 Topic: 1.0  =  ),(31 Topic -> 95 Topic: 2.0  =  )
+(11 Country -> 37 Country: 1.0  =  ),(11 Country -> 37 Country: 2.0  =  )
+Unmatched (17 Participant -> 8 Attendee: 1.0  =  ),
+(18 Person -> 64 Person: 1.0  =  ),(18 Person -> 64 Person: 2.0  =  )
+Unmatched (14 Member_PC -> 91 TPCMember: 1.0  =  ),
+(16 Paper -> 59 Paper: 1.0  =  ),(16 Paper -> 59 Paper: 2.0  =  )
+Unmatched (31 reviewes -> 39 isReviewing: 1.0  =  ),
+Unmatched (35 writtenBy -> 41 isWrittenBy: 1.0  =  ),
+Unmatched (20 hasSurname -> 14 hasLastName: 1.0  =  ),
+(14 hasFirstName -> 13 hasFirstName: 1.0  =  ),(14 hasFirstName -> 13 hasFirstName: 2.0  =  )
+Unmatched (34 writes -> 24 hasRelatedPaper: 1.0  =  ),
+False positives (0 Administrative_event -> 92 TalkEvent: 0.6  =  ),
+False positives (30 Submission_event -> 1 AcademicEvent: 0.6  =  ),
+False positives (9 Conference -> 30 Conference: 2.0  =  ),
+False positives (6 Chair_PC -> 85 SessionChair: 2.0  =  ),
+False positives (23 Reviewing_event -> 10 BreakEvent: 0.6  =  ),
+False positives (27 Short_paper -> 101 WithdrawnPaper: 0.6  =  ),
+False positives (36 Working_event -> 33 ConferenceEvent: 0.6  =  ),
+False positives (12 Event -> 54 NonAcademicEvent: 0.6  =  ),
+False positives (11 hasCountry -> 10 hasCountry: 2.0  =  ),
+False positives (17 hasPhone -> 19 hasPhone: 2.0  =  ),
+False positives (5 employedBy -> 44 providedBy: 0.6  =  ),
+False positives (26 location -> 33 isLocationOf: 0.65  =  ),
+False positives (12 hasEmail -> 11 hasEmail: 2.0  =  ),
+False positives (31 reviewes -> 38 isReviewedBy: 0.65  =  ),
+False positives (18 hasPostalCode -> 20 hasPostalCode: 2.0  =  ),
+False positives (10 hasCity -> 7 hasCity: 2.0  =  ),
+False positives (19 hasStreet -> 27 hasStreet: 2.0  =  ),
+False positives (33 studyAt -> 0 attendeeAt: 0.6  =  ),
+False positives (22 hasTopic -> 30 hasTopic: 2.0  =  ),

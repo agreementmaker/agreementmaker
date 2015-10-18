@@ -1,0 +1,31 @@
+Reference Alignment,My Alignment
+(68 Place -> 78 Place: 1.0  =  ),(68 Place -> 78 Place: 2.0  =  )
+(85 SessionChair -> 100 Session_chair: 1.0  =  ),(85 SessionChair -> 100 Session_chair: 2.0  =  )
+(9 Author -> 5 Author: 1.0  =  ),(9 Author -> 5 Author: 2.0  =  )
+(40 Document -> 43 Document: 1.0  =  ),(40 Document -> 43 Document: 2.0  =  )
+Unmatched (37 Country -> 113 State: 1.0  =  ),
+Unmatched (99 WelcomeTalk -> 137 Welcome_address: 1.0  =  ),
+Unmatched (90 Sponsorship -> 112 Sponzorship: 1.0  =  ),
+(82 Reviewer -> 98 Reviewer: 1.0  =  ),(82 Reviewer -> 98 Reviewer: 2.0  =  )
+Unmatched (8 Attendee -> 39 Delegate: 1.0  =  ),
+Unmatched (32 ConferenceDinner -> 42 Dinner_banquet: 1.0  =  ),
+Unmatched (89 SocialEvent -> 105 Social_program: 1.0  =  ),
+(17 CoffeeBreak -> 22 Coffee_break: 1.0  =  ),(17 CoffeeBreak -> 22 Coffee_break: 2.0  =  )
+(78 Review -> 97 Review: 1.0  =  ),(78 Review -> 97 Review: 2.0  =  )
+(75 Reception -> 21 Coctail_reception: 1.0  =  ),(75 Reception -> 21 Coctail_reception: 0.6  =  )
+Unmatched (33 ConferenceEvent -> 25 Conference_activity: 1.0  =  ),
+Unmatched (88 SlideSet -> 126 Transparency: 1.0  =  ),
+Unmatched (59 Paper -> 117 Submission: 1.0  =  ),
+Unmatched (35 ConferenceVenuePlace -> 27 Conference_building: 1.0  =  ),
+Unmatched (39 DiningPlace -> 32 Conference_restaurant: 1.0  =  ),
+False positives (31 ConferenceChair -> 13 Brief_introduction_for_Session_chair: 2.0  =  ),
+False positives (42 FreeTimeBreak -> 123 Time: 0.65  =  ),
+False positives (60 PaperPresentation -> 135 Video_presentation: 0.6  =  ),
+False positives (34 ConferenceSession -> 99 Session: 0.6  =  ),
+False positives (66 PersonalPublicationHistory -> 87 Publication: 0.65  =  ),
+False positives (79 ReviewForm -> 94 Registration_form: 0.6  =  ),
+False positives (70 Presenter -> 86 Presenter_university: 0.65  =  ),
+False positives (20 ComputerArchitectureTopic -> 23 Computer: 0.65  =  ),
+False positives (8 Attendee -> 7 Author_attendee_cd_registration_fee: 0.65  =  ),
+False positives (64 Person -> 77 Person: 2.0  =  ),
+False positives (30 Conference -> 73 One_conference_day: 0.65  =  ),

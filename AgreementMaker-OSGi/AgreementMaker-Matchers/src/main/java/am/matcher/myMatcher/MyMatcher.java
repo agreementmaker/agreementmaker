@@ -38,7 +38,10 @@ public class MyMatcher  extends AbstractMatcher  {
 			alignType typeOfNodes, SimilarityMatrix matrix) throws Exception 
 	{
 
-				StringSimilarity s=new StringSimilarity();
+
+		StringSimilarity s=new StringSimilarity();
+				Synonyms syn=new Synonyms();
+				syn.synonymList();
 				double sim=0.0d;
 				String sourceName=source.getLocalName();
 				sourceName = Character.toLowerCase(sourceName.charAt(0)) + sourceName.substring(1); 
@@ -47,21 +50,37 @@ public class MyMatcher  extends AbstractMatcher  {
 				double score,max;
 				
 				if(sourceName.equalsIgnoreCase(targetName))
-					sim=1.0d;
+					sim=2.0d;
 				
 				else
 				{
 					int count=0;
+					int simcount=0;
 					ArrayList<String> sparts=getSparts(sourceName);
 					ArrayList<String> tparts=getTparts(targetName);
 					//check last word of the two array list
+					if(sparts.equals(tparts))
+					{
+						sim=2.0d;
+					}
+					
+					else
+					{
 					
 					double lscore=s.similarity(sparts.get(sparts.size()-1), tparts.get(tparts.size()-1));
-					if(lscore >0.8d && ((sparts.size()+tparts.size())==4||(sparts.size()+tparts.size())==3))
+					if(lscore >0.8d)
 					{
-						sim=0.6;
-						
+						if(((sparts.size()+tparts.size())==3))
+								sim=0.65;
+						if((sparts.size()+tparts.size())==4)
+								sim=0.6;
+							
+					
+					
+						/*if((sparts.size()+tparts.size())==3)
+							sim=0.75;*/
 					}
+					
 					
 					// else count the number of matching words
 					else
@@ -77,19 +96,43 @@ public class MyMatcher  extends AbstractMatcher  {
 										count++;
 										
 									}
+									else
+									{
+										ArrayList<String> p=(ArrayList<String>) syn.synset.get(sp);
+										if(p!=null)
+										{
+											
+											if(p.contains(sp))
+											{
+												if(p.contains(t))
+													count++;
+											}
+										}
+										
+										
+										
+									}
 								
 							}
 						}
 						//find the ratio of matching words
 						float sizes=(sparts.size()+tparts.size());
 						float y=(2*count)/sizes;
+						
+						if(count==1 && (sparts.size()==1||tparts.size()==1))
+						{
+							sim=0.55;
+						}
 						if(y>0.7)
 							sim=y;
+						
+						
+						
 					}
 				}
 				
 
-					
+				}
 					
 					
 					
@@ -161,6 +204,7 @@ public class MyMatcher  extends AbstractMatcher  {
 		{
 			if(!sourceName.equals(sourceName.toLowerCase()))
 			{
+				
 				ps=sourceName.split("(?=\\p{Upper})");	
 				for(String x:ps)
 				{
@@ -299,7 +343,7 @@ public class MyMatcher  extends AbstractMatcher  {
 	
 		String ONTOLOGY_BASE_PATH ="conference_dataset/"; // Use your base path
 		//String[] confs = {"cmt","conference","confOf","edas","ekaw","iasted","sigkdd"};
-		String[] confs = {"conference","ekaw"};
+		String[] confs = {"cmt","confOf"};
 	/*	 static String SOURCE_ONTOLOGY = "cmt";  // Change this for TESTING
 		 static String TARGET_ONTOLOGY = "confOf";// Change this for TESTING
 	*/
