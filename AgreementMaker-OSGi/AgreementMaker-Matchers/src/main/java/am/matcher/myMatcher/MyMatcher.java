@@ -97,7 +97,7 @@ public class MyMatcher  extends AbstractMatcher  {
 										
 									}
 									else
-									{
+									{ //check synonyms
 										ArrayList<String> p=(ArrayList<String>) syn.synset.get(sp);
 										if(p!=null)
 										{
