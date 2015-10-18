@@ -46,14 +46,14 @@ public class MyMatcher  extends AbstractMatcher  {
 				String sourceName=source.getLocalName();
 				sourceName = Character.toLowerCase(sourceName.charAt(0)) + sourceName.substring(1); 
 				String targetName=target.getLocalName();
-<<<<<<< HEAD
+
 				targetName = Character.toLowerCase(targetName.charAt(0)) + targetName.substring(1); 
 				double score,max;
 				
-=======
-				double score;
-				//This is irritating
->>>>>>> origin/master
+
+				
+				
+
 				if(sourceName.equalsIgnoreCase(targetName))
 					sim=2.0d;
 				
