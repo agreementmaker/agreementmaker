@@ -39,3 +39,6 @@ AgreementMaker-OSGi/provision/target/
 .classpath
 build.properties
 AgreementMaker-OSGi/runner
+AgreementMaker-OSGi/*.iml
+AgreementMaker-OSGi/*/*.iml
+.idea
