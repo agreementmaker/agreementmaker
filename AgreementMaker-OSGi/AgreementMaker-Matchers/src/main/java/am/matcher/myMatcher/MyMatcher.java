@@ -42,7 +42,7 @@ public class MyMatcher  extends AbstractMatcher  {
 				String sourceName=source.getLocalName();
 				String targetName=target.getLocalName();
 				double score;
-				//This is irritating
+				
 				if(sourceName.equalsIgnoreCase(targetName))
 					sim=1.0d;
 				
