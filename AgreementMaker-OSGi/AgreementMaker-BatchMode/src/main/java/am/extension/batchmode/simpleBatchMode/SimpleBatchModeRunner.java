@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.List;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -12,16 +11,7 @@ import javax.xml.bind.Unmarshaller;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
-
-import am.app.mappingEngine.Alignment;
-import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.ReferenceEvaluationData;
-import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
-import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
-import am.app.mappingEngine.referenceAlignment.ReferenceEvaluator;
-import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
@@ -36,7 +26,6 @@ import am.matcher.oaei.oaei2011.OAEI2011Matcher;
 import am.matcher.oaei.oaei2011.OAEI2011MatcherParameters;
 import am.output.console.ConsoleProgressDisplay;
 import am.parsing.AlignmentOutput;
-import am.parsing.OutputController;
 
 /**
  * This class takes runs a batch mode from the given SimpleBatchMode XML file.
@@ -92,7 +81,7 @@ public class SimpleBatchModeRunner {
 		log.setLevel(Level.INFO);
 		
 		if( sbm == null ) {
-			JAXBContext context = JAXBContext.newInstance(this.getClass().getPackage().getName()) ;
+			JAXBContext context = JAXBContext.newInstance(ObjectFactory.class);
 	
 			Unmarshaller unmarshaller = context.createUnmarshaller() ;
 	
