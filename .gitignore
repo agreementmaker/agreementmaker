@@ -36,3 +36,6 @@ AgreementMaker-OSGi/target/
 .settings/
 .project
 .classpath
+AgreementMaker-OSGi/*.iml
+AgreementMaker-OSGi/*/*.iml
+.idea
