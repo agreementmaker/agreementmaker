@@ -39,13 +39,11 @@ public class MyMatcher  extends AbstractMatcher  {
 	protected Mapping alignTwoNodes(Node source, Node target,
 			alignType typeOfNodes, SimilarityMatrix matrix) throws Exception 
 	{
-		
 		String sourceName=source.getLocalName();
 		sourceName = Character.toLowerCase(sourceName.charAt(0)) + sourceName.substring(1); 
 		String targetName=target.getLocalName();
 		targetName = Character.toLowerCase(targetName.charAt(0)) + targetName.substring(1); 
 		double sim=this.getSimilarityScore(sourceName, targetName);
-		
 		if (source.isProp())
 		{
 			double propertySim=0;
@@ -65,10 +63,8 @@ public class MyMatcher  extends AbstractMatcher  {
 			}
 			catch(NullPointerException e)
 			{
-				//System.out.println("Null property");
-			}
-			
 				
+			}	
 		}
 		return new Mapping(source, target, sim);				
 	}
@@ -94,53 +90,35 @@ public class MyMatcher  extends AbstractMatcher  {
 		else if (syn.isSynonym(sourceName.toLowerCase(), targetName.toLowerCase()))
 			sim=1d;
 		
-		/*// If the source and target doesn't match try alternate ways to see whether there is match
+		// If the source and target doesn't match try alternate ways to see whether there is match
 		else
 		{
 			int count=0;
 			//Split source into parts 
 			ArrayList<String> sparts=this.getParts(sourceName);
 			ArrayList<String> tparts=this.getParts(targetName);
-			//lscore refers to the similarity score of the last words of source and target name
-			double lscore=s.similarity(sparts.get(sparts.size()-1), tparts.get(tparts.size()-1));
-			// If the last words match
-			if(lscore >0.9)
+			for(String t:tparts)
 			{
-				if(((sparts.size()+tparts.size())==3))
-						sim=0.65;
-				else if((sparts.size()+tparts.size())==4)
-						sim=0.6;
-				
-			}	
-			// else count the number of matching words
-			else
-			{
-				for(String t:tparts)
-				{
-					for(String sp:sparts)
-					{	
-							score=s.similarity(sp, t);
-							if(score>0.8)
-							{
-								count++;	
-							}
-							else
-							{ //check synonyms
-									if (syn.isSynonym(t, sp))
-											count++;							
-							}
-						
-					}
+				for(String sp:sparts)
+				{	
+						score=s.similarity(sp, t);
+						if(score>0.8)
+						{
+							count++;	
+						}
+						else
+						{ 	//check synonyms
+							if (syn.isSynonym(t, sp))
+									count++;							
+						}				
 				}
-			}
+			 }
 			//find the ratio of matching words
 			float sizes=(sparts.size()+tparts.size());
 			float y=(2*count)/sizes;
-			if(y>0.6)
+			if(y>0.7)
 				sim=y;
-		
-		
-		}*/
+		}
 		return sim;
 	}
 		
@@ -150,34 +128,34 @@ public class MyMatcher  extends AbstractMatcher  {
 	 * @param targetName
 	 * @return
 	 */
-		private ArrayList<String> getParts(String targetName)
-		{
-			ArrayList<String> tparts=new ArrayList<String>();	
-			String[] pt;
-			if(targetName.contains("_"))
-			{	
-				String ts[]=targetName.toLowerCase().split("_");
-				for(String x:ts)
+	private ArrayList<String> getParts(String targetName)
+	{
+		ArrayList<String> tparts=new ArrayList<String>();	
+		String[] pt;
+		if(targetName.contains("_"))
+		{	
+			String ts[]=targetName.toLowerCase().split("_");
+			for(String x:ts)
+			{
+				tparts.add(x);
+			}
+		}
+		else
+			if(!targetName.equals(targetName.toLowerCase()))
+			{
+				pt=targetName.split("(?=\\p{Upper})");	
+				for(String x:pt)
 				{
-					tparts.add(x);
+					tparts.add(x.toLowerCase());
 				}
 			}
 			else
-				if(!targetName.equals(targetName.toLowerCase()))
-				{
-					pt=targetName.split("(?=\\p{Upper})");	
-					for(String x:pt)
-					{
-						tparts.add(x.toLowerCase());
-					}
-				}
-				else
-				{
-				
-				tparts.add(targetName);
-				}
-			return tparts;
-		}
+			{
+			
+			tparts.add(targetName);
+			}
+		return tparts;
+	}
 	private ArrayList<Double> referenceEvaluation(String pathToReferenceAlignment)
 			throws Exception {
 
@@ -329,6 +307,7 @@ public class MyMatcher  extends AbstractMatcher  {
 		double recall=0.0d;
 		double fmeasure=0.0d;
 		int size=21;
+		ArrayList<Double> fscore=new ArrayList<Double>();
 		for(int i = 0; i < confs.length-1; i++)
 		{
 			for(int j = i+1; j < confs.length; j++)
@@ -366,6 +345,8 @@ public class MyMatcher  extends AbstractMatcher  {
 			writer=new FileOutput(confs[i]+"-"+confs[j]+".csv");
 			writer.writeHeader();
 			ArrayList<Double> results=	mm.referenceEvaluation(ONTOLOGY_BASE_PATH + confs[i]+"-"+confs[j]+".rdf");
+			//Add fscore to a list
+			fscore.add(results.get(2));
 			precision+=results.get(0);
 			recall+=results.get(1);
 			fmeasure+=results.get(2);

@@ -6,7 +6,7 @@ Reference Alignment,My Alignment
 Unmatched:(9 ConferenceChair -> 22 General_Chair: 1.0  =  ),,[10 ConferenceMember],[28 Organizator]
 (25 Review -> 43 Review: 1.0  =  ),(25 Review -> 43 Review: 2.0  =  ),[12 Document],[19 Document]
 (21 ProgramCommittee -> 36 Program_Committee: 1.0  =  ),(21 ProgramCommittee -> 36 Program_Committee: 1.5  =  ),[],[12 Committee]
-Unmatched:(22 ProgramCommitteeChair -> 35 Program_Chair: 1.0  =  ),,[23 ProgramCommitteeMember],[28 Organizator]
+(22 ProgramCommitteeChair -> 35 Program_Chair: 1.0  =  ),(22 ProgramCommitteeChair -> 35 Program_Chair: 0.800000011920929  =  ),[23 ProgramCommitteeMember],[28 Organizator]
 (3 Author -> 2 Author: 1.0  =  ),(3 Author -> 2 Author: 2.0  =  ),[28 User, 10 ConferenceMember],[45 Speaker]
 (19 Person -> 32 Person: 1.0  =  ),(19 Person -> 32 Person: 2.0  =  ),[],[]
 (15 email -> 3 E-mail: 1.0  =  ),(15 email -> 3 E-mail: 1.5  =  ),Person,Person

@@ -16,3 +16,4 @@ Unmatched:(50 is_given_by -> 23 presentationed_by: 1.0  =  ),,Presentation,Docum
 Unmatched:(4 gives_presentations -> 22 presentation: 1.0  =  ),,Active_conference_participant,Speaker
 False positives (31 Organization -> 28 Organizator: 1.5  =  ),,[],[32 Person]
 False positives (10 Conference -> 13 Conference: 2.0  =  ),,[],[]
+False positives (9 Committee_member -> 37 Program_Committee_member: 0.800000011920929  =  ),,[37 Person],[28 Organizator]

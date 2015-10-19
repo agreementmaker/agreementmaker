@@ -7,7 +7,7 @@ Reference Alignment,My Alignment
 (25 Review -> 78 Review: 1.0  =  ),(25 Review -> 78 Review: 2.0  =  ),[12 Document],[40 Document]
 (12 Document -> 40 Document: 1.0  =  ),(12 Document -> 40 Document: 2.0  =  ),[],[]
 (16 Paper -> 59 Paper: 1.0  =  ),(16 Paper -> 59 Paper: 2.0  =  ),[12 Document],[40 Document]
-Unmatched:(26 hasConferenceMember -> 16 hasMember: 1.0  =  ),,Conference,Conference
+(26 hasConferenceMember -> 16 hasMember: 1.0  =  ),(26 hasConferenceMember -> 16 hasMember: 0.800000011920929  =  ),Conference,Conference
 Unmatched:(34 memberOfConference -> 34 isMemberOf: 1.0  =  ),,ConferenceMember,Person
 Unmatched:(22 hasAuthor -> 41 isWrittenBy: 1.0  =  ),,Paper,Paper
 Unmatched:(23 hasBeenAssigned -> 39 isReviewing: 1.0  =  ),,Reviewer,
