@@ -1,7 +1,6 @@
 contribution,paper,
 chairman,chair,
 subject,topic,
-paper,contribution,
-assign,review,
-member,participant,applicant
-part,event,
+assign,,
+member,review,
+part,participant,applicant

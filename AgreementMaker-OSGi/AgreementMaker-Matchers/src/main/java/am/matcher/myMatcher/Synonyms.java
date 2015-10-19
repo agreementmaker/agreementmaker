@@ -29,6 +29,7 @@ public class Synonyms
 				synset.put(syn[i], slist);
 			}
 		}
+		br.close();
 		
 		
 	}

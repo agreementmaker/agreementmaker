@@ -1,23 +1,31 @@
 Reference Alignment,My Alignment
-(8 Conference -> 13 Conference: 1.0  =  ),(8 Conference -> 13 Conference: 2.0  =  )
-(16 Paper -> 31 Paper: 1.0  =  ),(16 Paper -> 31 Paper: 2.0  =  )
-(23 ProgramCommitteeMember -> 37 Program_Committee_member: 1.0  =  ),(23 ProgramCommitteeMember -> 37 Program_Committee_member: 2.0  =  )
-(12 Document -> 19 Document: 1.0  =  ),(12 Document -> 19 Document: 2.0  =  )
+Unmatched (8 Conference -> 13 Conference: 1.0  =  ),
+Unmatched (16 Paper -> 31 Paper: 1.0  =  ),
+Unmatched (23 ProgramCommitteeMember -> 37 Program_Committee_member: 1.0  =  ),
+(12 Document -> 19 Document: 1.0  =  ),(12 Document -> 19 Document: 1.0  =  )
 (9 ConferenceChair -> 22 General_Chair: 1.0  =  ),(9 ConferenceChair -> 22 General_Chair: 0.6  =  )
-(25 Review -> 43 Review: 1.0  =  ),(25 Review -> 43 Review: 2.0  =  )
-(21 ProgramCommittee -> 36 Program_Committee: 1.0  =  ),(21 ProgramCommittee -> 36 Program_Committee: 2.0  =  )
+(25 Review -> 43 Review: 1.0  =  ),(25 Review -> 43 Review: 1.0  =  )
+Unmatched (21 ProgramCommittee -> 36 Program_Committee: 1.0  =  ),
 Unmatched (22 ProgramCommitteeChair -> 35 Program_Chair: 1.0  =  ),
-(3 Author -> 2 Author: 1.0  =  ),(3 Author -> 2 Author: 2.0  =  )
-(19 Person -> 32 Person: 1.0  =  ),(19 Person -> 32 Person: 2.0  =  )
-Unmatched (15 email -> 3 E-mail: 1.0  =  ),
+Unmatched (3 Author -> 2 Author: 1.0  =  ),
+(19 Person -> 32 Person: 1.0  =  ),(19 Person -> 32 Person: 1.0  =  )
+(15 email -> 3 E-mail: 1.0  =  ),(15 email -> 3 E-mail: 1.0  =  )
 (53 submitPaper -> 26 submit: 1.0  =  ),(53 submitPaper -> 26 submit: 0.55  =  )
 False positives (17 PaperAbstract -> 1 Abstract: 0.65  =  ),
-False positives (22 ProgramCommitteeChair -> 12 Committee: 0.55  =  ),
+False positives (16 Paper -> 3 Author_of_paper: 0.6  =  ),
+False positives (18 PaperFullVersion -> 31 Paper: 0.55  =  ),
 False positives (2 AssociatedChair -> 35 Program_Chair: 0.6  =  ),
+False positives (22 ProgramCommitteeChair -> 36 Program_Committee: 0.800000011920929  =  ),
+False positives (21 ProgramCommittee -> 37 Program_Committee_member: 0.800000011920929  =  ),
+False positives (23 ProgramCommitteeMember -> 12 Committee: 0.55  =  ),
+False positives (10 ConferenceMember -> 13 Conference: 0.55  =  ),
+False positives (3 Author -> 17 Deadline_Author_notification: 0.55  =  ),
+False positives (8 Conference -> 14 Conference_hall: 0.55  =  ),
+False positives (4 AuthorNotReviewer -> 2 Author: 0.55  =  ),
+False positives (13 date -> 2 Date: 1.0  =  ),
+False positives (36 name -> 5 Name: 1.0  =  ),
 False positives (1 acceptedBy -> 25 searched_by: 0.6  =  ),
-False positives (36 name -> 5 Name: 2.0  =  ),
-False positives (13 date -> 2 Date: 2.0  =  ),
-False positives (58 writtenBy -> 21 payed_by: 0.6  =  ),
-False positives (6 adjustedBy -> 12 awarded_by: 0.6  =  ),
 False positives (4 addedBy -> 23 presentationed_by: 0.6  =  ),
+False positives (6 adjustedBy -> 12 awarded_by: 0.6  =  ),
+False positives (58 writtenBy -> 21 payed_by: 0.6  =  ),
 False positives (45 rejectedBy -> 17 holded_by: 0.6  =  ),

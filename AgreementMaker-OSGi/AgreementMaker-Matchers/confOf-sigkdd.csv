@@ -1,14 +1,19 @@
 Reference Alignment,My Alignment
-(18 Person -> 32 Person: 1.0  =  ),(18 Person -> 32 Person: 2.0  =  )
+(18 Person -> 32 Person: 1.0  =  ),(18 Person -> 32 Person: 1.0  =  )
 Unmatched (14 Member_PC -> 37 Program_Committee_member: 1.0  =  ),
-(3 Author -> 2 Author: 1.0  =  ),(3 Author -> 2 Author: 2.0  =  )
-(9 Conference -> 13 Conference: 1.0  =  ),(9 Conference -> 13 Conference: 2.0  =  )
-(6 Chair_PC -> 35 Program_Chair: 1.0  =  ),(6 Chair_PC -> 35 Program_Chair: 2.0  =  )
-(16 Paper -> 31 Paper: 1.0  =  ),(16 Paper -> 31 Paper: 2.0  =  )
+(3 Author -> 2 Author: 1.0  =  ),(3 Author -> 2 Author: 1.0  =  )
+(9 Conference -> 13 Conference: 1.0  =  ),(9 Conference -> 13 Conference: 1.0  =  )
+Unmatched (6 Chair_PC -> 35 Program_Chair: 1.0  =  ),
+Unmatched (16 Paper -> 31 Paper: 1.0  =  ),
 Unmatched (12 hasEmail -> 3 E-mail: 1.0  =  ),
+False positives (10 Contribution -> 18 Deadline_Paper_Submission: 0.55  =  ),
+False positives (29 Student -> 41 Registration_Student: 0.65  =  ),
+False positives (27 Short_paper -> 31 Paper: 0.65  =  ),
 False positives (13 Member -> 40 Registration_SIGMOD_Member: 0.6  =  ),
-False positives (29 Student -> 10 Best_Student_Paper_Supporter: 0.65  =  ),
-False positives (35 writtenBy -> 23 presentationed_by: 0.6  =  ),
+False positives (17 Participant -> 39 Registration_SIGKDD_Member: 0.55  =  ),
+False positives (15 Organization -> 28 Organizator: 1.0  =  ),
+False positives (16 Paper -> 3 Author_of_paper: 0.6  =  ),
+False positives (1 contactEmail -> 3 E-mail: 0.55  =  ),
 False positives (14 hasFirstName -> 5 Name: 0.6  =  ),
-False positives (1 contactEmail -> 3 E-mail: 0.6  =  ),
+False positives (35 writtenBy -> 23 presentationed_by: 0.6  =  ),
 False positives (5 employedBy -> 25 searched_by: 0.6  =  ),

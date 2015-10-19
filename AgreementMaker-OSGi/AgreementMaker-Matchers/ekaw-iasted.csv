@@ -1,24 +1,27 @@
 Reference Alignment,My Alignment
 Unmatched (29 Location -> 78 Place: 1.0  =  ),
-(17 Document -> 43 Document: 1.0  =  ),(17 Document -> 43 Document: 2.0  =  )
+(17 Document -> 43 Document: 1.0  =  ),(17 Document -> 43 Document: 1.0  =  )
 Unmatched (20 Event -> 1 Activity: 1.0  =  ),
-(41 Person -> 77 Person: 1.0  =  ),(41 Person -> 77 Person: 2.0  =  )
-(40 Paper_Author -> 5 Author: 1.0  =  ),(40 Paper_Author -> 5 Author: 0.6  =  )
-(58 Session -> 99 Session: 1.0  =  ),(58 Session -> 99 Session: 2.0  =  )
-(55 Review -> 97 Review: 1.0  =  ),(55 Review -> 97 Review: 2.0  =  )
+(41 Person -> 77 Person: 1.0  =  ),(41 Person -> 77 Person: 1.0  =  )
+(40 Paper_Author -> 5 Author: 1.0  =  ),(40 Paper_Author -> 5 Author: 0.65  =  )
+Unmatched (58 Session -> 99 Session: 1.0  =  ),
+(55 Review -> 97 Review: 1.0  =  ),(55 Review -> 97 Review: 1.0  =  )
 (7 Conference_Banquet -> 42 Dinner_banquet: 1.0  =  ),(7 Conference_Banquet -> 42 Dinner_banquet: 0.6  =  )
-(64 Tutorial -> 130 Tutorial: 1.0  =  ),(64 Tutorial -> 130 Tutorial: 2.0  =  )
-(59 Session_Chair -> 100 Session_chair: 1.0  =  ),(59 Session_Chair -> 100 Session_chair: 2.0  =  )
-False positives (46 Presenter -> 85 Presenter_state: 0.65  =  ),
-False positives (6 Conference -> 73 One_conference_day: 0.65  =  ),
-False positives (14 Demo_Chair -> 13 Brief_introduction_for_Session_chair: 2.0  =  ),
-False positives (67 University -> 86 Presenter_university: 0.6  =  ),
-False positives (10 Conference_Proceedings -> 18 Cd_proceening: 0.6  =  ),
-False positives (43 Possible_Reviewer -> 98 Reviewer: 0.6  =  ),
-False positives (47 Proceedings -> 9 Author_cd_proceedings_included: 0.65  =  ),
-False positives (53 Research_Institute -> 96 Research: 0.65  =  ),
+Unmatched (64 Tutorial -> 130 Tutorial: 1.0  =  ),
+(59 Session_Chair -> 100 Session_chair: 1.0  =  ),(59 Session_Chair -> 100 Session_chair: 1.0  =  )
+False positives (64 Tutorial -> 131 Tutorial_speaker: 0.55  =  ),
+False positives (53 Research_Institute -> 96 Research: 0.55  =  ),
+False positives (46 Presenter -> 51 Hotel_presenter: 0.65  =  ),
+False positives (67 University -> 86 Presenter_university: 0.65  =  ),
+False positives (43 Possible_Reviewer -> 98 Reviewer: 0.65  =  ),
+False positives (58 Session -> 101 Session_room: 0.55  =  ),
+False positives (22 Individual_Presentation -> 82 Presentation: 0.65  =  ),
+False positives (25 Invited_Speaker -> 106 Speaker: 0.65  =  ),
+False positives (47 Proceedings -> 18 Cd_proceening: 0.55  =  ),
+False positives (61 Student -> 116 Student_registration_fee: 0.55  =  ),
+False positives (10 Conference_Proceedings -> 12 Book_proceeding: 0.6  =  ),
 False positives (34 OC_Member -> 54 IASTED_member: 0.6  =  ),
-False positives (61 Student -> 116 Student_registration_fee: 0.65  =  ),
-False positives (22 Individual_Presentation -> 135 Video_presentation: 0.6  =  ),
-False positives (25 Invited_Speaker -> 131 Tutorial_speaker: 0.6  =  ),
+False positives (11 Conference_Session -> 99 Session: 0.65  =  ),
+False positives (6 Conference -> 3 Activity_before_conference: 0.6  =  ),
+False positives (65 Tutorial_Abstract -> 130 Tutorial: 0.55  =  ),
 False positives (8 heldIn -> 39 speak_in: 0.6  =  ),

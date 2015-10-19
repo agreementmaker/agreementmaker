@@ -1,24 +1,28 @@
 Reference Alignment,My Alignment
-(68 Place -> 33 Place: 1.0  =  ),(68 Place -> 33 Place: 2.0  =  )
-(64 Person -> 32 Person: 1.0  =  ),(64 Person -> 32 Person: 2.0  =  )
+(68 Place -> 33 Place: 1.0  =  ),(68 Place -> 33 Place: 1.0  =  )
+(64 Person -> 32 Person: 1.0  =  ),(64 Person -> 32 Person: 1.0  =  )
 Unmatched (35 ConferenceVenuePlace -> 14 Conference_hall: 1.0  =  ),
-(9 Author -> 2 Author: 1.0  =  ),(9 Author -> 2 Author: 2.0  =  )
+(9 Author -> 2 Author: 1.0  =  ),(9 Author -> 2 Author: 1.0  =  )
 Unmatched (4 AccommodationPlace -> 24 Hotel: 1.0  =  ),
 Unmatched (31 ConferenceChair -> 22 General_Chair: 1.0  =  ),
-(30 Conference -> 13 Conference: 1.0  =  ),(30 Conference -> 13 Conference: 2.0  =  )
-(78 Review -> 43 Review: 1.0  =  ),(78 Review -> 43 Review: 2.0  =  )
-(40 Document -> 19 Document: 1.0  =  ),(40 Document -> 19 Document: 2.0  =  )
-(59 Paper -> 31 Paper: 1.0  =  ),(59 Paper -> 31 Paper: 2.0  =  )
+Unmatched (30 Conference -> 13 Conference: 1.0  =  ),
+(78 Review -> 43 Review: 1.0  =  ),(78 Review -> 43 Review: 1.0  =  )
+(40 Document -> 19 Document: 1.0  =  ),(40 Document -> 19 Document: 1.0  =  )
+Unmatched (59 Paper -> 31 Paper: 1.0  =  ),
 Unmatched (8 Attendee -> 26 Listener: 1.0  =  ),
 Unmatched (8 hasCostAmount -> 9 Price: 1.0  =  ),
 Unmatched (18 hasName -> 6 Name_of_conference: 1.0  =  ),
 Unmatched (49 startDate -> 10 Start_of_conference: 1.0  =  ),
 Unmatched (2 endDate -> 4 End_of_conference: 1.0  =  ),
-False positives (31 ConferenceChair -> 35 Program_Chair: 0.6  =  ),
+False positives (57 Organization -> 28 Organizator: 1.0  =  ),
+False positives (3 AcceptedPaper -> 31 Paper: 0.65  =  ),
+False positives (30 Conference -> 14 Conference_hall: 0.55  =  ),
 False positives (85 SessionChair -> 22 General_Chair: 0.6  =  ),
-False positives (0 AcademiaOrganization -> 28 Organizator: 0.6  =  ),
-False positives (13 hasFirstName -> 5 Name: 0.6  =  ),
-False positives (11 hasEmail -> 3 E-mail: 0.6  =  ),
-False positives (12 hasEndDateTime -> 2 Date: 0.65  =  ),
+False positives (31 ConferenceChair -> 35 Program_Chair: 0.6  =  ),
+False positives (87 SingleLevelConference -> 13 Conference: 0.6  =  ),
+False positives (59 Paper -> 3 Author_of_paper: 0.6  =  ),
+False positives (2 endDate -> 2 Date: 0.65  =  ),
+False positives (11 hasEmail -> 3 E-mail: 0.55  =  ),
 False positives (9 hasCostCurrency -> 1 Currency: 0.6  =  ),
 False positives (44 providedBy -> 25 searched_by: 0.6  =  ),
+False positives (18 hasName -> 5 Name: 0.65  =  ),

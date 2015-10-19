@@ -1,9 +1,9 @@
 package am.matcher.myMatcher;
 
 
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.regex.Pattern;
+
 import am.Utility;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
@@ -32,200 +32,151 @@ public class MyMatcher  extends AbstractMatcher  {
 		setCategory(MatcherCategory.UNCATEGORIZED);		
 	}
 	
-	
+	/**
+	 * 
+	 */
 	@Override
 	protected Mapping alignTwoNodes(Node source, Node target,
 			alignType typeOfNodes, SimilarityMatrix matrix) throws Exception 
 	{
-
-
+		
+		String sourceName=source.getLocalName();
+		sourceName = Character.toLowerCase(sourceName.charAt(0)) + sourceName.substring(1); 
+		String targetName=target.getLocalName();
+		targetName = Character.toLowerCase(targetName.charAt(0)) + targetName.substring(1); 
+		double sim=this.getSimilarityScore(sourceName, targetName);
+		if (source.isProp())
+		{
+			double propertySim=0;
+			String sourceDomainName=source.getPropertyDomain().getLocalName();
+			String targetDomainName=source.getPropertyDomain().getLocalName();
+			if (sourceDomainName==null ||targetDomainName==null)
+				propertySim=0d;
+			if (propertySim<0.6)
+				sim=0d;
+				
+		}
+		return new Mapping(source, target, sim);				
+	}
+	/**
+	 * 
+	 * @param sourceName
+	 * @param targetName
+	 * @return
+	 */
+	private double getSimilarityScore(String sourceName, String targetName)
+	{
+	
 		StringSimilarity s=new StringSimilarity();
-				Synonyms syn=new Synonyms();
-				syn.synonymList();
-				double sim=0.0d;
-				String sourceName=source.getLocalName();
-				sourceName = Character.toLowerCase(sourceName.charAt(0)) + sourceName.substring(1); 
-				String targetName=target.getLocalName();
-
-				targetName = Character.toLowerCase(targetName.charAt(0)) + targetName.substring(1); 
-				double score,max;
+		Synonyms syn=new Synonyms();
+		
+		try {
+			syn.synonymList();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		double sim=0.0d;
+		double score;
+		// If the source name matches exactly with target name
+		if(sourceName.equalsIgnoreCase(targetName))
+			sim=1.0d;
+		// If the source and target doesn't match try alternate ways to see whether there is match
+		else
+		{
+			int count=0;
+			//Split source into parts 
+			ArrayList<String> sparts=this.getParts(sourceName);
+			ArrayList<String> tparts=this.getParts(targetName);
+			//lscore refers to the similarity score of the last words of source and target name
+			double lscore=s.similarity(sparts.get(sparts.size()-1), tparts.get(tparts.size()-1));
+			// If the last words match
+			if(lscore >0.9)
+			{
+				if(((sparts.size()+tparts.size())==3))
+						sim=0.65;
+				else if((sparts.size()+tparts.size())==4)
+						sim=0.6;
+			}	
+			// else count the number of matching words
+			else
+			{
 				
-
+				for(String t:tparts)
+				{
+					for(String sp:sparts)
+					{	
+							score=s.similarity(sp, t);
+							if(score>0.8)
+							{
+								count++;	
+							}
+							else
+							{ //check synonyms
+								ArrayList<String> p=(ArrayList<String>) syn.synset.get(sp);
+								if(p!=null)
+								{
+									
+									if(p.contains(sp))
+									{
+										if(p.contains(t))
+											count++;
+									}
+								}						
+							}
+						
+					}
+				}
+				//find the ratio of matching words
+				float sizes=(sparts.size()+tparts.size());
+				float y=(2*count)/sizes;
 				
-				
-
-				if(sourceName.equalsIgnoreCase(targetName))
-					sim=2.0d;
-				
+				if(count==1 && (sparts.size()==1||tparts.size()==1))
+				{
+					sim=0.55;
+				}
+				if(y>0.7)
+					sim=y;
+			
+		}
+		}
+		return sim;
+	}
+		
+		
+	/**
+	 * 	
+	 * @param targetName
+	 * @return
+	 */
+		private ArrayList<String> getParts(String targetName)
+		{
+			ArrayList<String> tparts=new ArrayList<String>();	
+			String[] pt;
+			if(targetName.contains("_"))
+			{	
+				String ts[]=targetName.toLowerCase().split("_");
+				for(String x:ts)
+				{
+					tparts.add(x);
+				}
+			}
+			else
+				if(!targetName.equals(targetName.toLowerCase()))
+				{
+					pt=targetName.split("(?=\\p{Upper})");	
+					for(String x:pt)
+					{
+						tparts.add(x.toLowerCase());
+					}
+				}
 				else
 				{
-					int count=0;
-					int simcount=0;
-					ArrayList<String> sparts=getSparts(sourceName);
-					ArrayList<String> tparts=getTparts(targetName);
-					//check last word of the two array list
-					if(sparts.equals(tparts))
-					{
-						sim=2.0d;
-					}
-					
-					else
-					{
-					
-					double lscore=s.similarity(sparts.get(sparts.size()-1), tparts.get(tparts.size()-1));
-					if(lscore >0.8d)
-					{
-						if(((sparts.size()+tparts.size())==3))
-								sim=0.65;
-						if((sparts.size()+tparts.size())==4)
-								sim=0.6;
-							
-					
-					
-						/*if((sparts.size()+tparts.size())==3)
-							sim=0.75;*/
-					}
-					
-					
-					// else count the number of matching words
-					else
-					{
-						
-						for(String t:tparts)
-						{
-							for(String sp:sparts)
-							{	
-									score=s.similarity(sp, t);
-									if(score>0.8)
-									{
-										count++;
-										
-									}
-									else
-									{ //check synonyms
-										ArrayList<String> p=(ArrayList<String>) syn.synset.get(sp);
-										if(p!=null)
-										{
-											
-											if(p.contains(sp))
-											{
-												if(p.contains(t))
-													count++;
-											}
-										}
-										
-										
-										
-									}
-								
-							}
-						}
-						//find the ratio of matching words
-						float sizes=(sparts.size()+tparts.size());
-						float y=(2*count)/sizes;
-						
-						if(count==1 && (sparts.size()==1||tparts.size()==1))
-						{
-							sim=0.55;
-						}
-						if(y>0.7)
-							sim=y;
-						
-						
-						
-					}
+				
+				tparts.add(targetName);
 				}
-				
-
-				}
-					
-					
-					
-				
-					
-/*				
-*/				/*if(sparts.get(sparts.size()-1).equals((tparts).get(tparts.size()-1)))
-				{
-					sim=0.7d;
-					
-					
-				}*/
-					
-					
-			
-				
-
-					
-				
-						
-					
-				 
-					
-					return new Mapping(source, target, sim);
-						
-	}
-	
-	public ArrayList<String> getTparts(String targetName)
-	{
-		ArrayList<String> tparts=new ArrayList<String>();	
-		String[] pt;
-		if(targetName.contains("_"))
-		{	
-			String ts[]=targetName.toLowerCase().split("_");
-			for(String x:ts)
-			{
-				tparts.add(x);
-			}
+			return tparts;
 		}
-		else
-			if(!targetName.equals(targetName.toLowerCase()))
-			{
-				pt=targetName.split("(?=\\p{Upper})");	
-				for(String x:pt)
-				{
-					tparts.add(x.toLowerCase());
-				}
-			}
-			else
-			{
-			
-			tparts.add(targetName);
-			}
-		return tparts;
-	}
-	public ArrayList<String> getSparts(String sourceName)
-	{
-		ArrayList<String> sparts=new ArrayList<String>();
-		String[] ps;
-		if(sourceName.contains("_"))
-		{
-			String st[]=sourceName.toLowerCase().split("_");
-			for(String x:st)
-			{
-				sparts.add(x);
-			}
-		}
-		else
-		{
-			if(!sourceName.equals(sourceName.toLowerCase()))
-			{
-				
-				ps=sourceName.split("(?=\\p{Upper})");	
-				for(String x:ps)
-				{
-					sparts.add(x.toLowerCase());
-				}
-			}
-			else
-			{
-			
-			sparts.add(sourceName);
-			}
-		}
-		return sparts;
-	}
-
-
 	private ArrayList<Double> referenceEvaluation(String pathToReferenceAlignment)
 			throws Exception {
 
@@ -296,20 +247,34 @@ public class MyMatcher  extends AbstractMatcher  {
 			{
 				if (referenceSet.get(i).equals(myAlignment.get(j)))
 				{
-					writer.write(referenceSet.get(i).toString(), myAlignment.get(j).toString());
+					if (referenceSet.get(i).getEntity1().isProp())
+						writer.write(referenceSet.get(i).toString(), myAlignment.get(j).toString(), referenceSet.get(i).getEntity1().getPropertyDomain().getLocalName(),referenceSet.get(i).getEntity2().getPropertyDomain().getLocalName());
+					else	
+						writer.write(referenceSet.get(i).toString(), myAlignment.get(j).toString(), referenceSet.get(i).getEntity1().getParents().toString(),referenceSet.get(i).getEntity2().getParents().toString());
 					flag=true;
 					myAlignment.remove(j);
 				}
 					
 			}
 			if (!flag)
-				writer.write("Unmatched "+referenceSet.get(i).toString(),"");
+			{
+				if (referenceSet.get(i).getEntity1().isProp())
+					writer.write("Unmatched:"+referenceSet.get(i).toString(), "", referenceSet.get(i).getEntity1().getPropertyDomain().getLocalName(),referenceSet.get(i).getEntity2().getPropertyDomain().getLocalName());
+				else	
+					writer.write("Unmatched:"+referenceSet.get(i).toString(), "", referenceSet.get(i).getEntity1().getParents().toString(),referenceSet.get(i).getEntity2().getParents().toString());
+				//writer.write("Unmatched "+referenceSet.get(i).toString(),"",referenceSet.get(i).getEntity1().getParents().toString(),referenceSet.get(i).getEntity2().getParents().toString());
+
+			}
 				
 		}
 		
 		for (j=0;j<myAlignment.size();j++)
 		{
-			writer.write("False positives "+myAlignment.get(j).toString(),"");
+			if (myAlignment.get(j).getEntity1().isProp())
+				writer.write("False positives "+myAlignment.get(j).toString(),"",myAlignment.get(j).getEntity1().getPropertyDomain().getLocalName(),myAlignment.get(j).getEntity2().getPropertyDomain().getLocalName());
+
+			else
+				writer.write("False positives "+myAlignment.get(j).toString(),"",myAlignment.get(j).getEntity1().getParents().toString(),myAlignment.get(j).getEntity2().getParents().toString());
 		}
 		
 		
@@ -349,11 +314,9 @@ public class MyMatcher  extends AbstractMatcher  {
 		String ONTOLOGY_BASE_PATH ="conference_dataset/"; // Use your base path
 		//String[] confs = {"cmt","conference","confOf","edas","ekaw","iasted","sigkdd"};
 		String[] confs = {"cmt","confOf"};
-	/*	 static String SOURCE_ONTOLOGY = "cmt";  // Change this for TESTING
-		 static String TARGET_ONTOLOGY = "confOf";// Change this for TESTING
-	*/
-		MyMatcher mm = new MyMatcher();
 		
+		
+		MyMatcher mm = new MyMatcher();
 		System.setProperty("wordnet.database.dir","wordnet-3.0/dict");
 		double precision=0.0d;
 		double recall=0.0d;
@@ -420,7 +383,8 @@ public class MyMatcher  extends AbstractMatcher  {
 		sb.append("Precision = Correct/Discovered: "+ pPercent+"\n");
 		sb.append("Recall = Correct/Reference: "+ rPercent+"\n");
 		sb.append("Fmeasure = 2(precision*recall)/(precision+recall): "+ fPercent+"\n");
-	
+		
+		
 		String report=sb.toString();
 		System.out.println("Evaulation results:");
 		System.out.println(report);

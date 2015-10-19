@@ -32,12 +32,22 @@ public class FileOutput
 			
 	}
 	
-	public  void write(String refAlignment,String myAlignment)
+	public  void write(String refAlignment,String myAlignment,String parent1,String parent2)
 	   {
 		    try {
 		    	writer.write(refAlignment);
 		    	writer.write(',');
 		    	writer.write(myAlignment);
+		    	writer.write(',');
+		    	if (parent1!=null)
+		    	{
+		    		writer.write(parent1);
+		    		writer.write(',');
+		    	}
+		    	if (parent2!=null)
+		    	{
+		    		writer.write(parent2);
+		    	}
 		    	writer.write('\n');
 			} catch (IOException e) {
 				// TODO Auto-generated catch block

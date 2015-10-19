@@ -1,28 +1,34 @@
 Reference Alignment,My Alignment
-(37 Person -> 64 Person: 1.0  =  ),(37 Person -> 64 Person: 2.0  =  )
+(37 Person -> 64 Person: 1.0  =  ),(37 Person -> 64 Person: 1.0  =  )
 Unmatched (18 Conference_participant -> 8 Attendee: 1.0  =  ),
-(31 Organization -> 57 Organization: 1.0  =  ),(31 Organization -> 57 Organization: 2.0  =  )
-(50 Reviewer -> 82 Reviewer: 1.0  =  ),(50 Reviewer -> 82 Reviewer: 2.0  =  )
-Unmatched (17 Conference_part -> 33 ConferenceEvent: 1.0  =  ),
-(57 Workshop -> 102 Workshop: 1.0  =  ),(57 Workshop -> 102 Workshop: 2.0  =  )
-(15 Conference_document -> 40 Document: 1.0  =  ),(15 Conference_document -> 40 Document: 0.6  =  )
-(35 Paper -> 59 Paper: 1.0  =  ),(35 Paper -> 59 Paper: 2.0  =  )
-(46 Review -> 78 Review: 1.0  =  ),(46 Review -> 78 Review: 2.0  =  )
+(31 Organization -> 57 Organization: 1.0  =  ),(31 Organization -> 57 Organization: 1.0  =  )
+(50 Reviewer -> 82 Reviewer: 1.0  =  ),(50 Reviewer -> 82 Reviewer: 1.0  =  )
+(17 Conference_part -> 33 ConferenceEvent: 1.0  =  ),(17 Conference_part -> 33 ConferenceEvent: 1.0  =  )
+(57 Workshop -> 102 Workshop: 1.0  =  ),(57 Workshop -> 102 Workshop: 1.0  =  )
+(15 Conference_document -> 40 Document: 1.0  =  ),(15 Conference_document -> 40 Document: 0.65  =  )
+Unmatched (35 Paper -> 59 Paper: 1.0  =  ),
+Unmatched (46 Review -> 78 Review: 1.0  =  ),
 Unmatched (20 Conference_volume -> 30 Conference: 1.0  =  ),
-Unmatched (45 Rejected_contribution -> 77 RejectedPaper: 1.0  =  ),
-(53 Topic -> 95 Topic: 1.0  =  ),(53 Topic -> 95 Topic: 2.0  =  )
-Unmatched (1 Accepted_contribution -> 3 AcceptedPaper: 1.0  =  ),
-(43 Regular_author -> 9 Author: 1.0  =  ),(43 Regular_author -> 9 Author: 0.6  =  )
+(45 Rejected_contribution -> 77 RejectedPaper: 1.0  =  ),(45 Rejected_contribution -> 77 RejectedPaper: 1.0  =  )
+(53 Topic -> 95 Topic: 1.0  =  ),(53 Topic -> 95 Topic: 1.0  =  )
+(1 Accepted_contribution -> 3 AcceptedPaper: 1.0  =  ),(1 Accepted_contribution -> 3 AcceptedPaper: 1.0  =  )
+(43 Regular_author -> 9 Author: 1.0  =  ),(43 Regular_author -> 9 Author: 0.65  =  )
 Unmatched (36 has_the_first_name -> 13 hasFirstName: 1.0  =  ),
 Unmatched (16 has_a_review_expertise -> 22 hasRating: 1.0  =  ),
 Unmatched (37 has_the_last_name -> 14 hasLastName: 1.0  =  ),
-False positives (41 Publisher -> 72 PublishedPaper: 0.65  =  ),
-False positives (6 Chair -> 85 SessionChair: 0.6  =  ),
+False positives (41 Publisher -> 72 PublishedPaper: 0.55  =  ),
+False positives (46 Review -> 94 TextualReviewQuestion: 0.55  =  ),
 False positives (55 Track-workshop_chair -> 31 ConferenceChair: 0.6  =  ),
-False positives (10 Conference -> 30 Conference: 2.0  =  ),
-False positives (39 Presentation -> 60 PaperPresentation: 0.6  =  ),
-False positives (4 Call_for_participation -> 12 Call: 0.65  =  ),
+False positives (10 Conference -> 97 TwoLevelConference: 0.6  =  ),
+False positives (2 Active_conference_participant -> 30 Conference: 0.55  =  ),
 False positives (29 Invited_talk -> 99 WelcomeTalk: 0.6  =  ),
+False positives (6 Chair -> 85 SessionChair: 0.65  =  ),
+False positives (4 Call_for_participation -> 12 Call: 0.55  =  ),
+False positives (3 Call_for_paper -> 14 CallForPapers: 1.0  =  ),
+False positives (35 Paper -> 101 WithdrawnPaper: 0.65  =  ),
+False positives (39 Presentation -> 60 PaperPresentation: 0.65  =  ),
+False positives (5 Camera_ready_contribution -> 59 Paper: 0.55  =  ),
+False positives (47 Review_expertise -> 78 Review: 0.55  =  ),
+False positives (34 has_members -> 16 hasMember: 1.0  =  ),
 False positives (41 invited_by -> 44 providedBy: 0.6  =  ),
-False positives (34 has_members -> 16 hasMember: 0.6  =  ),
-False positives (55 reviews -> 37 isReviewHistoryOf: 0.65  =  ),
+False positives (55 reviews -> 37 isReviewHistoryOf: 0.55  =  ),

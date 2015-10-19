@@ -1,44 +1,50 @@
 Reference Alignment,My Alignment
 Unmatched (32 ConferenceDinner -> 7 Conference_Banquet: 1.0  =  ),
 Unmatched (1 AcademicEvent -> 57 Scientific_Event: 1.0  =  ),
-(3 AcceptedPaper -> 2 Accepted_Paper: 1.0  =  ),(3 AcceptedPaper -> 2 Accepted_Paper: 2.0  =  )
+(3 AcceptedPaper -> 2 Accepted_Paper: 1.0  =  ),(3 AcceptedPaper -> 2 Accepted_Paper: 0.6  =  )
 Unmatched (68 Place -> 29 Location: 1.0  =  ),
 Unmatched (0 AcademiaOrganization -> 1 Academic_Institution: 1.0  =  ),
-(89 SocialEvent -> 60 Social_Event: 1.0  =  ),(89 SocialEvent -> 60 Social_Event: 2.0  =  )
+Unmatched (89 SocialEvent -> 60 Social_Event: 1.0  =  ),
 Unmatched (57 Organization -> 35 Organisation: 1.0  =  ),
-(9 Author -> 40 Paper_Author: 1.0  =  ),(9 Author -> 40 Paper_Author: 0.6  =  )
-Unmatched (95 Topic -> 54 Research_Topic: 1.0  =  ),
-(40 Document -> 17 Document: 1.0  =  ),(40 Document -> 17 Document: 2.0  =  )
-(77 RejectedPaper -> 52 Rejected_Paper: 1.0  =  ),(77 RejectedPaper -> 52 Rejected_Paper: 2.0  =  )
-(33 ConferenceEvent -> 20 Event: 1.0  =  ),(33 ConferenceEvent -> 20 Event: 0.6  =  )
-(85 SessionChair -> 59 Session_Chair: 1.0  =  ),(85 SessionChair -> 59 Session_Chair: 2.0  =  )
-(64 Person -> 41 Person: 1.0  =  ),(64 Person -> 41 Person: 2.0  =  )
-(71 Programme -> 49 Programme_Brochure: 1.0  =  ),(71 Programme -> 49 Programme_Brochure: 0.65  =  )
-(78 Review -> 55 Review: 1.0  =  ),(78 Review -> 55 Review: 2.0  =  )
-(102 Workshop -> 69 Workshop: 1.0  =  ),(102 Workshop -> 69 Workshop: 2.0  =  )
-(59 Paper -> 39 Paper: 1.0  =  ),(59 Paper -> 39 Paper: 2.0  =  )
+(9 Author -> 40 Paper_Author: 1.0  =  ),(9 Author -> 40 Paper_Author: 0.65  =  )
+(95 Topic -> 54 Research_Topic: 1.0  =  ),(95 Topic -> 54 Research_Topic: 0.65  =  )
+(40 Document -> 17 Document: 1.0  =  ),(40 Document -> 17 Document: 1.0  =  )
+(77 RejectedPaper -> 52 Rejected_Paper: 1.0  =  ),(77 RejectedPaper -> 52 Rejected_Paper: 0.6  =  )
+Unmatched (33 ConferenceEvent -> 20 Event: 1.0  =  ),
+Unmatched (85 SessionChair -> 59 Session_Chair: 1.0  =  ),
+(64 Person -> 41 Person: 1.0  =  ),(64 Person -> 41 Person: 1.0  =  )
+(71 Programme -> 49 Programme_Brochure: 1.0  =  ),(71 Programme -> 49 Programme_Brochure: 0.55  =  )
+Unmatched (78 Review -> 55 Review: 1.0  =  ),
+(102 Workshop -> 69 Workshop: 1.0  =  ),(102 Workshop -> 69 Workshop: 1.0  =  )
+Unmatched (59 Paper -> 39 Paper: 1.0  =  ),
 Unmatched (8 Attendee -> 9 Conference_Participant: 1.0  =  ),
 Unmatched (38 isReviewedBy -> 6 hasReviewer: 1.0  =  ),
 Unmatched (39 isReviewing -> 24 reviewerOfPaper: 1.0  =  ),
 Unmatched (33 isLocationOf -> 11 locationOf: 1.0  =  ),
 Unmatched (15 hasLocation -> 8 heldIn: 1.0  =  ),
-False positives (82 Reviewer -> 43 Possible_Reviewer: 0.6  =  ),
+False positives (70 Presenter -> 46 Presenter: 1.0  =  ),
 False positives (101 WithdrawnPaper -> 50 Regular_Paper: 0.6  =  ),
-False positives (0 AcademiaOrganization -> 35 Organisation: 0.6  =  ),
-False positives (62 PendingPaper -> 62 Submitted_Paper: 0.6  =  ),
-False positives (16 ClosingTalk -> 26 Invited_Talk: 0.6  =  ),
-False positives (72 PublishedPaper -> 8 Conference_Paper: 0.6  =  ),
-False positives (74 RatedPapers -> 4 Assigned_Paper: 0.6  =  ),
-False positives (70 Presenter -> 46 Presenter: 2.0  =  ),
+False positives (78 Review -> 42 Positive_Review: 0.65  =  ),
+False positives (33 ConferenceEvent -> 60 Social_Event: 0.6  =  ),
+False positives (6 ActivePaper -> 71 Workshop_Paper: 0.6  =  ),
+False positives (0 AcademiaOrganization -> 35 Organisation: 0.65  =  ),
+False positives (15 CallForReviews -> 55 Review: 0.55  =  ),
+False positives (34 ConferenceSession -> 58 Session: 0.65  =  ),
+False positives (10 BreakEvent -> 57 Scientific_Event: 0.6  =  ),
+False positives (87 SingleLevelConference -> 6 Conference: 0.6  =  ),
+False positives (99 WelcomeTalk -> 13 Contributed_Talk: 0.6  =  ),
+False positives (14 CallForPapers -> 39 Paper: 0.55  =  ),
 False positives (31 ConferenceChair -> 70 Workshop_Chair: 0.6  =  ),
 False positives (60 PaperPresentation -> 22 Individual_Presentation: 0.6  =  ),
-False positives (34 ConferenceSession -> 11 Conference_Session: 2.0  =  ),
-False positives (7 AntennasTopic -> 54 Research_Topic: 0.6  =  ),
-False positives (6 ActivePaper -> 71 Workshop_Paper: 0.6  =  ),
-False positives (99 WelcomeTalk -> 13 Contributed_Talk: 0.6  =  ),
-False positives (30 Conference -> 6 Conference: 2.0  =  ),
-False positives (10 BreakEvent -> 57 Scientific_Event: 0.6  =  ),
+False positives (82 Reviewer -> 43 Possible_Reviewer: 0.65  =  ),
+False positives (30 Conference -> 12 Conference_Trip: 0.55  =  ),
+False positives (1 AcademicEvent -> 20 Event: 0.65  =  ),
+False positives (59 Paper -> 62 Submitted_Paper: 0.65  =  ),
+False positives (72 PublishedPaper -> 4 Assigned_Paper: 0.6  =  ),
+False positives (85 SessionChair -> 37 PC_Chair: 0.6  =  ),
+False positives (62 PendingPaper -> 8 Conference_Paper: 0.6  =  ),
+False positives (16 ClosingTalk -> 26 Invited_Talk: 0.6  =  ),
+False positives (25 hasReviewHistory -> 5 hasReview: 0.800000011920929  =  ),
+False positives (3 forEvent -> 10 listsEvent: 0.6  =  ),
 False positives (30 hasTopic -> 1 coversTopic: 0.6  =  ),
 False positives (44 providedBy -> 32 writtenBy: 0.6  =  ),
-False positives (3 forEvent -> 10 listsEvent: 0.6  =  ),
-False positives (25 hasReviewHistory -> 5 hasReview: 0.800000011920929  =  ),
