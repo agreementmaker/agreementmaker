@@ -91,7 +91,7 @@ public class MyMatcher  extends AbstractMatcher  {
 			sim=2.0d;
 		else if (s.similarity(sourceName, targetName)>0.8)
 			sim=1.5d;
-		else if (syn.isSynonym(sourceName, targetName))
+		else if (syn.isSynonym(sourceName.toLowerCase(), targetName.toLowerCase()))
 			sim=1d;
 		
 		/*// If the source and target doesn't match try alternate ways to see whether there is match

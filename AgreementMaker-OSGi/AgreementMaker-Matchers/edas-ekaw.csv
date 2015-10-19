@@ -20,7 +20,7 @@ Unmatched:(71 Programme -> 49 Programme_Brochure: 1.0  =  ),,[40 Document],[17 D
 Unmatched:(8 Attendee -> 9 Conference_Participant: 1.0  =  ),,[64 Person],[41 Person]
 Unmatched:(38 isReviewedBy -> 6 hasReviewer: 1.0  =  ),,Paper,Paper
 Unmatched:(39 isReviewing -> 24 reviewerOfPaper: 1.0  =  ),,Possible_Reviewer
-Unmatched:(33 isLocationOf -> 11 locationOf: 1.0  =  ),,Place,Location
+(33 isLocationOf -> 11 locationOf: 1.0  =  ),(33 isLocationOf -> 11 locationOf: 1.5  =  ),Place,Location
 Unmatched:(15 hasLocation -> 8 heldIn: 1.0  =  ),,ConferenceEvent,Event
 False positives (70 Presenter -> 46 Presenter: 2.0  =  ),,[9 Author],[9 Conference_Participant]
 False positives (34 ConferenceSession -> 11 Conference_Session: 1.5  =  ),,[],[58 Session]

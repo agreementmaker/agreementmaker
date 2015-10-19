@@ -22,7 +22,7 @@ public class Synonyms
 				String[] syn = line.split(",");
 				for(int i=0;i<syn.length;i++)
 				{
-					synset.put(syn[i],count);
+					synset.put(syn[i].toLowerCase(),count);
 				}
 				count++;
 			}
