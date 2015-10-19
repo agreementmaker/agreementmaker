@@ -1,28 +1,25 @@
 Reference Alignment,My Alignment
-(18 Conference_participant -> 17 Participant: 1.0  =  ),(18 Conference_participant -> 17 Participant: 0.65  =  )
-(38 Poster -> 19 Poster: 1.0  =  ),(38 Poster -> 19 Poster: 1.0  =  )
-(31 Organization -> 15 Organization: 1.0  =  ),(31 Organization -> 15 Organization: 1.0  =  )
-(53 Topic -> 31 Topic: 1.0  =  ),(53 Topic -> 31 Topic: 1.0  =  )
-(57 Workshop -> 37 Workshop: 1.0  =  ),(57 Workshop -> 37 Workshop: 1.0  =  )
-Unmatched (35 Paper -> 16 Paper: 1.0  =  ),
-(37 Person -> 18 Person: 1.0  =  ),(37 Person -> 18 Person: 1.0  =  )
-Unmatched (13 Conference_contribution -> 10 Contribution: 1.0  =  ),
-(56 Tutorial -> 33 Tutorial: 1.0  =  ),(56 Tutorial -> 33 Tutorial: 1.0  =  )
-Unmatched (20 Conference_volume -> 9 Conference: 1.0  =  ),
-(43 Regular_author -> 3 Author: 1.0  =  ),(43 Regular_author -> 3 Author: 0.65  =  )
-Unmatched (26 has_an_email -> 12 hasEmail: 1.0  =  ),
-Unmatched (22 has_a_track-workshop-tutorial_topic -> 22 hasTopic: 1.0  =  ),
-Unmatched (37 has_the_last_name -> 20 hasSurname: 1.0  =  ),
-Unmatched (36 has_the_first_name -> 14 hasFirstName: 1.0  =  ),
-False positives (6 Chair -> 6 Chair_PC: 0.55  =  ),
-False positives (1 Accepted_contribution -> 10 Contribution: 0.65  =  ),
-False positives (17 Conference_part -> 12 Event: 0.55  =  ),
-False positives (35 Paper -> 27 Short_paper: 0.65  =  ),
-False positives (3 Call_for_paper -> 16 Paper: 0.6  =  ),
-False positives (44 Regular_contribution -> 22 Regular: 0.55  =  ),
-False positives (10 Conference -> 9 Conference: 1.0  =  ),
-False positives (9 Committee_member -> 13 Member: 0.65  =  ),
-False positives (11 has_a_location -> 26 location: 0.6  =  ),
-False positives (55 reviews -> 31 reviewes: 1.0  =  ),
-False positives (41 invited_by -> 35 writtenBy: 0.6  =  ),
-False positives (25 has_an_abstract -> 0 abstract: 0.6  =  ),
+(18 Conference_participant -> 17 Participant: 1.0  =  ),(18 Conference_participant -> 17 Participant: 0.65  =  ),[37 Person],[18 Person]
+(38 Poster -> 19 Poster: 1.0  =  ),(38 Poster -> 19 Poster: 1.0  =  ),[13 Conference_contribution],[10 Contribution]
+(31 Organization -> 15 Organization: 1.0  =  ),(31 Organization -> 15 Organization: 1.0  =  ),[],[]
+(53 Topic -> 31 Topic: 1.0  =  ),(53 Topic -> 31 Topic: 1.0  =  ),[],[]
+(57 Workshop -> 37 Workshop: 1.0  =  ),(57 Workshop -> 37 Workshop: 1.0  =  ),[17 Conference_part],[36 Working_event]
+Unmatched:(35 Paper -> 16 Paper: 1.0  =  ),,[44 Regular_contribution],[10 Contribution]
+(37 Person -> 18 Person: 1.0  =  ),(37 Person -> 18 Person: 1.0  =  ),[],[]
+Unmatched:(13 Conference_contribution -> 10 Contribution: 1.0  =  ),,[15 Conference_document],[]
+(56 Tutorial -> 33 Tutorial: 1.0  =  ),(56 Tutorial -> 33 Tutorial: 1.0  =  ),[17 Conference_part],[36 Working_event]
+Unmatched:(20 Conference_volume -> 9 Conference: 1.0  =  ),,[10 Conference],[36 Working_event]
+(43 Regular_author -> 3 Author: 1.0  =  ),(43 Regular_author -> 3 Author: 0.65  =  ),[14 Conference_contributor],[18 Person]
+Unmatched:(26 has_an_email -> 12 hasEmail: 1.0  =  ),,Person,Person
+Unmatched:(22 has_a_track-workshop-tutorial_topic -> 22 hasTopic: 1.0  =  ),,Conference_part,Working_event
+Unmatched:(37 has_the_last_name -> 20 hasSurname: 1.0  =  ),,Person,Person
+Unmatched:(36 has_the_first_name -> 14 hasFirstName: 1.0  =  ),,Person,Person
+False positives (5 Camera_ready_contribution -> 5 Camera_Ready_event: 0.6666666865348816  =  ),,[1 Accepted_contribution],[0 Administrative_event]
+False positives (6 Chair -> 6 Chair_PC: 0.6666666865348816  =  ),,[9 Committee_member],[18 Person]
+False positives (17 Conference_part -> 12 Event: 0.6666666865348816  =  ),,[],[]
+False positives (13 Conference_contribution -> 16 Paper: 0.6666666865348816  =  ),,[15 Conference_document],[10 Contribution]
+False positives (35 Paper -> 27 Short_paper: 0.65  =  ),,[44 Regular_contribution],[10 Contribution]
+False positives (14 Conference_contributor -> 10 Contribution: 0.6666666865348816  =  ),,[37 Person],[]
+False positives (44 Regular_contribution -> 22 Regular: 0.6666666865348816  =  ),,[58 Written_contribution],[17 Participant]
+False positives (10 Conference -> 9 Conference: 1.0  =  ),,[],[36 Working_event]
+False positives (9 Committee_member -> 13 Member: 0.65  =  ),,[37 Person],[17 Participant]

@@ -1,25 +1,21 @@
 Reference Alignment,My Alignment
-Unmatched (6 Conference -> 13 Conference: 1.0  =  ),
-(41 Person -> 32 Person: 1.0  =  ),(41 Person -> 32 Person: 1.0  =  )
-Unmatched (39 Paper -> 31 Paper: 1.0  =  ),
-(55 Review -> 43 Review: 1.0  =  ),(55 Review -> 43 Review: 1.0  =  )
-(25 Invited_Speaker -> 25 Invited_Speaker: 1.0  =  ),(25 Invited_Speaker -> 25 Invited_Speaker: 1.0  =  )
-Unmatched (34 OC_Member -> 30 Organizing_Committee_member: 1.0  =  ),
-Unmatched (0 Abstract -> 1 Abstract: 1.0  =  ),
-Unmatched (37 PC_Chair -> 35 Program_Chair: 1.0  =  ),
-Unmatched (40 Paper_Author -> 2 Author: 1.0  =  ),
-(17 Document -> 19 Document: 1.0  =  ),(17 Document -> 19 Document: 1.0  =  )
-Unmatched (29 Location -> 33 Place: 1.0  =  ),
-False positives (61 Student -> 41 Registration_Student: 0.65  =  ),
-False positives (2 Accepted_Paper -> 31 Paper: 0.65  =  ),
-False positives (65 Tutorial_Abstract -> 1 Abstract: 0.65  =  ),
-False positives (14 Demo_Chair -> 35 Program_Chair: 0.6  =  ),
-False positives (0 Abstract -> 16 Deadline_Abstract_Submission: 0.55  =  ),
-False positives (39 Paper -> 18 Deadline_Paper_Submission: 0.55  =  ),
-False positives (40 Paper_Author -> 3 Author_of_paper: 0.800000011920929  =  ),
-False positives (33 OC_Chair -> 22 General_Chair: 0.6  =  ),
-False positives (7 Conference_Banquet -> 13 Conference: 0.55  =  ),
-False positives (6 Conference -> 14 Conference_hall: 0.55  =  ),
-False positives (18 presentationOfPaper -> 22 presentation: 0.55  =  ),
-False positives (12 organisedBy -> 25 searched_by: 0.6  =  ),
-False positives (32 writtenBy -> 23 presentationed_by: 0.6  =  ),
+Unmatched:(6 Conference -> 13 Conference: 1.0  =  ),,[57 Scientific_Event],[]
+(41 Person -> 32 Person: 1.0  =  ),(41 Person -> 32 Person: 1.0  =  ),[],[]
+Unmatched:(39 Paper -> 31 Paper: 1.0  =  ),,[17 Document],[19 Document]
+(55 Review -> 43 Review: 1.0  =  ),(55 Review -> 43 Review: 1.0  =  ),[17 Document],[19 Document]
+(25 Invited_Speaker -> 25 Invited_Speaker: 1.0  =  ),(25 Invited_Speaker -> 25 Invited_Speaker: 1.0  =  ),[46 Presenter],[45 Speaker]
+Unmatched:(34 OC_Member -> 30 Organizing_Committee_member: 1.0  =  ),,[9 Conference_Participant],[28 Organizator]
+(0 Abstract -> 1 Abstract: 1.0  =  ),(0 Abstract -> 1 Abstract: 1.0  =  ),[17 Document],[19 Document]
+Unmatched:(37 PC_Chair -> 35 Program_Chair: 1.0  =  ),,[38 PC_Member, 9 Conference_Participant],[28 Organizator]
+Unmatched:(40 Paper_Author -> 2 Author: 1.0  =  ),,[41 Person],[45 Speaker]
+(17 Document -> 19 Document: 1.0  =  ),(17 Document -> 19 Document: 1.0  =  ),[],[]
+Unmatched:(29 Location -> 33 Place: 1.0  =  ),,[],[]
+False positives (61 Student -> 41 Registration_Student: 0.65  =  ),,[41 Person],[42 Registration_fee]
+False positives (39 Paper -> 3 Author_of_paper: 0.6  =  ),,[17 Document],[2 Author]
+False positives (2 Accepted_Paper -> 31 Paper: 0.65  =  ),,[19 Evaluated_Paper],[19 Document]
+False positives (14 Demo_Chair -> 35 Program_Chair: 0.6  =  ),,[9 Conference_Participant],[28 Organizator]
+False positives (33 OC_Chair -> 22 General_Chair: 0.6  =  ),,[34 OC_Member],[28 Organizator]
+False positives (40 Paper_Author -> 4 Author_of_paper_student: 0.6666666865348816  =  ),,[41 Person],[2 Author]
+False positives (7 Conference_Banquet -> 13 Conference: 0.6666666865348816  =  ),,[60 Social_Event],[]
+False positives (6 Conference -> 14 Conference_hall: 0.6666666865348816  =  ),,[57 Scientific_Event],[33 Place]
+False positives (32 writtenBy -> 23 presentationed_by: 0.6  =  ),,Document,Document

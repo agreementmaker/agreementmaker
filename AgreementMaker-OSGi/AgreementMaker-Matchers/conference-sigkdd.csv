@@ -1,32 +1,28 @@
 Reference Alignment,My Alignment
-Unmatched (0 Abstract -> 1 Abstract: 1.0  =  ),
-(28 Invited_speaker -> 25 Invited_Speaker: 1.0  =  ),(28 Invited_speaker -> 25 Invited_Speaker: 1.0  =  )
-(43 Regular_author -> 2 Author: 1.0  =  ),(43 Regular_author -> 2 Author: 0.65  =  )
-(46 Review -> 43 Review: 1.0  =  ),(46 Review -> 43 Review: 1.0  =  )
-(40 Program_committee -> 36 Program_Committee: 1.0  =  ),(40 Program_committee -> 36 Program_Committee: 1.0  =  )
-Unmatched (20 Conference_volume -> 13 Conference: 1.0  =  ),
-Unmatched (16 Conference_fees -> 21 Fee: 1.0  =  ),
-Unmatched (35 Paper -> 31 Paper: 1.0  =  ),
-Unmatched (33 Organizing_committee -> 29 Organizing_Committee: 1.0  =  ),
-(37 Person -> 32 Person: 1.0  =  ),(37 Person -> 32 Person: 1.0  =  )
-Unmatched (8 Committee -> 12 Committee: 1.0  =  ),
-(15 Conference_document -> 19 Document: 1.0  =  ),(15 Conference_document -> 19 Document: 0.65  =  )
-(26 has_an_email -> 3 E-mail: 1.0  =  ),(26 has_an_email -> 3 E-mail: 0.55  =  )
-Unmatched (50 is_given_by -> 23 presentationed_by: 1.0  =  ),
-(4 gives_presentations -> 22 presentation: 1.0  =  ),(4 gives_presentations -> 22 presentation: 0.65  =  )
-False positives (33 Organizing_committee -> 30 Organizing_Committee_member: 0.800000011920929  =  ),
-False positives (25 Extended_abstract -> 1 Abstract: 0.65  =  ),
-False positives (35 Paper -> 3 Author_of_paper: 0.6  =  ),
-False positives (3 Call_for_paper -> 31 Paper: 0.6  =  ),
-False positives (31 Organization -> 28 Organizator: 1.0  =  ),
-False positives (2 Active_conference_participant -> 13 Conference: 0.55  =  ),
-False positives (10 Conference -> 14 Conference_hall: 0.55  =  ),
-False positives (0 Abstract -> 16 Deadline_Abstract_Submission: 0.55  =  ),
-False positives (55 Track-workshop_chair -> 22 General_Chair: 0.6  =  ),
-False positives (6 Chair -> 35 Program_Chair: 0.65  =  ),
-False positives (9 Committee_member -> 12 Committee: 0.55  =  ),
-False positives (51 Steering_committee -> 29 Organizing_Committee: 0.6  =  ),
-False positives (8 Committee -> 37 Program_Committee_member: 0.55  =  ),
-False positives (12 has_a_name -> 5 Name: 0.6  =  ),
-False positives (41 invited_by -> 25 searched_by: 0.6  =  ),
-False positives (9 has_a_date_of_issue -> 2 Date: 0.55  =  ),
+(0 Abstract -> 1 Abstract: 1.0  =  ),(0 Abstract -> 1 Abstract: 1.0  =  ),[25 Extended_abstract],[19 Document]
+(28 Invited_speaker -> 25 Invited_Speaker: 1.0  =  ),(28 Invited_speaker -> 25 Invited_Speaker: 1.0  =  ),[14 Conference_contributor],[45 Speaker]
+(43 Regular_author -> 2 Author: 1.0  =  ),(43 Regular_author -> 2 Author: 0.65  =  ),[14 Conference_contributor],[45 Speaker]
+(46 Review -> 43 Review: 1.0  =  ),(46 Review -> 43 Review: 1.0  =  ),[15 Conference_document],[19 Document]
+Unmatched:(40 Program_committee -> 36 Program_Committee: 1.0  =  ),,[8 Committee],[12 Committee]
+Unmatched:(20 Conference_volume -> 13 Conference: 1.0  =  ),,[10 Conference],[]
+Unmatched:(16 Conference_fees -> 21 Fee: 1.0  =  ),,[],[]
+Unmatched:(35 Paper -> 31 Paper: 1.0  =  ),,[44 Regular_contribution],[19 Document]
+Unmatched:(33 Organizing_committee -> 29 Organizing_Committee: 1.0  =  ),,[8 Committee],[12 Committee]
+(37 Person -> 32 Person: 1.0  =  ),(37 Person -> 32 Person: 1.0  =  ),[],[]
+Unmatched:(8 Committee -> 12 Committee: 1.0  =  ),,[],[]
+(15 Conference_document -> 19 Document: 1.0  =  ),(15 Conference_document -> 19 Document: 0.65  =  ),[],[]
+Unmatched:(26 has_an_email -> 3 E-mail: 1.0  =  ),,Person,Person
+Unmatched:(50 is_given_by -> 23 presentationed_by: 1.0  =  ),,Presentation,Document
+Unmatched:(4 gives_presentations -> 22 presentation: 1.0  =  ),,Active_conference_participant,Speaker
+False positives (33 Organizing_committee -> 30 Organizing_Committee_member: 0.800000011920929  =  ),,[8 Committee],[28 Organizator]
+False positives (1 Accepted_contribution -> 31 Paper: 0.6666666865348816  =  ),,[49 Reviewed_contribution],[19 Document]
+False positives (35 Paper -> 3 Author_of_paper: 0.6  =  ),,[44 Regular_contribution],[2 Author]
+False positives (31 Organization -> 28 Organizator: 1.0  =  ),,[],[32 Person]
+False positives (11 Conference_announcement -> 13 Conference: 0.6666666865348816  =  ),,[15 Conference_document],[]
+False positives (10 Conference -> 14 Conference_hall: 0.6666666865348816  =  ),,[],[33 Place]
+False positives (55 Track-workshop_chair -> 22 General_Chair: 0.6  =  ),,[37 Person],[28 Organizator]
+False positives (6 Chair -> 35 Program_Chair: 0.65  =  ),,[9 Committee_member],[28 Organizator]
+False positives (40 Program_committee -> 37 Program_Committee_member: 0.800000011920929  =  ),,[8 Committee],[28 Organizator]
+False positives (9 Committee_member -> 12 Committee: 0.6666666865348816  =  ),,[37 Person],[]
+False positives (51 Steering_committee -> 29 Organizing_Committee: 0.6  =  ),,[8 Committee],[12 Committee]
+False positives (8 Committee -> 36 Program_Committee: 0.65  =  ),,[],[12 Committee]

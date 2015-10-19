@@ -1,34 +1,30 @@
 Reference Alignment,My Alignment
-(33 Tutorial -> 64 Tutorial: 1.0  =  ),(33 Tutorial -> 64 Tutorial: 1.0  =  )
-Unmatched (19 Poster -> 44 Poster_Paper: 1.0  =  ),
-(28 Social_event -> 60 Social_Event: 1.0  =  ),(28 Social_event -> 60 Social_Event: 1.0  =  )
-(18 Person -> 41 Person: 1.0  =  ),(18 Person -> 41 Person: 1.0  =  )
-Unmatched (36 Working_event -> 57 Scientific_Event: 1.0  =  ),
-(9 Conference -> 6 Conference: 1.0  =  ),(9 Conference -> 6 Conference: 1.0  =  )
-(3 Author -> 40 Paper_Author: 1.0  =  ),(3 Author -> 40 Paper_Author: 0.65  =  )
-(4 Banquet -> 7 Conference_Banquet: 1.0  =  ),(4 Banquet -> 7 Conference_Banquet: 0.65  =  )
-(37 Workshop -> 69 Workshop: 1.0  =  ),(37 Workshop -> 69 Workshop: 1.0  =  )
-(31 Topic -> 54 Research_Topic: 1.0  =  ),(31 Topic -> 54 Research_Topic: 0.65  =  )
-(10 Contribution -> 39 Paper: 1.0  =  ),(10 Contribution -> 39 Paper: 1.0  =  )
-Unmatched (17 Participant -> 9 Conference_Participant: 1.0  =  ),
-(6 Chair_PC -> 37 PC_Chair: 1.0  =  ),(6 Chair_PC -> 37 PC_Chair: 1.0  =  )
-Unmatched (15 Organization -> 35 Organisation: 1.0  =  ),
-(29 Student -> 61 Student: 1.0  =  ),(29 Student -> 61 Student: 1.0  =  )
-(34 University -> 67 University: 1.0  =  ),(34 University -> 67 University: 1.0  =  )
-(32 Trip -> 12 Conference_Trip: 1.0  =  ),(32 Trip -> 12 Conference_Trip: 0.65  =  )
-(14 Member_PC -> 38 PC_Member: 1.0  =  ),(14 Member_PC -> 38 PC_Member: 1.0  =  )
-Unmatched (25 Scholar -> 61 Student: 1.0  =  ),
-(12 Event -> 20 Event: 1.0  =  ),(12 Event -> 20 Event: 1.0  =  )
-False positives (16 Paper -> 71 Workshop_Paper: 0.65  =  ),
-False positives (22 Regular -> 51 Regular_Session: 0.55  =  ),
-False positives (13 Member -> 56 SC_Member: 0.65  =  ),
-False positives (23 Reviewing_event -> 57 Scientific_Event: 0.6  =  ),
-False positives (27 Short_paper -> 62 Submitted_Paper: 0.6  =  ),
-False positives (17 Participant -> 28 Late-Registered_Participant: 0.65  =  ),
-False positives (19 Poster -> 45 Poster_Session: 0.55  =  ),
-False positives (22 hasTopic -> 1 coversTopic: 0.6  =  ),
-False positives (26 location -> 11 locationOf: 0.55  =  ),
-False positives (5 employedBy -> 12 organisedBy: 0.6  =  ),
-False positives (35 writtenBy -> 32 writtenBy: 1.0  =  ),
-False positives (31 reviewes -> 24 reviewerOfPaper: 0.55  =  ),
-False positives (9 hasAdministrativeEvent -> 4 hasPart: 0.800000011920929  =  ),
+(33 Tutorial -> 64 Tutorial: 1.0  =  ),(33 Tutorial -> 64 Tutorial: 1.0  =  ),[36 Working_event],[22 Individual_Presentation]
+Unmatched:(19 Poster -> 44 Poster_Paper: 1.0  =  ),,[10 Contribution],[39 Paper]
+(28 Social_event -> 60 Social_Event: 1.0  =  ),(28 Social_event -> 60 Social_Event: 1.0  =  ),[12 Event],[20 Event]
+(18 Person -> 41 Person: 1.0  =  ),(18 Person -> 41 Person: 1.0  =  ),[],[]
+Unmatched:(36 Working_event -> 57 Scientific_Event: 1.0  =  ),,[12 Event],[20 Event]
+(9 Conference -> 6 Conference: 1.0  =  ),(9 Conference -> 6 Conference: 1.0  =  ),[36 Working_event],[57 Scientific_Event]
+(3 Author -> 40 Paper_Author: 1.0  =  ),(3 Author -> 40 Paper_Author: 0.65  =  ),[18 Person],[41 Person]
+(4 Banquet -> 7 Conference_Banquet: 1.0  =  ),(4 Banquet -> 7 Conference_Banquet: 0.65  =  ),[28 Social_event],[60 Social_Event]
+(37 Workshop -> 69 Workshop: 1.0  =  ),(37 Workshop -> 69 Workshop: 1.0  =  ),[36 Working_event],[57 Scientific_Event]
+(31 Topic -> 54 Research_Topic: 1.0  =  ),(31 Topic -> 54 Research_Topic: 0.65  =  ),[],[]
+Unmatched:(10 Contribution -> 39 Paper: 1.0  =  ),,[],[17 Document]
+Unmatched:(17 Participant -> 9 Conference_Participant: 1.0  =  ),,[18 Person],[41 Person]
+(6 Chair_PC -> 37 PC_Chair: 1.0  =  ),(6 Chair_PC -> 37 PC_Chair: 1.0  =  ),[18 Person],[38 PC_Member, 9 Conference_Participant]
+Unmatched:(15 Organization -> 35 Organisation: 1.0  =  ),,[],[]
+(29 Student -> 61 Student: 1.0  =  ),(29 Student -> 61 Student: 1.0  =  ),[17 Participant],[41 Person]
+(34 University -> 67 University: 1.0  =  ),(34 University -> 67 University: 1.0  =  ),[15 Organization],[1 Academic_Institution]
+(32 Trip -> 12 Conference_Trip: 1.0  =  ),(32 Trip -> 12 Conference_Trip: 0.65  =  ),[28 Social_event],[60 Social_Event]
+(14 Member_PC -> 38 PC_Member: 1.0  =  ),(14 Member_PC -> 38 PC_Member: 1.0  =  ),[18 Person],[43 Possible_Reviewer]
+Unmatched:(25 Scholar -> 61 Student: 1.0  =  ),,[18 Person],[41 Person]
+(12 Event -> 20 Event: 1.0  =  ),(12 Event -> 20 Event: 1.0  =  ),[],[]
+False positives (5 Camera_Ready_event -> 5 Camera_Ready_Paper: 0.6666666865348816  =  ),,[0 Administrative_event],[39 Paper]
+False positives (27 Short_paper -> 71 Workshop_Paper: 0.6  =  ),,[10 Contribution],[39 Paper]
+False positives (22 Regular -> 51 Regular_Session: 0.6666666865348816  =  ),,[17 Participant],[58 Session]
+False positives (10 Contribution -> 2 Accepted_Paper: 0.6666666865348816  =  ),,[],[19 Evaluated_Paper]
+False positives (13 Member -> 56 SC_Member: 0.65  =  ),,[17 Participant],[38 PC_Member]
+False positives (23 Reviewing_event -> 57 Scientific_Event: 0.6  =  ),,[0 Administrative_event],[20 Event]
+False positives (17 Participant -> 28 Late-Registered_Participant: 0.65  =  ),,[18 Person],[9 Conference_Participant]
+False positives (16 Paper -> 39 Paper: 1.0  =  ),,[10 Contribution],[17 Document]
+False positives (19 Poster -> 45 Poster_Session: 0.6666666865348816  =  ),,[10 Contribution],[58 Session]

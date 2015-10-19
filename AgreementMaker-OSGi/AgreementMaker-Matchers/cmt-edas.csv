@@ -1,28 +1,24 @@
 Reference Alignment,My Alignment
-(19 Person -> 64 Person: 1.0  =  ),(19 Person -> 64 Person: 1.0  =  )
-Unmatched (8 Conference -> 30 Conference: 1.0  =  ),
-(3 Author -> 9 Author: 1.0  =  ),(3 Author -> 9 Author: 1.0  =  )
-(26 Reviewer -> 82 Reviewer: 1.0  =  ),(26 Reviewer -> 82 Reviewer: 1.0  =  )
-(9 ConferenceChair -> 31 ConferenceChair: 1.0  =  ),(9 ConferenceChair -> 31 ConferenceChair: 1.0  =  )
-Unmatched (25 Review -> 78 Review: 1.0  =  ),
-(12 Document -> 40 Document: 1.0  =  ),(12 Document -> 40 Document: 1.0  =  )
-Unmatched (16 Paper -> 59 Paper: 1.0  =  ),
-Unmatched (26 hasConferenceMember -> 16 hasMember: 1.0  =  ),
-Unmatched (34 memberOfConference -> 34 isMemberOf: 1.0  =  ),
-Unmatched (22 hasAuthor -> 41 isWrittenBy: 1.0  =  ),
-Unmatched (23 hasBeenAssigned -> 39 isReviewing: 1.0  =  ),
-Unmatched (11 assignedTo -> 38 isReviewedBy: 1.0  =  ),
-False positives (16 Paper -> 101 WithdrawnPaper: 0.65  =  ),
-False positives (10 ConferenceMember -> 30 Conference: 0.55  =  ),
-False positives (25 Review -> 81 ReviewRating: 0.55  =  ),
-False positives (2 AssociatedChair -> 85 SessionChair: 0.6  =  ),
-False positives (14 Meta-Review -> 78 Review: 0.65  =  ),
-False positives (27 SubjectArea -> 95 Topic: 0.55  =  ),
-False positives (8 Conference -> 97 TwoLevelConference: 0.6  =  ),
-False positives (17 PaperAbstract -> 59 Paper: 0.55  =  ),
-False positives (13 date -> 49 startDate: 0.65  =  ),
-False positives (1 acceptedBy -> 44 providedBy: 0.6  =  ),
-False positives (15 email -> 11 hasEmail: 0.65  =  ),
-False positives (11 assignedTo -> 48 relatesTo: 0.6  =  ),
-False positives (36 name -> 18 hasName: 0.65  =  ),
-False positives (30 hasSubjectArea -> 30 hasTopic: 0.800000011920929  =  ),
+(19 Person -> 64 Person: 1.0  =  ),(19 Person -> 64 Person: 1.0  =  ),[],[]
+Unmatched:(8 Conference -> 30 Conference: 1.0  =  ),,[],[]
+(3 Author -> 9 Author: 1.0  =  ),(3 Author -> 9 Author: 1.0  =  ),[28 User, 10 ConferenceMember],[]
+(26 Reviewer -> 82 Reviewer: 1.0  =  ),(26 Reviewer -> 82 Reviewer: 1.0  =  ),[28 User, 10 ConferenceMember],[]
+(9 ConferenceChair -> 31 ConferenceChair: 1.0  =  ),(9 ConferenceChair -> 31 ConferenceChair: 1.0  =  ),[10 ConferenceMember],[64 Person]
+Unmatched:(25 Review -> 78 Review: 1.0  =  ),,[12 Document],[40 Document]
+(12 Document -> 40 Document: 1.0  =  ),(12 Document -> 40 Document: 1.0  =  ),[],[]
+Unmatched:(16 Paper -> 59 Paper: 1.0  =  ),,[12 Document],[40 Document]
+Unmatched:(26 hasConferenceMember -> 16 hasMember: 1.0  =  ),,Conference,Conference
+Unmatched:(34 memberOfConference -> 34 isMemberOf: 1.0  =  ),,ConferenceMember,Person
+Unmatched:(22 hasAuthor -> 41 isWrittenBy: 1.0  =  ),,Paper,Paper
+Unmatched:(23 hasBeenAssigned -> 39 isReviewing: 1.0  =  ),,Reviewer,
+Unmatched:(11 assignedTo -> 38 isReviewedBy: 1.0  =  ),,Paper,Paper
+False positives (10 ConferenceMember -> 30 Conference: 0.6666666865348816  =  ),,[19 Person],[]
+False positives (25 Review -> 80 ReviewQuestion: 0.6666666865348816  =  ),,[12 Document],[]
+False positives (2 AssociatedChair -> 85 SessionChair: 0.6  =  ),,[10 ConferenceMember],[64 Person]
+False positives (14 Meta-Review -> 78 Review: 0.65  =  ),,[25 Review],[40 Document]
+False positives (16 Paper -> 74 RatedPapers: 0.6666666865348816  =  ),,[12 Document],[6 ActivePaper]
+False positives (27 SubjectArea -> 95 Topic: 0.6666666865348816  =  ),,[],[]
+False positives (8 Conference -> 34 ConferenceSession: 0.6666666865348816  =  ),,[],[]
+False positives (17 PaperAbstract -> 59 Paper: 0.6666666865348816  =  ),,[16 Paper],[40 Document]
+False positives (13 date -> 49 startDate: 0.65  =  ),,Conference,Conference
+False positives (42 readByReviewer -> 38 isReviewedBy: 0.6666666865348816  =  ),,Paper,Paper

@@ -1,13 +1,9 @@
 Reference Alignment,My Alignment
-Unmatched (3 Author -> 5 Author: 1.0  =  ),
-(25 Review -> 97 Review: 1.0  =  ),(25 Review -> 97 Review: 1.0  =  )
-(19 Person -> 77 Person: 1.0  =  ),(19 Person -> 77 Person: 1.0  =  )
-(26 Reviewer -> 98 Reviewer: 1.0  =  ),(26 Reviewer -> 98 Reviewer: 1.0  =  )
-False positives (4 AuthorNotReviewer -> 5 Author: 0.55  =  ),
-False positives (3 Author -> 10 Author_information_form: 0.55  =  ),
-False positives (12 Document -> 43 Document: 1.0  =  ),
-False positives (6 Chairman -> 13 Brief_introduction_for_Session_chair: 0.55  =  ),
-False positives (2 AssociatedChair -> 100 Session_chair: 0.6  =  ),
-False positives (10 ConferenceMember -> 54 IASTED_member: 0.6  =  ),
-False positives (8 Conference -> 3 Activity_before_conference: 0.6  =  ),
-False positives (56 writePaper -> 40 write: 0.55  =  ),
+(3 Author -> 5 Author: 1.0  =  ),(3 Author -> 5 Author: 1.0  =  ),[28 User, 10 ConferenceMember],[106 Speaker]
+(25 Review -> 97 Review: 1.0  =  ),(25 Review -> 97 Review: 1.0  =  ),[12 Document],[43 Document]
+(19 Person -> 77 Person: 1.0  =  ),(19 Person -> 77 Person: 1.0  =  ),[],[]
+(26 Reviewer -> 98 Reviewer: 1.0  =  ),(26 Reviewer -> 98 Reviewer: 1.0  =  ),[28 User, 10 ConferenceMember],[106 Speaker]
+False positives (12 Document -> 43 Document: 1.0  =  ),,[],[60 Item]
+False positives (8 Conference -> 33 Conference_state: 0.6666666865348816  =  ),,[],[113 State]
+False positives (2 AssociatedChair -> 100 Session_chair: 0.6  =  ),,[10 ConferenceMember],[39 Delegate]
+False positives (10 ConferenceMember -> 54 IASTED_member: 0.6  =  ),,[19 Person],[39 Delegate]

@@ -1,31 +1,27 @@
 Reference Alignment,My Alignment
-(68 Place -> 78 Place: 1.0  =  ),(68 Place -> 78 Place: 1.0  =  )
-Unmatched (85 SessionChair -> 100 Session_chair: 1.0  =  ),
-(9 Author -> 5 Author: 1.0  =  ),(9 Author -> 5 Author: 1.0  =  )
-(40 Document -> 43 Document: 1.0  =  ),(40 Document -> 43 Document: 1.0  =  )
-Unmatched (37 Country -> 113 State: 1.0  =  ),
-Unmatched (99 WelcomeTalk -> 137 Welcome_address: 1.0  =  ),
-Unmatched (90 Sponsorship -> 112 Sponzorship: 1.0  =  ),
-(82 Reviewer -> 98 Reviewer: 1.0  =  ),(82 Reviewer -> 98 Reviewer: 1.0  =  )
-Unmatched (8 Attendee -> 39 Delegate: 1.0  =  ),
-Unmatched (32 ConferenceDinner -> 42 Dinner_banquet: 1.0  =  ),
-Unmatched (89 SocialEvent -> 105 Social_program: 1.0  =  ),
-(17 CoffeeBreak -> 22 Coffee_break: 1.0  =  ),(17 CoffeeBreak -> 22 Coffee_break: 0.6  =  )
-(78 Review -> 97 Review: 1.0  =  ),(78 Review -> 97 Review: 1.0  =  )
-(75 Reception -> 21 Coctail_reception: 1.0  =  ),(75 Reception -> 21 Coctail_reception: 0.65  =  )
-Unmatched (33 ConferenceEvent -> 25 Conference_activity: 1.0  =  ),
-Unmatched (88 SlideSet -> 126 Transparency: 1.0  =  ),
-Unmatched (59 Paper -> 117 Submission: 1.0  =  ),
-Unmatched (35 ConferenceVenuePlace -> 27 Conference_building: 1.0  =  ),
-Unmatched (39 DiningPlace -> 32 Conference_restaurant: 1.0  =  ),
-False positives (42 FreeTimeBreak -> 123 Time: 0.55  =  ),
-False positives (66 PersonalPublicationHistory -> 87 Publication: 0.55  =  ),
-False positives (64 Person -> 77 Person: 1.0  =  ),
-False positives (20 ComputerArchitectureTopic -> 23 Computer: 0.55  =  ),
-False positives (70 Presenter -> 51 Hotel_presenter: 0.65  =  ),
-False positives (60 PaperPresentation -> 82 Presentation: 0.65  =  ),
-False positives (30 Conference -> 3 Activity_before_conference: 0.6  =  ),
-False positives (34 ConferenceSession -> 99 Session: 0.65  =  ),
-False positives (31 ConferenceChair -> 100 Session_chair: 0.6  =  ),
-False positives (8 Attendee -> 7 Author_attendee_cd_registration_fee: 0.55  =  ),
-False positives (79 ReviewForm -> 48 Form: 0.65  =  ),
+(68 Place -> 78 Place: 1.0  =  ),(68 Place -> 78 Place: 1.0  =  ),[],[]
+Unmatched:(85 SessionChair -> 100 Session_chair: 1.0  =  ),,[64 Person],[39 Delegate]
+(9 Author -> 5 Author: 1.0  =  ),(9 Author -> 5 Author: 1.0  =  ),[],[106 Speaker]
+(40 Document -> 43 Document: 1.0  =  ),(40 Document -> 43 Document: 1.0  =  ),[],[60 Item]
+Unmatched:(37 Country -> 113 State: 1.0  =  ),,[],[]
+Unmatched:(99 WelcomeTalk -> 137 Welcome_address: 1.0  =  ),,[92 TalkEvent],[25 Conference_activity]
+Unmatched:(90 Sponsorship -> 112 Sponzorship: 1.0  =  ),,[],[69 Money]
+(82 Reviewer -> 98 Reviewer: 1.0  =  ),(82 Reviewer -> 98 Reviewer: 1.0  =  ),[],[106 Speaker]
+Unmatched:(8 Attendee -> 39 Delegate: 1.0  =  ),,[64 Person],[77 Person]
+Unmatched:(32 ConferenceDinner -> 42 Dinner_banquet: 1.0  =  ),,[46 MealEvent],[105 Social_program]
+Unmatched:(89 SocialEvent -> 105 Social_program: 1.0  =  ),,[54 NonAcademicEvent],[25 Conference_activity]
+(17 CoffeeBreak -> 22 Coffee_break: 1.0  =  ),(17 CoffeeBreak -> 22 Coffee_break: 0.6  =  ),[10 BreakEvent],[25 Conference_activity]
+(78 Review -> 97 Review: 1.0  =  ),(78 Review -> 97 Review: 1.0  =  ),[40 Document],[43 Document]
+(75 Reception -> 21 Coctail_reception: 1.0  =  ),(75 Reception -> 21 Coctail_reception: 0.65  =  ),[89 SocialEvent],[25 Conference_activity]
+Unmatched:(33 ConferenceEvent -> 25 Conference_activity: 1.0  =  ),,[],[1 Activity]
+Unmatched:(88 SlideSet -> 126 Transparency: 1.0  =  ),,[40 Document],[43 Document]
+Unmatched:(59 Paper -> 117 Submission: 1.0  =  ),,[40 Document],[43 Document]
+Unmatched:(35 ConferenceVenuePlace -> 27 Conference_building: 1.0  =  ),,[68 Place],[14 Building]
+Unmatched:(39 DiningPlace -> 32 Conference_restaurant: 1.0  =  ),,[68 Place],[14 Building]
+False positives (64 Person -> 77 Person: 1.0  =  ),,[],[]
+False positives (85 SessionChair -> 99 Session: 0.6666666865348816  =  ),,[64 Person],[62 Lecture]
+False positives (30 Conference -> 33 Conference_state: 0.6666666865348816  =  ),,[],[113 State]
+False positives (60 PaperPresentation -> 82 Presentation: 0.65  =  ),,[1 AcademicEvent],[25 Conference_activity]
+False positives (70 Presenter -> 86 Presenter_university: 0.6666666865348816  =  ),,[9 Author],[14 Building]
+False positives (31 ConferenceChair -> 100 Session_chair: 0.6  =  ),,[64 Person],[39 Delegate]
+False positives (79 ReviewForm -> 48 Form: 0.65  =  ),,[],[43 Document]

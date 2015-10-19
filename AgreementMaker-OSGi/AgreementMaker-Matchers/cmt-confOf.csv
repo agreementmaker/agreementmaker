@@ -3,19 +3,18 @@ Unmatched:(22 ProgramCommitteeChair -> 6 Chair_PC: 1.0  =  ),,[23 ProgramCommitt
 (3 Author -> 3 Author: 1.0  =  ),(3 Author -> 3 Author: 1.0  =  ),[28 User, 10 ConferenceMember],[18 Person]
 (10 ConferenceMember -> 13 Member: 1.0  =  ),(10 ConferenceMember -> 13 Member: 0.65  =  ),[19 Person],[17 Participant]
 (1 Administrator -> 1 Administrator: 1.0  =  ),(1 Administrator -> 1 Administrator: 1.0  =  ),[28 User],[18 Person]
-(27 SubjectArea -> 31 Topic: 1.0  =  ),(27 SubjectArea -> 31 Topic: 0.55  =  ),[],[]
-(18 PaperFullVersion -> 16 Paper: 1.0  =  ),(18 PaperFullVersion -> 16 Paper: 0.55  =  ),[16 Paper],[10 Contribution]
+(27 SubjectArea -> 31 Topic: 1.0  =  ),(27 SubjectArea -> 31 Topic: 0.6666666865348816  =  ),[],[]
+Unmatched:(18 PaperFullVersion -> 16 Paper: 1.0  =  ),,[16 Paper],[10 Contribution]
 (8 Conference -> 9 Conference: 1.0  =  ),(8 Conference -> 9 Conference: 1.0  =  ),[],[36 Working_event]
 Unmatched:(23 ProgramCommitteeMember -> 14 Member_PC: 1.0  =  ),,[10 ConferenceMember],[18 Person]
 (19 Person -> 18 Person: 1.0  =  ),(19 Person -> 18 Person: 1.0  =  ),[],[]
 Unmatched:(16 Paper -> 10 Contribution: 1.0  =  ),,[12 Document],[]
-Unmatched:(56 writePaper -> 34 writes: 1.0  =  ),,Author,Author
-Unmatched:(54 title -> 21 hasTitle: 1.0  =  ),,Paper,Contribution
+(56 writePaper -> 34 writes: 1.0  =  ),(56 writePaper -> 34 writes: 0.6666666865348816  =  ),Author,Author
+(54 title -> 21 hasTitle: 1.0  =  ),(54 title -> 21 hasTitle: 0.65  =  ),Paper,Contribution
 Unmatched:(23 hasBeenAssigned -> 31 reviewes: 1.0  =  ),,Reviewer,Member_PC
 Unmatched:(22 hasAuthor -> 35 writtenBy: 1.0  =  ),,Paper,Contribution
 Unmatched:(30 hasSubjectArea -> 2 dealsWith: 1.0  =  ),,Paper,Contribution
-Unmatched:(15 email -> 12 hasEmail: 1.0  =  ),,Person,Person
-False positives (6 Chairman -> 6 Chair_PC: 0.55  =  ),,[19 Person],[18 Person]
-False positives (23 ProgramCommitteeMember -> 17 Participant: 0.55  =  ),,[10 ConferenceMember],[18 Person]
-False positives (17 PaperAbstract -> 10 Contribution: 0.55  =  ),,[16 Paper],[]
-False positives (16 Paper -> 27 Short_paper: 0.65  =  ),,[12 Document],[10 Contribution]
+(15 email -> 12 hasEmail: 1.0  =  ),(15 email -> 12 hasEmail: 0.65  =  ),Person,Person
+False positives (17 PaperAbstract -> 10 Contribution: 0.6666666865348816  =  ),,[16 Paper],[]
+False positives (16 Paper -> 16 Paper: 1.0  =  ),,[12 Document],[10 Contribution]
+False positives (1 acceptedBy -> 35 writtenBy: 0.6  =  ),,Paper,Contribution

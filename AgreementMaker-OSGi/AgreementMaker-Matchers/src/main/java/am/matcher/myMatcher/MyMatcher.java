@@ -48,12 +48,25 @@ public class MyMatcher  extends AbstractMatcher  {
 		if (source.isProp())
 		{
 			double propertySim=0;
-			String sourceDomainName=source.getPropertyDomain().getLocalName();
-			String targetDomainName=source.getPropertyDomain().getLocalName();
-			if (sourceDomainName==null ||targetDomainName==null)
-				propertySim=0d;
-			if (propertySim<0.6)
-				sim=0d;
+			try
+			{
+				String sourceDomainName=source.getPropertyDomain().getLocalName();
+				String targetDomainName=target.getPropertyDomain().getLocalName();
+				if (sourceDomainName==null ||targetDomainName==null)
+					propertySim=0d;
+				else
+				{
+					propertySim=this.getSimilarityScore(sourceDomainName, targetDomainName);
+				}
+					
+				if (propertySim<0.6)
+					sim=0d;
+			}
+			catch(NullPointerException e)
+			{
+				System.out.println("Null property");
+			}
+			
 				
 		}
 		return new Mapping(source, target, sim);				
@@ -80,7 +93,7 @@ public class MyMatcher  extends AbstractMatcher  {
 		double score;
 		// If the source name matches exactly with target name
 		if(sourceName.equalsIgnoreCase(targetName))
-			sim=1.0d;
+			sim=2.0d;
 		// If the source and target doesn't match try alternate ways to see whether there is match
 		else
 		{
@@ -101,7 +114,6 @@ public class MyMatcher  extends AbstractMatcher  {
 			// else count the number of matching words
 			else
 			{
-				
 				for(String t:tparts)
 				{
 					for(String sp:sparts)
@@ -127,18 +139,19 @@ public class MyMatcher  extends AbstractMatcher  {
 						
 					}
 				}
-				//find the ratio of matching words
-				float sizes=(sparts.size()+tparts.size());
-				float y=(2*count)/sizes;
-				
-				if(count==1 && (sparts.size()==1||tparts.size()==1))
-				{
-					sim=0.55;
-				}
-				if(y>0.7)
-					sim=y;
+			}
+			//find the ratio of matching words
+			float sizes=(sparts.size()+tparts.size());
+			float y=(2*count)/sizes;
 			
-		}
+			/*if(count==1 && (sparts.size()==1||tparts.size()==1))
+			{
+				sim=0.55;
+			}*/
+			if(y>0.6)
+				sim=y;
+		
+		
 		}
 		return sim;
 	}
@@ -271,8 +284,14 @@ public class MyMatcher  extends AbstractMatcher  {
 		for (j=0;j<myAlignment.size();j++)
 		{
 			if (myAlignment.get(j).getEntity1().isProp())
+				try
+			{
 				writer.write("False positives "+myAlignment.get(j).toString(),"",myAlignment.get(j).getEntity1().getPropertyDomain().getLocalName(),myAlignment.get(j).getEntity2().getPropertyDomain().getLocalName());
-
+			}
+			catch(NullPointerException e)
+			{
+				System.out.print("");
+			}
 			else
 				writer.write("False positives "+myAlignment.get(j).toString(),"",myAlignment.get(j).getEntity1().getParents().toString(),myAlignment.get(j).getEntity2().getParents().toString());
 		}
@@ -313,7 +332,7 @@ public class MyMatcher  extends AbstractMatcher  {
 	
 		String ONTOLOGY_BASE_PATH ="conference_dataset/"; // Use your base path
 		//String[] confs = {"cmt","conference","confOf","edas","ekaw","iasted","sigkdd"};
-		String[] confs = {"cmt","confOf"};
+		String[] confs = {"cmt","sigkdd"};
 		
 		
 		MyMatcher mm = new MyMatcher();
@@ -342,7 +361,7 @@ public class MyMatcher  extends AbstractMatcher  {
 		
 				DefaultMatcherParameters param = new DefaultMatcherParameters();
 		
-		//Set your parameters
+				//Set your parameters
 				param.threshold = 0.0;
 				param.maxSourceAlign = 1;
 				param.maxTargetAlign = 1;
@@ -371,9 +390,9 @@ public class MyMatcher  extends AbstractMatcher  {
 
 		StringBuilder sb= new StringBuilder();
 		
-		/*precision/=size;
+		precision/=size;
 		recall/=size;
-		fmeasure/=size;*/
+		fmeasure/=size;
 		
 		String pPercent = Utility.getOneDecimalPercentFromDouble(precision);
 		String rPercent = Utility.getOneDecimalPercentFromDouble(recall);
