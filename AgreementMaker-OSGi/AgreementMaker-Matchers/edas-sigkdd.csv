@@ -1,24 +1,17 @@
 Reference Alignment,My Alignment
-(68 Place -> 33 Place: 1.0  =  ),(68 Place -> 33 Place: 1.0  =  ),[],[]
-(64 Person -> 32 Person: 1.0  =  ),(64 Person -> 32 Person: 1.0  =  ),[],[]
+(68 Place -> 33 Place: 1.0  =  ),(68 Place -> 33 Place: 2.0  =  ),[],[]
+(64 Person -> 32 Person: 1.0  =  ),(64 Person -> 32 Person: 2.0  =  ),[],[]
 Unmatched:(35 ConferenceVenuePlace -> 14 Conference_hall: 1.0  =  ),,[68 Place],[33 Place]
-(9 Author -> 2 Author: 1.0  =  ),(9 Author -> 2 Author: 1.0  =  ),[],[45 Speaker]
+(9 Author -> 2 Author: 1.0  =  ),(9 Author -> 2 Author: 2.0  =  ),[],[45 Speaker]
 Unmatched:(4 AccommodationPlace -> 24 Hotel: 1.0  =  ),,[68 Place],[33 Place]
 Unmatched:(31 ConferenceChair -> 22 General_Chair: 1.0  =  ),,[64 Person],[28 Organizator]
-Unmatched:(30 Conference -> 13 Conference: 1.0  =  ),,[],[]
-(78 Review -> 43 Review: 1.0  =  ),(78 Review -> 43 Review: 1.0  =  ),[40 Document],[19 Document]
-(40 Document -> 19 Document: 1.0  =  ),(40 Document -> 19 Document: 1.0  =  ),[],[]
-Unmatched:(59 Paper -> 31 Paper: 1.0  =  ),,[40 Document],[19 Document]
+(30 Conference -> 13 Conference: 1.0  =  ),(30 Conference -> 13 Conference: 2.0  =  ),[],[]
+(78 Review -> 43 Review: 1.0  =  ),(78 Review -> 43 Review: 2.0  =  ),[40 Document],[19 Document]
+(40 Document -> 19 Document: 1.0  =  ),(40 Document -> 19 Document: 2.0  =  ),[],[]
+(59 Paper -> 31 Paper: 1.0  =  ),(59 Paper -> 31 Paper: 2.0  =  ),[40 Document],[19 Document]
 Unmatched:(8 Attendee -> 26 Listener: 1.0  =  ),,[64 Person],[32 Person]
 Unmatched:(8 hasCostAmount -> 9 Price: 1.0  =  ),,Sponsorship,Registration_fee
 Unmatched:(18 hasName -> 6 Name_of_conference: 1.0  =  ),,Conference,Conference
 Unmatched:(49 startDate -> 10 Start_of_conference: 1.0  =  ),,Conference,Conference
 Unmatched:(2 endDate -> 4 End_of_conference: 1.0  =  ),,Conference,Conference
-False positives (57 Organization -> 28 Organizator: 1.0  =  ),,[],[32 Person]
-False positives (60 PaperPresentation -> 31 Paper: 0.6666666865348816  =  ),,[1 AcademicEvent],[19 Document]
-False positives (32 ConferenceDinner -> 13 Conference: 0.6666666865348816  =  ),,[46 MealEvent],[]
-False positives (30 Conference -> 14 Conference_hall: 0.6666666865348816  =  ),,[],[33 Place]
-False positives (85 SessionChair -> 22 General_Chair: 0.6  =  ),,[64 Person],[28 Organizator]
-False positives (31 ConferenceChair -> 35 Program_Chair: 0.6  =  ),,[64 Person],[28 Organizator]
-False positives (59 Paper -> 3 Author_of_paper: 0.6  =  ),,[40 Document],[2 Author]
-False positives (13 hasFirstName -> 5 Name: 0.6  =  ),,Person,Person
+False positives (57 Organization -> 28 Organizator: 1.5  =  ),,[],[32 Person]

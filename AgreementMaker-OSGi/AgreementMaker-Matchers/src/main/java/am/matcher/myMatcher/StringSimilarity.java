@@ -24,11 +24,9 @@ public class StringSimilarity {
 	{
 		WordNetDatabase database = WordNetDatabase.getFileInstance();
 		Synset[] synsets = database.getSynsets(s1);
-		String[] wordForms;
-		  if (synsets.length > 0) {
+		if (synsets.length > 0) {
 		       for (int i = 0; i < synsets.length; i++)
 		       {
-		    	   wordForms = synsets[i].getWordForms();
 		    	   
 		    	   
 		       }

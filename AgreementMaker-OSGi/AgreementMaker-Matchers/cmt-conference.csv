@@ -1,30 +1,18 @@
 Reference Alignment,My Alignment
 Unmatched:(8 Conference -> 20 Conference_volume: 1.0  =  ),,[],[10 Conference]
-(20 Preference -> 48 Review_preference: 1.0  =  ),(20 Preference -> 48 Review_preference: 0.65  =  ),[],[]
-(3 Author -> 43 Regular_author: 1.0  =  ),(3 Author -> 43 Regular_author: 0.65  =  ),[28 User, 10 ConferenceMember],[14 Conference_contributor]
-(19 Person -> 37 Person: 1.0  =  ),(19 Person -> 37 Person: 1.0  =  ),[],[]
-(7 Co-author -> 23 Contribution_co-author: 1.0  =  ),(7 Co-author -> 23 Contribution_co-author: 0.65  =  ),[3 Author],[43 Regular_author]
-(17 PaperAbstract -> 0 Abstract: 1.0  =  ),(17 PaperAbstract -> 0 Abstract: 0.65  =  ),[16 Paper],[25 Extended_abstract]
-(12 Document -> 15 Conference_document: 1.0  =  ),(12 Document -> 15 Conference_document: 0.65  =  ),[],[]
-Unmatched:(25 Review -> 46 Review: 1.0  =  ),,[12 Document],[15 Conference_document]
-Unmatched:(8 Conference -> 10 Conference: 1.0  =  ),,[],[]
-Unmatched:(21 ProgramCommittee -> 40 Program_committee: 1.0  =  ),,[],[8 Committee]
+Unmatched:(20 Preference -> 48 Review_preference: 1.0  =  ),,[],[]
+Unmatched:(3 Author -> 43 Regular_author: 1.0  =  ),,[28 User, 10 ConferenceMember],[14 Conference_contributor]
+(19 Person -> 37 Person: 1.0  =  ),(19 Person -> 37 Person: 2.0  =  ),[],[]
+Unmatched:(7 Co-author -> 23 Contribution_co-author: 1.0  =  ),,[3 Author],[43 Regular_author]
+Unmatched:(17 PaperAbstract -> 0 Abstract: 1.0  =  ),,[16 Paper],[25 Extended_abstract]
+Unmatched:(12 Document -> 15 Conference_document: 1.0  =  ),,[],[]
+(25 Review -> 46 Review: 1.0  =  ),(25 Review -> 46 Review: 2.0  =  ),[12 Document],[15 Conference_document]
+(8 Conference -> 10 Conference: 1.0  =  ),(8 Conference -> 10 Conference: 2.0  =  ),[],[]
+(21 ProgramCommittee -> 40 Program_committee: 1.0  =  ),(21 ProgramCommittee -> 40 Program_committee: 1.5  =  ),[],[8 Committee]
 Unmatched:(6 Chairman -> 6 Chair: 1.0  =  ),,[19 Person],[9 Committee_member]
-(27 SubjectArea -> 53 Topic: 1.0  =  ),(27 SubjectArea -> 53 Topic: 0.6666666865348816  =  ),[],[]
-(15 email -> 26 has_an_email: 1.0  =  ),(15 email -> 26 has_an_email: 0.6  =  ),Person,Person
+Unmatched:(27 SubjectArea -> 53 Topic: 1.0  =  ),,[],[]
+Unmatched:(15 email -> 26 has_an_email: 1.0  =  ),,Person,Person
 Unmatched:(10 assignedByReviewer -> 41 invited_by: 1.0  =  ),,ExternalReviewer,Reviewer
 Unmatched:(7 assignExternalReviewer -> 42 invites_co-reviewers: 1.0  =  ),,Reviewer,Reviewer
-False positives (23 ProgramCommitteeMember -> 40 Program_committee: 0.800000011920929  =  ),,[10 ConferenceMember],[8 Committee]
-False positives (13 ExternalReviewer -> 50 Reviewer: 0.65  =  ),,[19 Person],[37 Person]
-False positives (16 Paper -> 35 Paper: 1.0  =  ),,[12 Document],[44 Regular_contribution]
-False positives (25 Review -> 47 Review_expertise: 0.6666666865348816  =  ),,[12 Document],[]
-False positives (14 Meta-Review -> 46 Review: 0.65  =  ),,[25 Review],[15 Conference_document]
-False positives (2 AssociatedChair -> 55 Track-workshop_chair: 0.6  =  ),,[10 ConferenceMember],[37 Person]
-False positives (22 ProgramCommitteeChair -> 6 Chair: 0.6  =  ),,[23 ProgramCommitteeMember],[9 Committee_member]
-False positives (8 Conference -> 21 Conference_www: 0.6666666865348816  =  ),,[],[15 Conference_document]
-False positives (9 ConferenceChair -> 10 Conference: 0.6666666865348816  =  ),,[10 ConferenceMember],[]
-False positives (21 ProgramCommittee -> 8 Committee: 0.65  =  ),,[],[]
-False positives (10 ConferenceMember -> 9 Committee_member: 0.6  =  ),,[19 Person],[37 Person]
-False positives (26 Reviewer -> 49 Reviewed_contribution: 0.6666666865348816  =  ),,[28 User, 10 ConferenceMember],[52 Submitted_contribution]
-False positives (35 memberOfProgramCommittee -> 60 was_a_program_committee_of: 0.6666666865348816  =  ),,ProgramCommitteeMember,Program_committee
-False positives (29 hasProgramCommitteeMember -> 34 has_members: 0.6666666865348816  =  ),,ProgramCommittee,Committee
+False positives (16 Paper -> 35 Paper: 2.0  =  ),,[12 Document],[44 Regular_contribution]
+False positives (26 Reviewer -> 50 Reviewer: 2.0  =  ),,[28 User, 10 ConferenceMember],[37 Person]

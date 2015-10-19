@@ -2,47 +2,55 @@ package am.matcher.myMatcher;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
-import java.util.*;
 
 public class Synonyms 
 {
-	HashMap<String,List<String>> synset=new HashMap<String,List<String>>();
-	public void synonymList() throws IOException
+	HashMap<String,Integer> synset=new HashMap<String,Integer>();
+	public void synonymList() 
 	{
 
 		String line="";
 		
-		BufferedReader br = new BufferedReader(new FileReader("synonyms.csv"));
-		
-		while ((line = br.readLine()) != null) {
-
-		        // use comma as separator
-			String[] syn = line.split(",");
-			List<String> slist = new ArrayList<String>(Arrays.asList(syn));
-			
-			
-			for(int i=0;i<syn.length;i++)
-			{
-				synset.put(syn[i], slist);
-			}
-		}
-		br.close();
-		
-		
-	}
-	public static void main(String args[])
-	{
-		Synonyms s=new Synonyms();
+		BufferedReader br;
 		try {
-			s.synonymList();
-		} catch (IOException e) {
+			br = new BufferedReader(new FileReader("synonyms.csv"));
+			int count=1;
+			while ((line = br.readLine()) != null) {
+
+			        // use comma as separator
+				String[] syn = line.split(",");
+				for(int i=0;i<syn.length;i++)
+				{
+					synset.put(syn[i],count);
+				}
+				count++;
+			}
+			br.close();
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		
+		
 	}
+	public Boolean isSynonym(String word1,String word2)
+	{
+		try
+		{
+		int num1=this.synset.get(word1);
+		int num2=this.synset.get(word2);
+		if (num1==num2)
+			return true;
+		}
+		catch(NullPointerException e)
+		{
+			
+		}
+		return false;
+	}
+	
 	
 }
 

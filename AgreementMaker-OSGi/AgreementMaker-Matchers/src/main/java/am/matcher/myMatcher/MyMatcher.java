@@ -1,7 +1,6 @@
 package am.matcher.myMatcher;
 
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import am.Utility;
@@ -24,6 +23,7 @@ import am.app.ontology.profiling.manual.ManualOntologyProfiler;
 public class MyMatcher  extends AbstractMatcher  {
 
 	private static FileOutput writer;
+	Synonyms syn;
 
 	public MyMatcher(){
 		super();
@@ -45,6 +45,7 @@ public class MyMatcher  extends AbstractMatcher  {
 		String targetName=target.getLocalName();
 		targetName = Character.toLowerCase(targetName.charAt(0)) + targetName.substring(1); 
 		double sim=this.getSimilarityScore(sourceName, targetName);
+		
 		if (source.isProp())
 		{
 			double propertySim=0;
@@ -64,7 +65,7 @@ public class MyMatcher  extends AbstractMatcher  {
 			}
 			catch(NullPointerException e)
 			{
-				System.out.println("Null property");
+				//System.out.println("Null property");
 			}
 			
 				
@@ -80,21 +81,20 @@ public class MyMatcher  extends AbstractMatcher  {
 	private double getSimilarityScore(String sourceName, String targetName)
 	{
 	
+		syn=new Synonyms();
+		syn.synonymList();
 		StringSimilarity s=new StringSimilarity();
-		Synonyms syn=new Synonyms();
-		
-		try {
-			syn.synonymList();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		double sim=0.0d;
 		double score;
 		// If the source name matches exactly with target name
 		if(sourceName.equalsIgnoreCase(targetName))
 			sim=2.0d;
-		// If the source and target doesn't match try alternate ways to see whether there is match
+		else if (s.similarity(sourceName, targetName)>0.8)
+			sim=1.5d;
+		else if (syn.isSynonym(sourceName, targetName))
+			sim=1d;
+		
+		/*// If the source and target doesn't match try alternate ways to see whether there is match
 		else
 		{
 			int count=0;
@@ -110,6 +110,7 @@ public class MyMatcher  extends AbstractMatcher  {
 						sim=0.65;
 				else if((sparts.size()+tparts.size())==4)
 						sim=0.6;
+				
 			}	
 			// else count the number of matching words
 			else
@@ -125,16 +126,8 @@ public class MyMatcher  extends AbstractMatcher  {
 							}
 							else
 							{ //check synonyms
-								ArrayList<String> p=(ArrayList<String>) syn.synset.get(sp);
-								if(p!=null)
-								{
-									
-									if(p.contains(sp))
-									{
-										if(p.contains(t))
-											count++;
-									}
-								}						
+									if (syn.isSynonym(t, sp))
+											count++;							
 							}
 						
 					}
@@ -143,16 +136,11 @@ public class MyMatcher  extends AbstractMatcher  {
 			//find the ratio of matching words
 			float sizes=(sparts.size()+tparts.size());
 			float y=(2*count)/sizes;
-			
-			/*if(count==1 && (sparts.size()==1||tparts.size()==1))
-			{
-				sim=0.55;
-			}*/
 			if(y>0.6)
 				sim=y;
 		
 		
-		}
+		}*/
 		return sim;
 	}
 		
@@ -331,8 +319,8 @@ public class MyMatcher  extends AbstractMatcher  {
 	public static void main(String[] args) throws Exception {
 	
 		String ONTOLOGY_BASE_PATH ="conference_dataset/"; // Use your base path
-		//String[] confs = {"cmt","conference","confOf","edas","ekaw","iasted","sigkdd"};
-		String[] confs = {"cmt","sigkdd"};
+		String[] confs = {"cmt","conference","confOf","edas","ekaw","iasted","sigkdd"};
+		//String[] confs = {"cmt","sigkdd"};
 		
 		
 		MyMatcher mm = new MyMatcher();
