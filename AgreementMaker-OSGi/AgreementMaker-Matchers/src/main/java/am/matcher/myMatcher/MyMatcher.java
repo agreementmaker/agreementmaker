@@ -4,6 +4,8 @@ package am.matcher.myMatcher;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
+
 import am.Utility;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
@@ -42,10 +44,31 @@ public class MyMatcher  extends AbstractMatcher  {
 	{
 		String sourceName=source.getLocalName();
 		sourceName = Character.toLowerCase(sourceName.charAt(0)) + sourceName.substring(1); 
+		sourceName=sourceName.replace("-", "");
 		String targetName=target.getLocalName();
 		targetName = Character.toLowerCase(targetName.charAt(0)) + targetName.substring(1); 
+		targetName=targetName.replace("-", "");
 		double sim=this.getSimilarityScore(sourceName, targetName);
 		// If type of source and target is a property, check whether their domain is same.If same assign the similarity score
+		
+		if(sim==0.713508)
+		{
+			
+			String sparents=source.getParents().toString();
+			String tparents=target.getParents().toString();
+			if(sparents!=null && tparents!=null)
+			{
+				if(this.getSimilarityScore(sparents, tparents)>0.95)
+					sim=0.7;
+				else
+					sim=0;
+			}
+			else
+			{
+				sim=0;
+			}
+			
+		}
 		if (source.isProp())
 		{
 			double propertySim=0;
@@ -96,6 +119,7 @@ public class MyMatcher  extends AbstractMatcher  {
 		else if (syn.isSynonym(sourceName.toLowerCase(), targetName.toLowerCase()))
 			sim=1d;
 		
+		
 		// If the source and target doesn't match try substring match
 		else
 		{
@@ -117,6 +141,7 @@ public class MyMatcher  extends AbstractMatcher  {
 		int count=0;
 		double sim=0.0d;
 		double score;
+		int syncount=0;
 		
 		//Split source into parts 
 		ArrayList<String> sparts=this.getParts(sourceName);
@@ -128,6 +153,7 @@ public class MyMatcher  extends AbstractMatcher  {
 			{
 				continue;
 			}
+			
 			for(String sp:sparts)
 			{	
 				if (stop.isStopWord(sp)&&count<1)
@@ -142,7 +168,11 @@ public class MyMatcher  extends AbstractMatcher  {
 				else
 				{ 	//check synonyms
 					if (syn.isSynonym(t, sp))
-							count++;							
+							count++;
+							
+					/*else
+						if(s.semanticSimilarity(t, sp)>0.8)
+							count++;*/
 				}				
 			}
 		 }
@@ -150,9 +180,18 @@ public class MyMatcher  extends AbstractMatcher  {
 		int totalsize=sparts.size()+tparts.size()-stop.countStopWords(sparts)-stop.countStopWords(tparts);
 		if (totalsize>0)
 		{
-			sim=(2*count)/(float)totalsize;
-			if(sim<0.7)
+			score=(2*count)/(float)totalsize;
+			
+			if(score<0.7)
 				sim=0;
+			else
+				sim=score;
+			if(count==1&&totalsize==3)
+			{
+				
+				sim=0.713508;
+				
+			}
 		}
 		return sim;
 	}
@@ -171,6 +210,7 @@ public class MyMatcher  extends AbstractMatcher  {
 			String ts[]=targetName.toLowerCase().split("_");
 			for(String x:ts)
 			{
+				
 				tparts.add(x);
 			}
 		}
@@ -334,7 +374,7 @@ public class MyMatcher  extends AbstractMatcher  {
 	
 		String ONTOLOGY_BASE_PATH ="conference_dataset/"; // Use your base path
 		String[] confs = {"cmt","conference","confOf","edas","ekaw","iasted","sigkdd"};
-		//String[] confs = {"cmt","ekaw"};
+		//String[] confs = {"iasted","sigkdd"};
 		
 		
 		MyMatcher mm = new MyMatcher();
