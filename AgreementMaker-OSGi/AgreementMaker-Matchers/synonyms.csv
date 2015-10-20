@@ -1,7 +1,10 @@
-contribution,paper,
-subject,topic,
-paper,contribution,
-assign,review,
-part,event,
+contribution,paper
+subject,topic
+paper,contribution
+part,event
 location,place
+applicant,participant
+trip,excursion
+sur,last
+assigned,reviewed
 contribute,write
