@@ -2,6 +2,7 @@ package am.matcher.myMatcher;
 
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import am.Utility;
 import am.app.mappingEngine.AbstractMatcher;
@@ -123,13 +124,13 @@ public class MyMatcher  extends AbstractMatcher  {
 		
 		for(String t:tparts)
 		{
-			if (stop.isStopWord(t))
+			if (stop.isStopWord(t)&&count<1)
 			{
 				continue;
 			}
 			for(String sp:sparts)
 			{	
-				if (stop.isStopWord(sp))
+				if (stop.isStopWord(sp)&&count<1)
 				{
 					continue;
 				}
@@ -333,7 +334,7 @@ public class MyMatcher  extends AbstractMatcher  {
 	
 		String ONTOLOGY_BASE_PATH ="conference_dataset/"; // Use your base path
 		String[] confs = {"cmt","conference","confOf","edas","ekaw","iasted","sigkdd"};
-		//String[] confs = {"cmt","sigkdd"};
+		//String[] confs = {"cmt","ekaw"};
 		
 		
 		MyMatcher mm = new MyMatcher();
@@ -395,7 +396,8 @@ public class MyMatcher  extends AbstractMatcher  {
 		}
 
 		StringBuilder sb= new StringBuilder();
-		fscore.sort(
+		Collections.sort(fscore,
+				
 				new Comparator<Fscore>() {
 			        @Override
 			        public int compare(Fscore a,Fscore b)
