@@ -2,6 +2,7 @@ package am.extension.batchmode.simpleBatchMode;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
 
@@ -9,6 +10,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Unmarshaller;
 
+import am.extension.batchmode.api.BatchModeRunner;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import am.app.mappingEngine.AbstractMatcher;
@@ -35,7 +37,7 @@ import am.parsing.AlignmentOutput;
  * @author Cosmin Stroe - Nov 7, 2011
  *
  */
-public class SimpleBatchModeRunner {
+public class SimpleBatchModeRunner implements BatchModeRunner {
 
 	private final File input;
 	private final File output; // TODO: Use the output directory if the user specifies it.
@@ -92,14 +94,15 @@ public class SimpleBatchModeRunner {
 		
 		// Instantiate the Matching Algorithm.
 		AbstractMatcher matcher = instantiateMatcher(sbm);
-		
-		
+
+        for(OntologyType ontType : sbm.getOntologies().getOntology()) {
+            checkOntologyFiles(ontType);
+        }
+
 		for( OntologyType ontType : sbm.ontologies.ontology) {
 			
 			File sourceOnt = new File(ontType.sourceOntology);
 			File targetOnt = new File(ontType.targetOntology);
-			
-			if( !checkOntologyFiles( sourceOnt, targetOnt, log ) ) continue;
 			
 			// load the Ontologies.
 			final Ontology sourceOntology = OntoTreeBuilder.loadOWLOntology(sourceOnt.getAbsolutePath());
@@ -116,7 +119,6 @@ public class SimpleBatchModeRunner {
 			log.info("Matching: " + sourceOntology.getTitle() + " with " + targetOntology.getTitle() + ".");
 			try {
 				matcher.match();
-				
 			} catch( Exception e ) {
 				try {
 					File alignmentFile = new File(ontType.outputAlignmentFile + ".error");
@@ -133,26 +135,13 @@ public class SimpleBatchModeRunner {
 			}
 			
 			// output the alignment
-			try {
-				File alignmentFile = new File(ontType.outputAlignmentFile);
-				log.info("Saving alignment " + alignmentFile.getName() + "." );
-				AlignmentOutput output = 
-						new AlignmentOutput(matcher.getAlignment(), alignmentFile.getCanonicalFile());
-				String sourceUri = sourceOntology.getURI();
-				String targetUri = targetOntology.getURI();
-				output.write(sourceUri, targetUri, sourceUri, targetUri, matcher.getName());
-			
-				referenceEvaluation("C:/workspaceFinalProject/reference_alignments/cmt-conference.rdf",sourceOntology,targetOntology,matcher);
-				}
-
-				
-			//	referenceEvaluation("/Users/Aseel/Downloads/reference-alignment/cmt-iasted"
-			//			+ ".rdf",sourceOntology,targetOntology,matcher);
-			//	}
-
-			catch (IOException e) {
-				e.printStackTrace();
-			}
+            File alignmentFile = new File(ontType.outputAlignmentFile);
+            log.info("Saving alignment " + alignmentFile.getName() + "." );
+            AlignmentOutput output =
+                    new AlignmentOutput(matcher.getAlignment(), alignmentFile.getCanonicalFile());
+            String sourceUri = sourceOntology.getURI();
+            String targetUri = targetOntology.getURI();
+            output.write(sourceUri, targetUri, sourceUri, targetUri, matcher.getName());
 		}
 	}
 	
@@ -239,38 +228,33 @@ public class SimpleBatchModeRunner {
 	/**
 	 * Check to make sure the ontology files exist and are readable.
 	 */
-	private boolean checkOntologyFiles(File sourceOnt, File targetOnt, Logger log) {
-		if( !sourceOnt.exists() ) {
-			log.info("Source ontology file does not exist (" + sourceOnt.getAbsolutePath() + ") ... Skipping.");
-			return false;
+	private void checkOntologyFiles(OntologyType ontType) throws IOException {
+        File sourceOnt = new File(ontType.sourceOntology);
+        File targetOnt = new File(ontType.targetOntology);
+
+        if( !sourceOnt.exists() ) {
+			throw new FileNotFoundException("Source ontology file does not exist (" + sourceOnt.getAbsolutePath() + ") ... Skipping.");
+		}
+		
+		if( !sourceOnt.isFile() ) {
+            throw new IOException("Source ontology is not a file (" + sourceOnt.getAbsolutePath() + ") ... Skipping.");
 		}
 		
 		if( !sourceOnt.canRead() ) {
-			log.info("Source ontology is not a file (" + sourceOnt.getAbsolutePath() + ") ... Skipping.");
-			return false;
-		}
-		
-		if( !sourceOnt.canRead() ) {
-			log.info("Source ontology is not readable (" + sourceOnt.getAbsolutePath() + ") ... Skipping.");
-			return false;
+            throw new IOException("Source ontology is not readable (" + sourceOnt.getAbsolutePath() + ") ... Skipping.");
 		}
 		
 		if( !targetOnt.exists() ) {
-			log.info("Target ontology file does not exist (" + targetOnt.getAbsolutePath() + ") ... Skipping.");
-			return false;
+            throw new FileNotFoundException("Target ontology file does not exist (" + targetOnt.getAbsolutePath() + ") ... Skipping.");
+		}
+		
+		if( !targetOnt.isFile() ) {
+            throw new IOException("Target ontology is not a file (" + targetOnt.getAbsolutePath() + ") ... Skipping.");
 		}
 		
 		if( !targetOnt.canRead() ) {
-			log.info("Target ontology is not a file (" + targetOnt.getAbsolutePath() + ") ... Skipping.");
-			return false;
+            throw new IOException("Target ontology is not readable (" + targetOnt.getAbsolutePath() + ") ... Skipping.");
 		}
-		
-		if( !targetOnt.canRead() ) {
-			log.info("Target ontology is not readable (" + targetOnt.getAbsolutePath() + ") ... Skipping.");
-			return false;
-		}
-		
-		return true;
 	}
 
 	/**
