@@ -13,8 +13,8 @@ Unmatched:(20 Conference_volume -> 30 Conference: 1.0  =  ),,[10 Conference],[]
 (53 Topic -> 95 Topic: 1.0  =  ),(53 Topic -> 95 Topic: 2.0  =  ),[],[]
 (1 Accepted_contribution -> 3 AcceptedPaper: 1.0  =  ),(1 Accepted_contribution -> 3 AcceptedPaper: 1.0  =  ),[49 Reviewed_contribution],[59 Paper]
 Unmatched:(43 Regular_author -> 9 Author: 1.0  =  ),,[14 Conference_contributor],[]
-(36 has_the_first_name -> 13 hasFirstName: 1.0  =  ),(36 has_the_first_name -> 13 hasFirstName: 0.8571428656578064  =  ),Person,Person
+(36 has_the_first_name -> 13 hasFirstName: 1.0  =  ),(36 has_the_first_name -> 13 hasFirstName: 0.800000011920929  =  ),Person,Person
 Unmatched:(16 has_a_review_expertise -> 22 hasRating: 1.0  =  ),,Submitted_contribution,ActivePaper
-(37 has_the_last_name -> 14 hasLastName: 1.0  =  ),(37 has_the_last_name -> 14 hasLastName: 0.8571428656578064  =  ),Person,Person
+(37 has_the_last_name -> 14 hasLastName: 1.0  =  ),(37 has_the_last_name -> 14 hasLastName: 0.800000011920929  =  ),Person,Person
 False positives (3 Call_for_paper -> 14 CallForPapers: 1.0  =  ),,[15 Conference_document],[12 Call]
 False positives (10 Conference -> 30 Conference: 2.0  =  ),,[],[]

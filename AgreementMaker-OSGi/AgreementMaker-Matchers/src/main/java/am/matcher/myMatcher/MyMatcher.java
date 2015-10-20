@@ -2,7 +2,7 @@ package am.matcher.myMatcher;
 
 
 import java.util.ArrayList;
-
+import java.util.Comparator;
 import am.Utility;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
@@ -17,13 +17,13 @@ import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.app.ontology.ontologyParser.OntologyDefinition;
-import am.app.ontology.profiling.manual.ManualOntologyProfiler;
 
 
 public class MyMatcher  extends AbstractMatcher  {
 
 	private static FileOutput writer;
-	Synonyms syn;
+	private static Synonyms syn;
+	private static StopWords stop;
 
 	public MyMatcher(){
 		super();
@@ -44,21 +44,28 @@ public class MyMatcher  extends AbstractMatcher  {
 		String targetName=target.getLocalName();
 		targetName = Character.toLowerCase(targetName.charAt(0)) + targetName.substring(1); 
 		double sim=this.getSimilarityScore(sourceName, targetName);
+		// If type of source and target is a property, check whether their domain is same.If same assign the similarity score
 		if (source.isProp())
 		{
 			double propertySim=0;
 			try
 			{
+				//Get source domain name
 				String sourceDomainName=source.getPropertyDomain().getLocalName();
+				//Get target domain name
 				String targetDomainName=target.getPropertyDomain().getLocalName();
+				//If source and target domain name null allocate propertySim as 0
 				if (sourceDomainName==null ||targetDomainName==null)
 					propertySim=0d;
+				
+				//If not null, find propertySim value
 				else
 				{
 					propertySim=this.getSimilarityScore(sourceDomainName, targetDomainName);
 				}
-					
-				if (propertySim<0.6)
+				
+				//If propertySim less than threshold make sim as 0
+				if (propertySim<0.8)
 					sim=0d;
 			}
 			catch(NullPointerException e)
@@ -68,20 +75,18 @@ public class MyMatcher  extends AbstractMatcher  {
 		}
 		return new Mapping(source, target, sim);				
 	}
+	
+	
 	/**
-	 * 
+	 * Returns similarity score of source and target 
 	 * @param sourceName
 	 * @param targetName
 	 * @return
 	 */
 	private double getSimilarityScore(String sourceName, String targetName)
 	{
-	
-		syn=new Synonyms();
-		syn.synonymList();
 		StringSimilarity s=new StringSimilarity();
 		double sim=0.0d;
-		double score;
 		// If the source name matches exactly with target name
 		if(sourceName.equalsIgnoreCase(targetName))
 			sim=2.0d;
@@ -90,41 +95,69 @@ public class MyMatcher  extends AbstractMatcher  {
 		else if (syn.isSynonym(sourceName.toLowerCase(), targetName.toLowerCase()))
 			sim=1d;
 		
-		// If the source and target doesn't match try alternate ways to see whether there is match
+		// If the source and target doesn't match try substring match
 		else
 		{
-			int count=0;
-			//Split source into parts 
-			ArrayList<String> sparts=this.getParts(sourceName);
-			ArrayList<String> tparts=this.getParts(targetName);
-			for(String t:tparts)
+			sim=this.getSubstringSim(sourceName, targetName);
+		}
+		return sim;
+	}
+	
+	
+	/**
+	 * Return the similarity score if the substrings match each other
+	 * @param sourceName
+	 * @param targetName
+	 * @return
+	 */
+	private double getSubstringSim(String sourceName, String targetName)
+	{
+		StringSimilarity s=new StringSimilarity();
+		int count=0;
+		double sim=0.0d;
+		double score;
+		
+		//Split source into parts 
+		ArrayList<String> sparts=this.getParts(sourceName);
+		ArrayList<String> tparts=this.getParts(targetName);
+		
+		for(String t:tparts)
+		{
+			if (stop.isStopWord(t))
 			{
-				for(String sp:sparts)
-				{	
-						score=s.similarity(sp, t);
-						if(score>0.8)
-						{
-							count++;	
-						}
-						else
-						{ 	//check synonyms
-							if (syn.isSynonym(t, sp))
-									count++;							
-						}				
+				continue;
+			}
+			for(String sp:sparts)
+			{	
+				if (stop.isStopWord(sp))
+				{
+					continue;
 				}
-			 }
-			//find the ratio of matching words
-			float sizes=(sparts.size()+tparts.size());
-			float y=(2*count)/sizes;
-			if(y>0.7)
-				sim=y;
+				score=s.similarity(sp, t);
+				if(score>0.8)
+				{
+					count++;	
+				}
+				else
+				{ 	//check synonyms
+					if (syn.isSynonym(t, sp))
+							count++;							
+				}				
+			}
+		 }
+		//find the ratio of matching words
+		int totalsize=sparts.size()+tparts.size()-stop.countStopWords(sparts)-stop.countStopWords(tparts);
+		if (totalsize>0)
+		{
+			sim=(2*count)/(float)totalsize;
+			if(sim<0.7)
+				sim=0;
 		}
 		return sim;
 	}
 		
-		
 	/**
-	 * 	
+	 * 	Returns the ArrayList that contains tokenized strings
 	 * @param targetName
 	 * @return
 	 */
@@ -156,6 +189,8 @@ public class MyMatcher  extends AbstractMatcher  {
 			}
 		return tparts;
 	}
+	
+	
 	private ArrayList<Double> referenceEvaluation(String pathToReferenceAlignment)
 			throws Exception {
 
@@ -263,7 +298,7 @@ public class MyMatcher  extends AbstractMatcher  {
 		}
 		
 		
-		System.out.println();
+		
 
 		// optional
 		setRefEvaluation(rd);
@@ -285,7 +320,7 @@ public class MyMatcher  extends AbstractMatcher  {
 		
 		return results;
 		
-		//log.info(report);
+		
 		
 		// use system out if you don't see the log4j output
 	//	System.out.println(report);
@@ -307,7 +342,10 @@ public class MyMatcher  extends AbstractMatcher  {
 		double recall=0.0d;
 		double fmeasure=0.0d;
 		int size=21;
-		ArrayList<Double> fscore=new ArrayList<Double>();
+		syn=new Synonyms();
+		syn.synonymList();
+		stop=new StopWords();
+		ArrayList<Fscore> fscore=new ArrayList<Fscore>();
 		for(int i = 0; i < confs.length-1; i++)
 		{
 			for(int j = i+1; j < confs.length; j++)
@@ -322,7 +360,6 @@ public class MyMatcher  extends AbstractMatcher  {
 				source.setDefinition(def1);
 				def2.largeOntologyMode=false;
 				target.setDefinition(def2);
-				ManualOntologyProfiler mop=new ManualOntologyProfiler(source, target);
 				mm.setSourceOntology(source);
 				mm.setTargetOntology(target);
 		
@@ -346,7 +383,7 @@ public class MyMatcher  extends AbstractMatcher  {
 			writer.writeHeader();
 			ArrayList<Double> results=	mm.referenceEvaluation(ONTOLOGY_BASE_PATH + confs[i]+"-"+confs[j]+".rdf");
 			//Add fscore to a list
-			fscore.add(results.get(2));
+			fscore.add(new Fscore(results.get(2),confs[i]+"-"+confs[j]));
 			precision+=results.get(0);
 			recall+=results.get(1);
 			fmeasure+=results.get(2);
@@ -358,7 +395,20 @@ public class MyMatcher  extends AbstractMatcher  {
 		}
 
 		StringBuilder sb= new StringBuilder();
-		
+		fscore.sort(
+				new Comparator<Fscore>() {
+			        @Override
+			        public int compare(Fscore a,Fscore b)
+			        {
+
+			            if (a.score==b.score)
+			            	return 0;
+			            if (a.score>b.score)
+			            	return 1;
+			            return -1;
+			        }
+			    });
+		System.out.println("Lowest F-score ontology:"+fscore.get(0).ontology.toString());
 		precision/=size;
 		recall/=size;
 		fmeasure/=size;

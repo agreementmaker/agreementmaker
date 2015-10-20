@@ -18,7 +18,7 @@ Unmatched:(71 Programme -> 49 Programme_Brochure: 1.0  =  ),,[40 Document],[17 D
 (102 Workshop -> 69 Workshop: 1.0  =  ),(102 Workshop -> 69 Workshop: 2.0  =  ),[1 AcademicEvent],[57 Scientific_Event]
 (59 Paper -> 39 Paper: 1.0  =  ),(59 Paper -> 39 Paper: 2.0  =  ),[40 Document],[17 Document]
 Unmatched:(8 Attendee -> 9 Conference_Participant: 1.0  =  ),,[64 Person],[41 Person]
-Unmatched:(38 isReviewedBy -> 6 hasReviewer: 1.0  =  ),,Paper,Paper
+(38 isReviewedBy -> 6 hasReviewer: 1.0  =  ),(38 isReviewedBy -> 6 hasReviewer: 1.0  =  ),Paper,Paper
 Unmatched:(39 isReviewing -> 24 reviewerOfPaper: 1.0  =  ),,Possible_Reviewer
 (33 isLocationOf -> 11 locationOf: 1.0  =  ),(33 isLocationOf -> 11 locationOf: 1.5  =  ),Place,Location
 Unmatched:(15 hasLocation -> 8 heldIn: 1.0  =  ),,ConferenceEvent,Event

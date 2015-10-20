@@ -10,8 +10,8 @@ Unmatched:(13 Conference_contribution -> 10 Contribution: 1.0  =  ),,[15 Confere
 (56 Tutorial -> 33 Tutorial: 1.0  =  ),(56 Tutorial -> 33 Tutorial: 2.0  =  ),[17 Conference_part],[36 Working_event]
 Unmatched:(20 Conference_volume -> 9 Conference: 1.0  =  ),,[10 Conference],[36 Working_event]
 Unmatched:(43 Regular_author -> 3 Author: 1.0  =  ),,[14 Conference_contributor],[18 Person]
-(26 has_an_email -> 12 hasEmail: 1.0  =  ),(26 has_an_email -> 12 hasEmail: 0.800000011920929  =  ),Person,Person
+(26 has_an_email -> 12 hasEmail: 1.0  =  ),(26 has_an_email -> 12 hasEmail: 1.0  =  ),Person,Person
 Unmatched:(22 has_a_track-workshop-tutorial_topic -> 22 hasTopic: 1.0  =  ),,Conference_part,Working_event
 Unmatched:(37 has_the_last_name -> 20 hasSurname: 1.0  =  ),,Person,Person
-(36 has_the_first_name -> 14 hasFirstName: 1.0  =  ),(36 has_the_first_name -> 14 hasFirstName: 0.8571428656578064  =  ),Person,Person
+(36 has_the_first_name -> 14 hasFirstName: 1.0  =  ),(36 has_the_first_name -> 14 hasFirstName: 0.800000011920929  =  ),Person,Person
 False positives (10 Conference -> 9 Conference: 2.0  =  ),,[],[36 Working_event]
