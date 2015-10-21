@@ -1,0 +1,19 @@
+{
+  "tasks" : [ {
+    "sourceOntology" : {
+      "file" : "/path/to/some/file.owl"
+    },
+    "targetOntology" : {
+      "file" : "/path/to/some/file.owl"
+    },
+    "matcher" : {
+      "class" : "com.some.package.Matcher"
+    },
+    "selector" : {
+      "class" : "com.some.package.Selector"
+    },
+    "output" : {
+      "file" : "/path/some/file.rdf"
+    }
+  } ]
+}
