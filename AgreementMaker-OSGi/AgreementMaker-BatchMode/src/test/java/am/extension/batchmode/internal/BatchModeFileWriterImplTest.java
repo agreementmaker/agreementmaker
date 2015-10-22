@@ -17,8 +17,8 @@ public class BatchModeFileWriterImplTest {
     @Test
     public void test_simple_output() throws IOException {
         BatchModeTaskImpl newTask = new BatchModeTaskImpl();
-        newTask.setSourceOntology(new OntologyFile("/path/to/some/file.owl"));
-        newTask.setTargetOntology(new OntologyFile("/path/to/some/file.owl"));
+        newTask.setSourceOntology(new OntologyFile("/path/to/some/file1.owl"));
+        newTask.setTargetOntology(new OntologyFile("/path/to/some/file2.owl"));
         newTask.setMatcher(new MatcherProviderFromClasspath("com.some.package.Matcher"));
         newTask.setSelector(new SelectorProviderFromClasspath("com.some.package.Selector"));
         newTask.setOutput(new WriteOAEIToFile("/path/some/file.rdf"));

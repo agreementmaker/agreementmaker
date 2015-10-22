@@ -1,10 +1,10 @@
 {
   "tasks" : [ {
     "sourceOntology" : {
-      "file" : "/path/to/some/file.owl"
+      "file" : "/path/to/some/file1.owl"
     },
     "targetOntology" : {
-      "file" : "/path/to/some/file.owl"
+      "file" : "/path/to/some/file2.owl"
     },
     "matcher" : {
       "class" : "com.some.package.Matcher"
@@ -13,7 +13,7 @@
       "class" : "com.some.package.Selector"
     },
     "output" : {
-      "file" : "/path/some/file.rdf"
+      "oaei" : "/path/some/file.rdf"
     }
   } ]
 }

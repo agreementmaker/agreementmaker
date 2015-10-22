@@ -15,7 +15,7 @@ public class WriteOAEIToFileSerializer extends StdSerializer<WriteOAEIToFile> {
     @Override
     public void serialize(WriteOAEIToFile writeOAEIToFile, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
         jsonGenerator.writeStartObject();
-        jsonGenerator.writeStringField("file", writeOAEIToFile.getFilePath());
+        jsonGenerator.writeStringField("oaei", writeOAEIToFile.getFilePath());
         jsonGenerator.writeEndObject();
     }
 }
