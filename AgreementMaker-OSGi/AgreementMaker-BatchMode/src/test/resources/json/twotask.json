@@ -1,0 +1,35 @@
+{
+  "tasks" : [ {
+    "sourceOntology" : {
+      "file" : "/path/to/some/file1.owl"
+    },
+    "targetOntology" : {
+      "file" : "/path/to/some/file2.owl"
+    },
+    "matcher" : {
+      "class" : "com.some.package.Matcher"
+    },
+    "selector" : {
+      "class" : "com.some.package.Selector"
+    },
+    "output" : {
+      "oaei" : "/path/some/alignment1.rdf"
+    }
+  }, {
+    "sourceOntology" : {
+      "file" : "/path/to/some/file1.owl"
+    },
+    "targetOntology" : {
+      "file" : "/path/to/some/file3.owl"
+    },
+    "matcher" : {
+      "class" : "com.some.package.Matcher2"
+    },
+    "selector" : {
+      "class" : "com.some.package.Selector3"
+    },
+    "output" : {
+      "oaei" : "/path/some/alignment2.rdf"
+    }
+  } ]
+}
