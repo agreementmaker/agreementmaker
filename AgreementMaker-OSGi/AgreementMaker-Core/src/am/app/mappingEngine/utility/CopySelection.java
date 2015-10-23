@@ -4,15 +4,9 @@ import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.AbstractSelectionAlgorithm;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.SelectionResult;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 
 public class CopySelection extends AbstractSelectionAlgorithm {
-
-	@Override
-	public SelectionResult getResult() {
-		return result;
-	}
 
 	@Override
 	public String getName() {
