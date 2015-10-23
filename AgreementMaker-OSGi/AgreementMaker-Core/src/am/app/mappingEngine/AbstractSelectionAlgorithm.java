@@ -48,13 +48,13 @@ public abstract class AbstractSelectionAlgorithm extends SwingWorker<Void,Void> 
 	
     //RESET ALIGNMENT STRUCTURES,     //TEMPLATE METHOD TO ALLOW DEVELOPERS TO ADD CODE: call super when overriding
     public void beforeSelectionOperations() {
-    	result = new SelectionResult();
+    	result = new SelectionResult(params.matchingTask);
     	result.setClassAlignmentSet(null);
     	result.setPropertyAlignmentSet(null);
     	result.setInstanceAlignmentSet(null);
     	result.setQualEvaluation(null);
     	result.setRefEvaluation(null);
-    	
+
     	for( MatchingProgressListener mpd : progressListeners ) {
     		mpd.appendToReport("Performing mapping selection ...");
     	}
