@@ -2,7 +2,10 @@ package am.extension.batchmode.internal.providers;
 
 import am.app.mappingEngine.SelectionResult;
 import am.extension.batchmode.api.BatchModeOutputProvider;
+import am.parsing.AlignmentOutput;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.io.IOException;
 
 public class WriteOAEIToFile implements BatchModeOutputProvider {
     private final String filePath;
@@ -12,7 +15,11 @@ public class WriteOAEIToFile implements BatchModeOutputProvider {
     }
 
     @Override
-    public void save(SelectionResult result) {
+    public void save(SelectionResult result) throws IOException {
+        AlignmentOutput output = new AlignmentOutput(result.getAlignment(), filePath);
+        String sourceUri = result.getMatchingTask().matcherParameters.getSourceOntology().getURI();
+        String targetUri = result.getMatchingTask().matcherParameters.getTargetOntology().getURI();
+        output.write(sourceUri, targetUri, sourceUri, targetUri, result.getMatchingTask().matchingAlgorithm.getName());
     }
 
     public String getFilePath() {

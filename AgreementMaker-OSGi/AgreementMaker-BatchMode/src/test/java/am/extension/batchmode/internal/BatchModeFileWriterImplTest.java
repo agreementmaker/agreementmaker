@@ -1,7 +1,6 @@
 package am.extension.batchmode.internal;
 
 import am.extension.batchmode.internal.providers.MatcherProviderFromClasspath;
-import am.extension.batchmode.internal.providers.OntologyFile;
 import am.extension.batchmode.internal.providers.SelectorProviderFromClasspath;
 import am.extension.batchmode.internal.providers.WriteOAEIToFile;
 import org.junit.Test;
@@ -19,8 +18,8 @@ public class BatchModeFileWriterImplTest {
     @Test
     public void test_simple_output() throws IOException {
         BatchModeTaskImpl newTask = new BatchModeTaskImpl();
-        newTask.setSourceOntology(new OntologyFile("/path/to/some/file1.owl"));
-        newTask.setTargetOntology(new OntologyFile("/path/to/some/file2.owl"));
+        newTask.setSourceOntology("/path/to/some/file1.owl");
+        newTask.setTargetOntology("/path/to/some/file2.owl");
         newTask.setMatcher(new MatcherProviderFromClasspath("com.some.package.Matcher"));
         newTask.setSelector(new SelectorProviderFromClasspath("com.some.package.Selector"));
         newTask.setOutput(new WriteOAEIToFile("/path/some/file.rdf"));
@@ -40,8 +39,8 @@ public class BatchModeFileWriterImplTest {
         BatchModeSpecImpl newSpec = new BatchModeSpecImpl();
         {
             BatchModeTaskImpl newTask = new BatchModeTaskImpl();
-            newTask.setSourceOntology(new OntologyFile("/path/to/some/file1.owl"));
-            newTask.setTargetOntology(new OntologyFile("/path/to/some/file2.owl"));
+            newTask.setSourceOntology("/path/to/some/file1.owl");
+            newTask.setTargetOntology("/path/to/some/file2.owl");
             newTask.setMatcher(new MatcherProviderFromClasspath("com.some.package.Matcher"));
             newTask.setSelector(new SelectorProviderFromClasspath("com.some.package.Selector"));
             newTask.setOutput(new WriteOAEIToFile("/path/some/alignment1.rdf"));
@@ -49,8 +48,8 @@ public class BatchModeFileWriterImplTest {
         }
         {
             BatchModeTaskImpl newTask = new BatchModeTaskImpl();
-            newTask.setSourceOntology(new OntologyFile("/path/to/some/file1.owl"));
-            newTask.setTargetOntology(new OntologyFile("/path/to/some/file3.owl"));
+            newTask.setSourceOntology("/path/to/some/file1.owl");
+            newTask.setTargetOntology("/path/to/some/file3.owl");
             newTask.setMatcher(new MatcherProviderFromClasspath("com.some.package.Matcher2"));
             newTask.setSelector(new SelectorProviderFromClasspath("com.some.package.Selector3"));
             newTask.setOutput(new WriteOAEIToFile("/path/some/alignment2.rdf"));

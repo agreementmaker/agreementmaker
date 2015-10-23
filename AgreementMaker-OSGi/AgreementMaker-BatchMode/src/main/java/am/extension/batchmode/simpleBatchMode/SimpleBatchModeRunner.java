@@ -1,16 +1,16 @@
 package am.extension.batchmode.simpleBatchMode;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.PrintStream;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.Unmarshaller;
-
+import am.app.mappingEngine.DefaultMatcherParameters;
+import am.app.mappingEngine.DefaultSelectionParameters;
+import am.app.mappingEngine.MatchingTask;
+import am.app.mappingEngine.SelectionAlgorithm;
 import am.extension.batchmode.api.BatchModeRunner;
+import am.extension.batchmode.api.BatchModeSpec;
+import am.extension.batchmode.api.BatchModeTask;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import am.app.mappingEngine.AbstractMatcher;
@@ -27,7 +27,6 @@ import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.matcher.oaei.oaei2011.OAEI2011Matcher;
 import am.matcher.oaei.oaei2011.OAEI2011MatcherParameters;
 import am.output.console.ConsoleProgressDisplay;
-import am.parsing.AlignmentOutput;
 
 /**
  * This class takes runs a batch mode from the given SimpleBatchMode XML file.
@@ -39,114 +38,39 @@ import am.parsing.AlignmentOutput;
  */
 public class SimpleBatchModeRunner implements BatchModeRunner {
 
-	private final File input;
-	private final File output; // TODO: Use the output directory if the user specifies it.
-	private final SimpleBatchModeType bm;
-	
-	/**
-	 * Batch mode runner with an output directory specified.
-	 * @param input The XML file that describes the batch mode.
-	 * @param output The directory where to output the final alignment.
-	 */
-	public SimpleBatchModeRunner(File input, File output) {
-		this.input = input;
-		this.output = output;
-		this.bm = null;
-	}
+    @Override
+    public void run(BatchModeSpec spec) throws Exception {
+        Logger log = Logger.getLogger(this.getClass());
+        log.setLevel(Level.INFO); // TODO: Should be in a config file
 
-	/**
-	 * Run a batch mode.
-	 * @param input  The XML file that describes the batch mode.
-	 */
-	public SimpleBatchModeRunner(File input) {
-		this.input = input;
-		this.output = null;
-		this.bm = null;
-	}
-	
-	/**
-	 * Pass the batch mode structure directly, without having the read it from a file.
-	 * @param bm
-	 */
-	public SimpleBatchModeRunner(SimpleBatchModeType bm) {
-		this.input = null;
-		this.output = null;
-		this.bm = bm;
-	}
-	
-	public void runBatchMode() throws Exception {
-	
-		
-		SimpleBatchModeType sbm = bm;
-		
-		Logger log = Logger.getLogger(this.getClass());
-		log.setLevel(Level.INFO);
-		
-		if( sbm == null ) {
-			JAXBContext context = JAXBContext.newInstance(ObjectFactory.class);
-	
-			Unmarshaller unmarshaller = context.createUnmarshaller() ;
-	
-			JAXBElement<SimpleBatchModeType> batchmode = (JAXBElement<SimpleBatchModeType>) unmarshaller.unmarshal(new FileInputStream(input)) ; 
-			
-			sbm = batchmode.getValue();
-		}
-		
-		// Instantiate the Matching Algorithm.
-		AbstractMatcher matcher = instantiateMatcher(sbm);
+        for(BatchModeTask task : spec.getTasks()) {
+            // load the Ontologies.
+            checkOntologyFiles(task.getSourceOntology(), task.getTargetOntology());
 
-        for(OntologyType ontType : sbm.getOntologies().getOntology()) {
-            checkOntologyFiles(ontType);
+            final Ontology sourceOntology = OntoTreeBuilder.loadOWLOntology(task.getSourceOntology());
+            final Ontology targetOntology = OntoTreeBuilder.loadOWLOntology(task.getTargetOntology());
+
+            AbstractMatcher matcher = task.getMatcher().getMatcher();
+            DefaultMatcherParameters parameters = new DefaultMatcherParameters();
+            parameters.setOntologies(sourceOntology, targetOntology);
+            matcher.setParameters(parameters);
+
+            SelectionAlgorithm selector = task.getSelector().getSelector();
+            DefaultSelectionParameters selectionParameters = new DefaultSelectionParameters();
+            selectionParameters.inputResult = matcher.getResult();
+            selector.setParameters(selectionParameters);
+
+            MatchingTask newMatchingTask = new MatchingTask(matcher, parameters, selector, selectionParameters);
+            selectionParameters.matchingTask = newMatchingTask; // TODO: Fix the circular dependency between matching task and selection parameters!
+
+            log.info("Matching: " + sourceOntology.getTitle() + " with " + targetOntology.getTitle() + ".");
+
+            matcher.match();
+            selector.select();
+
+            task.getOutput().save(selector.getResult());
         }
-
-		for( OntologyType ontType : sbm.ontologies.ontology) {
-			
-			File sourceOnt = new File(ontType.sourceOntology);
-			File targetOnt = new File(ontType.targetOntology);
-			
-			// load the Ontologies.
-			final Ontology sourceOntology = OntoTreeBuilder.loadOWLOntology(sourceOnt.getAbsolutePath());
-			final Ontology targetOntology = OntoTreeBuilder.loadOWLOntology(targetOnt.getAbsolutePath());
-						
-			//Core.getInstance().setSourceOntology(sourceOntology);
-			//Core.getInstance().setTargetOntology(targetOntology);
-			
-
-			matcher.setSourceOntology(sourceOntology);
-			matcher.setTargetOntology(targetOntology);
-		
-			// run the algorithm
-			log.info("Matching: " + sourceOntology.getTitle() + " with " + targetOntology.getTitle() + ".");
-			try {
-				matcher.match();
-			} catch( Exception e ) {
-				try {
-					File alignmentFile = new File(ontType.outputAlignmentFile + ".error");
-					log.info("Saving error " + alignmentFile.getName() + "." );
-				
-					PrintStream ps = new PrintStream(alignmentFile);
-					e.printStackTrace(ps);
-					ps.close();
-				} catch( Exception e2 ) {
-					e2.printStackTrace();
-				}
-				e.printStackTrace();
-				continue;
-			}
-			
-			// output the alignment
-            File alignmentFile = new File(ontType.outputAlignmentFile);
-            log.info("Saving alignment " + alignmentFile.getName() + "." );
-            AlignmentOutput output =
-                    new AlignmentOutput(matcher.getAlignment(), alignmentFile.getCanonicalFile());
-            String sourceUri = sourceOntology.getURI();
-            String targetUri = targetOntology.getURI();
-            output.write(sourceUri, targetUri, sourceUri, targetUri, matcher.getName());
-		}
-	}
-	
-
-	
+    }
 
 	private void referenceEvaluation(String pathToReferenceAlignment, Ontology sourceOntology,  Ontology targetOntology,AbstractMatcher matcher)
 			throws Exception {
@@ -228,9 +152,9 @@ public class SimpleBatchModeRunner implements BatchModeRunner {
 	/**
 	 * Check to make sure the ontology files exist and are readable.
 	 */
-	private void checkOntologyFiles(OntologyType ontType) throws IOException {
-        File sourceOnt = new File(ontType.sourceOntology);
-        File targetOnt = new File(ontType.targetOntology);
+	private void checkOntologyFiles(String sourceOntology, String targetOntology) throws IOException {
+        File sourceOnt = new File(sourceOntology);
+        File targetOnt = new File(targetOntology);
 
         if( !sourceOnt.exists() ) {
 			throw new FileNotFoundException("Source ontology file does not exist (" + sourceOnt.getAbsolutePath() + ") ... Skipping.");

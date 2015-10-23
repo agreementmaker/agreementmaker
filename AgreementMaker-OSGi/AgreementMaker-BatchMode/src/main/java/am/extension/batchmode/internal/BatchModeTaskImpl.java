@@ -1,33 +1,32 @@
 package am.extension.batchmode.internal;
 
 import am.extension.batchmode.api.BatchModeMatcherProvider;
-import am.extension.batchmode.api.BatchModeOntologyProvider;
 import am.extension.batchmode.api.BatchModeOutputProvider;
 import am.extension.batchmode.api.BatchModeSelectorProvider;
 import am.extension.batchmode.api.BatchModeTask;
 
 public class BatchModeTaskImpl implements BatchModeTask {
-    private BatchModeOntologyProvider sourceOntology;
-    private BatchModeOntologyProvider targetOntology;
+    private String sourceOntology;
+    private String targetOntology;
     private BatchModeMatcherProvider matcher;
     private BatchModeSelectorProvider selector;
     private BatchModeOutputProvider output;
 
     @Override
-    public BatchModeOntologyProvider getSourceOntology() {
+    public String getSourceOntology() {
         return sourceOntology;
     }
 
-    public void setSourceOntology(BatchModeOntologyProvider sourceOntology) {
+    public void setSourceOntology(String sourceOntology) {
         this.sourceOntology = sourceOntology;
     }
 
     @Override
-    public BatchModeOntologyProvider getTargetOntology() {
+    public String getTargetOntology() {
         return targetOntology;
     }
 
-    public void setTargetOntology(BatchModeOntologyProvider targetOntology) {
+    public void setTargetOntology(String targetOntology) {
         this.targetOntology = targetOntology;
     }
 

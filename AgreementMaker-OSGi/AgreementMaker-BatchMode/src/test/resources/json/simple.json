@@ -1,11 +1,7 @@
 {
   "tasks" : [ {
-    "sourceOntology" : {
-      "filePath" : "/path/to/some/file1.owl"
-    },
-    "targetOntology" : {
-      "filePath" : "/path/to/some/file2.owl"
-    },
+    "sourceOntology" : "/path/to/some/file1.owl",
+    "targetOntology" : "/path/to/some/file2.owl",
     "matcher" : {
       "canonicalClassName" : "com.some.package.Matcher"
     },

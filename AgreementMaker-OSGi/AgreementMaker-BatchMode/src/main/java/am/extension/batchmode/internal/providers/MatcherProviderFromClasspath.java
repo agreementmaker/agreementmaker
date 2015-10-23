@@ -1,6 +1,6 @@
 package am.extension.batchmode.internal.providers;
 
-import am.app.mappingEngine.MatchingAlgorithm;
+import am.app.mappingEngine.AbstractMatcher;
 import am.extension.batchmode.api.BatchModeMatcherProvider;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -12,7 +12,7 @@ public class MatcherProviderFromClasspath extends ProviderFromClasspath implemen
 
     @Override
     @JsonIgnore
-    public MatchingAlgorithm getMatcher() {
-        return (MatchingAlgorithm) super.getObject();
+    public AbstractMatcher getMatcher() {
+        return (AbstractMatcher) super.getObject();
     }
 }

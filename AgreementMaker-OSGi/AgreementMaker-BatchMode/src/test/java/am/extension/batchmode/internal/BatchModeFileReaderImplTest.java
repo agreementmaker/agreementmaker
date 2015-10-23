@@ -5,7 +5,6 @@ import am.extension.batchmode.api.BatchModeFileReader;
 import am.extension.batchmode.api.BatchModeSpec;
 import am.extension.batchmode.api.BatchModeTask;
 import am.extension.batchmode.internal.providers.MatcherProviderFromClasspath;
-import am.extension.batchmode.internal.providers.OntologyFile;
 import am.extension.batchmode.internal.providers.SelectorProviderFromClasspath;
 import am.extension.batchmode.internal.providers.WriteOAEIToFile;
 import org.junit.Test;
@@ -27,12 +26,10 @@ public class BatchModeFileReaderImplTest {
 
         BatchModeTask task = spec.getTasks().get(0);
         assertNotNull(task.getSourceOntology());
-        assertTrue(task.getSourceOntology() instanceof OntologyFile);
-        assertThat(((OntologyFile) task.getSourceOntology()).getFilePath(), is(equalTo("/path/to/some/file1.owl")));
+        assertThat(task.getSourceOntology(), is(equalTo("/path/to/some/file1.owl")));
 
         assertNotNull(task.getTargetOntology());
-        assertTrue(task.getTargetOntology() instanceof OntologyFile);
-        assertThat(((OntologyFile) task.getTargetOntology()).getFilePath(), is(equalTo("/path/to/some/file2.owl")));
+        assertThat(task.getTargetOntology(), is(equalTo("/path/to/some/file2.owl")));
 
         assertNotNull(task.getMatcher());
         assertTrue(task.getMatcher() instanceof MatcherProviderFromClasspath);
@@ -58,12 +55,10 @@ public class BatchModeFileReaderImplTest {
         {
             BatchModeTask task = spec.getTasks().get(0);
             assertNotNull(task.getSourceOntology());
-            assertTrue(task.getSourceOntology() instanceof OntologyFile);
-            assertThat(((OntologyFile) task.getSourceOntology()).getFilePath(), is(equalTo("/path/to/some/file1.owl")));
+            assertThat(task.getSourceOntology(), is(equalTo("/path/to/some/file1.owl")));
 
             assertNotNull(task.getTargetOntology());
-            assertTrue(task.getTargetOntology() instanceof OntologyFile);
-            assertThat(((OntologyFile) task.getTargetOntology()).getFilePath(), is(equalTo("/path/to/some/file2.owl")));
+            assertThat(task.getTargetOntology(), is(equalTo("/path/to/some/file2.owl")));
 
             assertNotNull(task.getMatcher());
             assertTrue(task.getMatcher() instanceof MatcherProviderFromClasspath);
@@ -79,12 +74,10 @@ public class BatchModeFileReaderImplTest {
         }{
             BatchModeTask task = spec.getTasks().get(1);
             assertNotNull(task.getSourceOntology());
-            assertTrue(task.getSourceOntology() instanceof OntologyFile);
-            assertThat(((OntologyFile) task.getSourceOntology()).getFilePath(), is(equalTo("/path/to/some/file1.owl")));
+            assertThat(task.getSourceOntology(), is(equalTo("/path/to/some/file1.owl")));
 
             assertNotNull(task.getTargetOntology());
-            assertTrue(task.getTargetOntology() instanceof OntologyFile);
-            assertThat(((OntologyFile) task.getTargetOntology()).getFilePath(), is(equalTo("/path/to/some/file3.owl")));
+            assertThat(task.getTargetOntology(), is(equalTo("/path/to/some/file3.owl")));
 
             assertNotNull(task.getMatcher());
             assertTrue(task.getMatcher() instanceof MatcherProviderFromClasspath);
