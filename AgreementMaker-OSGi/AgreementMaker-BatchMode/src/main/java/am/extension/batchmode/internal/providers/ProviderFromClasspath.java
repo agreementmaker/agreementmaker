@@ -1,5 +1,7 @@
 package am.extension.batchmode.internal.providers;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class ProviderFromClasspath {
     private final String canonicalClassName;
 
@@ -7,6 +9,7 @@ public class ProviderFromClasspath {
         this.canonicalClassName = canonicalClassName;
     }
 
+    @JsonIgnore
     public Object getObject() {
         try {
             Class c = Class.forName(canonicalClassName);

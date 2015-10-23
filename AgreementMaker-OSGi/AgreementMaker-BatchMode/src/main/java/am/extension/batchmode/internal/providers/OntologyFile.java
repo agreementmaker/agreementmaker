@@ -1,6 +1,7 @@
 package am.extension.batchmode.internal.providers;
 
 import am.extension.batchmode.api.BatchModeOntologyProvider;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -14,6 +15,7 @@ public class OntologyFile implements BatchModeOntologyProvider {
     }
 
     @Override
+    @JsonIgnore
     public InputStream getContent() throws IOException {
         return new FileInputStream(filePath);
     }

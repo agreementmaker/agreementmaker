@@ -1,19 +1,19 @@
 {
   "tasks" : [ {
     "sourceOntology" : {
-      "file" : "/path/to/some/file1.owl"
+      "filePath" : "/path/to/some/file1.owl"
     },
     "targetOntology" : {
-      "file" : "/path/to/some/file2.owl"
+      "filePath" : "/path/to/some/file2.owl"
     },
     "matcher" : {
-      "class" : "com.some.package.Matcher"
+      "canonicalClassName" : "com.some.package.Matcher"
     },
     "selector" : {
-      "class" : "com.some.package.Selector"
+      "canonicalClassName" : "com.some.package.Selector"
     },
     "output" : {
-      "oaei" : "/path/some/file.rdf"
+      "filePath" : "/path/some/file.rdf"
     }
   } ]
 }
