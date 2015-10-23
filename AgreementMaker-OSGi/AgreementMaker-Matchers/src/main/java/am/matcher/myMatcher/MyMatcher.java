@@ -25,7 +25,7 @@ import am.app.ontology.ontologyParser.OntologyDefinition;
 public class MyMatcher  extends AbstractMatcher  {
 
 	private static FileOutput writer;
-	private static Synonyms syn;
+	
 	private static StopWords stop;
 
 	public MyMatcher(){
@@ -42,33 +42,65 @@ public class MyMatcher  extends AbstractMatcher  {
 	protected Mapping alignTwoNodes(Node source, Node target,
 			alignType typeOfNodes, SimilarityMatrix matrix) throws Exception 
 	{
+		
 		String sourceName=source.getLocalName();
+		//replace the first character with lower case to avoid confusions considering words like "hasAuthor"
 		sourceName = Character.toLowerCase(sourceName.charAt(0)) + sourceName.substring(1); 
-		sourceName=sourceName.replace("-", "");
 		String targetName=target.getLocalName();
 		targetName = Character.toLowerCase(targetName.charAt(0)) + targetName.substring(1); 
-		targetName=targetName.replace("-", "");
-		double sim=this.getSimilarityScore(sourceName, targetName);
-		// If type of source and target is a property, check whether their domain is same.If same assign the similarity score
 		
-		if(sim==0.713508)
+		//replace the special characters
+		sourceName=sourceName.replace("-", "");
+		targetName=targetName.replace("-", "");
+		
+		//get the similarity score (sim > 0 if similarity score is greater than 0.7)
+		double sim=this.getSimilarityScore(sourceName, targetName);
+		
+		// special case where the majority words are similar yet sim value is not greater than 0.7 (Eg:Conference_document->document)
+		if(sim>=0.66 && sim<0.7)
 		{
-			
-			String sparents=source.getParents().toString();
-			String tparents=target.getParents().toString();
-			if(sparents!=null && tparents!=null)
+			//if source and target is class , check if their parents are equal
+			if(source.isClass())
 			{
-				if(this.getSimilarityScore(sparents, tparents)>0.95)
+				//when both source and target has no parents
+				if(source.getParentCount()==0&&target.getParentCount()==0)
+				{
 					sim=0.7;
+				}
+				
+				
 				else
-					sim=0;
-			}
-			else
-			{
-				sim=0;
+				{
+					
+					//obtain the String array with parent names
+					String sparents=(source.getParents().toString());
+					sparents=sparents.substring(1,sparents.length()-1);
+					String[] sourceparent=sparents.split(",");
+					
+					String tparents=target.getParents().toString();
+					tparents=tparents.substring(1,tparents.length()-1);
+					String[] targetparent=tparents.split(",");
+					
+					// When there is exactly one parent for source and target , check the similarity of two parents
+					if(sourceparent.length==1 && targetparent.length==1)
+					{
+						// strip the numerical from parent names, Eg: 19 User -> User
+						if(this.getSimilarityScore(targetparent[0].replaceAll("[0-9]", ""), sourceparent[0].replaceAll("[0-9]", ""))>0.9)
+							sim=0.7;
+						else
+							sim=0;
+					}
+					//When more than one parent , probability of similarity is less
+					else
+						sim=0;
+					
+				}	
+					
 			}
 			
 		}
+		// If type of source and target is a property, check whether their domain is same.If same assign the similarity score
+		
 		if (source.isProp())
 		{
 			double propertySim=0;
@@ -90,7 +122,14 @@ public class MyMatcher  extends AbstractMatcher  {
 				
 				//If propertySim less than threshold make sim as 0
 				if (propertySim<0.8)
-					sim=0d;
+				{
+					sim=0;
+					
+					
+				}
+				
+				
+				
 			}
 			catch(NullPointerException e)
 			{
@@ -109,14 +148,17 @@ public class MyMatcher  extends AbstractMatcher  {
 	 */
 	private double getSimilarityScore(String sourceName, String targetName)
 	{
+		//String similarity class contains edit distance methods and wordnet methods
 		StringSimilarity s=new StringSimilarity();
 		double sim=0.0d;
 		// If the source name matches exactly with target name
 		if(sourceName.equalsIgnoreCase(targetName))
 			sim=2.0d;
+		//If the edit distance is greater than threshold
 		else if (s.similarity(sourceName, targetName)>0.8)
 			sim=1.5d;
-		else if (syn.isSynonym(sourceName.toLowerCase(), targetName.toLowerCase()))
+		//If source and target are wordnet match
+		else if (s.semanticSimilarity(sourceName.toLowerCase(), targetName.toLowerCase())==1.0)
 			sim=1d;
 		
 		
@@ -149,6 +191,7 @@ public class MyMatcher  extends AbstractMatcher  {
 		
 		for(String t:tparts)
 		{
+			//count stopwords if only count is greater than 1 
 			if (stop.isStopWord(t)&&count<1)
 			{
 				continue;
@@ -165,15 +208,7 @@ public class MyMatcher  extends AbstractMatcher  {
 				{
 					count++;	
 				}
-				else
-				{ 	//check synonyms
-					if (syn.isSynonym(t, sp))
-							count++;
-							
-					/*else
-						if(s.semanticSimilarity(t, sp)>0.8)
-							count++;*/
-				}				
+						
 			}
 		 }
 		//find the ratio of matching words
@@ -186,10 +221,11 @@ public class MyMatcher  extends AbstractMatcher  {
 				sim=0;
 			else
 				sim=score;
+			//special case where there are 2 words matching out of 3 words yet the similarity ratio is not greater than 0.7
 			if(count==1&&totalsize==3)
 			{
 				
-				sim=0.713508;
+				sim=0.66;
 				
 			}
 		}
@@ -201,10 +237,12 @@ public class MyMatcher  extends AbstractMatcher  {
 	 * @param targetName
 	 * @return
 	 */
+	//find substrings
 	private ArrayList<String> getParts(String targetName)
 	{
 		ArrayList<String> tparts=new ArrayList<String>();	
 		String[] pt;
+		//split String by "_"
 		if(targetName.contains("_"))
 		{	
 			String ts[]=targetName.toLowerCase().split("_");
@@ -217,6 +255,7 @@ public class MyMatcher  extends AbstractMatcher  {
 		else
 			if(!targetName.equals(targetName.toLowerCase()))
 			{
+				//split string by Uppercase
 				pt=targetName.split("(?=\\p{Upper})");	
 				for(String x:pt)
 				{
@@ -374,7 +413,7 @@ public class MyMatcher  extends AbstractMatcher  {
 	
 		String ONTOLOGY_BASE_PATH ="conference_dataset/"; // Use your base path
 		String[] confs = {"cmt","conference","confOf","edas","ekaw","iasted","sigkdd"};
-		//String[] confs = {"iasted","sigkdd"};
+		//String[] confs = {"edas","sigkdd"};
 		
 		
 		MyMatcher mm = new MyMatcher();
@@ -383,8 +422,7 @@ public class MyMatcher  extends AbstractMatcher  {
 		double recall=0.0d;
 		double fmeasure=0.0d;
 		int size=21;
-		syn=new Synonyms();
-		syn.synonymList();
+		
 		stop=new StopWords();
 		ArrayList<Fscore> fscore=new ArrayList<Fscore>();
 		for(int i = 0; i < confs.length-1; i++)

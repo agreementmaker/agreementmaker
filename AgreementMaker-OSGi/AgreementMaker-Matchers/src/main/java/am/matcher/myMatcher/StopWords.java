@@ -3,7 +3,7 @@ package am.matcher.myMatcher;
 import java.util.ArrayList;
 
 public class StopWords {
-	
+	//check for stopwords
 	String[] stopwords={"has","an","a","by","is"} ;
 	Boolean isStopWord(String w)
 	{

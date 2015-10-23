@@ -1,13 +1,9 @@
 package am.matcher.myMatcher;
 
-/*import edu.cmu.lti.lexical_db.ILexicalDatabase;
+import edu.cmu.lti.lexical_db.ILexicalDatabase;
 import edu.cmu.lti.lexical_db.NictWordNet;
 import edu.cmu.lti.ws4j.impl.WuPalmer;
-import edu.cmu.lti.ws4j.util.WS4JConfiguration;*/
-import edu.smu.tspell.wordnet.Synset;
-import edu.smu.tspell.wordnet.WordNetDatabase;
-
-
+import edu.cmu.lti.ws4j.util.WS4JConfiguration;
 
 public class StringSimilarity {
 	
@@ -57,4 +53,16 @@ public class StringSimilarity {
 	    }
 	    return costs[s2.length()];
 	  }
+	 
+	  public double semanticSimilarity(String s1,String s2)
+		{
+		  //wordnet matching
+			final ILexicalDatabase db = new NictWordNet();
+			WS4JConfiguration.getInstance().setMFS(true);
+			double s = new WuPalmer(db).calcRelatednessOfWords(s1, s2);
+			return s;
+		
+			
+		}
+
 }
