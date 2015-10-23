@@ -136,7 +136,7 @@ public class AlignmentOutput
     }
 
     
-    public AlignmentOutput(Alignment<Mapping> as, String fp) throws Exception
+    public AlignmentOutput(Alignment<Mapping> as, String fp) throws IOException
     {
         alignmentSet = as;
         filepath = fp;
@@ -147,7 +147,7 @@ public class AlignmentOutput
             		file.delete();
             	}
             	else {
-            		throw new Exception("Not overwriting existing file.");
+            		throw new IOException("Not overwriting existing file.");
             	}
             }
             raf = new RandomAccessFile(filepath, "rw");
