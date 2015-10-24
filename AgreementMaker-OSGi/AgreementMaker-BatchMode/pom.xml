@@ -35,6 +35,7 @@
 						<Export-Package>${bundle.namespace}.*</Export-Package>
 						<Import-Package>
 							!javax.xml.namespace,
+                            am.app.mappingEngine.oneToOneSelection,
 							*
 						</Import-Package>
 					</instructions>
