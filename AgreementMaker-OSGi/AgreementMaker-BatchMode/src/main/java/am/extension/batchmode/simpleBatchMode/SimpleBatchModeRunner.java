@@ -40,9 +40,6 @@ public class SimpleBatchModeRunner implements BatchModeRunner {
 
     @Override
     public void run(BatchModeSpec spec) throws Exception {
-        Logger log = Logger.getLogger(this.getClass());
-        log.setLevel(Level.INFO); // TODO: Should be in a config file
-
         for(BatchModeTask task : spec.getTasks()) {
             // load the Ontologies.
             checkOntologyFiles(task.getSourceOntology(), task.getTargetOntology());
@@ -63,7 +60,7 @@ public class SimpleBatchModeRunner implements BatchModeRunner {
             MatchingTask newMatchingTask = new MatchingTask(matcher, parameters, selector, selectionParameters);
             selectionParameters.matchingTask = newMatchingTask; // TODO: Fix the circular dependency between matching task and selection parameters!
 
-            log.info("Matching: " + sourceOntology.getTitle() + " with " + targetOntology.getTitle() + ".");
+            System.out.println("Matching: " + sourceOntology.getTitle() + " with " + targetOntology.getTitle() + ".");
 
             matcher.match();
             selector.select();
