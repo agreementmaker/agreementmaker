@@ -1,5 +1,6 @@
 package am.extension.batchmode.internal.providers;
 
+import am.extension.batchmode.Activator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class ProviderFromClasspath {
@@ -12,7 +13,7 @@ public class ProviderFromClasspath {
     @JsonIgnore
     public Object getObject() {
         try {
-            Class c = Class.forName(canonicalClassName);
+            Class c = Activator.getContext().getBundle().loadClass(canonicalClassName);
             return c.newInstance();
         } catch (Exception e) {
             throw new RuntimeException(e);
