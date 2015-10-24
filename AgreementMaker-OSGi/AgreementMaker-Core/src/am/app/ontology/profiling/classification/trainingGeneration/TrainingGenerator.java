@@ -220,7 +220,7 @@ public class TrainingGenerator {
 	
 	
 	
-	public static void testThreshold() {
+	public static void testThreshold() throws IOException {
 	/*	
 		//create the object input training that contains a list of matcher, parameters and classes
 		InputTrainingGenerator i = new InputTrainingGenerator();
@@ -305,16 +305,16 @@ public class TrainingGenerator {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}*/
-		
-	
+
+
 		//load the object from file
 		OutputTrainingGenerator o2 = new OutputTrainingGenerator("Classification/prova2.xml");
 		//o2.storeTableVisual("Classification/visualTable.txt");
-			
+
 		//create the model with the output training
 		//OntologyClassificator oc = new OntologyClassificator(o2,ClassificatorRegistry.C_NaiveBayes);
 		OntologyClassifier oc = new OntologyClassifier(o2);
-		
+
 
 		
 		//train the model with the 
@@ -384,7 +384,7 @@ public class TrainingGenerator {
 	}
 	
 	
-public static void testClassified() {
+public static void testClassified() throws IOException {
 		
 	
 		//load the object from file
