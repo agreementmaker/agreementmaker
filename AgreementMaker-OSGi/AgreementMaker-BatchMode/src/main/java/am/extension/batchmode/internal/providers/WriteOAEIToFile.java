@@ -16,7 +16,7 @@ public class WriteOAEIToFile implements BatchModeOutputProvider {
 
     @Override
     public void save(SelectionResult result) throws IOException {
-        AlignmentOutput output = new AlignmentOutput(result.getAlignment(), filePath);
+        AlignmentOutput output = new AlignmentOutput(result.getAlignment(), filePath, true);
         String sourceUri = result.getMatchingTask().matcherParameters.getSourceOntology().getURI();
         String targetUri = result.getMatchingTask().matcherParameters.getTargetOntology().getURI();
         output.write(sourceUri, targetUri, sourceUri, targetUri, result.getMatchingTask().matchingAlgorithm.getName());
