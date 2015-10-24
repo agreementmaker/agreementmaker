@@ -10,10 +10,13 @@ Unmatched:(16 Conference_fees -> 21 Fee: 1.0  =  ),,[],[]
 (33 Organizing_committee -> 29 Organizing_Committee: 1.0  =  ),(33 Organizing_committee -> 29 Organizing_Committee: 2.0  =  ),[8 Committee],[12 Committee]
 (37 Person -> 32 Person: 1.0  =  ),(37 Person -> 32 Person: 2.0  =  ),[],[]
 (8 Committee -> 12 Committee: 1.0  =  ),(8 Committee -> 12 Committee: 2.0  =  ),[],[]
-Unmatched:(15 Conference_document -> 19 Document: 1.0  =  ),,[],[]
+(15 Conference_document -> 19 Document: 1.0  =  ),(15 Conference_document -> 19 Document: 0.7  =  ),[],[]
 (26 has_an_email -> 3 E-mail: 1.0  =  ),(26 has_an_email -> 3 E-mail: 1.0  =  ),Person,Person
 Unmatched:(50 is_given_by -> 23 presentationed_by: 1.0  =  ),,Presentation,Document
 Unmatched:(4 gives_presentations -> 22 presentation: 1.0  =  ),,Active_conference_participant,Speaker
 False positives (31 Organization -> 28 Organizator: 1.5  =  ),,[],[32 Person]
 False positives (10 Conference -> 13 Conference: 2.0  =  ),,[],[]
 False positives (9 Committee_member -> 37 Program_Committee_member: 0.800000011920929  =  ),,[37 Person],[28 Organizator]
+False positives (12 has_a_name -> 5 Name: 1.0  =  ),,Person
+False positives (46 is_a_starting_date -> 2 Date: 0.6666666865348816  =  ),,Important_dates,Deadline
+False positives (4 gives_presentations -> 23 presentationed_by: 0.6666666865348816  =  ),,Active_conference_participant,Document

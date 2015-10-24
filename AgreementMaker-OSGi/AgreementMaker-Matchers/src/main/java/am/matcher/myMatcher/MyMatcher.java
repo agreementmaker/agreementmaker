@@ -23,8 +23,8 @@ import am.app.ontology.ontologyParser.OntologyDefinition;
 
 
 public class MyMatcher  extends AbstractMatcher  {
-
-	private static FileOutput writer;
+/*
+	private static FileOutput writer;*/
 	
 	private static StopWords stop;
 
@@ -158,8 +158,7 @@ public class MyMatcher  extends AbstractMatcher  {
 		else if (s.similarity(sourceName, targetName)>0.8)
 			sim=1.5d;
 		//If source and target are wordnet match
-		else if (s.semanticSimilarity(sourceName.toLowerCase(), targetName.toLowerCase())==1.0)
-			sim=1d;
+
 		
 		
 		// If the source and target doesn't match try substring match
@@ -217,17 +216,11 @@ public class MyMatcher  extends AbstractMatcher  {
 		{
 			score=(2*count)/(float)totalsize;
 			
-			if(score<0.7)
+			if(score<0.66)
 				sim=0;
 			else
 				sim=score;
-			//special case where there are 2 words matching out of 3 words yet the similarity ratio is not greater than 0.7
-			if(count==1&&totalsize==3)
-			{
-				
-				sim=0.66;
-				
-			}
+			
 		}
 		return sim;
 	}
@@ -333,7 +326,7 @@ public class MyMatcher  extends AbstractMatcher  {
 		// use the ReferenceEvaluator to actually compute the metrics
 		ReferenceEvaluationData rd = ReferenceEvaluator.compare(myAlignment,
 				referenceSet);
-		int i,j;
+		/*int i,j;
 		for (i=0;i<referenceSet.size();i++)
 		{
 			Boolean flag=false;
@@ -376,9 +369,9 @@ public class MyMatcher  extends AbstractMatcher  {
 			else
 				writer.write("False positives "+myAlignment.get(j).toString(),"",myAlignment.get(j).getEntity1().getParents().toString(),myAlignment.get(j).getEntity2().getParents().toString());
 		}
+		*/
 		
-		
-		
+	
 
 		// optional
 		setRefEvaluation(rd);
@@ -458,15 +451,15 @@ public class MyMatcher  extends AbstractMatcher  {
 					e.printStackTrace();
 				}
 				
-			writer=new FileOutput(confs[i]+"-"+confs[j]+".csv");
-			writer.writeHeader();
+				/*writer=new FileOutput(confs[i]+"-"+confs[j]+".csv");
+				writer.writeHeader();*/
 			ArrayList<Double> results=	mm.referenceEvaluation(ONTOLOGY_BASE_PATH + confs[i]+"-"+confs[j]+".rdf");
 			//Add fscore to a list
 			fscore.add(new Fscore(results.get(2),confs[i]+"-"+confs[j]));
 			precision+=results.get(0);
 			recall+=results.get(1);
 			fmeasure+=results.get(2);
-			writer.close();
+			/*writer.close();*/
 			
 			
 			}

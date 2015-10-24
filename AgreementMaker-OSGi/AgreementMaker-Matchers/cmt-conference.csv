@@ -1,11 +1,11 @@
 Reference Alignment,My Alignment
 Unmatched:(8 Conference -> 20 Conference_volume: 1.0  =  ),,[],[10 Conference]
-Unmatched:(20 Preference -> 48 Review_preference: 1.0  =  ),,[],[]
+(20 Preference -> 48 Review_preference: 1.0  =  ),(20 Preference -> 48 Review_preference: 0.7  =  ),[],[]
 Unmatched:(3 Author -> 43 Regular_author: 1.0  =  ),,[28 User, 10 ConferenceMember],[14 Conference_contributor]
 (19 Person -> 37 Person: 1.0  =  ),(19 Person -> 37 Person: 2.0  =  ),[],[]
 Unmatched:(7 Co-author -> 23 Contribution_co-author: 1.0  =  ),,[3 Author],[43 Regular_author]
 Unmatched:(17 PaperAbstract -> 0 Abstract: 1.0  =  ),,[16 Paper],[25 Extended_abstract]
-Unmatched:(12 Document -> 15 Conference_document: 1.0  =  ),,[],[]
+(12 Document -> 15 Conference_document: 1.0  =  ),(12 Document -> 15 Conference_document: 0.7  =  ),[],[]
 (25 Review -> 46 Review: 1.0  =  ),(25 Review -> 46 Review: 2.0  =  ),[12 Document],[15 Conference_document]
 (8 Conference -> 10 Conference: 1.0  =  ),(8 Conference -> 10 Conference: 2.0  =  ),[],[]
 (21 ProgramCommittee -> 40 Program_committee: 1.0  =  ),(21 ProgramCommittee -> 40 Program_committee: 1.5  =  ),[],[8 Committee]
@@ -14,7 +14,16 @@ Unmatched:(27 SubjectArea -> 53 Topic: 1.0  =  ),,[],[]
 (15 email -> 26 has_an_email: 1.0  =  ),(15 email -> 26 has_an_email: 1.0  =  ),Person,Person
 Unmatched:(10 assignedByReviewer -> 41 invited_by: 1.0  =  ),,ExternalReviewer,Reviewer
 Unmatched:(7 assignExternalReviewer -> 42 invites_co-reviewers: 1.0  =  ),,Reviewer,Reviewer
-False positives (16 Paper -> 35 Paper: 2.0  =  ),,[12 Document],[44 Regular_contribution]
 False positives (23 ProgramCommitteeMember -> 9 Committee_member: 0.800000011920929  =  ),,[10 ConferenceMember],[37 Person]
+False positives (16 Paper -> 35 Paper: 2.0  =  ),,[12 Document],[44 Regular_contribution]
 False positives (26 Reviewer -> 50 Reviewer: 2.0  =  ),,[28 User, 10 ConferenceMember],[37 Person]
+False positives (17 endReview -> 55 reviews: 0.6666666865348816  =  ),,ProgramCommitteeChair,Review
+False positives (34 memberOfConference -> 59 was_a_member_of: 0.6666666865348816  =  ),,ConferenceMember,Committee_member
+False positives (29 hasProgramCommitteeMember -> 13 has_a_program_committee: 0.800000011920929  =  ),,ProgramCommittee,Conference_volume
+False positives (26 hasConferenceMember -> 34 has_members: 0.6666666865348816  =  ),,Conference,Committee
+False positives (22 hasAuthor -> 29 has_authors: 1.5  =  ),,Paper,Conference_document
 False positives (35 memberOfProgramCommittee -> 60 was_a_program_committee_of: 0.75  =  ),,ProgramCommitteeMember,Program_committee
+False positives (23 hasBeenAssigned -> 30 has_been_assigned_a_review_reference: 0.6666666865348816  =  ),,Reviewer,
+False positives (13 date -> 49 is_an_ending_date: 0.6666666865348816  =  ),,Conference,Important_dates
+False positives (36 name -> 12 has_a_name: 1.0  =  ),,
+False positives (57 writeReview -> 15 has_a_review: 0.6666666865348816  =  ),,Reviewer,Reviewed_contribution

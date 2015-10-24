@@ -5,18 +5,23 @@ Unmatched:(19 Poster -> 44 Poster_Paper: 1.0  =  ),,[10 Contribution],[39 Paper]
 (18 Person -> 41 Person: 1.0  =  ),(18 Person -> 41 Person: 2.0  =  ),[],[]
 Unmatched:(36 Working_event -> 57 Scientific_Event: 1.0  =  ),,[12 Event],[20 Event]
 (9 Conference -> 6 Conference: 1.0  =  ),(9 Conference -> 6 Conference: 2.0  =  ),[36 Working_event],[57 Scientific_Event]
-Unmatched:(3 Author -> 40 Paper_Author: 1.0  =  ),,[18 Person],[41 Person]
-Unmatched:(4 Banquet -> 7 Conference_Banquet: 1.0  =  ),,[28 Social_event],[60 Social_Event]
+(3 Author -> 40 Paper_Author: 1.0  =  ),(3 Author -> 40 Paper_Author: 0.7  =  ),[18 Person],[41 Person]
+(4 Banquet -> 7 Conference_Banquet: 1.0  =  ),(4 Banquet -> 7 Conference_Banquet: 0.7  =  ),[28 Social_event],[60 Social_Event]
 (37 Workshop -> 69 Workshop: 1.0  =  ),(37 Workshop -> 69 Workshop: 2.0  =  ),[36 Working_event],[57 Scientific_Event]
-Unmatched:(31 Topic -> 54 Research_Topic: 1.0  =  ),,[],[]
+(31 Topic -> 54 Research_Topic: 1.0  =  ),(31 Topic -> 54 Research_Topic: 0.7  =  ),[],[]
 Unmatched:(10 Contribution -> 39 Paper: 1.0  =  ),,[],[17 Document]
-Unmatched:(17 Participant -> 9 Conference_Participant: 1.0  =  ),,[18 Person],[41 Person]
+(17 Participant -> 9 Conference_Participant: 1.0  =  ),(17 Participant -> 9 Conference_Participant: 0.7  =  ),[18 Person],[41 Person]
 (6 Chair_PC -> 37 PC_Chair: 1.0  =  ),(6 Chair_PC -> 37 PC_Chair: 1.0  =  ),[18 Person],[38 PC_Member, 9 Conference_Participant]
 (15 Organization -> 35 Organisation: 1.0  =  ),(15 Organization -> 35 Organisation: 1.5  =  ),[],[]
 (29 Student -> 61 Student: 1.0  =  ),(29 Student -> 61 Student: 2.0  =  ),[17 Participant],[41 Person]
 (34 University -> 67 University: 1.0  =  ),(34 University -> 67 University: 2.0  =  ),[15 Organization],[1 Academic_Institution]
-Unmatched:(32 Trip -> 12 Conference_Trip: 1.0  =  ),,[28 Social_event],[60 Social_Event]
+(32 Trip -> 12 Conference_Trip: 1.0  =  ),(32 Trip -> 12 Conference_Trip: 0.7  =  ),[28 Social_event],[60 Social_Event]
 (14 Member_PC -> 38 PC_Member: 1.0  =  ),(14 Member_PC -> 38 PC_Member: 1.0  =  ),[18 Person],[43 Possible_Reviewer]
 Unmatched:(25 Scholar -> 61 Student: 1.0  =  ),,[18 Person],[41 Person]
 (12 Event -> 20 Event: 1.0  =  ),(12 Event -> 20 Event: 2.0  =  ),[],[]
 False positives (16 Paper -> 39 Paper: 2.0  =  ),,[10 Contribution],[17 Document]
+False positives (22 hasTopic -> 29 topicCoveredBy: 0.6666666865348816  =  ),,Working_event,Research_Topic
+False positives (9 hasAdministrativeEvent -> 3 hasEvent: 0.6666666865348816  =  ),,Working_event,Event
+False positives (35 writtenBy -> 32 writtenBy: 2.0  =  ),,Contribution,Document
+False positives (31 reviewes -> 6 hasReviewer: 1.0  =  ),,Member_PC,Paper
+False positives (26 location -> 11 locationOf: 0.6666666865348816  =  ),,Location

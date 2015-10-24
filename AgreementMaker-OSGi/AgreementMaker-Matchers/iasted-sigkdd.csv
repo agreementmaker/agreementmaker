@@ -14,6 +14,10 @@ Unmatched:(37 Deadline_for_notification_of_acceptance -> 17 Deadline_Author_noti
 (77 Person -> 32 Person: 1.0  =  ),(77 Person -> 32 Person: 2.0  =  ),[],[]
 (36 Deadline -> 15 Deadline: 1.0  =  ),(36 Deadline -> 15 Deadline: 2.0  =  ),[123 Time],[]
 (106 Speaker -> 45 Speaker: 1.0  =  ),(106 Speaker -> 45 Speaker: 2.0  =  ),[39 Delegate],[32 Person]
-False positives (118 Submissions_deadline -> 18 Deadline_Paper_Submission: 0.800000011920929  =  ),,[36 Deadline],[15 Deadline]
 False positives (43 Document -> 19 Document: 2.0  =  ),,[60 Item],[]
+False positives (118 Submissions_deadline -> 18 Deadline_Paper_Submission: 0.800000011920929  =  ),,[36 Deadline],[15 Deadline]
+False positives (53 Hotel_room -> 24 Hotel: 0.7  =  ),,[78 Place],[33 Place]
+False positives (67 Memeber_registration_fee -> 40 Registration_SIGMOD_Member: 0.7  =  ),,[93 Registration_fee],[42 Registration_fee]
 False positives (35 pay -> 20 pay: 2.0  =  ),,Person,Person
+False positives (33 obtain -> 19 obtain: 2.0  =  ),,Person,Author
+False positives (6 is_designed_for -> 15 designed_by: 0.6666666865348816  =  ),,Deadline

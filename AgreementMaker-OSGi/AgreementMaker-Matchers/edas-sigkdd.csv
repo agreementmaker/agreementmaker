@@ -15,3 +15,7 @@ Unmatched:(18 hasName -> 6 Name_of_conference: 1.0  =  ),,Conference,Conference
 Unmatched:(49 startDate -> 10 Start_of_conference: 1.0  =  ),,Conference,Conference
 Unmatched:(2 endDate -> 4 End_of_conference: 1.0  =  ),,Conference,Conference
 False positives (57 Organization -> 28 Organizator: 1.5  =  ),,[],[32 Person]
+False positives (11 hasEmail -> 3 E-mail: 1.0  =  ),,Person
+False positives (18 hasName -> 5 Name: 1.0  =  ),,Conference,Person
+False positives (9 hasCostCurrency -> 1 Currency: 0.6666666865348816  =  ),,Sponsorship,Registration_fee
+False positives (2 endDate -> 2 Date: 0.6666666865348816  =  ),,Conference,Deadline

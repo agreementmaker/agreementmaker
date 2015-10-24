@@ -4,3 +4,5 @@ Reference Alignment,My Alignment
 (19 Person -> 77 Person: 1.0  =  ),(19 Person -> 77 Person: 2.0  =  ),[],[]
 (26 Reviewer -> 98 Reviewer: 1.0  =  ),(26 Reviewer -> 98 Reviewer: 2.0  =  ),[28 User, 10 ConferenceMember],[106 Speaker]
 False positives (12 Document -> 43 Document: 2.0  =  ),,[],[60 Item]
+False positives (58 writtenBy -> 31 is_writen_by: 2.0  =  ),,Review,Item
+False positives (56 writePaper -> 40 write: 0.6666666865348816  =  ),,Author,Person

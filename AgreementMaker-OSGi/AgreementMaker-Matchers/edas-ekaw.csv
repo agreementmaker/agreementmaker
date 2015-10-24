@@ -2,18 +2,18 @@ Reference Alignment,My Alignment
 Unmatched:(32 ConferenceDinner -> 7 Conference_Banquet: 1.0  =  ),,[46 MealEvent],[60 Social_Event]
 Unmatched:(1 AcademicEvent -> 57 Scientific_Event: 1.0  =  ),,[33 ConferenceEvent],[20 Event]
 (3 AcceptedPaper -> 2 Accepted_Paper: 1.0  =  ),(3 AcceptedPaper -> 2 Accepted_Paper: 1.5  =  ),[59 Paper],[19 Evaluated_Paper]
-(68 Place -> 29 Location: 1.0  =  ),(68 Place -> 29 Location: 1.0  =  ),[],[]
+Unmatched:(68 Place -> 29 Location: 1.0  =  ),,[],[]
 Unmatched:(0 AcademiaOrganization -> 1 Academic_Institution: 1.0  =  ),,[57 Organization],[35 Organisation]
 (89 SocialEvent -> 60 Social_Event: 1.0  =  ),(89 SocialEvent -> 60 Social_Event: 1.5  =  ),[54 NonAcademicEvent],[20 Event]
 (57 Organization -> 35 Organisation: 1.0  =  ),(57 Organization -> 35 Organisation: 1.5  =  ),[],[]
 Unmatched:(9 Author -> 40 Paper_Author: 1.0  =  ),,[],[41 Person]
-Unmatched:(95 Topic -> 54 Research_Topic: 1.0  =  ),,[],[]
+(95 Topic -> 54 Research_Topic: 1.0  =  ),(95 Topic -> 54 Research_Topic: 0.7  =  ),[],[]
 (40 Document -> 17 Document: 1.0  =  ),(40 Document -> 17 Document: 2.0  =  ),[],[]
 (77 RejectedPaper -> 52 Rejected_Paper: 1.0  =  ),(77 RejectedPaper -> 52 Rejected_Paper: 1.5  =  ),[59 Paper],[19 Evaluated_Paper]
-Unmatched:(33 ConferenceEvent -> 20 Event: 1.0  =  ),,[],[]
+(33 ConferenceEvent -> 20 Event: 1.0  =  ),(33 ConferenceEvent -> 20 Event: 0.7  =  ),[],[]
 (85 SessionChair -> 59 Session_Chair: 1.0  =  ),(85 SessionChair -> 59 Session_Chair: 1.5  =  ),[64 Person],[9 Conference_Participant, 38 PC_Member]
 (64 Person -> 41 Person: 1.0  =  ),(64 Person -> 41 Person: 2.0  =  ),[],[]
-Unmatched:(71 Programme -> 49 Programme_Brochure: 1.0  =  ),,[40 Document],[17 Document]
+(71 Programme -> 49 Programme_Brochure: 1.0  =  ),(71 Programme -> 49 Programme_Brochure: 0.7  =  ),[40 Document],[17 Document]
 (78 Review -> 55 Review: 1.0  =  ),(78 Review -> 55 Review: 2.0  =  ),[40 Document],[17 Document]
 (102 Workshop -> 69 Workshop: 1.0  =  ),(102 Workshop -> 69 Workshop: 2.0  =  ),[1 AcademicEvent],[57 Scientific_Event]
 (59 Paper -> 39 Paper: 1.0  =  ),(59 Paper -> 39 Paper: 2.0  =  ),[40 Document],[17 Document]
@@ -22,6 +22,11 @@ Unmatched:(8 Attendee -> 9 Conference_Participant: 1.0  =  ),,[64 Person],[41 Pe
 Unmatched:(39 isReviewing -> 24 reviewerOfPaper: 1.0  =  ),,Possible_Reviewer
 (33 isLocationOf -> 11 locationOf: 1.0  =  ),(33 isLocationOf -> 11 locationOf: 1.5  =  ),Place,Location
 Unmatched:(15 hasLocation -> 8 heldIn: 1.0  =  ),,ConferenceEvent,Event
+False positives (30 Conference -> 6 Conference: 2.0  =  ),,[],[57 Scientific_Event]
 False positives (70 Presenter -> 46 Presenter: 2.0  =  ),,[9 Author],[9 Conference_Participant]
 False positives (34 ConferenceSession -> 11 Conference_Session: 1.5  =  ),,[],[58 Session]
-False positives (30 Conference -> 6 Conference: 2.0  =  ),,[],[57 Scientific_Event]
+False positives (37 isReviewHistoryOf -> 22 reviewOfPaper: 0.6666666865348816  =  ),,PersonalReviewHistory,Review
+False positives (41 isWrittenBy -> 32 writtenBy: 1.5  =  ),,Paper,Document
+False positives (30 hasTopic -> 29 topicCoveredBy: 0.6666666865348816  =  ),,Research_Topic
+False positives (3 forEvent -> 3 hasEvent: 0.6666666865348816  =  ),,Call,Event
+False positives (25 hasReviewHistory -> 5 hasReview: 0.6666666865348816  =  ),,Reviewer,Paper

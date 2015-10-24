@@ -6,7 +6,7 @@ Unmatched:(36 Working_event -> 1 AcademicEvent: 1.0  =  ),,[12 Event],[33 Confer
 (20 Reception -> 75 Reception: 1.0  =  ),(20 Reception -> 75 Reception: 2.0  =  ),[28 Social_event],[89 SocialEvent]
 (37 Workshop -> 102 Workshop: 1.0  =  ),(37 Workshop -> 102 Workshop: 2.0  =  ),[36 Working_event],[1 AcademicEvent]
 (3 Author -> 9 Author: 1.0  =  ),(3 Author -> 9 Author: 2.0  =  ),[18 Person],[]
-Unmatched:(12 Event -> 33 ConferenceEvent: 1.0  =  ),,[],[]
+(12 Event -> 33 ConferenceEvent: 1.0  =  ),(12 Event -> 33 ConferenceEvent: 0.7  =  ),[],[]
 (31 Topic -> 95 Topic: 1.0  =  ),(31 Topic -> 95 Topic: 2.0  =  ),[],[]
 (11 Country -> 37 Country: 1.0  =  ),(11 Country -> 37 Country: 2.0  =  ),[],[]
 Unmatched:(17 Participant -> 8 Attendee: 1.0  =  ),,[18 Person],[64 Person]
@@ -19,3 +19,12 @@ Unmatched:(20 hasSurname -> 14 hasLastName: 1.0  =  ),,Person,Person
 (14 hasFirstName -> 13 hasFirstName: 1.0  =  ),(14 hasFirstName -> 13 hasFirstName: 2.0  =  ),Person,Person
 Unmatched:(34 writes -> 24 hasRelatedPaper: 1.0  =  ),,Author,Author
 False positives (9 Conference -> 30 Conference: 2.0  =  ),,[36 Working_event],[]
+False positives (11 hasCountry -> 10 hasCountry: 2.0  =  ),,Conference
+False positives (17 hasPhone -> 19 hasPhone: 2.0  =  ),,Person,ContactInformation
+False positives (26 location -> 15 hasLocation: 1.0  =  ),,ConferenceEvent
+False positives (12 hasEmail -> 11 hasEmail: 2.0  =  ),,Person,
+False positives (31 reviewes -> 38 isReviewedBy: 1.0  =  ),,Member_PC,Paper
+False positives (18 hasPostalCode -> 20 hasPostalCode: 2.0  =  ),,ContactInformation
+False positives (10 hasCity -> 7 hasCity: 2.0  =  ),,ContactInformation
+False positives (19 hasStreet -> 27 hasStreet: 2.0  =  ),,ContactInformation
+False positives (22 hasTopic -> 30 hasTopic: 2.0  =  ),,Working_event,
