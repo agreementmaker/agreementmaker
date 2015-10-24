@@ -23,8 +23,6 @@ public class AlignmentOutput
     private ArrayList<String> writeList = null;  // TODO: REMOVE THIS!!!!!! VERY VERY VERY INEFFICIENT USE OF MEMORY - Cosmin.
     private StringBuilder buffer;
 
-    private boolean overwriteExisting = false;
-    
     /**
      * This constructor is used for saving as a String, not to a file.  Use only with compileString().
      * @param as The set of mappings between two ontologies.
@@ -135,8 +133,11 @@ public class AlignmentOutput
         buffer.append(temp);
     }
 
-    
-    public AlignmentOutput(Alignment<Mapping> as, String fp) throws IOException
+    public AlignmentOutput(Alignment<Mapping> as, String fp) throws IOException {
+        this(as, fp, false);
+    }
+
+    public AlignmentOutput(Alignment<Mapping> as, String fp, boolean overwriteExisting) throws IOException
     {
         alignmentSet = as;
         filepath = fp;
@@ -144,7 +145,10 @@ public class AlignmentOutput
             File file = new File(fp);
             if (file.exists()) {
             	if( overwriteExisting ) {
-            		file.delete();
+            		boolean deleted = file.delete();
+                    if(!deleted) {
+                        throw new IOException("Could not delete file: " + file.getAbsolutePath());
+                    }
             	}
             	else {
             		throw new IOException("Not overwriting existing file.");
@@ -304,9 +308,5 @@ public class AlignmentOutput
 
 	public String getString() {
 		return buffer.toString();
-	}
-	
-	public void setOverwriteExisting(boolean overwriteExisting) {
-		this.overwriteExisting = overwriteExisting;
 	}
 }
