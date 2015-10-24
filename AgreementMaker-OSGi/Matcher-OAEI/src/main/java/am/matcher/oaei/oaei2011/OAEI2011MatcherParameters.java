@@ -20,5 +20,8 @@ public class OAEI2011MatcherParameters extends DefaultMatcherParameters {
 	public OAEI2011MatcherParameters() { 
 		super(); 
 	}
-	
+
+    public OAEI2011MatcherParameters(DefaultMatcherParameters params) {
+        super(params);
+    }
 }
