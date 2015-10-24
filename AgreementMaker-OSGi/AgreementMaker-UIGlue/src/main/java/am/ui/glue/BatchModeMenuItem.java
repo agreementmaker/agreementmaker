@@ -55,15 +55,15 @@ public class BatchModeMenuItem extends JMenuItem implements AMMenuItem {
 		if( !previousFile.isEmpty() )
 			fd.setSelectedFile(new File(previousFile));
 		
-		fd.setDialogTitle("Select BatchMode XML File");
+		fd.setDialogTitle("Select BatchMode JSON File");
 		
 		FileFilter xmlFileFilter = new FileFilter() {
 			@Override public boolean accept(File f) {
-				return f.isDirectory() || f.getName().toLowerCase().endsWith(".xml");
+				return f.isDirectory() || f.getName().toLowerCase().endsWith(".json");
 			}
 
 			@Override public String getDescription() {
-				return "XML File (*.xml)";
+				return "JSON File (*.json)";
 			}
 		};
 		
@@ -96,7 +96,10 @@ public class BatchModeMenuItem extends JMenuItem implements AMMenuItem {
 								UICore.getUI().getUIFrame(), 
 								e.getClass() + "\n" + e.getMessage(), 
 								"ERROR", JOptionPane.ERROR_MESSAGE);
+                        return;
 					}
+
+                    JOptionPane.showMessageDialog(UICore.getUI().getUIFrame(),  "Batch Mode runner has completed.", "Completed", JOptionPane.INFORMATION_MESSAGE);
 				}
 			};
 			
