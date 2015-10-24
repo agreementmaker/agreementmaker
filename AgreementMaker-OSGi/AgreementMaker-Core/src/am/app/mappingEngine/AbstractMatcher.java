@@ -1187,12 +1187,13 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		return param;
 	}
 
-	/**
-	 * @param param Cannot be null. If null, we will instantiate a new {@link DefaultMatcherParameters}.
-	 */
 	public void setParameters(DefaultMatcherParameters param) {
-		if( param == null ) this.param = new DefaultMatcherParameters();
-		this.param = param;
+        if(param == null) {
+            throw new IllegalArgumentException("Cannot set null parameters.");
+        }
+        this.param = param;
+        this.sourceOntology = param.getSourceOntology();
+        this.targetOntology = param.getTargetOntology();
 	}
 
 	/**
@@ -1563,10 +1564,6 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		 removePropertyChangeListener(p);
 	 }
 
-	 /**
-	  * getProgressDisplay
-	  * @param p
-	  */
 	 public MatchingProgressListener getProgressDisplay(int index) {
 		 return progressDisplays.get(index);
 	 }
