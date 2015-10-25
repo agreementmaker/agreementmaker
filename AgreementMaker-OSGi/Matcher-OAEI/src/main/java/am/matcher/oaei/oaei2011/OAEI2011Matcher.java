@@ -97,9 +97,13 @@ public class OAEI2011Matcher extends AbstractMatcher {
 	public void match() throws Exception {
     	matchStart();
 
-    	OAEI2011MatcherParameters p = (OAEI2011MatcherParameters) param;
-    	
-    	for( MatchingProgressListener mpd : progressDisplays ) mpd.ignoreComplete(true);
+        if(!(param instanceof OAEI2011MatcherParameters)) {
+            param = new OAEI2011MatcherParameters(param);
+        }
+
+        OAEI2011MatcherParameters p = (OAEI2011MatcherParameters) param;
+
+        for( MatchingProgressListener mpd : progressDisplays ) mpd.ignoreComplete(true);
     	
     	AbstractMatcher finalResult = null;
     	if( p.automaticConfiguration ) {
@@ -152,7 +156,12 @@ public class OAEI2011Matcher extends AbstractMatcher {
 	
 	private AbstractMatcher automaticConfiguration() throws Exception {
 		AbstractMatcher finalResult = null;
-		OAEI2011Configuration conf = OntologyClassifier.classifiedOntologiesOAEI2011(sourceOntology, targetOntology);
+        OAEI2011Configuration conf;
+        try {
+            conf = OntologyClassifier.classifiedOntologiesOAEI2011(sourceOntology, targetOntology);
+        } catch(Exception ex) {
+            conf = OAEI2011Configuration.GENERAL_PURPOSE;
+        }
 			
 		switch( conf ) {
 		case LARGE_LEXICAL: {
@@ -203,7 +212,8 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		
 		IterativeInstanceStructuralParameters iismParam = 
 				new IterativeInstanceStructuralParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign);
-		
+		iismParam.setOntologies(getSourceOntology(), getTargetOntology());
+
 		iismParam.allBoost();
 		iismParam.setConsiderIndividuals(true);
 		iismParam.setPropertyUsageThreshold(0.6);
@@ -254,6 +264,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		BaseSimilarityParameters bsmParam = 
 				new BaseSimilarityParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign);
 		bsmParam.useDictionary = false;
+        bsmParam.setOntologies(getSourceOntology(), getTargetOntology());
 		
 		setupSubMatcher(bsm, bsmParam);
 		runSubMatcher(bsm, "BSM");
@@ -268,8 +279,9 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		
 		ParametricStringParameters psmParam = 
 				new ParametricStringParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign);
-		
-		psmParam.localWeight = 0.33;
+        psmParam.setOntologies(getSourceOntology(), getTargetOntology());
+
+        psmParam.localWeight = 0.33;
 		psmParam.labelWeight = 0.34d;
 		psmParam.commentWeight = 0.33d;
 		psmParam.seeAlsoWeight = 0.00d;
@@ -296,8 +308,9 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		
 		MultiWordsParameters vmmParam = 
 				new MultiWordsParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign);
-		
-		vmmParam.measure = MultiWordsParameters.TFIDF;
+        vmmParam.setOntologies(getSourceOntology(), getTargetOntology());
+
+        vmmParam.measure = MultiWordsParameters.TFIDF;
 		//only on concepts right now because it should be weighted differently
 		vmmParam.considerInstances = true;
 		vmmParam.considerNeighbors = false;
@@ -324,8 +337,9 @@ public class OAEI2011Matcher extends AbstractMatcher {
 			LexicalSynonymMatcherParameters lsmParam = 
 					new LexicalSynonymMatcherParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign);
 			lsmParam.useSynonymTerms = false;
-			
-			setupSubMatcher(lsm, lsmParam);
+            lsmParam.setOntologies(getSourceOntology(), getTargetOntology());
+
+            setupSubMatcher(lsm, lsmParam);
 			runSubMatcher(lsm, "LSM");
 			
 			lwcInputMatchers.add(lsm);
@@ -346,11 +360,10 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		lwcParam.qualityEvaluation = true;
 		lwcParam.manualWeighted = false;
 		lwcParam.quality = QualityMetricRegistry.LOCAL_CONFIDENCE;
-		
-		setupSubMatcher(lwc, lwcParam);
+        lwcParam.setOntologies(getSourceOntology(), getTargetOntology());
+
+        setupSubMatcher(lwc, lwcParam);
 		runSubMatcher(lwc, "LWC");
-		
-		
 
 		return lwc;
 	}

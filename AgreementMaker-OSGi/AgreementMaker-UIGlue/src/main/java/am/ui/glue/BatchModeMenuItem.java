@@ -3,6 +3,7 @@ package am.ui.glue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.prefs.Preferences;
 
@@ -11,10 +12,13 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 
-import am.extension.batchmode.simpleBatchMode.SimpleBatchModeRunner;
+import am.extension.batchmode.api.BatchModeFileReader;
+import am.extension.batchmode.api.BatchModeRunner;
+import am.extension.batchmode.api.BatchModeSpec;
 import am.ui.UICore;
 import am.ui.UIMenu;
 import am.ui.api.AMMenuItem;
+import org.osgi.framework.ServiceReference;
 
 public class BatchModeMenuItem extends JMenuItem implements AMMenuItem {
 
@@ -51,15 +55,15 @@ public class BatchModeMenuItem extends JMenuItem implements AMMenuItem {
 		if( !previousFile.isEmpty() )
 			fd.setSelectedFile(new File(previousFile));
 		
-		fd.setDialogTitle("Select BatchMode XML File");
+		fd.setDialogTitle("Select BatchMode JSON File");
 		
 		FileFilter xmlFileFilter = new FileFilter() {
 			@Override public boolean accept(File f) {
-				return f.isDirectory() || f.getName().toLowerCase().endsWith(".xml");
+				return f.isDirectory() || f.getName().toLowerCase().endsWith(".json");
 			}
 
 			@Override public String getDescription() {
-				return "XML File (*.xml)";
+				return "JSON File (*.json)";
 			}
 		};
 		
@@ -78,15 +82,24 @@ public class BatchModeMenuItem extends JMenuItem implements AMMenuItem {
 			Runnable sbm = new Runnable() {
 				@Override public void run() {
 					try {
-						SimpleBatchModeRunner runner = new SimpleBatchModeRunner(selectedFile);
-						runner.runBatchMode();
+                        ServiceReference<BatchModeFileReader> readerServicereference = Activator.getContext().getServiceReference(BatchModeFileReader.class);
+                        BatchModeFileReader reader = Activator.getContext().getService(readerServicereference);
+
+                        ServiceReference<BatchModeRunner> runnerServiceReference = Activator.getContext().getServiceReference(BatchModeRunner.class);
+                        BatchModeRunner runner = Activator.getContext().getService(runnerServiceReference);
+
+                        BatchModeSpec spec = reader.read(new FileInputStream(selectedFile));
+                        runner.run(spec);
 					} catch (Exception e) {
 						e.printStackTrace();
 						JOptionPane.showMessageDialog(
 								UICore.getUI().getUIFrame(), 
 								e.getClass() + "\n" + e.getMessage(), 
 								"ERROR", JOptionPane.ERROR_MESSAGE);
+                        return;
 					}
+
+                    JOptionPane.showMessageDialog(UICore.getUI().getUIFrame(),  "Batch Mode runner has completed.", "Completed", JOptionPane.INFORMATION_MESSAGE);
 				}
 			};
 			

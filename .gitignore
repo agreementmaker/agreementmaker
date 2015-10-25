@@ -33,6 +33,7 @@ AgreementMaker-OSGi/Matcher-OAEI/target/
 AgreementMaker-OSGi/Matcher-PRA/META-INF/
 AgreementMaker-OSGi/Matcher-PRA/target/
 AgreementMaker-OSGi/target/
+target/
 .settings/
 .project
 .classpath

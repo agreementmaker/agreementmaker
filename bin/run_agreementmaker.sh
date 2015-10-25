@@ -4,6 +4,7 @@ MVN_REPO=$HOME/.m2/repository
 GROUP_ID=$MVN_REPO/edu/uic/cs/advis/am
 
 pax-run.sh --clean \
+--org.ops4j.pax.runner.platform.workingDirectory="target/runner" \
 --org.ops4j.pax.runner.platform.vmOptions="-agentlib:jdwp=transport=dt_socket,server=y,address=8778,suspend=n" \
 file:$GROUP_ID/AgreementMaker-API/0.0.1-SNAPSHOT/AgreementMaker-API-0.0.1-SNAPSHOT.jar \
 file:$GROUP_ID/AgreementMaker-Core/0.3.0-SNAPSHOT/AgreementMaker-Core-0.3.0-SNAPSHOT.jar \
