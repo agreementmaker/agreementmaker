@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.evaluation.clustering.Cluster;
 import am.evaluation.clustering.ClusteringMethod;
@@ -32,7 +32,7 @@ public class GVM_Clustering extends ClusteringMethod {
 	int numClusters;
 	private SimilarityMatrix[] matrices;
 
-	public GVM_Clustering(List<AbstractMatcher> matchers, int numClusters) {
+	public GVM_Clustering(List<MatchingTask> matchers, int numClusters) {
 		super(matchers);
 		this.numClusters = numClusters;
 	}
@@ -86,8 +86,8 @@ public class GVM_Clustering extends ClusteringMethod {
 		}else{
 			Collections.shuffle(availableMatchers);
 
-			int rows = availableMatchers.get(0).getClassesMatrix().getRows();
-			int cols = availableMatchers.get(0).getClassesMatrix().getColumns();
+			int rows = availableMatchers.get(0).matcherResult.getClassesMatrix().getRows();
+			int cols = availableMatchers.get(0).matcherResult.getClassesMatrix().getColumns();
 
 			clusters = new DblClusters<List<double[]>>( availableMatchers.size(), numClusters);
 
@@ -105,7 +105,7 @@ public class GVM_Clustering extends ClusteringMethod {
 
 					// fill in the current point
 					for( int k = 0; k < availableMatchers.size(); k++ ) {
-						currentPoint[k] = availableMatchers.get(k).getClassesMatrix().getSimilarity(i, j);
+						currentPoint[k] = availableMatchers.get(k).matcherResult.getClassesMatrix().getSimilarity(i, j);
 					}
 					currentKey[0] = i;
 					currentKey[1] = j;

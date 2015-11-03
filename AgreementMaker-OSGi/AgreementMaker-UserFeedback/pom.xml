@@ -43,6 +43,10 @@
 							!org.kxml2.io.*,
 							!nu.xom.*,
 							!sun.misc.*,
+							!javax.xml.namespace,
+							!com.ctc.wstx.stax,
+							!javax.xml.transform,
+							!javax.xml.stream,
 							*
 						</Import-Package>
 						<Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
@@ -100,6 +104,12 @@
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>AgreementMaker-CollaborationClient</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>${project.parent.groupId}</groupId>
+			<artifactId>AgreementMaker-BatchMode</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>

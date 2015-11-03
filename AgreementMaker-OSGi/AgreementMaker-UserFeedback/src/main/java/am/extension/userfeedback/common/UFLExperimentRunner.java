@@ -14,10 +14,11 @@ import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.extension.userfeedback.UFLRegistry.ExperimentRegistry;
 import am.extension.userfeedback.experiments.UFLExperiment;
 import am.extension.userfeedback.experiments.UFLExperimentSetup;
-import am.extension.userfeedback.logic.UFLControlLogic;
+import am.extension.userfeedback.logic.api.UFLControlLogic;
 import am.extension.userfeedback.preset.ExperimentPreset;
 import am.extension.userfeedback.preset.MatchingTaskPreset;
 import am.extension.userfeedback.ui.UFLProgressDisplay;
+import am.utility.ArchiveManager;
 import am.utility.Pair;
 import am.utility.referenceAlignment.AlignmentUtilities;
 
@@ -63,7 +64,11 @@ public class UFLExperimentRunner implements Runnable {
 			fireChange();
 			return;
 		}
-				
+		
+		ArchiveManager ex = new ArchiveManager();
+		ex.checkOntologyFile(task.getSourceOntology());
+		ex.checkOntologyFile(task.getTargetOntology());
+		
 		final Ontology sourceOntology = OntoTreeBuilder.loadOWLOntology(task.getSourceOntology());
 		final Ontology targetOntology = OntoTreeBuilder.loadOWLOntology(task.getTargetOntology());
 		
@@ -81,17 +86,15 @@ public class UFLExperimentRunner implements Runnable {
 		
 		uflExperiment.gui = display;
 
-		// Step 1.  experiment is starting.  Initialize the experiment setup.
-		final UFLControlLogic logic = uflExperiment.getControlLogic();
-		logic.runExperiment(uflExperiment);
-		
-		while(!uflExperiment.experimentHasCompleted()) {
-			try {
+		// Step 1.  experiment is starting.  Initialize the experiment setup.		
+		try {
+			final UFLControlLogic logic = uflExperiment.getControlLogic();
+			logic.runExperiment(uflExperiment);
+			while (!uflExperiment.experimentHasCompleted()) {
 				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-				break;
 			}
+		} catch (Exception e) {
+				e.printStackTrace();
 		}
 		
 		Core.getInstance().removeOntology(sourceOntology);

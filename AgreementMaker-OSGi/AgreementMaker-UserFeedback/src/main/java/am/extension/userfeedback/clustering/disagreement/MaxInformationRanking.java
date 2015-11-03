@@ -7,9 +7,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
@@ -100,9 +100,8 @@ public class MaxInformationRanking extends CandidateSelection<SUExperiment> {
 //		if (ex.getIterationNumber()==0)
 //			initializeRankedMatrix();
 		// get the matchers from the execution semantics
-		List<AbstractMatcher> matchers = ex.initialMatcher.getComponentMatchers();
+		List<MatchingTask> matchers = ex.initialMatcher.getComponentMatchers();
 		
-
 		//if (ex.getIterationNumber()<=1)
 		//{
 		//rank(matchers);
@@ -112,6 +111,14 @@ public class MaxInformationRanking extends CandidateSelection<SUExperiment> {
 		//	allRanked=ex.allRanked;
 		saveRankList(ex.getIterationNumber());
 		
+		//if (ex.getIterationNumber()<=1)
+		//{
+		//rank(matchers);
+		ex.disRanked=allRanked;
+		//}
+		//else
+		//	allRanked=ex.allRanked;
+		saveRankList(ex.getIterationNumber());
 //		if (experiment.getAlignCardinalityType()==alignCardinality.c1_1)
 //		selectedMapping=getCandidateMapping_1_1();
 		selectedMapping=getCandidateMapping_m_n();
@@ -163,6 +170,29 @@ public class MaxInformationRanking extends CandidateSelection<SUExperiment> {
 	}
 	
 	private void saveSV()
+	{
+		Object[] sv;
+		File file = new File("/home/frank/Documents/SignatureVector/SV.txt");
+		// if file doesnt exists, then create it
+		if (!file.exists()) {
+			try {
+				file.createNewFile();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		FileWriter fw=null;
+		try {
+			fw = new FileWriter(file.getAbsoluteFile());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		BufferedWriter bw = new BufferedWriter(fw);
+		int count=0;
+		double avg=0;
+		for(Mapping mp : allRanked)
 	{
 		Object[] sv;
 		File file = new File("/home/frank/Documents/SignatureVector/SV.txt");
@@ -402,16 +432,16 @@ public class MaxInformationRanking extends CandidateSelection<SUExperiment> {
 	
 	private Object[] getSignatureVector(Mapping mp)
 	{
-		List<AbstractMatcher> inputMatchers=experiment.initialMatcher.getComponentMatchers();
+		List<MatchingTask> inputMatchers=experiment.initialMatcher.getComponentMatchers();
 		int size=inputMatchers.size();
 		Node sourceNode=mp.getEntity1();
 		Node targetNode=mp.getEntity2();
-		AbstractMatcher a;
+		MatchingTask a;
 		Object[] ssv=new Object[size];
 		for (int i=0;i<size;i++)
 		{
 			a = inputMatchers.get(i);
-			ssv[i]=a.getAlignment().getSimilarity(sourceNode, targetNode);
+			ssv[i]=a.selectionResult.getAlignment().getSimilarity(sourceNode, targetNode);
 			
 		}
 		return ssv;
@@ -446,6 +476,10 @@ public class MaxInformationRanking extends CandidateSelection<SUExperiment> {
 			}
 		}
 		return count;
+	}
+			distance+=Math.pow((double)sv1[j]-(double)sv2[j],2);
+		}
+		return Math.sqrt(distance);
 	}
 	
 	private double svDistance(Object[] sv1, Object[] sv2)

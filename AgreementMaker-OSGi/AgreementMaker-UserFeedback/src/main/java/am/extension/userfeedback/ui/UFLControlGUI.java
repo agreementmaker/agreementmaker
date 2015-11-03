@@ -25,7 +25,7 @@ import am.extension.userfeedback.UFLRegistry.SaveFeedbackRegistry;
 import am.extension.userfeedback.UFLRegistry.UserValidationRegistry;
 import am.extension.userfeedback.experiments.UFLExperiment;
 import am.extension.userfeedback.experiments.UFLExperimentSetup;
-import am.extension.userfeedback.logic.UFLControlLogic;
+import am.extension.userfeedback.logic.api.UFLControlLogic;
 import am.ui.UI;
 import am.ui.UIUtility;
 import am.ui.api.impl.AMTabSupportPanel;
@@ -54,7 +54,7 @@ public class UFLControlGUI extends AMTabSupportPanel implements ActionListener, 
     	INITSCREEN_btnStart,
     	
     	LOOP_INIZIALIZATION_DONE,
-    	EXECUTION_SEMANTICS_DONE, 
+    	INITIAL_MATCHERS_DONE, 
     	CANDIDATE_SELECTION_DONE, 
     	CS_EVALUATION_DONE, 
     	USER_STORAGE_DONE, 

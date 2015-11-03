@@ -18,12 +18,11 @@ import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.extension.userfeedback.UserFeedback.Validation;
-import am.extension.userfeedback.common.ServerFeedbackEvaluationData;
 import am.extension.userfeedback.experiments.UFLExperiment;
 import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
 import am.extension.userfeedback.experiments.UFLExperimentSetup;
 import am.extension.userfeedback.logic.PersistentSequentialControlLogic;
-import am.extension.userfeedback.logic.UFLControlLogic;
+import am.extension.userfeedback.logic.api.UFLControlLogic;
 import am.extension.userfeedback.rankingStrategies.StrategyInterface;
 import am.ui.UIUtility;
 
@@ -34,36 +33,31 @@ import com.tomgibara.cluster.gvm.dbl.DblResult;
  */
 public class MUExperiment extends UFLExperiment {
 
-
-	
-public BufferedWriter logFile;
-private Alignment<Mapping> MLAlignment;
-private Object[][] trainingSet_classes;
-private Object[][] trainingSet_property;
-
+	private Alignment<Mapping> MLAlignment;
+	private Object[][] trainingSet_classes;
+	private Object[][] trainingSet_property;
 	private SimilarityMatrix uflClassMatrix;
 	private SimilarityMatrix uflPropertyMatrix;
+	private SparseMatrix uflStorageClass_pos;
+	private SparseMatrix uflStorageClass_neg;
+	private SparseMatrix uflStorageProperty_pos;
+	private SparseMatrix uflStorageProperty_neg;
+	public List<Mapping> disRanked;
+	public List<Mapping> uncertainRanking;
+	public List<Mapping> almostRanking;
+	public Mapping selectedMapping;
+	public int feedbackCount;
+	public String feedback;
 
-private SparseMatrix uflStorageClass_pos;
-private SparseMatrix uflStorageClass_neg;
-private SparseMatrix uflStorageProperty_pos;
-private SparseMatrix uflStorageProperty_neg;
-public List<Mapping> disRanked;
-public List<Mapping> uncertainRanking;
-public List<Mapping> almostRanking;
-public Mapping selectedMapping;
-public int feedbackCount;
-public String feedback;
-
-public List<DblResult<List<double[]>>> clusterC;
-public List<DblResult<List<double[]>>> clusterP;
-public List<Mapping> alreadyEvaluated=new ArrayList<Mapping>();
-public List<Mapping> conflictualClass;
-public List<Mapping> conflictualProp;
-public HashMap<String, List<Mapping>> usersMappings=new HashMap<String, List<Mapping>>();
-public HashMap<String, Integer> usersGroup=new HashMap<String, Integer>();
-public HashMap<String, SimilarityMatrix> usersClass=new HashMap<String, SimilarityMatrix>();
-public HashMap<String, SimilarityMatrix> usersProp=new HashMap<String, SimilarityMatrix>();
+	public List<DblResult<List<double[]>>> clusterC;
+	public List<DblResult<List<double[]>>> clusterP;
+	public List<Mapping> alreadyEvaluated=new ArrayList<Mapping>();
+	public List<Mapping> conflictualClass;
+	public List<Mapping> conflictualProp;
+	public HashMap<String, List<Mapping>> usersMappings=new HashMap<String, List<Mapping>>();
+	public HashMap<String, Integer> usersGroup=new HashMap<String, Integer>();
+	public HashMap<String, SimilarityMatrix> usersClass=new HashMap<String, SimilarityMatrix>();
+	public HashMap<String, SimilarityMatrix> usersProp=new HashMap<String, SimilarityMatrix>();
 
 	public static class csData{
 		public int[] count={0,0,0};
@@ -73,13 +67,13 @@ public HashMap<String, SimilarityMatrix> usersProp=new HashMap<String, Similarit
 		public List<Mapping> rrList;
 		public StrategyInterface mappingSource;
 	}
-public csData data=new csData();
+
+	public csData data=new csData();
 
 
-private alignCardinality alignCardinalityType=alignCardinality.cn_m;
+	private alignCardinality alignCardinalityType=alignCardinality.cn_m;
 
-	public MUExperiment(UFLExperimentSetup setup)
-	{
+	public MUExperiment(UFLExperimentSetup setup) {
 		super(setup);
 		
 		String log = setup.parameters.getParameter(Parameter.LOGFILE);
@@ -93,14 +87,13 @@ private alignCardinality alignCardinalityType=alignCardinality.cn_m;
 		}
 	}
 
-public alignCardinality getAlignCardinalityType() {
-	return alignCardinalityType;
-}
+	public alignCardinality getAlignCardinalityType() {
+		return alignCardinalityType;
+	}
 
-
-public void setAlignCardinalityType(alignCardinality alignCardinalityType) {
-	this.alignCardinalityType = alignCardinalityType;
-}
+	public void setAlignCardinalityType(alignCardinality alignCardinalityType) {
+		this.alignCardinalityType = alignCardinalityType;
+	}
 
 	//forbidden position keeper
 	private SparseMatrix forbiddenPositionsClasses;
@@ -153,39 +146,37 @@ public void setAlignCardinalityType(alignCardinality alignCardinalityType) {
 		}
 	}
 	
-public void setFeedBackMatrix(SparseMatrix mtrx, alignType type, Validation validation)
-{
-	switch(type) {
-	case aligningClasses:
-		switch(validation) {
-		case CORRECT:
-			uflStorageClass_pos=mtrx;
+	public void setFeedBackMatrix(SparseMatrix mtrx, alignType type, Validation validation)
+	{
+		switch(type) {
+		case aligningClasses:
+			switch(validation) {
+			case CORRECT:
+				uflStorageClass_pos=mtrx;
+				break;
+			case INCORRECT:
+				uflStorageClass_neg=mtrx;
+				break;
+			default:
+				throw new RuntimeException(validation + " is not accepted");
+			}
 			break;
-		case INCORRECT:
-			uflStorageClass_neg=mtrx;
+		case aligningProperties:
+			switch(validation) {
+			case CORRECT:
+				uflStorageProperty_pos=mtrx;
+				break;
+			case INCORRECT:
+				uflStorageProperty_neg=mtrx;
+				break;
+			default:
+				throw new RuntimeException(validation + " is not accepted");
+			}
 			break;
 		default:
-			throw new RuntimeException(validation + " is not accepted");
+			throw new RuntimeException(type + " is not accepted");
 		}
-		break;
-	case aligningProperties:
-		switch(validation) {
-		case CORRECT:
-			uflStorageProperty_pos=mtrx;
-			break;
-		case INCORRECT:
-			uflStorageProperty_neg=mtrx;
-			break;
-		default:
-			throw new RuntimeException(validation + " is not accepted");
-		}
-		break;
-	default:
-		throw new RuntimeException(type + " is not accepted");
 	}
-}
-
-
 
 	public Object[][] getTrainingSet(alignType type) {
 		switch(type) {
@@ -198,13 +189,13 @@ public void setFeedBackMatrix(SparseMatrix mtrx, alignType type, Validation vali
 		}
 	}
 
-public void setTrainingSet_classes(Object[][] trainingSet_classes) {
-	this.trainingSet_classes = trainingSet_classes;
-}
-
-public void setTrainingSet_property(Object[][] trainingSet_property) {
-	this.trainingSet_property = trainingSet_property;
-}
+	public void setTrainingSet_classes(Object[][] trainingSet_classes) {
+		this.trainingSet_classes = trainingSet_classes;
+	}
+	
+	public void setTrainingSet_property(Object[][] trainingSet_property) {
+		this.trainingSet_property = trainingSet_property;
+	}
 
 	public SimilarityMatrix getComputedUFLMatrix(alignType type) {
 		switch(type) {
@@ -238,20 +229,8 @@ public void setTrainingSet_property(Object[][] trainingSet_property) {
 	}
 
 
-public void setMLAlignment(Alignment<Mapping> mLAlignment) {
-	MLAlignment = mLAlignment;
-}
-
-	@Override
-	public boolean experimentHasCompleted() {
-		if( userFeedback != null && userFeedback.getUserFeedback() == Validation.END_EXPERIMENT ) return true;  // we're done when the user says so
-		return false;
-	}
-
-	@Override
-	public void newIteration() {
-		super.newIteration();
-		// TODO: Save all the objects that we used in the previous iteration.
+	public void setMLAlignment(Alignment<Mapping> mLAlignment) {
+		MLAlignment = mLAlignment;
 	}
 
 	@Override

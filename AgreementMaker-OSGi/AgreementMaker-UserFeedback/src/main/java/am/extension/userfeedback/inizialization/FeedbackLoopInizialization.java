@@ -45,5 +45,5 @@ public abstract class FeedbackLoopInizialization<T extends UFLExperiment>{
 		fireEvent(e);
 	}
 	
-	public abstract void inizialize(T exp);
+	public abstract void initialize(T exp);
 }

@@ -47,7 +47,7 @@ public class MatchingTask {
 		this.selectionAlgorithm = selectionAlgorithm;
 		this.selectionParameters = selectionParams;
 	}
-	
+		
 	/**
 	 * Run the matching algorithm.
 	 */
@@ -83,7 +83,9 @@ public class MatchingTask {
 	
 	public String getShortLabel() {
 		if( shortLabel != null ) return shortLabel;
-		
+		if (matchingAlgorithm != null) {
+			return matchingAlgorithm.getName();
+		}
 		return "Task " + Integer.toString(ID);
 	}
 	

@@ -11,10 +11,10 @@ import java.awt.image.WritableRaster;
 
 import javax.swing.JPanel;
 
-import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.evaluation.clustering.Cluster;
 import am.visualization.Gradient;
@@ -23,11 +23,11 @@ public class MatrixPlot extends JPanel {
 
 	private static final long serialVersionUID = -7536491459476626040L;
 
-	protected final AbstractMatcher  matcher;
+	protected final MatchingTask matchingTask;
 	protected final SimilarityMatrix matrix;
 	private final alignType type;
 	
-	protected int squareSize = 10;
+	protected int squareSize = 5;
 	private int border = 0;
 	private BufferedImage I;
 	private Point selected = null;
@@ -52,7 +52,7 @@ public class MatrixPlot extends JPanel {
 		super();
 		I = null;
 		matrix = mtx;
-		matcher = null;
+		matchingTask = null;
 		type = mtx.getAlignType();		
 		createImage(false);
 	}
@@ -61,7 +61,7 @@ public class MatrixPlot extends JPanel {
 		super();
 		I = null;
 		matrix = mtx;
-		matcher = null;
+		matchingTask = null;
 		type = mtx.getAlignType();		
 		createImage(false);
 		enclosingPanel = mpnl;
@@ -71,27 +71,27 @@ public class MatrixPlot extends JPanel {
 		super();
 		I = null;
 		matrix = mtx;
-		matcher = null;
+		matchingTask = null;
 		gradient = g;
 		type = mtx.getAlignType();		
 		createImage(false);
 		enclosingPanel = mpnl;
 	}
 	
-	public MatrixPlot(AbstractMatcher a, SimilarityMatrix mtx, MatrixPlotPanel mpnl) {
+	public MatrixPlot(MatchingTask a, SimilarityMatrix mtx, MatrixPlotPanel mpnl) {
 		super();
 		I = null;
-		matcher = a;
+		matchingTask = a;
 		matrix = mtx;
 		type = mtx.getAlignType();		
 		createImage(false);
 		enclosingPanel = mpnl;
 	}
 	
-	public MatrixPlot(AbstractMatcher a, SimilarityMatrix mtx, MatrixPlotPanel mpnl, Gradient g) {
+	public MatrixPlot(MatchingTask a, SimilarityMatrix mtx, MatrixPlotPanel mpnl, Gradient g) {
 		super();
 		I = null;
-		matcher = a;
+		matchingTask = a;
 		matrix = mtx;
 		gradient = g;
 		type = mtx.getAlignType();		
@@ -184,9 +184,9 @@ public class MatrixPlot extends JPanel {
 					
 					Alignment<Mapping> vizAlignment = null;
 					
-					if( matcher != null ) {
-						if( type == alignType.aligningClasses ) vizAlignment = matcher.getClassAlignmentSet();
-						if( type == alignType.aligningProperties ) vizAlignment = matcher.getPropertyAlignmentSet();
+					if( matchingTask != null ) {
+						if( type == alignType.aligningClasses ) vizAlignment = matchingTask.selectionResult.getClassAlignmentSet();
+						if( type == alignType.aligningProperties ) vizAlignment = matchingTask.selectionResult.getPropertyAlignmentSet();
 				
 					
 						Graphics2D g = (Graphics2D)I.getGraphics();
@@ -223,9 +223,9 @@ public class MatrixPlot extends JPanel {
 				
 				Color mappingColor = referenceAlignmentColor;
 				Alignment<Mapping> vizAlignment = null;
-				if( matcher != null ) {
-					if( type == alignType.aligningClasses ) vizAlignment = matcher.getClassAlignmentSet();
-					if( type == alignType.aligningProperties ) vizAlignment = matcher.getPropertyAlignmentSet();
+				if( matchingTask != null ) {
+					if( type == alignType.aligningClasses ) vizAlignment = matchingTask.selectionResult.getClassAlignmentSet();
+					if( type == alignType.aligningProperties ) vizAlignment = matchingTask.selectionResult.getPropertyAlignmentSet();
 				}
 				
 				if( vizAlignment != null ) {

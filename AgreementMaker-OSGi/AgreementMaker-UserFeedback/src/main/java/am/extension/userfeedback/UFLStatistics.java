@@ -10,7 +10,7 @@ import javax.swing.event.EventListenerList;
 import am.extension.userfeedback.experiments.UFLExperiment;
 import am.extension.userfeedback.ui.UFLControlGUI;
 
-public abstract class UFLStatistics <T extends UFLExperiment> {
+public abstract class UFLStatistics {
 
 	EventListenerList listeners;  // list of listeners for this class
 	
@@ -18,7 +18,7 @@ public abstract class UFLStatistics <T extends UFLExperiment> {
 		listeners = new EventListenerList();
 	}
 	
-	public abstract void compute( T exp );
+	public abstract void compute( UFLExperiment exp );
 	
 	
 	public void addActionListener( ActionListener l ) {

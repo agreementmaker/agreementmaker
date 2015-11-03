@@ -1,10 +1,10 @@
 package am.visualization;
 
-import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.MatchingTask;
 
 public interface MatcherAnalyticsEventListener {
 
 	public void receiveEvent(MatcherAnalyticsEvent e);
 	
-	public AbstractMatcher getMatcher();
+	public MatchingTask getMatcher();
 }

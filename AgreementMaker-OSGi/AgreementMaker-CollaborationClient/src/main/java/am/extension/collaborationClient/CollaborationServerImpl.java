@@ -1,6 +1,5 @@
 package am.extension.collaborationClient;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,13 +18,13 @@ import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.ontology.ontologyParser.OntologyDefinition;
 import am.evaluation.disagreement.variance.VarianceDisagreementComparator;
-import am.extension.batchmode.simpleBatchMode.SimpleBatchModeRunner;
 import am.extension.collaborationClient.api.CollaborationCandidateMapping;
 import am.extension.collaborationClient.api.CollaborationFeedback;
 import am.extension.collaborationClient.api.CollaborationTask;
 import am.extension.collaborationClient.api.CollaborationUser;
 import am.extension.collaborationClient.api.CollaborationAPI;
 import am.matcher.oaei.oaei2011.OAEI2011Matcher;
+import am.matcher.oaei.oaei2011.OAEI2011Matcher.SubMatcherID;
 import am.matcher.oaei.oaei2011.OAEI2011Matcher.SubMatcherID;
 
 // If you get errors because unresolved imports go here:
@@ -72,12 +71,8 @@ public class CollaborationServerImpl implements CollaborationAPI {
 	public int addOntologyPair( String sourceOntology, String targetOntology ) {
 		CollaborationOntologyPair cop = new CollaborationOntologyPair(sourceOntology, targetOntology);
 		ontologyPairs.add(cop);
-		
-		
-		SimpleBatchModeRunner sbmr = new SimpleBatchModeRunner((File)null);
-		AbstractMatcher matcher = sbmr.instantiateMatcher(null);
-		OAEI2011Matcher oaei2011 = null;
-		if( matcher instanceof OAEI2011Matcher ) oaei2011 = (OAEI2011Matcher) matcher;
+
+        OAEI2011Matcher oaei2011 = new OAEI2011Matcher();
 		
 		oaei2011.setSourceOntology(cop.sourceOntology);
 		oaei2011.setTargetOntology(cop.targetOntology);

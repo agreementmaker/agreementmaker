@@ -539,12 +539,8 @@ public class HierarchyMatcherModified extends AbstractMatcher
 			classesMatrix = input.getClassesMatrix();
 			propertiesMatrix = new ArraySimilarityMatrix(sourceOntology, targetOntology, alignType.aligningProperties);
 						
-			if(!useInput){
-				for (int i = 0; i < sourceOntology.getClassesList().size(); i++) {
-					for (int j = 0; j < targetOntology.getClassesList().size(); j++) {
-						classesMatrix.set(i, j, null);
-					}
-				}
+			if (!useInput) {
+				classesMatrix.clearAll();
 			}
 
 		}

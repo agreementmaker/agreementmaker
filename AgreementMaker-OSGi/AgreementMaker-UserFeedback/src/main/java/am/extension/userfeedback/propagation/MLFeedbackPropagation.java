@@ -13,14 +13,16 @@ import java.util.List;
 
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
-import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.app.ontology.Node;
-import am.extension.multiUserFeedback.experiment.MUExperiment;
 import am.extension.userfeedback.MLutility.NaiveBayes;
 import am.extension.userfeedback.UserFeedback.Validation;
+import am.extension.userfeedback.MLutility.NaiveBayes;
 import am.extension.userfeedback.experiments.MLFExperiment;
 import am.matcher.Combination.CombinationMatcher;
 
@@ -30,8 +32,7 @@ public class MLFeedbackPropagation extends FeedbackPropagation<MLFExperiment> {
 	final double treshold_down=0.01;
 	final double penalize_ratio=0.9;
 	private MLFExperiment experiment;
-	List<AbstractMatcher> inputMatchers = new ArrayList<AbstractMatcher>();
-	
+	List<MatchingTask> inputMatchers = new ArrayList<>();
 
 	private Object[] addToSV(Mapping mp, Boolean label)
 	{
@@ -39,13 +40,13 @@ public class MLFeedbackPropagation extends FeedbackPropagation<MLFExperiment> {
 		int size=inputMatchers.size();
 		Node sourceNode=mp.getEntity1();
 		Node targetNode=mp.getEntity2();
-		AbstractMatcher a;
+		MatchingTask a;
 		Object obj=new Object();
 		Object[] ssv=new Object[size+1];
 		for (int i=0;i<size;i++)
 		{
 			a = inputMatchers.get(i);
-			obj=a.getAlignment().getSimilarity(sourceNode, targetNode);
+			obj=a.selectionResult.getAlignment().getSimilarity(sourceNode, targetNode);
 			if (obj!=null)
 				ssv[i]=obj;
 			else
@@ -65,12 +66,12 @@ public class MLFeedbackPropagation extends FeedbackPropagation<MLFExperiment> {
 		int size=inputMatchers.size();
 		Node sourceNode=mp.getEntity1();
 		Node targetNode=mp.getEntity2();
-		AbstractMatcher a;
+		MatchingTask a;
 		Object[] ssv=new Object[size];
 		for (int i=0;i<size;i++)
 		{
 			a = inputMatchers.get(i);
-			ssv[i]=a.getAlignment().getSimilarity(sourceNode, targetNode);
+			ssv[i]=a.selectionResult.getAlignment().getSimilarity(sourceNode, targetNode);
 			
 		}
 		return ssv;
@@ -141,7 +142,6 @@ public class MLFeedbackPropagation extends FeedbackPropagation<MLFExperiment> {
 
 		return top;
 	}
-	
 	//check if the signature vector is valid. A valid signature vector must have at least one non zero element.
 	private boolean validSsv(Object[] ssv)
 	{
@@ -161,7 +161,7 @@ public class MLFeedbackPropagation extends FeedbackPropagation<MLFExperiment> {
 		int iteration=experiment.getIterationNumber();
 		inputMatchers=experiment.initialMatcher.getComponentMatchers();
 		Mapping candidateMapping = experiment.userFeedback.getCandidateMapping();
-		List<AbstractMatcher> availableMatchers = experiment.initialMatcher.getComponentMatchers();
+		List<MatchingTask> availableMatchers = experiment.initialMatcher.getComponentMatchers();
 		Object[][] trainingSet=new Object[1][availableMatchers.size()];
 		int trainset_index=0;
 		

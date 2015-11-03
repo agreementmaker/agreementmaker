@@ -3,10 +3,10 @@ package am.extension.userfeedback.clustering.disagreement;
 import java.text.NumberFormat;
 import java.util.List;
 
-import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.ontology.Ontology;
 import am.evaluation.clustering.Cluster;
@@ -31,7 +31,7 @@ public class ClusterBoostPropagation extends FeedbackPropagation<UFLExperiment> 
 		Mapping candidateMapping = experiment.userFeedback.getCandidateMapping();
 		
 		// setup the clustering method
-		List<AbstractMatcher> availableMatchers = experiment.initialMatcher.getComponentMatchers();
+		List<MatchingTask> availableMatchers = experiment.initialMatcher.getComponentMatchers();
 		LocalByThresholdMethod clusteringMethod = new LocalByThresholdMethod(availableMatchers);
 		
 		LocalByThresholdParameters clusteringParameters = new LocalByThresholdParameters();

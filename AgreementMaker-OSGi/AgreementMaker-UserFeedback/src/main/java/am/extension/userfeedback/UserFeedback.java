@@ -19,7 +19,7 @@ public abstract class UserFeedback <T extends UFLExperiment>{
 	}
 	public enum Validation { CORRECT, INCORRECT, SKIP, END_EXPERIMENT; }
 
-	public abstract void validate( T experiment );
+	public abstract void validate(UFLExperiment experiment);
 	public abstract Validation getUserFeedback();
 	public abstract void setUserFeedback(Validation feedback);
 	public abstract Mapping getCandidateMapping();

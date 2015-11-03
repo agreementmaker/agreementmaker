@@ -90,4 +90,6 @@ public interface SimilarityMatrix {
 
 	public void fillMatrix(double sim, List<Node> sourceList, List<Node> targetList);
 
+	/** Remove all mappings from the matrix. */
+	public void clearAll();
 }

@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.management.InstanceAlreadyExistsException;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.osgi.framework.Bundle;
@@ -152,6 +153,8 @@ public class Core {
 			}
 		}
 		
+		amRoot = FilenameUtils.normalize(amRoot);
+		
 		log.info("AgreementMaker root directory: " + amRoot);
 		
 		
@@ -197,9 +200,17 @@ public class Core {
 	/**
 	 * @return The root directory for AgreementMaker data files. All code should
 	 *         reference this root when accessing configuration files, training
-	 *         models, etc...
+	 *         models, etc. The string is guaranteed to have a trailing file
+	 *         separator.
 	 */
-	public String getRoot() { return amRoot; }
+	public String getRoot() {
+		if( amRoot.endsWith(File.separator) ) {
+			return amRoot;
+		}
+		else {
+			return amRoot + File.separator;
+		}
+	}
 	
 	// deprecated by multiple-ontology interface (TODO: Finish implementing multiple-ontology interface. - Cosmin 10/17/2010)
 	public Ontology getSourceOntology() {  return sourceOntology; }
@@ -311,6 +322,9 @@ public class Core {
 	@Deprecated
 	public List<AbstractMatcher> getMatcherInstances() { return getMatchingAlgorithms(); }
 	
+	/**
+	 * @deprecated You probably want to use {@link #getMatchingTasks()}.
+	 */
 	@Deprecated
 	public List<MatcherResult> getMatcherResults(){ return matcherResults;}
 	

@@ -2,18 +2,18 @@ package am.app.mappingEngine;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import am.app.mappingEngine.threaded.AbstractMatcherRunner;
-
-import com.hp.hpl.jena.ontology.OntModel;
+import am.app.ontology.Ontology;
 
 /**
  * This class contains all the common matcher parameters:
  * <ul>
  * <li>The {@link #ontologies} to be matched.</li>
- * <li>The {@link #threshold} and cardinality ({@link maxSourceAlign},
- * {@link maxTargetAlign}).</li>
+ * <li>The {@link #threshold} and cardinality ({@link #maxSourceAlign},
+ * {@link #maxTargetAlign}).</li>
  * <li>Parameters to control threaded execution of the matching algorithm (
  * {@link #threadedExecution}, {@link #threadedOverlap},
  * {@link #threadedExecution}).
@@ -34,13 +34,8 @@ public class DefaultMatcherParameters implements Serializable {
 	 * ontology. If the list contains more than two ontologies, then it is
 	 * assumed that this is a multi-ontology matching task.
 	 * </p>
-	 * 
-	 * <p>
-	 * NOTE: We have moded to using the Jena datastructures directly in our
-	 * code, instead of hiding them behind the Ontology class.
-	 * </p>
 	 */
-	public OntModel[] ontologies;
+	public Ontology[] ontologies;
 	
 	// fields are initialized to their defaults.
 	public double threshold = 0.6;
@@ -151,7 +146,7 @@ public class DefaultMatcherParameters implements Serializable {
 	 * single result.
 	 * </p>
 	 */
-	public List<MatchingTask> inputResults = new ArrayList<MatchingTask>();
+	public List<MatchingTask> inputResults = new ArrayList<>();
 	
 	
 	public DefaultMatcherParameters() { /* work is done by the field initialization; */ }
@@ -163,6 +158,23 @@ public class DefaultMatcherParameters implements Serializable {
 		this.maxTargetAlign = maxTargetAlign;
 	}
 
+    public DefaultMatcherParameters(DefaultMatcherParameters copy)  {
+        this.threshold = copy.threshold;
+        this.maxSourceAlign = copy.maxSourceAlign;
+        this.maxTargetAlign = copy.maxTargetAlign;
+
+        this.completionMode = copy.completionMode;
+        this.storeProvenance = copy.storeProvenance;
+        this.largeOntologyMode = copy.largeOntologyMode;
+
+        this.threadedExecution = copy.threadedExecution;
+        this.threadedOverlap = copy.threadedOverlap;
+        this.threadedReservedProcessors = copy.threadedReservedProcessors;
+
+        this.ontologies = Arrays.copyOf(copy.ontologies, copy.ontologies.length);
+        this.inputResults = new ArrayList<>(copy.inputResults);
+    }
+
 	/**
 	 * Helper function to set the ontologies to be matched.
 	 * 
@@ -172,10 +184,15 @@ public class DefaultMatcherParameters implements Serializable {
 	 *            If more than two ontologies, we assume a multi-ontology
 	 *            matching task.
 	 */
-	public void setOntologies(OntModel ... ontologies) {
+	public void setOntologies(Ontology ... ontologies) {
 		this.ontologies = ontologies;
 	}
 	
-	public OntModel getSourceOntology() { return ontologies[0]; }
-	public OntModel getTargetOntology() { return ontologies[1]; }
+	public Ontology getSourceOntology() { 
+		return ontologies[0]; 
+	}
+	
+	public Ontology getTargetOntology() { 
+		return ontologies[1];
+	}
 }

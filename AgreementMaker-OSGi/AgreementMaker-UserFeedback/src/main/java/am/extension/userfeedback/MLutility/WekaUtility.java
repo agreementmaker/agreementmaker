@@ -1,13 +1,12 @@
 package am.extension.userfeedback.MLutility;
 
 
+import weka.classifiers.functions.LibSVM;
+import weka.classifiers.functions.LinearRegression;
 import weka.core.Attribute;
 import weka.core.FastVector;
 import weka.core.Instance;
 import weka.core.Instances;
-import weka.classifiers.functions.LinearRegression;
-import weka.classifiers.functions.LibSVM;
-import weka.classifiers.lazy.IBk;
 
 
 
@@ -17,7 +16,7 @@ public class WekaUtility {
 	
 	
 	
-	public void setTrainingSet(Object[][] ts)
+	public void setTrainingSet(double[][] ts)
 	{
 		trainingSet=createTrainingInstances(ts);
 		try {
@@ -29,7 +28,7 @@ public class WekaUtility {
 	}
 	
 
-	private Instance createDataInstances(Object[] dtInstance){
+	private Instance createDataInstances(double[] dtInstance){
 				
 		//initialize the attribute array
 		int attributeNum=dtInstance.length;
@@ -58,7 +57,7 @@ public class WekaUtility {
 		// Create the instance
 		instance = new Instance(dtInstance.length+1);
 		for (int i = 0; i<dtInstance.length; i++){
-			instance.setValue((Attribute)fvWekaAttributes.elementAt(i), (double)dtInstance[i]);
+			instance.setValue((Attribute)fvWekaAttributes.elementAt(i), dtInstance[i]);
 		}
 				
 			
@@ -71,7 +70,7 @@ public class WekaUtility {
 		
 	}	
 	
-	private Instances createTrainingInstances(Object[][] ts){
+	private Instances createTrainingInstances(double[][] ts){
 		//initialize the attribute array
 		int attributeNum=ts[0].length-1;
 		int labelIndex=ts[0].length-1;
@@ -115,7 +114,7 @@ public class WekaUtility {
 	}	
 	
 	
-	public double runRegression(Object[] ds)
+	public double runRegression(double[] ds)
 	{
 		double lrSim=0;
 		Instance dataSet=createDataInstances(ds);
@@ -133,7 +132,7 @@ public class WekaUtility {
 		return lrSim;
 	}
 	
-	public double runKNN(Object[] ds)
+	public double runKNN(double[] ds)
 	{
 		double simSVM=0;
 		

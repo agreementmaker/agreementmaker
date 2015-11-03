@@ -38,7 +38,7 @@ public class OutputTrainingGenerator {
 	}
 	
 	
-	public OutputTrainingGenerator(String fileName){
+	public OutputTrainingGenerator(String fileName) throws IOException {
 		this.classList= new LinkedList<String>();
 		this.resultList = new LinkedList<Result>();
 		this.winnerList = new LinkedList<Winner>();
@@ -62,10 +62,8 @@ public class OutputTrainingGenerator {
 		} catch (SAXException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
+
 		doc.getDocumentElement().normalize();
 		//System.out.println("Root element " + doc.getDocumentElement().getNodeName());
 

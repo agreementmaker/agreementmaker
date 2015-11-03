@@ -4,9 +4,9 @@ package am.app.mappingEngine.qualityEvaluation.metrics.ufl.shi;
 import java.util.ArrayList;
 import java.util.List;
 
-import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.qualityEvaluation.AbstractQualityMetric;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 
@@ -15,9 +15,9 @@ public class ContentionPoint  extends AbstractQualityMetric{
 	private double threshold;
 	List<Mapping> lst=new ArrayList<>();
 	SimilarityMatrix ufl;
-	List<AbstractMatcher> amInput=new ArrayList<>();
+	List<MatchingTask> amInput=new ArrayList<>();
 	
-	public ContentionPoint(SimilarityMatrix am, List<AbstractMatcher> inputMatchers, alignType type, double threshold)
+	public ContentionPoint(SimilarityMatrix am, List<MatchingTask> inputMatchers, alignType type, double threshold)
 	{
 		super();
 		this.threshold=threshold;
@@ -34,9 +34,9 @@ public class ContentionPoint  extends AbstractQualityMetric{
 				for (int k=0; k<inputMatchers.size();k++)
 				{
 					if (type.equals(alignType.aligningClasses))
-						sim=inputMatchers.get(k).getClassesMatrix().getSimilarity(i, j);
+						sim=inputMatchers.get(k).matcherResult.getClassesMatrix().getSimilarity(i, j);
 					else
-						sim=inputMatchers.get(k).getPropertiesMatrix().getSimilarity(i, j);
+						sim=inputMatchers.get(k).matcherResult.getPropertiesMatrix().getSimilarity(i, j);
 					
 					if(sim>threshold)
 						countP++;
@@ -69,9 +69,9 @@ public class ContentionPoint  extends AbstractQualityMetric{
 		{
 			double tmp=0;
 			if(type.equals(alignType.aligningClasses))
-				tmp=Math.abs(amInput.get(k).getClassesMatrix().getSimilarity(i, j)-threshold);
+				tmp=Math.abs(amInput.get(k).matcherResult.getClassesMatrix().getSimilarity(i, j)-threshold);
 			else
-				tmp=Math.abs(amInput.get(k).getPropertiesMatrix().getSimilarity(i, j)-threshold);
+				tmp=Math.abs(amInput.get(k).matcherResult.getPropertiesMatrix().getSimilarity(i, j)-threshold);
 			if(tmp>max)
 				max=tmp;
 			if((tmp<max)&&(tmp>p_max))

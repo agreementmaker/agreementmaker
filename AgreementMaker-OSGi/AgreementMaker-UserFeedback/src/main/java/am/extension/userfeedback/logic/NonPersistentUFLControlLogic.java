@@ -1,21 +1,9 @@
-package am.extension.userfeedback.experiments;
+package am.extension.userfeedback.logic;
 
-import java.awt.event.ActionListener;
+import am.extension.userfeedback.experiments.UFLExperiment;
+import am.extension.userfeedback.logic.api.AbstractUFLControlLogic;
 
-public abstract class UFLControlLogic<T extends UFLExperiment>  implements ActionListener {
-	
-	protected T experiment;
-	
-	
-	public abstract void runExperiment(T experiment);
-	
-	/**
-	 * Starts a separate thread for running a piece of the experiment.
-	 */
-	protected void startThread(Runnable runnable) {
-		Thread initialMatchersThread = new Thread(runnable);
-		initialMatchersThread.start();
-	}
+public abstract class NonPersistentUFLControlLogic<T extends UFLExperiment> extends AbstractUFLControlLogic<T> {
 	
 	protected void runInitialMatchers() {
 		// Run the initial matchers in a separate thread.
@@ -39,7 +27,7 @@ public abstract class UFLControlLogic<T extends UFLExperiment>  implements Actio
 			experiment.dataInizialization.addActionListener(this);
 			startThread(new Runnable(){
 				@Override public void run() {
-					experiment.dataInizialization.inizialize(experiment);	
+					experiment.dataInizialization.initialize(experiment);	
 				}
 			});
 		} catch (InstantiationException | IllegalAccessException e) {
@@ -94,6 +82,22 @@ public abstract class UFLControlLogic<T extends UFLExperiment>  implements Actio
 		}
 	}
 	
+	protected void runFeedbackAggregation() {
+		try {
+			experiment.feedbackAggregation = experiment.setup.fa.getEntryClass().newInstance();
+			experiment.feedbackAggregation.addActionListener(this);
+
+			startThread(new Runnable() {
+				@Override
+				public void run() {
+					experiment.feedbackAggregation.addFeedback(experiment);
+				}
+			});
+		} catch (InstantiationException | IllegalAccessException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	protected void runFeedbackPropagation() {
 		try {
 			experiment.feedbackPropagation = experiment.setup.fp.getEntryClass().newInstance();
@@ -135,6 +139,21 @@ public abstract class UFLControlLogic<T extends UFLExperiment>  implements Actio
 			startThread(new Runnable() {
 				@Override public void run() {
 					experiment.saveFeedback.save(experiment);	
+				}
+			});
+		} catch (InstantiationException | IllegalAccessException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	protected void runStatistic() {
+		try {
+			experiment.uflStatistics = experiment.setup.us.getEntryClass().newInstance();
+			experiment.uflStatistics.addActionListener(this);
+
+			startThread(new Runnable() {
+				@Override public void run() {
+					experiment.uflStatistics.compute(experiment);
 				}
 			});
 		} catch (InstantiationException | IllegalAccessException e) {

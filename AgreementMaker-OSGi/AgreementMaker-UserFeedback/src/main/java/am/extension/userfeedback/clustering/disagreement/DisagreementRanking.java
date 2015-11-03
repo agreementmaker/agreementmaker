@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MappingSimilarityComparator;
+import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.ontology.Ontology;
 import am.evaluation.disagreement.variance.VarianceDisagreement;
@@ -39,13 +39,41 @@ public class DisagreementRanking<T extends UFLExperiment> extends CandidateSelec
 		this.experiment = ex;
 
 		// get the matchers from the execution semantics
-		List<AbstractMatcher> matchers = ex.initialMatcher.getComponentMatchers();
+		List<MatchingTask> matchers = ex.initialMatcher.getComponentMatchers();
 		
 		rank(matchers);
 	}
 	
-	public void rank(List<AbstractMatcher> matchers) {
+	public void rank(List<MatchingTask> matchers) {
 				
+		if( allRanked == null ) {
+			initializeRankedList(matchers);
+		}
+		
+		for( int i = 0; i < allRanked.size(); i++ ){
+			if( experiment.correctMappings == null && experiment.incorrectMappings == null )
+			{
+				selectedMapping = allRanked.get(i);
+				break;
+			}
+			
+			Mapping m = allRanked.get(i);
+			if( experiment.correctMappings != null && (experiment.correctMappings.contains(m.getEntity1(),Ontology.SOURCE) != null ||
+				experiment.correctMappings.contains(m.getEntity2(),Ontology.TARGET) != null) ) {
+				// assume 1-1 mapping, skip already validated mappings.
+				continue;
+			}
+			if( experiment.incorrectMappings != null && experiment.incorrectMappings.contains(m) ) 
+				continue; // we've validated this mapping already.
+			
+			selectedMapping=m;
+			break;
+		}
+		
+		done();
+	}
+
+	private void initializeRankedList(List<MatchingTask> matchers) {
 		if( allRanked == null ) {
 			initializeRankedList(matchers);
 		}

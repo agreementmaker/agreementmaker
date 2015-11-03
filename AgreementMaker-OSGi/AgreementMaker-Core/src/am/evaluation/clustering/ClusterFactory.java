@@ -4,7 +4,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
-import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.MatchingTask;
 import am.evaluation.clustering.localByThreshold.LocalByThresholdMethod;
 
 public class ClusterFactory {
@@ -26,7 +26,7 @@ public class ClusterFactory {
 	}
 	
 	
-	public static ClusteringMethod createClusteringMethod( ClusteringType t, List<AbstractMatcher> matchers ) {
+	public static ClusteringMethod createClusteringMethod( ClusteringType t, List<MatchingTask> matchers ) {
 		ClusteringMethod method = null;
 		
 		try {

@@ -1,11 +1,11 @@
 package am.app.mappingEngine.referenceAlignment;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 import am.app.mappingEngine.ReferenceEvaluationData;
 
-import com.ibm.icu.text.DecimalFormat;
 
 public class ThresholdAnalysisData {
 	private double[] thresholds;

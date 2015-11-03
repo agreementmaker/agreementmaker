@@ -114,7 +114,7 @@ public class MatchingTaskPreset implements Comparable<MatchingTaskPreset>, Seria
 		}
 		return targetOnt;
 	}
-	
+
 	/**
 	 * @return true if there was a reference file specified for this matching task
 	 */

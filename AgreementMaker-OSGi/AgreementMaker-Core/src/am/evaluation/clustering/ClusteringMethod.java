@@ -5,9 +5,9 @@ import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.List;
 
-import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.MatchingTask;
 
 /**
  * A clustering method is used to cluster similar mappings.
@@ -18,9 +18,9 @@ public abstract class ClusteringMethod {
 	
 	protected final PropertyChangeSupport propertyChangeSupport;
 
-	protected List<AbstractMatcher> availableMatchers = new ArrayList<AbstractMatcher>();
+	protected List<MatchingTask> availableMatchers = new ArrayList<>();
 	
-	public ClusteringMethod(List<AbstractMatcher> availableMatchers) {
+	public ClusteringMethod(List<MatchingTask> availableMatchers) {
 		
 		propertyChangeSupport = new PropertyChangeSupport(this);
 		
@@ -28,8 +28,8 @@ public abstract class ClusteringMethod {
 			this.availableMatchers.addAll(availableMatchers);
 	}
 
-	public void setAvailableMatchers(List<AbstractMatcher> availableMatchers) {	this.availableMatchers = availableMatchers; }
-	public List<AbstractMatcher> getAvailableMatchers() { return availableMatchers; }
+	public void setAvailableMatchers(List<MatchingTask> availableMatchers) {	this.availableMatchers = availableMatchers; }
+	public List<MatchingTask> getAvailableMatchers() { return availableMatchers; }
 	
 	public abstract void cluster();
 	

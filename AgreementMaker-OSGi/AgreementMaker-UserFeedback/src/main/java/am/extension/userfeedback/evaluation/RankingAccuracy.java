@@ -1,18 +1,14 @@
 package am.extension.userfeedback.evaluation;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.Serializable;
 import java.util.Arrays;
 
-import am.app.Core;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.extension.userfeedback.experiments.UFLExperiment;
 import am.extension.userfeedback.experiments.UFLExperimentParameters.Parameter;
 
-public class RankingAccuracy extends CandidateSelectionEvaluation{
+public class RankingAccuracy extends CandidateSelectionEvaluation {
 	private int falsePositive=0;
 	private int falseNegative=0;
 	private int count=0;
@@ -27,34 +23,29 @@ public class RankingAccuracy extends CandidateSelectionEvaluation{
 		
 		Mapping candidateMapping = exp.candidateSelection.getSelectedMapping();
 		
-		this.experiment=exp;
+		this.experiment = exp;
 
-		Alignment<Mapping> computedAlignment=exp.getFinalAlignment();
-		try{
-			if ((computedAlignment.contains(candidateMapping))&&(!referenceAlignment.contains(candidateMapping)))
-			{
-				falsePositive++;
-			}
-			if ((!computedAlignment.contains(candidateMapping))&&(referenceAlignment.contains(candidateMapping)))
-			{
-				falseNegative++;
-			}
+		Alignment<Mapping> computedAlignment = exp.getFinalAlignment();
+		if ((computedAlignment.contains(candidateMapping)) && (!referenceAlignment.contains(candidateMapping))) {
+			falsePositive++;
 		}
-		catch (Exception e)
-		{
-			System.out.println("bwhbow");
+		if ((!computedAlignment.contains(candidateMapping)) && (referenceAlignment.contains(candidateMapping))) {
+			falseNegative++;
 		}
 		count++;
 		
-		double accuracy=((double)(falseNegative+falsePositive))/(double)count;
+		double accuracy = ((double)(falseNegative+falsePositive)) / (double)count;
 		
-		try {
-			writeAccuracy(accuracy, candidateMapping);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if (candidateMapping != null) {
+			StringBuilder sb = new StringBuilder();
+			sb.append("\tRanking Accuracy: ")
+			  .append(accuracy).append(" ")
+			  .append(falsePositive).append(" ")
+			  .append(falseNegative).append(" ")
+			  .append(count).append(" ")
+			  .append(candidateMapping);
+			experiment.info(sb.toString());
 		}
-		
 		
 		if( data == null) {
 			int numIterations = exp.setup.parameters.getIntParameter(Parameter.NUM_ITERATIONS);
@@ -62,32 +53,16 @@ public class RankingAccuracy extends CandidateSelectionEvaluation{
 		}
 	
 		// save all the values
-		int currentIteration = exp.getIterationNumber()-1;
-		data.accuracy[currentIteration] = accuracy;
-		data.falsePositive   [currentIteration] =falsePositive;
-		data.falseNegative [currentIteration] = falseNegative;
-		data.totalFeedback    [currentIteration] = count;
+		int currentIndex = exp.getIterationNumber();
+		data.accuracy[currentIndex]      = accuracy;
+		data.falsePositive[currentIndex] = falsePositive;
+		data.falseNegative[currentIndex] = falseNegative;
+		data.totalFeedback[currentIndex] = count;
 		
 		
 		done();
 		
 	}
-	
-	
-	private void writeAccuracy(double accuracy, Mapping mp) throws Exception
-	{
-		if (mp!=null)
-		{
-			String currentLog = experiment.setup.parameters.getParameter(Parameter.LOGFILE);
-			File file = new File(Core.getInstance().getRoot() + currentLog + "-accuracy.txt");
-	
-			FileWriter fw = new FileWriter(file.getAbsoluteFile(), true);
-			BufferedWriter bw = new BufferedWriter(fw);
-			bw.write(accuracy+" "+falsePositive+" "+falseNegative+" "+count+" "+mp.toString()+"\n");
-			bw.close();
-		}
-	}
-	
 	
 	public ServerCSEvaluationData getData() {
 		return data;

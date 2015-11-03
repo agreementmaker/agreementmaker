@@ -45,7 +45,7 @@ public class SignatureVectorStats {
 			for(int j=0;j<col;j++)
 			{
 				Mapping mp = sm.get(i, j);
-				Object[] sv = UFLutility.getSignatureVector(mp, experiment.initialMatcher.getComponentMatchers());
+				double[] sv = UFLutility.getSignatureVector(mp, experiment.initialMatcher.getComponentMatchers());
 				if (UFLutility.validSsv(sv))
 				{
 
@@ -75,7 +75,7 @@ public class SignatureVectorStats {
 		int row=sm.getRows();
 		int col=sm.getColumns();
 		Mapping mp;
-		Object[] sv;
+		double[] sv;
 		for (int i=0;i<row;i++)
 		{
 			for(int j=0;j<col;j++)

@@ -7,9 +7,6 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
-import org.openjena.atlas.logging.Log;
-
-import am.extension.batchmode.simpleBatchMode.SimpleBatchModeRunner;
 import am.matcher.lod.LinkedOpenData.LODBatch;
 import am.matcher.oaei.imei2013.InstanceMatching;
 import am.ui.UICore;

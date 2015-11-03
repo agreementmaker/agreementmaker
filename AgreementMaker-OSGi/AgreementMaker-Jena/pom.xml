@@ -1,0 +1,66 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>edu.uic.cs.advis.am</groupId>
+		<artifactId>AgreementMaker-OSGi</artifactId>
+		<version>0.3.0-SNAPSHOT</version>
+	</parent>
+	
+	<artifactId>AgreementMaker-Jena</artifactId>
+	<packaging>bundle</packaging>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<version>2.4.0</version>
+				<extensions>true</extensions>
+				<configuration>
+					<manifestLocation>META-INF</manifestLocation>
+					<instructions>
+						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+						<Bundle-Version>${project.version}</Bundle-Version>
+						<!-- <Export-Package>${bundle.namespace}.*</Export-Package> -->
+						<!-- <Export-Package>*</Export-Package> <_exportcontents>!org.osgi.*,!org.apache.felix.*,*</_exportcontents> -->
+						<Import-Package>
+							!com.ibm.uvm.tools,
+							!com.sun.jdmk.comm,
+							!javax.jmdns,
+							!javax.jms,
+							!javax.mail,
+							!javax.mail.internet,
+							!net.sf.ehcache,
+							!net.spy.memcached,
+							!org.apache.xml.resolver,
+							!org.apache.xml.resolver.readers,
+							!sun.io,
+							*
+						</Import-Package>
+
+						<_exportcontents>
+							*
+						</_exportcontents>
+
+						<Embed-Dependency>*;scope=compile|runtime;type=!pom;</Embed-Dependency>
+						<Embed-Directory>target/dependency</Embed-Directory>
+						<Embed-StripGroup>true</Embed-StripGroup>
+						<Embed-Transitive>true</Embed-Transitive>
+					</instructions>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.apache.jena</groupId>
+			<artifactId>apache-jena-libs</artifactId>
+			<version>2.11.2</version>
+			<type>pom</type>
+			<!-- <exclusions> <exclusion> <groupId>xml-apis</groupId> <artifactId>xml-apis</artifactId> 
+				</exclusion> </exclusions> -->
+		</dependency>
+	</dependencies>
+</project>

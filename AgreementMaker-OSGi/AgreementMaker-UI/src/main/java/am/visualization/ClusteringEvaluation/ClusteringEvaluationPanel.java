@@ -7,19 +7,18 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
 
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JPanel;
 
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.MatcherResult;
+import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.ReferenceEvaluationData;
 import am.app.mappingEngine.referenceAlignment.ReferenceEvaluator;
 import am.evaluation.clustering.Cluster;
 import am.evaluation.clustering.localByThreshold.LocalByThresholdMethod;
 import am.evaluation.clustering.localByThreshold.LocalByThresholdParameters;
 import am.ui.MatchersChooser;
-import am.ui.api.AMTab;
 import am.ui.api.impl.AMTabSupportPanel;
 
 public class ClusteringEvaluationPanel 	extends AMTabSupportPanel 
@@ -47,28 +46,28 @@ public class ClusteringEvaluationPanel 	extends AMTabSupportPanel
 	public void actionPerformed(ActionEvent e) {
 		if( e.getActionCommand() == "start" ) {
 			// start button was pressed
-			AbstractMatcher reference  = MatchersChooser.getOneMatcher("Please select the reference alignment matcher:");
-			List<AbstractMatcher> matchers = MatchersChooser.getManyMatchers("Please select the matchers for computing the clusters:");
+			MatchingTask reference  = MatchersChooser.getOneMatcher("Please select the reference alignment matcher:");
+			List<MatchingTask> matchers = MatchersChooser.getManyMatchers("Please select the matchers for computing the clusters:");
 			
 			evaluateLocalbyThresholdClustering( reference, matchers);
 		}
 		
 	}
 
-	private void evaluateLocalbyThresholdClustering(AbstractMatcher reference, List<AbstractMatcher> matchers) {
+	private void evaluateLocalbyThresholdClustering(MatchingTask reference, List<MatchingTask> matchers) {
 
 		LocalByThresholdMethod clm = new LocalByThresholdMethod(matchers);
 		LocalByThresholdParameters clmp = new LocalByThresholdParameters();
 		clmp.clusteringThreshold = 0.1;
 		clm.setParameters(clmp);
 		
-		Mapping firstMapping = reference.getClassAlignmentSet().get(0);
+		Mapping firstMapping = reference.selectionResult.getClassAlignmentSet().get(0);
 		System.out.println("Computing the cluster of mapping: " + firstMapping);
 		for( double th = 0.0d; th < 0.5; th += 0.01 ) {
 			((LocalByThresholdParameters)(clm.getParameters())).clusteringThreshold = th;
 			Cluster<Mapping> cl = clm.getCluster(firstMapping);
 			
-			ReferenceEvaluationData red = ReferenceEvaluator.compare(cl.getAlignment(), reference.getClassAlignmentSet());
+			ReferenceEvaluationData red = ReferenceEvaluator.compare(cl.getAlignment(), reference.selectionResult.getClassAlignmentSet());
 
 			System.out.println("th="+ th + ": size(" + cl.size() +")" + " inRef(" + red.getCorrect() + ")" );
 		}

@@ -1,0 +1,15 @@
+{
+  "tasks" : [ {
+    "sourceOntology" : "/home/cosmin/a.owl",
+    "targetOntology" : "/home/cosmin/b.owl",
+    "matcher" : {
+      "canonicalClassName" : "am.matcher.oaei.oaei2011.OAEI2011Matcher"
+    },
+    "selector" : {
+      "canonicalClassName" : "am.app.mappingEngine.oneToOneSelection.MwbmSelection"
+    },
+    "output" : {
+      "filePath" : "/home/cosmin/a_to_b.rdf"
+    }
+  } ]
+}
