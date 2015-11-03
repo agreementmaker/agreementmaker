@@ -29,11 +29,13 @@
 				<configuration>
 					<manifestLocation>META-INF</manifestLocation>
 					<instructions>
+                        <Bundle-Activator>${bundle.namespace}.Activator</Bundle-Activator>
 						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
 						<Bundle-Version>${project.version}</Bundle-Version>
 						<Export-Package>${bundle.namespace}.*</Export-Package>
 						<Import-Package>
 							!javax.xml.namespace,
+                            am.app.mappingEngine.oneToOneSelection,
 							*
 						</Import-Package>
 					</instructions>
@@ -69,6 +71,24 @@
 			<scope>provided</scope>
 		</dependency>
         <dependency>
+            <groupId>${project.parent.groupId}</groupId>
+            <artifactId>AgreementMaker-Matchers</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.parent.groupId}</groupId>
+            <artifactId>Matcher-AdvancedSimilarity</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.parent.groupId}</groupId>
+            <artifactId>Matcher-PRA</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.11</version>
@@ -78,6 +98,12 @@
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-all</artifactId>
             <version>1.3</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>18.0</version>
             <scope>test</scope>
         </dependency>
 	</dependencies>

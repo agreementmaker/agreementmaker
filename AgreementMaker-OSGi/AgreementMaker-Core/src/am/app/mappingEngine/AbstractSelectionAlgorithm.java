@@ -5,8 +5,6 @@ import java.util.List;
 
 import javax.swing.SwingWorker;
 
-import org.apache.log4j.Logger;
-
 import am.Utility;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 
@@ -15,9 +13,13 @@ public abstract class AbstractSelectionAlgorithm extends SwingWorker<Void,Void> 
 	protected DefaultSelectionParameters params;
 	protected SelectionResult result;
 	
-	private static Logger LOG = Logger.getLogger(AbstractSelectionAlgorithm.class);
 	// FIXME: Isn't this taken care of by SwingWorker? -- Cosmin.
 	protected List<MatchingProgressListener> progressListeners = new ArrayList<MatchingProgressListener>();
+
+    @Override
+    public SelectionResult getResult() {
+        return result;
+    }
 	
 	/**
 	 * Match(), buildSimilarityMatrix() and select() are the only 3 public methods to be accessed by the system other then get and set methods
@@ -42,17 +44,17 @@ public abstract class AbstractSelectionAlgorithm extends SwingWorker<Void,Void> 
 	protected Void doInBackground() throws Exception {
 		select();
 		return null;
-	};
+	}
 	
     //RESET ALIGNMENT STRUCTURES,     //TEMPLATE METHOD TO ALLOW DEVELOPERS TO ADD CODE: call super when overriding
     public void beforeSelectionOperations() {
-    	result = new SelectionResult();
+    	result = new SelectionResult(params.matchingTask);
     	result.setClassAlignmentSet(null);
     	result.setPropertyAlignmentSet(null);
     	result.setInstanceAlignmentSet(null);
     	result.setQualEvaluation(null);
     	result.setRefEvaluation(null);
-    	
+
     	for( MatchingProgressListener mpd : progressListeners ) {
     		mpd.appendToReport("Performing mapping selection ...");
     	}
