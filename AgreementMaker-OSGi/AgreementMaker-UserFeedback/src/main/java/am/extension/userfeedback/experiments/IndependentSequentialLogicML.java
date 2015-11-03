@@ -1,14 +1,17 @@
-package am.extension.userfeedback.logic;
+package am.extension.userfeedback.experiments;
 
 import java.awt.event.ActionEvent;
 
-import am.extension.userfeedback.experiments.SUExperiment;
+import org.apache.log4j.Logger;
+
 import am.extension.userfeedback.ui.UFLControlGUI.ActionCommands;
 
-public class IndipendentSequentialLogicSU  extends UFLControlLogic<SUExperiment> {
+public class IndependentSequentialLogicML  extends UFLControlLogic<MLFExperiment> {
+	
+	private static Logger LOG = Logger.getLogger(IndependentSequentialLogicMultiUser.class);
 	
 	@Override
-	public void runExperiment(SUExperiment exp) {
+	public void runExperiment(MLFExperiment exp) {
 		this.experiment = exp;
 		runInitialMatchers();
 	}
@@ -19,11 +22,12 @@ public class IndipendentSequentialLogicSU  extends UFLControlLogic<SUExperiment>
 		System.out.println(e.getActionCommand());  // TODO: Remove this.
 		
 		if( experiment != null && experiment.experimentHasCompleted() ) { // check stop condition
+			runSaveFeedback();
 			System.out.println("Experiment has completed.  Ignoring further actions.");
 			return;
 		}
 		
-		if( e.getActionCommand() == ActionCommands.INITIAL_MATCHERS_DONE.name() ) {
+		if( e.getActionCommand() == ActionCommands.EXECUTION_SEMANTICS_DONE.name() ) {
 			runInizialization();
 		}
 		
@@ -48,7 +52,7 @@ public class IndipendentSequentialLogicSU  extends UFLControlLogic<SUExperiment>
 		}
 		
 		if( e.getActionCommand() == ActionCommands.PROPAGATION_EVALUATION_DONE.name() ) {
-			experiment.beginIteration();
+			experiment.newIteration();
 			runCandidateSelection(); // back to top /\
 		}
 	}

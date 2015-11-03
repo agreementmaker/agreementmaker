@@ -1190,6 +1190,14 @@ public class OAEI2011Matcher extends AbstractMatcher {
 			mt.selectionAlgorithm.select();
 			mt.selectionResult = mt.selectionAlgorithm.getResult();
 			
+			mt.matcherResult = m.getResult();
+
+			// do selection
+			mt.selectionParameters.inputResult = m.getResult();
+			mt.selectionAlgorithm.setParameters(mt.selectionParameters);
+			mt.selectionAlgorithm.select();
+			mt.selectionResult = mt.selectionAlgorithm.getResult();
+			
 			Core.getInstance().addMatchingTask(mt);
 		}
 	}

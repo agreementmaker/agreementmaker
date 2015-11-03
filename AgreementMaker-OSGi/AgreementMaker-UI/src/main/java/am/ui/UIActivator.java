@@ -46,6 +46,16 @@ public class UIActivator implements BundleActivator {
 		        uiFrame.repaint();
 		    }
 		});
+				UICore.setUI(newUI);
+				final JFrame uiFrame = newUI.getUIFrame();
+				
+				java.awt.EventQueue.invokeLater(new Runnable() {
+				    @Override
+				    public void run() {
+				        uiFrame.toFront();
+				        uiFrame.repaint();
+				    }
+				});
 		
 		// start the visualization tracker
 		visTracker = new ServiceTracker<AMVisualizationComponent, AMVisualizationComponent>(context, 

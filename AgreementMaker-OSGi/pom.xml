@@ -44,6 +44,7 @@
 	<description>OSGi version of AgreementMaker</description>
 
 	<!-- Repositories from where we get our dependencies. -->
+	<!-- Repositories from where we get our dependencies. -->
 	<repositories>
 		<repository>
 			<id>AgreementMaker Maven Repo</id>
@@ -52,6 +53,21 @@
 		<repository>
 			<id>bliki</id>
 			<url>https://gwtwiki.googlecode.com/svn/maven-repository/</url>
+		</repository>
+		<repository>
+			<id>Apache Jena Releases</id>
+			<url>https://repository.apache.org/content/repositories/releases/</url>
+		</repository>
+		<!-- Springsource Bundle Repository -->
+		<repository>
+			<id>com.springsource.repository.bundles.release</id>
+			<name>SpringSource Enterprise Bundle Repository - SpringSource Bundle Releases</name>
+			<url>http://repository.springsource.com/maven/bundles/release</url>
+		</repository>
+		<repository>
+			<id>com.springsource.repository.bundles.external</id>
+			<name>SpringSource Enterprise Bundle Repository - External Bundle Releases</name>
+			<url>http://repository.springsource.com/maven/bundles/external</url>
 		</repository>
 	</repositories>
 	
@@ -204,11 +220,139 @@
 						<version>1.5</version>
 					</plugin>
 				</plugins>
+				</pluginManagement>
+			</build>
+		</profile>
+
+<!-- Profile for creating the source jars -->
+<profile>
+      <id>release</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <version>2.2.1</version>
+            <executions>
+              <execution>
+                <id>attach-sources</id>
+                <goals>
+                  <goal>jar-no-fork</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+		<!-- Maven Graph Plugin: http://mvnplugins.fusesource.org/maven/1.4/maven-graph-plugin/index.html 
+			To generate the dependency graphs, use: 
+			$ mvn -P graph graph:project
+		OR
+			$ mvn -P graph graph:reactor
+			
+			dot must be on your PATH.
+		-->
+		<profile>
+			<id>graph</id>
+			<pluginRepositories>
+				<pluginRepository>
+					<id>mvnplugins.fusesource.org</id>
+					<url>http://mvnplugins.fusesource.org/repo/release</url>
+					<releases>
+						<enabled>true</enabled>
+					</releases>
+				</pluginRepository>
+			</pluginRepositories>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.fusesource.mvnplugins</groupId>
+						<artifactId>maven-graph-plugin</artifactId>
+						<version>1.5</version>
+					</plugin>
+				</plugins>
 			</build>
 		</profile>
 		
 	</profiles>
 
+	<!-- Dependencies common to ALL modules of this project. -->
+	<dependencies>
+
+		<!-- OSGi dependencies -->
+		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>org.osgi.core</artifactId>
+			<version>4.3.1</version>
+			<scope>provided</scope>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>org.osgi.compendium</artifactId>
+			<version>4.3.1</version>
+			<scope>provided</scope>
+			<optional>true</optional>
+		</dependency>
+		
+	</profiles>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.8.1</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+	
+	<!-- <dependencyManagement>
+       <dependencies>
+            <dependency>
+                <groupId>org.drombler.fx</groupId>
+                <artifactId>drombler-fx-core-action</artifactId>
+                <version>${drombler-fx.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.drombler.fx</groupId>
+                <artifactId>drombler-fx-core-application</artifactId>
+                <version>${drombler-fx.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.drombler.fx</groupId>
+                <artifactId>drombler-fx-core-application-locale-de</artifactId>
+                <version>${drombler-fx.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.drombler.fx</groupId>
+                <artifactId>drombler-fx-core-commons</artifactId>
+                <version>${drombler-fx.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.drombler.fx</groupId>
+                <artifactId>drombler-fx-core-docking</artifactId>
+                <version>${drombler-fx.version}</version>
+            </dependency>
+			<dependency>
+                <groupId>org.drombler.fx</groupId>
+                <artifactId>drombler-fx-locale-all</artifactId>
+                <type>pom</type>
+                <version>${drombler-fx.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.drombler.fx</groupId>
+                <artifactId>drombler-fx-locale-de</artifactId>
+                <type>pom</type>
+                <version>${drombler-fx.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.drombler.fx</groupId>
+                <artifactId>drombler-fx-startup-main</artifactId>
+                <version>${drombler-fx.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement> -->
+	
 	<!-- Dependencies common to ALL modules of this project. -->
 	<dependencies>
 		<!-- OSGi dependencies -->

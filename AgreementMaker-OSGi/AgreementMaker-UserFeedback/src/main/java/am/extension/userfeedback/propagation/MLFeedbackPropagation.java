@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
@@ -19,6 +20,7 @@ import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.app.ontology.Node;
+import am.extension.userfeedback.MLutility.NaiveBayes;
 import am.extension.userfeedback.UserFeedback.Validation;
 import am.extension.userfeedback.MLutility.NaiveBayes;
 import am.extension.userfeedback.experiments.MLFExperiment;
@@ -31,7 +33,6 @@ public class MLFeedbackPropagation extends FeedbackPropagation<MLFExperiment> {
 	final double penalize_ratio=0.9;
 	private MLFExperiment experiment;
 	List<MatchingTask> inputMatchers = new ArrayList<>();
-	
 
 	private Object[] addToSV(Mapping mp, Boolean label)
 	{
@@ -141,7 +142,6 @@ public class MLFeedbackPropagation extends FeedbackPropagation<MLFExperiment> {
 
 		return top;
 	}
-	
 	//check if the signature vector is valid. A valid signature vector must have at least one non zero element.
 	private boolean validSsv(Object[] ssv)
 	{

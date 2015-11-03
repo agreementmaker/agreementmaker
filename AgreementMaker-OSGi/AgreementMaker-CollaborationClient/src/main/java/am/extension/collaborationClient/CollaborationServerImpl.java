@@ -25,6 +25,7 @@ import am.extension.collaborationClient.api.CollaborationUser;
 import am.extension.collaborationClient.api.CollaborationAPI;
 import am.matcher.oaei.oaei2011.OAEI2011Matcher;
 import am.matcher.oaei.oaei2011.OAEI2011Matcher.SubMatcherID;
+import am.matcher.oaei.oaei2011.OAEI2011Matcher.SubMatcherID;
 
 // If you get errors because unresolved imports go here:
 // http://tech.amikelive.com/node-269/eclipse-quick-tip-resolving-error-the-import-javaxservlet-cannot-be-resolved/

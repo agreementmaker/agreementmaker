@@ -3,6 +3,7 @@ package am.extension.batchmode.simpleBatchMode;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.List;
 
 import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.DefaultSelectionParameters;
@@ -14,6 +15,14 @@ import am.extension.batchmode.api.BatchModeTask;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import am.app.mappingEngine.AbstractMatcher;
+
+import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.ReferenceEvaluationData;
+import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
+import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
+import am.app.mappingEngine.referenceAlignment.ReferenceEvaluator;
+
 
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
@@ -68,6 +77,95 @@ public class SimpleBatchModeRunner implements BatchModeRunner {
             task.getOutput().save(selector.getResult());
         }
     }
+
+	private void referenceEvaluation(String pathToReferenceAlignment, Ontology sourceOntology,  Ontology targetOntology,AbstractMatcher matcher)
+			throws Exception {
+		// Run the reference alignment matcher to get the list of mappings in
+		// the reference alignment file
+		ReferenceAlignmentMatcher refMatcher = new ReferenceAlignmentMatcher();//(ReferenceAlignmentMatcher) MatcherFactory
+//				.getMatcherInstance(MatchersRegistry.ImportAlignment);
+
+		// these parameters are equivalent to the ones in the graphical
+		// interface
+		ReferenceAlignmentParameters parameters = new ReferenceAlignmentParameters();
+		parameters.fileName = pathToReferenceAlignment;
+		parameters.format = ReferenceAlignmentMatcher.OAEI;
+		parameters.onlyEquivalence = false;
+		parameters.skipClasses = false;
+		parameters.skipProperties = false;
+		refMatcher.setSourceOntology(sourceOntology);
+		refMatcher.setTargetOntology(targetOntology);
+
+		// When working with sub-superclass relations the cardinality is always
+		// ANY to ANY
+		if (!parameters.onlyEquivalence) {
+			parameters.maxSourceAlign = AbstractMatcher.ANY_INT;
+			parameters.maxTargetAlign = AbstractMatcher.ANY_INT;
+		}
+
+		refMatcher.setParam(parameters);
+
+		// load the reference alignment
+		refMatcher.match();
+		
+		Alignment<Mapping> referenceSet;
+		if (refMatcher.areClassesAligned() && refMatcher.arePropertiesAligned()) {
+			referenceSet = refMatcher.getAlignment(); // class + properties
+		} else if (refMatcher.areClassesAligned()) {
+			referenceSet = refMatcher.getClassAlignmentSet();
+		} else if (refMatcher.arePropertiesAligned()) {
+			referenceSet = refMatcher.getPropertyAlignmentSet();
+		} else {
+			// empty set? -- this should not happen
+			referenceSet = new Alignment<Mapping>(Ontology.ID_NONE,
+					Ontology.ID_NONE);
+		}
+
+		// the alignment which we will evaluate
+		Alignment<Mapping> myAlignment;
+
+		if (refMatcher.areClassesAligned() && refMatcher.arePropertiesAligned()) {
+			myAlignment = matcher.getAlignment();
+		} else if (refMatcher.areClassesAligned()) {
+			myAlignment = matcher.getClassAlignmentSet();
+		} else if (refMatcher.arePropertiesAligned()) {
+			myAlignment = matcher.getPropertyAlignmentSet();
+		} else {
+			myAlignment = new Alignment<Mapping>(Ontology.ID_NONE,
+					Ontology.ID_NONE); // empty
+		}
+
+		// use the ReferenceEvaluator to actually compute the metrics
+		ReferenceEvaluationData rd = ReferenceEvaluator.compare(myAlignment,
+				referenceSet);
+
+		// optional
+		//setRefEvaluation(rd);
+
+		// output the report
+		StringBuilder report = new StringBuilder();
+		report.append("Reference Evaluation Complete\n\n").append(matcher.getName())
+				.append("\n\n").append(rd.getReport()).append("\n");
+
+		//log.info(report);
+		
+		// use system out if you don't see the log4j output
+		System.out.println(report);
+				
+
+	}
+
+			
+				referenceEvaluation("C:/workspaceFinalProject/reference_alignments/cmt-conference.rdf",sourceOntology,targetOntology,matcher);
+
+				
+			//	referenceEvaluation("/Users/Aseel/Downloads/reference-alignment/cmt-iasted"
+			//			+ ".rdf",sourceOntology,targetOntology,matcher);
+			//	}
+
+
+
+	
 
 	private void referenceEvaluation(String pathToReferenceAlignment, Ontology sourceOntology,  Ontology targetOntology,AbstractMatcher matcher)
 			throws Exception {

@@ -10,7 +10,7 @@ import am.app.mappingEngine.Mapping;
 import am.extension.userfeedback.experiments.UFLExperiment;
 import am.extension.userfeedback.ui.UFLControlGUI;
 
-public abstract class UserFeedback {
+public abstract class UserFeedback <T extends UFLExperiment>{
 
 	private EventListenerList listeners;  // list of listeners for this class
 	

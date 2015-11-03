@@ -74,6 +74,34 @@ public class DisagreementRanking<T extends UFLExperiment> extends CandidateSelec
 	}
 
 	private void initializeRankedList(List<MatchingTask> matchers) {
+		if( allRanked == null ) {
+			initializeRankedList(matchers);
+		}
+		
+		for( int i = 0; i < allRanked.size(); i++ ){
+			if( experiment.correctMappings == null && experiment.incorrectMappings == null )
+			{
+				selectedMapping = allRanked.get(i);
+				break;
+			}
+			
+			Mapping m = allRanked.get(i);
+			if( experiment.correctMappings != null && (experiment.correctMappings.contains(m.getEntity1(),Ontology.SOURCE) != null ||
+				experiment.correctMappings.contains(m.getEntity2(),Ontology.TARGET) != null) ) {
+				// assume 1-1 mapping, skip already validated mappings.
+				continue;
+			}
+			if( experiment.incorrectMappings != null && experiment.incorrectMappings.contains(m) ) 
+				continue; // we've validated this mapping already.
+			
+			selectedMapping=m;
+			break;
+		}
+		
+		done();
+	}
+
+	private void initializeRankedList(List<AbstractMatcher> matchers) {
 		// setup the variance disagreement calculation
 		VarianceDisagreementParameters disagreementParams = new VarianceDisagreementParameters();
 		disagreementParams.setMatchers(matchers);

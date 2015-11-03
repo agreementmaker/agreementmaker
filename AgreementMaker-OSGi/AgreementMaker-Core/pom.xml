@@ -31,7 +31,7 @@
 		<directory>target</directory>
 
 		<plugins>
-			<plugin>
+      <plugin>
 				<groupId>org.apache.felix</groupId>
 				<artifactId>maven-bundle-plugin</artifactId>
 				<version>2.4.0</version>
@@ -193,7 +193,7 @@
 			<version>1.0</version>
 		</dependency> -->
 
-		<dependency>
+    <dependency>
 			<groupId>org.apache.jena</groupId>
 			<artifactId>jena-sdb</artifactId>
 			<version>1.4.2</version>
@@ -203,8 +203,7 @@
 					<artifactId>xml-apis</artifactId>
 				</exclusion>
 			</exclusions>
-		</dependency>
-
+    </dependency>
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
@@ -288,11 +287,10 @@
 				</exclusion>
 			</exclusions>
 		</dependency> 
-
-		<dependency>
-			<groupId>dom4j</groupId>
-			<artifactId>dom4j</artifactId>
-			<version>1.6.1</version>
+    <dependency>
+		  <groupId>dom4j</groupId>
+		  <artifactId>dom4j</artifactId>
+		  <version>1.6.1</version>
 			<!-- xml-apis conflicts with xerces -->
 			<exclusions>
 				<exclusion>
@@ -300,7 +298,8 @@
 					<artifactId>xml-apis</artifactId>
 				</exclusion>
 			</exclusions>
-		</dependency>
+		</exclusions>
+	</dependency>
 
 		<dependency>
 			<groupId>net.sf.jwordnet</groupId>

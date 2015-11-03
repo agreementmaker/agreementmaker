@@ -23,6 +23,7 @@ public class AlignmentOutput
     private ArrayList<String> writeList = null;  // TODO: REMOVE THIS!!!!!! VERY VERY VERY INEFFICIENT USE OF MEMORY - Cosmin.
     private StringBuilder buffer;
 
+    private boolean overwriteExisting = false;
     /**
      * This constructor is used for saving as a String, not to a file.  Use only with compileString().
      * @param as The set of mappings between two ontologies.
@@ -308,5 +309,9 @@ public class AlignmentOutput
 
 	public String getString() {
 		return buffer.toString();
+	}
+	
+	public void setOverwriteExisting(boolean overwriteExisting) {
+		this.overwriteExisting = overwriteExisting;
 	}
 }

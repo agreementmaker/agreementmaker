@@ -1187,6 +1187,9 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		return param;
 	}
 
+	/**
+	 * @param param Cannot be null. If null, we will instantiate a new {@link DefaultMatcherParameters}.
+	 */
 	public void setParameters(DefaultMatcherParameters param) {
         if(param == null) {
             throw new IllegalArgumentException("Cannot set null parameters.");

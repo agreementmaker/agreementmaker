@@ -321,4 +321,11 @@ public class OrthoCombinationMatchers extends InitialMatchers {
 	@Override public AbstractMatcher getFinalMatcher() {
 		return m_lwc;
 	}
+		//FIXME: We should not be looking at the reference alignment here.
+		if( referenceAlignment != null ) {
+		}
+					referenceAlignment.contains(currentMapping.getEntity1(),currentMapping.getEntity2(), currentMapping.getRelation()) ) {
+					referenceAlignment.contains(currentMapping.getEntity1(), currentMapping.getEntity2(), currentMapping.getRelation()) ) {
+		if( referenceAlignment != null ) {
+		}
 }
