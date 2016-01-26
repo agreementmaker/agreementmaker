@@ -80,7 +80,7 @@
       <plugin>
         <groupId>org.ops4j</groupId>
         <artifactId>maven-pax-plugin</artifactId>
-        <version>1.5</version>
+        <version>1.6.0</version>
         <configuration>
           <provision>
             <param>--platform=felix</param>
