@@ -1,3 +1,9 @@
+# AgreementMaker
+
+AgreementMaker is an ontology matching and visualization tool.
+It also serves as a platform to implement and test new ontology 
+matching algorithms.
+
 # AgreementMaker-OSGi
 
 This is an OSGi version of AgremeentMaker.  All the sub-directories are each an
