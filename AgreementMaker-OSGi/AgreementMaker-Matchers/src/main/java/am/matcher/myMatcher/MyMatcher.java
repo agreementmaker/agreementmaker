@@ -2,9 +2,8 @@ package am.matcher.myMatcher;
 
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+
+
 
 import am.Utility;
 import am.app.mappingEngine.AbstractMatcher;
@@ -182,7 +181,7 @@ public class MyMatcher  extends AbstractMatcher  {
 		int count=0;
 		double sim=0.0d;
 		double score;
-		int syncount=0;
+		
 		
 		//Split source into parts 
 		ArrayList<String> sparts=this.getParts(sourceName);
@@ -326,53 +325,7 @@ public class MyMatcher  extends AbstractMatcher  {
 		// use the ReferenceEvaluator to actually compute the metrics
 		ReferenceEvaluationData rd = ReferenceEvaluator.compare(myAlignment,
 				referenceSet);
-		/*int i,j;
-		for (i=0;i<referenceSet.size();i++)
-		{
-			Boolean flag=false;
-			for (j=0;j<myAlignment.size();j++)
-			{
-				if (referenceSet.get(i).equals(myAlignment.get(j)))
-				{
-					if (referenceSet.get(i).getEntity1().isProp())
-						writer.write(referenceSet.get(i).toString(), myAlignment.get(j).toString(), referenceSet.get(i).getEntity1().getPropertyDomain().getLocalName(),referenceSet.get(i).getEntity2().getPropertyDomain().getLocalName());
-					else	
-						writer.write(referenceSet.get(i).toString(), myAlignment.get(j).toString(), referenceSet.get(i).getEntity1().getParents().toString(),referenceSet.get(i).getEntity2().getParents().toString());
-					flag=true;
-					myAlignment.remove(j);
-				}
-					
-			}
-			if (!flag)
-			{
-				if (referenceSet.get(i).getEntity1().isProp())
-					writer.write("Unmatched:"+referenceSet.get(i).toString(), "", referenceSet.get(i).getEntity1().getPropertyDomain().getLocalName(),referenceSet.get(i).getEntity2().getPropertyDomain().getLocalName());
-				else	
-					writer.write("Unmatched:"+referenceSet.get(i).toString(), "", referenceSet.get(i).getEntity1().getParents().toString(),referenceSet.get(i).getEntity2().getParents().toString());
-				//writer.write("Unmatched "+referenceSet.get(i).toString(),"",referenceSet.get(i).getEntity1().getParents().toString(),referenceSet.get(i).getEntity2().getParents().toString());
-
-			}
-				
-		}
 		
-		for (j=0;j<myAlignment.size();j++)
-		{
-			if (myAlignment.get(j).getEntity1().isProp())
-				try
-			{
-				writer.write("False positives "+myAlignment.get(j).toString(),"",myAlignment.get(j).getEntity1().getPropertyDomain().getLocalName(),myAlignment.get(j).getEntity2().getPropertyDomain().getLocalName());
-			}
-			catch(NullPointerException e)
-			{
-				System.out.print("");
-			}
-			else
-				writer.write("False positives "+myAlignment.get(j).toString(),"",myAlignment.get(j).getEntity1().getParents().toString(),myAlignment.get(j).getEntity2().getParents().toString());
-		}
-		*/
-		
-	
-
 		// optional
 		setRefEvaluation(rd);
 
@@ -392,11 +345,6 @@ public class MyMatcher  extends AbstractMatcher  {
 		results.add(fmeasure);
 		
 		return results;
-		
-		
-		
-		// use system out if you don't see the log4j output
-	//	System.out.println(report);
 
 	}
 
@@ -406,7 +354,7 @@ public class MyMatcher  extends AbstractMatcher  {
 	
 		String ONTOLOGY_BASE_PATH ="conference_dataset/"; // Use your base path
 		String[] confs = {"cmt","conference","confOf","edas","ekaw","iasted","sigkdd"};
-		//String[] confs = {"edas","sigkdd"};
+		
 		
 		
 		MyMatcher mm = new MyMatcher();
@@ -417,7 +365,7 @@ public class MyMatcher  extends AbstractMatcher  {
 		int size=21;
 		
 		stop=new StopWords();
-		ArrayList<Fscore> fscore=new ArrayList<Fscore>();
+		
 		for(int i = 0; i < confs.length-1; i++)
 		{
 			for(int j = i+1; j < confs.length; j++)
@@ -451,15 +399,14 @@ public class MyMatcher  extends AbstractMatcher  {
 					e.printStackTrace();
 				}
 				
-				/*writer=new FileOutput(confs[i]+"-"+confs[j]+".csv");
-				writer.writeHeader();*/
+				
 			ArrayList<Double> results=	mm.referenceEvaluation(ONTOLOGY_BASE_PATH + confs[i]+"-"+confs[j]+".rdf");
-			//Add fscore to a list
-			fscore.add(new Fscore(results.get(2),confs[i]+"-"+confs[j]));
+	
+			
 			precision+=results.get(0);
 			recall+=results.get(1);
 			fmeasure+=results.get(2);
-			/*writer.close();*/
+		
 			
 			
 			}
@@ -467,21 +414,7 @@ public class MyMatcher  extends AbstractMatcher  {
 		}
 
 		StringBuilder sb= new StringBuilder();
-		Collections.sort(fscore,
-				
-				new Comparator<Fscore>() {
-			        @Override
-			        public int compare(Fscore a,Fscore b)
-			        {
-
-			            if (a.score==b.score)
-			            	return 0;
-			            if (a.score>b.score)
-			            	return 1;
-			            return -1;
-			        }
-			    });
-		System.out.println("Lowest F-score ontology:"+fscore.get(0).ontology.toString());
+		
 		precision/=size;
 		recall/=size;
 		fmeasure/=size;
