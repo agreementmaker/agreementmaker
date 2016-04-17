@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<catalog prefer="public" xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+    <group id="Folder Repository, directory=, recursive=true, Auto-Update=true, version=2" prefer="public" xml:base="">
+        <uri id="Automatically generated entry, Timestamp=1445328672423" name="http://cmt" uri="cmt.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1445328672423" name="http://conference" uri="Conference.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1445328672423" name="http://confOf" uri="confOf.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1445328672423" name="http://edas" uri="edas.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1445328672423" name="http://ekaw" uri="ekaw.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1445328672423" name="http://iasted" uri="iasted.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1445328672423" name="http://sigkdd" uri="sigkdd.owl"/>
+    </group>
+</catalog>

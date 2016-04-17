@@ -1,0 +1,132 @@
+<?xml version='1.0' encoding='utf-8'?>
+				<rdf:RDF xmlns='http://knowledgeweb.semanticweb.org/heterogeneity/alignment' 
+					 xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
+					 xmlns:xsd='http://www.w3.org/2001/XMLSchema#'>
+				<Alignment>
+				<xml>yes</xml>
+				<level>0</level>
+				<type>??</type>
+				
+				<onto1>
+				<Ontology rdf:about="http://conference">
+				  <location>http://nb.vse.cz/~svabo/oaei2010/Conference.owl</location>
+				</Ontology>
+				</onto1>
+				<onto2>
+				<Ontology rdf:about="http://iasted">
+				  <location>http://nb.vse.cz/~svabo/oaei2010/iasted.owl</location>
+				</Ontology>
+				</onto2>		<map>
+								<Cell cid='99'>
+									<entity1 rdf:resource='http://conference#Passive_conference_participant'/>
+									<entity2 rdf:resource='http://iasted#Listener'/>
+									<measure rdf:datatype='xsd:float'>1.0</measure>
+									<relation>=</relation>
+								</Cell>
+							</map>
+							<map>
+								<Cell cid='98'>
+									<entity1 rdf:resource='http://conference#Active_conference_participant'/>
+									<entity2 rdf:resource='http://iasted#Speaker'/>
+									<measure rdf:datatype='xsd:float'>1.0</measure>
+									<relation>=</relation>
+								</Cell>
+							</map>
+							<map>
+								<Cell cid='1'>
+									<entity1 rdf:resource='http://conference#Reviewer'/>
+									<entity2 rdf:resource='http://iasted#Reviewer'/>
+									<measure rdf:datatype='xsd:float'>1.0</measure>
+									<relation>=</relation>
+								</Cell>
+							</map>
+							<map>
+								<Cell cid='2'>
+									<entity1 rdf:resource='http://conference#Person'/>
+									<entity2 rdf:resource='http://iasted#Person'/>
+									<measure rdf:datatype='xsd:float'>1.0</measure>
+									<relation>=</relation>
+								</Cell>
+							</map>
+							<map>
+								<Cell cid='3'>
+									<entity1 rdf:resource='http://conference#Regular_author'/>
+									<entity2 rdf:resource='http://iasted#Author'/>
+									<measure rdf:datatype='xsd:float'>1.0</measure>
+									<relation>=</relation>
+								</Cell>
+							</map>
+							<map>
+								<Cell cid='4'>
+									<entity1 rdf:resource='http://conference#Conference_fees'/>
+									<entity2 rdf:resource='http://iasted#Fee'/>
+									<measure rdf:datatype='xsd:float'>1.0</measure>
+									<relation>=</relation>
+								</Cell>
+							</map>
+							<map>
+								<Cell cid='5'>
+									<entity1 rdf:resource='http://conference#Tutorial'/>
+									<entity2 rdf:resource='http://iasted#Tutorial'/>
+									<measure rdf:datatype='xsd:float'>1.0</measure>
+									<relation>=</relation>
+								</Cell>
+							</map>
+							<map>
+								<Cell cid='6'>
+									<entity1 rdf:resource='http://conference#contributes'/>
+									<entity2 rdf:resource='http://iasted#write'/>
+									<measure rdf:datatype='xsd:float'>1.0</measure>
+									<relation>=</relation>
+								</Cell>
+							</map>
+							<map>
+								<Cell cid='7'>
+									<entity1 rdf:resource='http://conference#Review'/>
+									<entity2 rdf:resource='http://iasted#Review'/>
+									<measure rdf:datatype='xsd:float'>1.0</measure>
+									<relation>=</relation>
+								</Cell>
+							</map>
+							<map>
+								<Cell cid='8'>
+									<entity1 rdf:resource='http://conference#Conference_document'/>
+									<entity2 rdf:resource='http://iasted#Document'/>
+									<measure rdf:datatype='xsd:float'>1.0</measure>
+									<relation>=</relation>
+								</Cell>
+							</map>
+							<map>
+								<Cell cid='9'>
+									<entity1 rdf:resource='http://conference#Conference_part'/>
+									<entity2 rdf:resource='http://iasted#Conference_activity'/>
+									<measure rdf:datatype='xsd:float'>1.0</measure>
+									<relation>=</relation>
+								</Cell>
+							</map>
+							<map>
+								<Cell cid='10'>
+									<entity1 rdf:resource='http://conference#Submitted_contribution'/>
+									<entity2 rdf:resource='http://iasted#Submission'/>
+									<measure rdf:datatype='xsd:float'>1.0</measure>
+									<relation>=</relation>
+								</Cell>
+							</map>
+							<map>
+								<Cell cid='11'>
+									<entity1 rdf:resource='http://conference#Camera_ready_contribution'/>
+									<entity2 rdf:resource='http://iasted#Final_manuscript'/>
+									<measure rdf:datatype='xsd:float'>1.0</measure>
+									<relation>=</relation>
+								</Cell>
+							</map>
+							<map>
+								<Cell cid='12'>
+									<entity1 rdf:resource='http://conference#Conference_proceedings'/>
+									<entity2 rdf:resource='http://iasted#Publication'/>
+									<measure rdf:datatype='xsd:float'>1.0</measure>
+									<relation>=</relation>
+								</Cell>
+							</map>
+							</Alignment>
+	</rdf:RDF>

@@ -1,0 +1,23 @@
+Reference Alignment,My Alignment
+(78 Place -> 33 Place: 1.0  =  ),(78 Place -> 33 Place: 2.0  =  ),[],[]
+(97 Review -> 43 Review: 1.0  =  ),(97 Review -> 43 Review: 2.0  =  ),[43 Document],[19 Document]
+(116 Student_registration_fee -> 41 Registration_Student: 1.0  =  ),(116 Student_registration_fee -> 41 Registration_Student: 0.800000011920929  =  ),[93 Registration_fee],[42 Registration_fee]
+(45 Fee -> 21 Fee: 1.0  =  ),(45 Fee -> 21 Fee: 2.0  =  ),[69 Money],[]
+(93 Registration_fee -> 42 Registration_fee: 1.0  =  ),(93 Registration_fee -> 42 Registration_fee: 2.0  =  ),[45 Fee],[21 Fee]
+(108 Sponsor -> 46 Sponzor: 1.0  =  ),(108 Sponsor -> 46 Sponzor: 1.5  =  ),[77 Person],[]
+Unmatched:(37 Deadline_for_notification_of_acceptance -> 17 Deadline_Author_notification: 1.0  =  ),,[36 Deadline],[15 Deadline]
+(72 Nonmember_registration_fee -> 38 Registration_Non-Member: 1.0  =  ),(72 Nonmember_registration_fee -> 38 Registration_Non-Member: 0.800000011920929  =  ),[93 Registration_fee],[42 Registration_fee]
+(5 Author -> 2 Author: 1.0  =  ),(5 Author -> 2 Author: 2.0  =  ),[106 Speaker],[45 Speaker]
+(64 Listener -> 26 Listener: 1.0  =  ),(64 Listener -> 26 Listener: 2.0  =  ),[39 Delegate],[32 Person]
+(66 Main_office -> 27 Main_office: 1.0  =  ),(66 Main_office -> 27 Main_office: 2.0  =  ),[78 Place],[33 Place]
+(30 Conference_hall -> 14 Conference_hall: 1.0  =  ),(30 Conference_hall -> 14 Conference_hall: 2.0  =  ),[78 Place],[33 Place]
+(77 Person -> 32 Person: 1.0  =  ),(77 Person -> 32 Person: 2.0  =  ),[],[]
+(36 Deadline -> 15 Deadline: 1.0  =  ),(36 Deadline -> 15 Deadline: 2.0  =  ),[123 Time],[]
+(106 Speaker -> 45 Speaker: 1.0  =  ),(106 Speaker -> 45 Speaker: 2.0  =  ),[39 Delegate],[32 Person]
+False positives (43 Document -> 19 Document: 2.0  =  ),,[60 Item],[]
+False positives (118 Submissions_deadline -> 18 Deadline_Paper_Submission: 0.800000011920929  =  ),,[36 Deadline],[15 Deadline]
+False positives (53 Hotel_room -> 24 Hotel: 0.7  =  ),,[78 Place],[33 Place]
+False positives (67 Memeber_registration_fee -> 40 Registration_SIGMOD_Member: 0.7  =  ),,[93 Registration_fee],[42 Registration_fee]
+False positives (35 pay -> 20 pay: 2.0  =  ),,Person,Person
+False positives (33 obtain -> 19 obtain: 2.0  =  ),,Person,Author
+False positives (6 is_designed_for -> 15 designed_by: 0.6666666865348816  =  ),,Deadline

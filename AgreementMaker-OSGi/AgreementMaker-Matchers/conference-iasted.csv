@@ -1,0 +1,17 @@
+Reference Alignment,My Alignment
+Unmatched:(36 Passive_conference_participant -> 64 Listener: 1.0  =  ),,[18 Conference_participant],[39 Delegate]
+Unmatched:(2 Active_conference_participant -> 106 Speaker: 1.0  =  ),,[18 Conference_participant, 14 Conference_contributor],[39 Delegate]
+(50 Reviewer -> 98 Reviewer: 1.0  =  ),(50 Reviewer -> 98 Reviewer: 2.0  =  ),[37 Person],[106 Speaker]
+(37 Person -> 77 Person: 1.0  =  ),(37 Person -> 77 Person: 2.0  =  ),[],[]
+Unmatched:(43 Regular_author -> 5 Author: 1.0  =  ),,[14 Conference_contributor],[106 Speaker]
+Unmatched:(16 Conference_fees -> 45 Fee: 1.0  =  ),,[],[69 Money]
+(56 Tutorial -> 130 Tutorial: 1.0  =  ),(56 Tutorial -> 130 Tutorial: 2.0  =  ),[17 Conference_part],[62 Lecture]
+(46 Review -> 97 Review: 1.0  =  ),(46 Review -> 97 Review: 2.0  =  ),[15 Conference_document],[43 Document]
+Unmatched:(15 Conference_document -> 43 Document: 1.0  =  ),,[],[60 Item]
+Unmatched:(17 Conference_part -> 25 Conference_activity: 1.0  =  ),,[],[1 Activity]
+Unmatched:(52 Submitted_contribution -> 117 Submission: 1.0  =  ),,[58 Written_contribution],[43 Document]
+Unmatched:(5 Camera_ready_contribution -> 47 Final_manuscript: 1.0  =  ),,[1 Accepted_contribution],[117 Submission]
+Unmatched:(19 Conference_proceedings -> 87 Publication: 1.0  =  ),,[],[60 Item]
+Unmatched:(3 contributes -> 40 write: 1.0  =  ),,Person,Person
+False positives (39 Presentation -> 82 Presentation: 2.0  =  ),,[13 Conference_contribution],[25 Conference_activity]
+False positives (50 is_given_by -> 8 is_given_by: 2.0  =  ),,Presentation,

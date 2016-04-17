@@ -1,0 +1,29 @@
+Reference Alignment
+
+
+3. (43 Regular_author -> 2 Author: 1.0  =  )
+4. (46 Review -> 43 Review: 1.0  =  )
+5. (40 Program_committee -> 36 Program_Committee: 1.0  =  )
+6. (20 Conference_volume -> 13 Conference: 1.0  =  )
+7. (16 Conference_fees -> 21 Fee: 1.0  =  )
+
+
+10. (37 Person -> 32 Person: 1.0  =  )
+11. (8 Committee -> 12 Committee: 1.0  =  )
+12. (15 Conference_document -> 19 Document: 1.0  =  )
+13. (26 has_an_email -> 3 E-mail: 1.0  =  )
+14. (50 is_given_by -> 23 presentationed_by: 1.0  =  )
+15. (4 gives_presentations -> 22 presentation: 1.0  =  )
+
+My alignment
+
+1. (37 Person -> 26 Listener: 0.8888888888888888  =  )
+2. (33 Organizing_committee -> 29 Organizing_Committee: 1.0  =  )
+3. (0 Abstract -> 1 Abstract: 1.0  =  )
+4. (10 Conference -> 13 Conference: 1.0  =  )
+5. (35 Paper -> 31 Paper: 1.0  =  )
+6. (40 Program_committee -> 36 Program_Committee: 1.0  =  )
+7. (8 Committee -> 12 Committee: 1.0  =  )
+8. (32 Organizer -> 32 Person: 0.8421052631578947  =  )
+9. (46 Review -> 43 Review: 1.0  =  )
+10. (28 Invited_speaker -> 25 Invited_Speaker: 1.0  =  )

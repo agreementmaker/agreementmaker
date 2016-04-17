@@ -1,0 +1,21 @@
+Reference Alignment,My Alignment
+(68 Place -> 33 Place: 1.0  =  ),(68 Place -> 33 Place: 2.0  =  ),[],[]
+(64 Person -> 32 Person: 1.0  =  ),(64 Person -> 32 Person: 2.0  =  ),[],[]
+Unmatched:(35 ConferenceVenuePlace -> 14 Conference_hall: 1.0  =  ),,[68 Place],[33 Place]
+(9 Author -> 2 Author: 1.0  =  ),(9 Author -> 2 Author: 2.0  =  ),[],[45 Speaker]
+Unmatched:(4 AccommodationPlace -> 24 Hotel: 1.0  =  ),,[68 Place],[33 Place]
+Unmatched:(31 ConferenceChair -> 22 General_Chair: 1.0  =  ),,[64 Person],[28 Organizator]
+(30 Conference -> 13 Conference: 1.0  =  ),(30 Conference -> 13 Conference: 2.0  =  ),[],[]
+(78 Review -> 43 Review: 1.0  =  ),(78 Review -> 43 Review: 2.0  =  ),[40 Document],[19 Document]
+(40 Document -> 19 Document: 1.0  =  ),(40 Document -> 19 Document: 2.0  =  ),[],[]
+(59 Paper -> 31 Paper: 1.0  =  ),(59 Paper -> 31 Paper: 2.0  =  ),[40 Document],[19 Document]
+Unmatched:(8 Attendee -> 26 Listener: 1.0  =  ),,[64 Person],[32 Person]
+Unmatched:(8 hasCostAmount -> 9 Price: 1.0  =  ),,Sponsorship,Registration_fee
+Unmatched:(18 hasName -> 6 Name_of_conference: 1.0  =  ),,Conference,Conference
+Unmatched:(49 startDate -> 10 Start_of_conference: 1.0  =  ),,Conference,Conference
+Unmatched:(2 endDate -> 4 End_of_conference: 1.0  =  ),,Conference,Conference
+False positives (57 Organization -> 28 Organizator: 1.5  =  ),,[],[32 Person]
+False positives (11 hasEmail -> 3 E-mail: 1.0  =  ),,Person
+False positives (18 hasName -> 5 Name: 1.0  =  ),,Conference,Person
+False positives (9 hasCostCurrency -> 1 Currency: 0.6666666865348816  =  ),,Sponsorship,Registration_fee
+False positives (2 endDate -> 2 Date: 0.6666666865348816  =  ),,Conference,Deadline

@@ -1,0 +1,28 @@
+Reference Alignment,My Alignment
+(37 Person -> 64 Person: 1.0  =  ),(37 Person -> 64 Person: 2.0  =  ),[],[]
+Unmatched:(18 Conference_participant -> 8 Attendee: 1.0  =  ),,[37 Person],[64 Person]
+(31 Organization -> 57 Organization: 1.0  =  ),(31 Organization -> 57 Organization: 2.0  =  ),[],[]
+(50 Reviewer -> 82 Reviewer: 1.0  =  ),(50 Reviewer -> 82 Reviewer: 2.0  =  ),[37 Person],[]
+Unmatched:(17 Conference_part -> 33 ConferenceEvent: 1.0  =  ),,[],[]
+(57 Workshop -> 102 Workshop: 1.0  =  ),(57 Workshop -> 102 Workshop: 2.0  =  ),[17 Conference_part],[1 AcademicEvent]
+(15 Conference_document -> 40 Document: 1.0  =  ),(15 Conference_document -> 40 Document: 0.7  =  ),[],[]
+(35 Paper -> 59 Paper: 1.0  =  ),(35 Paper -> 59 Paper: 2.0  =  ),[44 Regular_contribution],[40 Document]
+(46 Review -> 78 Review: 1.0  =  ),(46 Review -> 78 Review: 2.0  =  ),[15 Conference_document],[40 Document]
+Unmatched:(20 Conference_volume -> 30 Conference: 1.0  =  ),,[10 Conference],[]
+Unmatched:(45 Rejected_contribution -> 77 RejectedPaper: 1.0  =  ),,[49 Reviewed_contribution],[59 Paper]
+(53 Topic -> 95 Topic: 1.0  =  ),(53 Topic -> 95 Topic: 2.0  =  ),[],[]
+Unmatched:(1 Accepted_contribution -> 3 AcceptedPaper: 1.0  =  ),,[49 Reviewed_contribution],[59 Paper]
+Unmatched:(43 Regular_author -> 9 Author: 1.0  =  ),,[14 Conference_contributor],[]
+(36 has_the_first_name -> 13 hasFirstName: 1.0  =  ),(36 has_the_first_name -> 13 hasFirstName: 0.800000011920929  =  ),Person,Person
+Unmatched:(16 has_a_review_expertise -> 22 hasRating: 1.0  =  ),,Submitted_contribution,ActivePaper
+(37 has_the_last_name -> 14 hasLastName: 1.0  =  ),(37 has_the_last_name -> 14 hasLastName: 0.800000011920929  =  ),Person,Person
+False positives (10 Conference -> 30 Conference: 2.0  =  ),,[],[]
+False positives (3 Call_for_paper -> 14 CallForPapers: 1.0  =  ),,[15 Conference_document],[12 Call]
+False positives (2 belongs_to_reviewers -> 1 belongsToEvent: 0.6666666865348816  =  ),,Programme
+False positives (15 has_a_review -> 25 hasReviewHistory: 0.6666666865348816  =  ),,Reviewed_contribution,Reviewer
+False positives (59 was_a_member_of -> 34 isMemberOf: 0.800000011920929  =  ),,Committee_member,Person
+False positives (26 has_an_email -> 11 hasEmail: 1.0  =  ),,Person,
+False positives (34 has_members -> 16 hasMember: 1.5  =  ),,Committee,Conference
+False positives (12 has_a_name -> 18 hasName: 1.0  =  ),,Conference
+False positives (11 has_a_location -> 15 hasLocation: 1.0  =  ),,Conference_volume,ConferenceEvent
+False positives (22 has_a_track-workshop-tutorial_topic -> 30 hasTopic: 0.6666666865348816  =  ),,Conference_part,

@@ -1,0 +1,14 @@
+Reference Alignment,My Alignment
+Unmatched:(29 Location -> 78 Place: 1.0  =  ),,[],[]
+(17 Document -> 43 Document: 1.0  =  ),(17 Document -> 43 Document: 2.0  =  ),[],[60 Item]
+Unmatched:(20 Event -> 1 Activity: 1.0  =  ),,[],[]
+(41 Person -> 77 Person: 1.0  =  ),(41 Person -> 77 Person: 2.0  =  ),[],[]
+Unmatched:(40 Paper_Author -> 5 Author: 1.0  =  ),,[41 Person],[106 Speaker]
+(58 Session -> 99 Session: 1.0  =  ),(58 Session -> 99 Session: 2.0  =  ),[57 Scientific_Event],[62 Lecture]
+(55 Review -> 97 Review: 1.0  =  ),(55 Review -> 97 Review: 2.0  =  ),[17 Document],[43 Document]
+Unmatched:(7 Conference_Banquet -> 42 Dinner_banquet: 1.0  =  ),,[60 Social_Event],[105 Social_program]
+(64 Tutorial -> 130 Tutorial: 1.0  =  ),(64 Tutorial -> 130 Tutorial: 2.0  =  ),[22 Individual_Presentation],[62 Lecture]
+(59 Session_Chair -> 100 Session_chair: 1.0  =  ),(59 Session_Chair -> 100 Session_chair: 2.0  =  ),[9 Conference_Participant, 38 PC_Member],[39 Delegate]
+False positives (8 Conference_Paper -> 24 Conference_Hiker: 1.5  =  ),,[39 Paper],[39 Delegate]
+False positives (8 heldIn -> 12 is_held_in: 1.0  =  ),,Event,Activity
+False positives (32 writtenBy -> 31 is_writen_by: 2.0  =  ),,Document,Item
