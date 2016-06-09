@@ -27,32 +27,37 @@
     <properties>
         <org.osgi.service.http.port>8080</org.osgi.service.http.port>
         <org.osgi.service.http.port.secure>8443</org.osgi.service.http.port.secure>
+        <maven.bundle.plugin.version>3.0.1</maven.bundle.plugin.version>
         <skipTests>true</skipTests>
     </properties>
 
     <packaging>pom</packaging>
 
     <modules>
+<!--
         <module>poms</module>
         <module>provision</module>
+-->
         <module>AgreementMaker-API</module>
         <module>AgreementMaker-Core</module>
         <module>Matcher-BaseSimilarity</module>
+        <module>Matcher-AdvancedSimilarity</module>
         <module>AgreementMaker-Matchers</module>
         <module>Matcher-PRA</module>
-        <module>Matcher-AdvancedSimilarity</module>
         <module>Matcher-OAEI</module>
-        <module>AgreementMaker-UI</module>
         <module>Matcher-LinkedOpenData</module>
+        <module>AgreementMaker-UI</module>
         <module>AgreementMaker-BatchMode</module>
         <module>AgreementMaker-CollaborationClient</module>
         <module>AgreementMaker-UserFeedback</module>
         <module>AgreementMaker-SemanticExplanation</module>
         <module>AgreementMaker-UIGlue</module>
-        <!-- <module>VisualAnalytics-Graph</module> -->
         <module>Matcher-Benchmarks2013</module>
-        <module>AgreementMaker-IntegrationTests</module>
         <module>Matcher-IMEI2013</module>
+        <!--
+                &lt;!&ndash; <module>VisualAnalytics-Graph</module> &ndash;&gt;
+                <module>AgreementMaker-IntegrationTests</module>
+        -->
     </modules>
 
     <!-- Repositories from where we get our dependencies. -->
@@ -97,11 +102,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-maven-plugin</artifactId>
-                <version>9.3.0.v20150612</version>
-            </plugin>
         </plugins>
     </build>
 
@@ -122,6 +122,14 @@
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.framework</artifactId>
+            <version>5.4.0</version>
+            <scope>provided</scope>
+        </dependency>
+
 
         <!-- Unit Test dependencies -->
         <dependency>
