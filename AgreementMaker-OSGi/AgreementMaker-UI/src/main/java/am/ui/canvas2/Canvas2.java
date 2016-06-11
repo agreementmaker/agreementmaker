@@ -255,15 +255,13 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 		
 		// draw the edges before we draw the vertices
 		// TODO: FIND A BETTER WAY TO DO THIS: CHANGE THE WAY THE ITERATOR ITERATES, -> GRAPH PRIORITY.  Currently TIME IS WASTED ITERATING TWICE THROUGH THE GRAPHS!!!!
-		Iterator<CanvasGraph> graphIter = graphs.iterator();
-		while( graphIter.hasNext() ) {
-			CanvasGraph graph = graphIter.next();
-			if( !graph.isVisible(currentView) ) { // if the whole graph is not visible, skip redrawing its elements 
+
+		for(CanvasGraph graph : new ArrayList<>(graphs)) {
+			if( !graph.isVisible(currentView) ) { // if the whole graph is not visible, skip redrawing its elements
 				graphsnotVis++; 
-				continue; } 
-			
-			
-			
+				continue;
+			}
+
 			// draw the edges before we draw the vertices
 			Iterator<Canvas2Edge> edgeIter = graph.edges();
 			while( edgeIter.hasNext() ) {
@@ -278,12 +276,9 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 				}
 			}
 		}
-		
-		
+
 		// Draw the vertices.
-		graphIter = graphs.iterator();
-		while( graphIter.hasNext() ) {
-			CanvasGraph graph = graphIter.next();
+		for(CanvasGraph graph : new ArrayList<>(graphs)) {
 			if( !graph.isVisible(currentView) ) { // if the whole graph is not visible, skip redrawing its elements 
 				//graphsnotVis++; 
 				continue; } 

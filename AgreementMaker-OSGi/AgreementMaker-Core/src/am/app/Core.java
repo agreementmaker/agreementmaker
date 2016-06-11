@@ -625,12 +625,6 @@ public class Core {
 			try {
 				bundleContext.getBundle(0).stop();
 				//EclipseStarter.shutdown();
-				
-				while( bundleContext.getBundles() != null ) {
-					Thread.sleep(100);
-				}
-				
-				
 			} catch (BundleException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
