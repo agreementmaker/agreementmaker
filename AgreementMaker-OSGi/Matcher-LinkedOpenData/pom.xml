@@ -33,7 +33,12 @@
 						<Bundle-Version>${project.version}</Bundle-Version>
 						<Export-Package>${bundle.namespace}.*</Export-Package>
 						<Bundle-Activator>${bundle.namespace}.Activator</Bundle-Activator>
-						<Import-Package>*</Import-Package>
+						<Import-Package>
+							!javax.xml.parsers,
+							!org.w3c.dom,
+							!org.xml.sax,
+							*
+						</Import-Package>
 					</instructions>
 				</configuration>
 			</plugin>
