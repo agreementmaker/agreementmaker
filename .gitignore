@@ -43,3 +43,4 @@ AgreementMaker-OSGi/runner
 AgreementMaker-OSGi/*.iml
 AgreementMaker-OSGi/*/*.iml
 .idea
+**/*.iml
