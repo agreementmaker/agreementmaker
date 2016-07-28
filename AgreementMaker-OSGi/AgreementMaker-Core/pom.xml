@@ -88,6 +88,7 @@
 							!nu.xom,
 							!org.apache.geronimo.osgi.registry.api,
 							!org.jdom.*,
+                            !org.xml.sax.helpers,
 							org.osgi.*,
 							com.hp.hpl.*,
 							org.apache.log4j.*,
@@ -140,6 +141,7 @@
 	<!-- Put the OSGi manifest where Eclipse Plugin Development Environment (PDE) expects it. -->
 	<profiles>
 		<profile>
+            <id>m2e</id>
 			<activation>
 				<property>
 					<name>m2e.version</name>

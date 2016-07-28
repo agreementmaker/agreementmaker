@@ -46,7 +46,13 @@
 							!javax.xml.namespace,
 							!com.ctc.wstx.stax,
 							!javax.xml.transform,
+                            !javax.xml.transform.sax,
+                            !javax.xml.transform.stream,
 							!javax.xml.stream,
+                            !javax.xml.parsers,
+                            !org.w3c.dom,
+                            !org.xml.sax,
+                            !org.w3c.dom.*,
 							*
 						</Import-Package>
 						<Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>

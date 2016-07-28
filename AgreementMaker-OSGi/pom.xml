@@ -89,9 +89,8 @@
                 <artifactId>maven-pax-plugin</artifactId>
                 <version>1.6.0</version>
                 <configuration>
-                    <provision>
-                        <param>--platform=felix</param>
-                    </provision>
+                    <framework>felix</framework>
+                    <noDependencies>true</noDependencies>
                 </configuration>
                 <executions>
                     <execution>

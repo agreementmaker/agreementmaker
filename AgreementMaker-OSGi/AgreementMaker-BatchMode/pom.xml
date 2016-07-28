@@ -35,6 +35,9 @@
 						<Export-Package>${bundle.namespace}.*</Export-Package>
 						<Import-Package>
 							!javax.xml.namespace,
+                            !javax.xml.parsers,
+                            !org.w3c.dom,
+                            !org.xml.sax,
                             am.app.mappingEngine.oneToOneSelection,
 							*
 						</Import-Package>
