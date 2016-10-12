@@ -52,6 +52,7 @@
         <module>AgreementMaker-CollaborationClient</module>
         <module>AgreementMaker-UserFeedback</module>
         <module>AgreementMaker-SemanticExplanation</module>
+        <module>AgreementMaker-SimilarityMetrics</module>
         <module>AgreementMaker-UIGlue</module>
         <module>Matcher-Benchmarks2013</module>
         <module>Matcher-IMEI2013</module>
