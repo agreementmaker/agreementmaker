@@ -97,6 +97,7 @@
 						</Import-Package>
 						
 						<_exportcontents>
+							am.utility.*,
 							!javax.activation.*,
 							!javax.xml.bind.*,
 							!javax.xml.stream.util.*,
@@ -259,12 +260,6 @@
 			<groupId>secondstring</groupId>
 			<artifactId>secondstring</artifactId>
 			<version>20120620</version>
-		</dependency>
-
-		<dependency>
-			<groupId>simmetrics</groupId>
-			<artifactId>simmetrics</artifactId>
-			<version>1.6.2</version>
 		</dependency>
 
 		<dependency>
