@@ -36,7 +36,7 @@ import edu.uic.advis.im.knowledgebase.ontology.OntologyKBFactory;
 import misc.NYTConstants;
 import misc.Queries;
 import misc.Utilities;
-import am.app.mappingEngine.StringUtil.StringMetrics;
+import am.app.similarity.StringMetrics;
 import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.ontology.Ontology;
 import am.output.AlignmentOutput;

@@ -1,7 +1,7 @@
 package am.app.similarity;
 
 import uk.ac.shef.wit.simmetrics.similaritymetrics.Levenshtein;
-import am.utility.WordNetUtils;
+import am.app.wordnet.WordNetUtils;
 
 public class AMSubEditWordnetSim extends AMSubstringSim implements StringSimilarityMeasure {
 

@@ -3,14 +3,6 @@
  */
 package am.matcher.oaei.oaei2011;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import am.Utility;
 import am.app.Core;
 import am.app.lexicon.LexiconBuilderParameters;
@@ -22,7 +14,6 @@ import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchingProgressListener;
 import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
-import am.app.mappingEngine.StringUtil.StringMetrics;
 import am.app.mappingEngine.oneToOneSelection.MwbmSelection;
 import am.app.mappingEngine.qualityEvaluation.QualityMetricRegistry;
 import am.app.mappingEngine.utility.OAEI_Track;
@@ -32,6 +23,7 @@ import am.app.ontology.hierarchy.AlternateHierarchy;
 import am.app.ontology.profiling.classification.OntologyClassifier;
 import am.app.ontology.profiling.classification.OntologyClassifier.OAEI2011Configuration;
 import am.app.ontology.profiling.manual.ManualOntologyProfiler;
+import am.app.similarity.StringMetrics;
 import am.matcher.Combination.CombinationMatcher;
 import am.matcher.Combination.CombinationParameters;
 import am.matcher.FilterMatcher.FilterMatcher;
@@ -53,8 +45,15 @@ import am.matcher.multiWords.MultiWordsMatcher;
 import am.matcher.multiWords.MultiWordsParameters;
 import am.matcher.parametricStringMatcher.ParametricStringMatcher;
 import am.matcher.parametricStringMatcher.ParametricStringParameters;
-
 import com.hp.hpl.jena.ontology.OntProperty;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * The matching algorithm for OAEI 2011.

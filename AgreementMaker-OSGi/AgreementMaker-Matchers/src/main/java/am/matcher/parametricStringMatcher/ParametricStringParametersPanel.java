@@ -13,7 +13,7 @@ import am.Utility;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
-import am.app.mappingEngine.StringUtil.StringMetrics;
+import am.app.similarity.StringMetrics;
 
 public class ParametricStringParametersPanel extends AbstractMatcherParametersPanel implements ActionListener{
 

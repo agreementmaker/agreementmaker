@@ -6,8 +6,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import am.app.similarity.StringSimilarityMeasure;
-
 /**
  * This class holds various string cleaning or transformation utilities. All of
  * these should be self-contained so they are declared static.
@@ -140,27 +138,6 @@ public class StringUtility {
 		}
 		
 		return sb.toString().trim();
-	}
-	
-	/**
-	 * Given a list of source labels and a list of target labels, find the most
-	 * similar pair of labels using the given similarity metric.
-	 * 
-	 * Current runtime is O(|sourceLabels|*|targetLabels|)*O(SSM) ~
-	 * BigOmega(n^2).
-	 */
-	public static double getMaxStringSimilarity(
-			List<String> sourceLabels, List<String> targetLabels, StringSimilarityMeasure ssm) {
-				
-		double maxStringSimilarity = 0.0d;
-		for( String sourceLabel : sourceLabels ) {
-			for( String targetLabel : targetLabels ) {
-				double currentSim = ssm.getSimilarity(sourceLabel, targetLabel);
-				maxStringSimilarity = Math.max(currentSim, maxStringSimilarity);
-			}
-		}
-		
-		return maxStringSimilarity;
 	}
 
 	public static int countCommonTokens(String string1, String string2) {

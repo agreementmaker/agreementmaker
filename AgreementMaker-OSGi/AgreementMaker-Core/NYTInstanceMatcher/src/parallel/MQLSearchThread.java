@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.json.JSONException;
 
-import am.app.mappingEngine.StringUtil.StringMetrics;
+import am.app.similarity.StringMetrics;
 
 import freebase.Freebase;
 

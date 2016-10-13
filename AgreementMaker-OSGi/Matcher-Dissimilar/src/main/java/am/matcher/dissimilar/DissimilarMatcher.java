@@ -26,7 +26,7 @@ import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatchingProgressListener;
 import am.app.mappingEngine.ReferenceEvaluationData;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
-import am.app.mappingEngine.StringUtil.StringMetrics;
+import am.app.similarity.StringMetrics;
 import am.app.mappingEngine.qualityEvaluation.QualityMetricRegistry;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;

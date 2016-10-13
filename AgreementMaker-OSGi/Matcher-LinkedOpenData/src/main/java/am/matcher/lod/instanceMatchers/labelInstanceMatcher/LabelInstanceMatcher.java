@@ -1,19 +1,18 @@
 package am.matcher.lod.instanceMatchers.labelInstanceMatcher;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import org.apache.log4j.Logger;
-
-import am.app.mappingEngine.StringUtil.StringMetrics;
 import am.app.mappingEngine.instance.EntityTypeMapper.EntityType;
 import am.app.ontology.instance.Instance;
+import am.app.similarity.StringMetrics;
 import am.app.similarity.StringSimilarityMeasure;
 import am.matcher.lod.instanceMatcher.LabelUtils;
 import am.matcher.lod.instanceMatchers.BaseInstanceMatcher;
 import am.utility.StringUtility;
+import org.apache.log4j.Logger;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * An instance matching algorithm that looks only at the labels associated with
@@ -104,7 +103,7 @@ public class LabelInstanceMatcher extends BaseInstanceMatcher {
 			sim = computeTypedSimilarity(processedSourceLabels, processedTargetLabels, source.getType());			
 		}
 		else {
-			sim = StringUtility.getMaxStringSimilarity(processedSourceLabels, processedTargetLabels, ssm);
+			sim = StringMetrics.getMaxStringSimilarity(processedSourceLabels, processedTargetLabels, ssm);
 		}
 		log.debug("labelSim: " + sim);
 		
@@ -155,11 +154,11 @@ public class LabelInstanceMatcher extends BaseInstanceMatcher {
 			};
 			
 			// get the best match between the names.
-			return StringUtility.getMaxStringSimilarity(processedSourceLabels, processedTargetLabels, custom_ssm);
+			return StringMetrics.getMaxStringSimilarity(processedSourceLabels, processedTargetLabels, custom_ssm);
 		}
 		else {
 			// don't know what to do for this type of entities.
-			return StringUtility.getMaxStringSimilarity(processedSourceLabels, processedTargetLabels, ssm);
+			return StringMetrics.getMaxStringSimilarity(processedSourceLabels, processedTargetLabels, ssm);
 		}
 
 	}

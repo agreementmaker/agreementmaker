@@ -7,7 +7,7 @@ import org.apache.log4j.Logger;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.ibm.icu.text.DecimalFormat;
 
-import am.app.mappingEngine.StringUtil.StringMetrics;
+import am.app.similarity.StringMetrics;
 import am.app.ontology.instance.Instance;
 
 public class StatementsInstanceMatcher extends BaseInstanceMatcher{

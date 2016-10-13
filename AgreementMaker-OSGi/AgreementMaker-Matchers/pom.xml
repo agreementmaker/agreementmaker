@@ -59,6 +59,12 @@
 			<version>${project.parent.version}</version>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>edu.uic.cs.advis.am</groupId>
+			<artifactId>AgreementMaker-SimilarityMetrics</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 
 </project>

@@ -1,7 +1,7 @@
 package am.matcher.lod.instanceMatchers.labelInstanceMatcher;
 
-import am.app.mappingEngine.StringUtil.StringMetrics;
 import am.app.mappingEngine.instance.DefaultInstanceMatcherParameters;
+import am.app.similarity.StringMetrics;
 
 /**
  * Parameters for the {@link LabelInstanceMatcher}.

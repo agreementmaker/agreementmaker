@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 import org.junit.experimental.theories.internal.AllMembersSupplier;
 
-import am.app.mappingEngine.StringUtil.StringMetrics;
+import am.app.similarity.StringMetrics;
 
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;

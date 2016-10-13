@@ -1,18 +1,11 @@
 package am.matcher.lod.instanceMatchers;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-
-import org.apache.log4j.Logger;
-
 import am.app.mappingEngine.Mapping.MappingRelation;
-import am.app.mappingEngine.StringUtil.StringMetrics;
 import am.app.mappingEngine.instance.AbstractInstanceMatcher;
 import am.app.mappingEngine.instance.EntityTypeMapper.EntityType;
 import am.app.mappingEngine.utility.MatchingPair;
 import am.app.ontology.instance.Instance;
+import am.app.similarity.StringMetrics;
 import am.matcher.lod.instanceMatcher.LabelUtils;
 import am.matcher.lod.instanceMatchers.labelInstanceMatcher.LabelInstanceMatcher;
 import am.matcher.lod.instanceMatchers.labelInstanceMatcher.LabelInstanceMatcherParameters;
@@ -21,6 +14,12 @@ import am.matcher.lod.instanceMatchers.tokenInstanceMatcher.TokenInstanceMatcher
 import am.matcher.lod.instanceMatchers.tokenInstanceMatcher.TokenInstanceMatcher.Aggregation;
 import am.matcher.lod.instanceMatchers.tokenInstanceMatcher.TokenInstanceMatcher.Modality;
 import am.matcher.lod.instanceMatchers.tokenInstanceMatcher.TokenInstanceMatcherParameters;
+import org.apache.log4j.Logger;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 
 public class InstanceMatcherFedeNew extends AbstractInstanceMatcher {
 
