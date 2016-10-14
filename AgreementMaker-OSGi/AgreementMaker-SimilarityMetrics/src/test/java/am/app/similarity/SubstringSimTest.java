@@ -108,4 +108,10 @@ public class SubstringSimTest {
         assertEquals(6d/14, metric.getSimilarity("ast", "astwastwast"), PRECISION);
         assertEquals(6d/14, metric.getSimilarity("astwastwast", "ast"), PRECISION);
     }
+
+    @Test
+    public void two_pairs_of_substrings() {
+        assertEquals(12d/14, metric.getSimilarity("abcrdef", "defgabc"), PRECISION);
+        assertEquals(12d/14, metric.getSimilarity("defgabc", "abcrdef"), PRECISION);
+    }
 }
