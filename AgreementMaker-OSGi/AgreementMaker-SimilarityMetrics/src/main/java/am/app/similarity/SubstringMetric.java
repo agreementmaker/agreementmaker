@@ -1,7 +1,7 @@
 package am.app.similarity;
 
 
-public class SubstringSim implements StringSimilarityMeasure {
+public class SubstringMetric implements StringSimilarityMeasure {
 
 	@Override
 	public double getSimilarity(String s1, String s2) {

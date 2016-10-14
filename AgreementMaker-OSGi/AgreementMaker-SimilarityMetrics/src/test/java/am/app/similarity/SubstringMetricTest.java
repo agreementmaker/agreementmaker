@@ -5,13 +5,13 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class SubstringSimTest {
+public class SubstringMetricTest {
     private static final double PRECISION = 0.000_000_001;
-    private SubstringSim metric;
+    private SubstringMetric metric;
 
     @Before
     public void setUp() {
-        metric = new SubstringSim();
+        metric = new SubstringMetric();
     }
 
     @Test(expected = NullPointerException.class)
@@ -39,7 +39,7 @@ public class SubstringSimTest {
     @Test
     public void exclude_range() {
         String input = "aninputstring";
-        assertEquals("astring", SubstringSim.excludeRange(input, 1, 7));
+        assertEquals("astring", SubstringMetric.excludeRange(input, 1, 7));
     }
 
     @Test

@@ -17,7 +17,7 @@ public enum StringMetrics {
 	LEVENSHTEIN("Levenshtein Edit Distance", LevenshteinEditDistance.class),
 	JAROWINKER("Jaro Winkler", JaroWinklerSim.class),
 	QGRAM("Q-Gram", QGramSim.class),
-	SUB("Substring metric", SubstringSim.class),
+	SUB("Substring metric", SubstringMetric.class),
 	AMSUB("AM Substring metric", AMSubstringSim.class),
 	ISUB("I-SUB", ISubSim.class),
 	AMSUB_AND_EDIT("AMsubstring + editDistance", AMSubEditSim.class), //0.6*amsub + 0.4*editdistance
