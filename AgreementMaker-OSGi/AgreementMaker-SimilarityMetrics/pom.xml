@@ -14,6 +14,7 @@
 	<packaging>bundle</packaging>
 	
 	<name>AgreementMaker Similarity Metrics</name>
+        <description>The string similarity metrics used by AgreementMaker</description>
 	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
