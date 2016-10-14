@@ -2,6 +2,13 @@ package am.app.similarity;
 
 import am.app.similarity.api.Measure;
 
+/**
+ * This implementation of edit distance measure is taken
+ * from {@link ISubSim}.
+ *
+ * Originally written by G. Stoilos & G. Stamou & S. Kollias
+ * for the Falcon-AO system.
+ */
 public class EditDistanceMeasure implements Measure<String> {
     @Override
     public int calculate(String s1, String s2) {
@@ -55,8 +62,7 @@ public class EditDistanceMeasure implements Measure<String> {
 
     private static int Minimum(int a, int b, int c)
     {
-        int mi;
-        mi = a;
+        int mi = a;
         if (b < mi) {
             mi = b;
         }
