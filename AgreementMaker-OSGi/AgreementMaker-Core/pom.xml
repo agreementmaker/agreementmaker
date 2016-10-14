@@ -97,6 +97,7 @@
 						</Import-Package>
 						
 						<_exportcontents>
+							am.utility.*,
 							!javax.activation.*,
 							!javax.xml.bind.*,
 							!javax.xml.stream.util.*,
@@ -174,6 +175,12 @@
 			<version>0.0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
+
+        <dependency>
+            <groupId>edu.uic.cs.advis.am</groupId>
+            <artifactId>AgreementMaker-SimilarityMetrics</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
 	
 		<dependency>
 			<groupId>commons-lang</groupId>
@@ -262,21 +269,9 @@
 		</dependency>
 
 		<dependency>
-			<groupId>simmetrics</groupId>
-			<artifactId>simmetrics</artifactId>
-			<version>1.6.2</version>
-		</dependency>
-
-		<dependency>
 			<groupId>simpack</groupId>
 			<artifactId>simpack</artifactId>
 			<version>0.91</version>
-		</dependency>
-
-		<dependency>
-			<groupId>jaws</groupId>
-			<artifactId>jaws</artifactId>
-			<version>1.3</version>
 		</dependency>
 
 		<dependency>

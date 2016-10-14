@@ -12,7 +12,6 @@ import am.app.lexicon.Lexicon;
 import am.app.lexicon.LexiconSynSet;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
-import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.LexiconStore.LexiconRegistry;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFeature;
@@ -21,7 +20,7 @@ import am.app.mappingEngine.StringUtil.NormalizerParameter;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.ontology.Node;
-import am.utility.WordNetUtils;
+import am.app.wordnet.WordNetUtils;
 
 import com.hp.hpl.jena.ontology.OntResource;
 

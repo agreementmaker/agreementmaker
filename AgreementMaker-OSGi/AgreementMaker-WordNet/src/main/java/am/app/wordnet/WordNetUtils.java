@@ -1,4 +1,4 @@
-package am.utility;
+package am.app.wordnet;
 
 import java.io.File;
 import java.util.HashMap;
@@ -6,8 +6,6 @@ import java.util.HashMap;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import am.app.Core;
-import am.app.Core;
 import edu.smu.tspell.wordnet.Synset;
 import edu.smu.tspell.wordnet.WordNetDatabase;
 
@@ -27,7 +25,7 @@ public class WordNetUtils {
 		if( wordNet != null ) return; // skip the initialization, wordnet has already been initialized
 
 		// Initialize the WordNet interface.
-		String wordnetDir = Core.getInstance().getRoot() + "wordnet-3.0";
+		String wordnetDir = "wordnet-3.0";
 
 		File rootDir = new File(wordnetDir);
 		if( !rootDir.exists() || !rootDir.canRead() ) {

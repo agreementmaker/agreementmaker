@@ -2,8 +2,8 @@ package am.matcher.parametricStringMatcher;
 
 import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
-import am.app.mappingEngine.StringUtil.StringMetrics;
 import am.app.mappingEngine.utility.OAEI_Track;
+import am.app.similarity.StringMetrics;
 
 public class ParametricStringParameters extends DefaultMatcherParameters {
 

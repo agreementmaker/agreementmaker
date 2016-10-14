@@ -1,18 +1,15 @@
 package am.app.similarity;
 
 import uk.ac.shef.wit.simmetrics.similaritymetrics.Levenshtein;
-import am.utility.WordNetUtils;
+import am.app.wordnet.WordNetUtils;
 
 public class AMSubEditWordnetSim extends AMSubstringSim implements StringSimilarityMeasure {
 
-	/**
-	 * Static so we don't have to reinitialize it all the time.
-	 */
-	private static WordNetUtils wordnet;
+	private WordNetUtils wordnet;
 	
-	public AMSubEditWordnetSim() {
+	public AMSubEditWordnetSim(WordNetUtils utils) {
 		super();
-		if( wordnet == null ) wordnet = new WordNetUtils();
+		wordnet = utils;
 	}
 	
 	@Override

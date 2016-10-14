@@ -32,6 +32,9 @@ AgreementMaker-OSGi/Matcher-OAEI/META-INF/
 AgreementMaker-OSGi/Matcher-OAEI/target/
 AgreementMaker-OSGi/Matcher-PRA/META-INF/
 AgreementMaker-OSGi/Matcher-PRA/target/
+AgreementMaker-OSGi/AgreementMaker-GeoNames/META-INF/
+AgreementMaker-OSGi/AgreementMaker-SimilarityMetrics/META-INF/
+AgreementMaker-OSGi/AgreementMaker-WordNet/META-INF/
 AgreementMaker-OSGi/target/
 AgreementMaker-OSGi/provision/target/
 target/

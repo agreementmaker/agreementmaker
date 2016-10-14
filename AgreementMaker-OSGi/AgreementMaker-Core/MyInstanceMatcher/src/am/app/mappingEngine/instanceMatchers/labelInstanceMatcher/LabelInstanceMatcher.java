@@ -10,7 +10,7 @@ import uk.ac.shef.wit.simmetrics.similaritymetrics.QGramsDistance;
 
 import am.app.mappingEngine.StringUtil.ISub;
 import am.app.mappingEngine.StringUtil.Normalizer;
-import am.app.mappingEngine.StringUtil.StringMetrics;
+import am.app.similarity.StringMetrics;
 import am.app.mappingEngine.instanceMatcher.LabelUtils;
 import am.app.mappingEngine.instanceMatchers.BaseInstanceMatcher;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringParameters;

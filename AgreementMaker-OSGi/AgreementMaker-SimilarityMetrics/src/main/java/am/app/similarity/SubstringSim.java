@@ -5,6 +5,10 @@ public class SubstringSim implements StringSimilarityMeasure {
 
 	@Override
 	public double getSimilarity(String s1, String s2) {
+		if(s1.equals(s2)) {
+			return 1d;
+		}
+
 		return substringScore(s1,s2);
 	}
 
@@ -46,7 +50,7 @@ public class SubstringSim implements StringSimilarityMeasure {
 					}
 				}
 			}
-			char[] newString = new char[s1.length() - (endS1 - startS1)];
+            char[] newString = new char[s1.length() - (endS1 - startS1)];
 			j = 0;
 			for (i = 0; i < s1.length(); i++) {
 				if (i >= startS1 && i < endS1) {

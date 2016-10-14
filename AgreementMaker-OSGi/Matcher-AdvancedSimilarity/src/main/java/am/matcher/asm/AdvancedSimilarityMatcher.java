@@ -3,27 +3,26 @@
  */
 package am.matcher.asm;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFeature;
-import am.app.mappingEngine.StringUtil.StringMetrics;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrixOld;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.ontology.AMNode;
 import am.app.ontology.Node;
 import am.app.ontology.profiling.OntologyProfiler;
+import am.app.similarity.StringMetrics;
 import am.matcher.bsm.BaseSimilarityMatcher;
 import am.matcher.parametricStringMatcher.ParametricStringMatcher;
 import am.matcher.parametricStringMatcher.ParametricStringParameters;
 import am.utility.Pair;
-
 import com.hp.hpl.jena.rdf.model.Resource;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author Michele Caci

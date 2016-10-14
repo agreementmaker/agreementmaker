@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import am.matcher.lod.hierarchy.Utilities;
-import am.utility.WordNetUtils;
+import am.app.wordnet.WordNetUtils;
 import edu.smu.tspell.wordnet.Synset;
 
 public class LODStatistics {

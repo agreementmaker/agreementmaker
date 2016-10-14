@@ -40,9 +40,11 @@
 -->
         <module>AgreementMaker-API</module>
         <module>AgreementMaker-Core</module>
+        <module>AgreementMaker-GeoNames</module>
         <module>Matcher-BaseSimilarity</module>
         <module>Matcher-AdvancedSimilarity</module>
         <module>AgreementMaker-Matchers</module>
+        <module>AgreementMaker-WordNet</module>
         <module>Matcher-PRA</module>
         <module>Matcher-OAEI</module>
         <module>Matcher-LinkedOpenData</module>
@@ -51,6 +53,7 @@
         <module>AgreementMaker-CollaborationClient</module>
         <module>AgreementMaker-UserFeedback</module>
         <module>AgreementMaker-SemanticExplanation</module>
+        <module>AgreementMaker-SimilarityMetrics</module>
         <module>AgreementMaker-UIGlue</module>
         <module>Matcher-Benchmarks2013</module>
         <module>Matcher-IMEI2013</module>
