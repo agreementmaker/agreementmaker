@@ -15,7 +15,6 @@
 	<packaging>bundle</packaging>
 
 	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<bundle.namespace>am.matcher.oaei.imei2013</bundle.namespace>
 	</properties>
 	

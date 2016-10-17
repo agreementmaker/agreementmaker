@@ -17,8 +17,8 @@
         <description>The string similarity metrics used by AgreementMaker</description>
 	
 	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<bundle.namespace>am.app.similarity</bundle.namespace>
+		<skipTests>false</skipTests>
 	</properties>
 
 	<build>
