@@ -1,3 +1,6 @@
+[![Coverage Status](https://coveralls.io/repos/github/agreementmaker/agreementmaker/badge.svg?branch=enable-jacoco)](https://coveralls.io/github/agreementmaker/agreementmaker?branch=enable-jacoco)
+![GNU Affero GPL v3](https://img.shields.io/badge/license-Affero%20GPL%20v3-blue.svg)
+
 # AgreementMaker Ontology Matching System
 
 AgreementMaker is an ontology matching system was started by the ADVIS Laboratory
