@@ -7,7 +7,7 @@ package am.app.similarity;
  * 
  */
 public class ISubSim implements StringSimilarityMeasure {
-	private static EditDistanceMeasure editDistance = new EditDistanceMeasure();
+	private static EditSimilarity editSimilarity = new EditSimilarity();
 
 	@Override
 	public double getSimilarity(String s1, String s2) {
@@ -15,16 +15,15 @@ public class ISubSim implements StringSimilarityMeasure {
 	}
 
 	public static double getISubSimilarity(String s, String t)
-	{
-		int sl = s.length(), tl = t.length();
-		if (sl <= 2 || tl <= 2) {
-			return  getEditSimilarity(s, t); //the edit distance class of falconAO is inside this class
+    {
+		if (s.length() <= 2 || t.length() <= 2) {
+			return editSimilarity.calculate(s, t);
 		} else {
 			return score(s, t);
 		}
 	}
 
-	public static double score(String st1, String st2)
+	private static double score(String st1, String st2)
 	{
 		if (st1 == null || st2 == null || st1.length() == 0 || st2.length() == 0) {
 			return 0;
@@ -149,12 +148,5 @@ public class ISubSim implements StringSimilarityMeasure {
 			}
 		}
 		return strBuf.toString();
-	}
-
-	public static double getEditSimilarity(String s, String t)
-	{
-		int edit = editDistance.calculate(s, t);
-		double sim = 1 / Math.exp(edit / (double) (s.length() + t.length() - edit));
-		return sim;
 	}
 }
