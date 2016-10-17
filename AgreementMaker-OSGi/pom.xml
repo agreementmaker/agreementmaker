@@ -29,6 +29,7 @@
         <org.osgi.service.http.port.secure>8443</org.osgi.service.http.port.secure>
         <maven.bundle.plugin.version>3.0.1</maven.bundle.plugin.version>
         <skipTests>true</skipTests>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <packaging>pom</packaging>
