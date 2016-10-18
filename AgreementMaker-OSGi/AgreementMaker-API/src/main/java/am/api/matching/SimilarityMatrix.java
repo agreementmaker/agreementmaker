@@ -1,10 +1,12 @@
 package am.api.matching;
 
 
+import am.api.ontology.Entity;
+
 /**
  * <p>
  * An interface to store similarities computed by a
- * {@link am.api.matching.MatchingAlgorithm matching algorithm}. Entities in the
+ * {@link Matcher matching algorithm}. Entities in the
  * source ontology are along the rows, and entities in the target ontology are
  * along the columns.
  * </p>
@@ -29,58 +31,14 @@ package am.api.matching;
  *               .      .
  *               .      .
  * </pre>
- * 
- * @author <a href="http://cstroe.com">Cosmin Stroe</a>
- * 
  */
-public interface SimilarityMatrix {
-	
+public interface SimilarityMatrix<I extends Entity> {
 	/**
-	 * @return the number of rows in this matrix.
-	 */
-	public int getRowCount();
-	
-	/**
-	 * @return the number of columns in this matrix.
-	 */
-	public int getColCount();
-	
-	/**
-	 * This method provides direct access to the similarities stored in the
-	 * similarity matrix.
-	 * 
-	 * @param sourceIndex ranges from 0 to {@link #getRowCount()} - 1
-	 * @param targetIndex ranges from 0 to {@link #getColCount()} - 1
+	 * Retrieve the similarity of two entities.
+	 *
+	 * @param sourceEntity an entity in the source ontology
+	 * @param targetEntity an entity in the target ontology
 	 * @return A similarity value from 0 to 1.0
 	 */
-	public double getSimilarity(int sourceIndex, int targetIndex);
-	
-	/**
-	 * Set the similarity values in the matrix directly. 
-	 * @param value must range from 0 to 1.0
-	 */
-	public void setSimilarity(int sourceIndex, int targetIndex, double value);
-	
-	/**
-	 * Remove all the mappings from this matrix.
-	 */
-	public void clearAll();
+	double getSimilarity(I sourceEntity, I targetEntity);
 }
-
-/*
- * Copyright (C) Cosmin Stroe, University of Illinois at Chicago, 2013
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
- */
