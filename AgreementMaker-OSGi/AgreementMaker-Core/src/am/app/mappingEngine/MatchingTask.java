@@ -11,7 +11,7 @@ import java.util.List;
  * 	- A selection algorithm.
  * 	- Parameters for the selection algorithm.
  *  - The MatcherResult after the matcher has executed.
- *  - The SelectionResult after the selection algorithm has executed.
+ *  - The SelectorResult after the selection algorithm has executed.
  * 
  * @author Cosmin Stroe
  *

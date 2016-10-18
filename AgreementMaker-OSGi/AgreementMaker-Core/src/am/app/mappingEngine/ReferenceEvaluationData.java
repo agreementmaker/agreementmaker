@@ -125,7 +125,7 @@ public class ReferenceEvaluationData
 	public String getReport() {
 		String result  = "";
 		result+="Matchings discovered: "+getFound()+"\n";
-		result+="Class mappings correct/found: "+classesCorrect+"/" + classesFound + ": " + 
+		result+="Class mappings correct/found: "+classesCorrect+"/" + classesFound + ": " +
 				(classesFound == 0 ? "0%" : Utility.getOneDecimalPercentFromDouble((double)classesCorrect/(double)classesFound)) + "\n";
 		result+="Property mappings correct/found: "+propertiesCorrect+"/" + propertiesFound + ": " + 
 				(propertiesFound == 0 ? "0%" : Utility.getOneDecimalPercentFromDouble((double)propertiesCorrect/(double)propertiesFound) ) + "\n";

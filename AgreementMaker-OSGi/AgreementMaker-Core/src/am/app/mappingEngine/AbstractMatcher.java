@@ -119,7 +119,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	/**
 	 * the matchers combined for example in the LWC matcher can have this set to false, because the partial matchings are not needed. 
 	   this parameter is mainly used in batchmode. For the UI has to be set to TRUE. Therefore, the paramter can be set to false, but should always be init to true.
-	   Deprecated: With the MatchingTask changes, selection is no longer done in the MatchingAlgorithm. -- Cosmin.
+	   Deprecated: With the MatchingTask changes, selection is no longer done in the Matcher. -- Cosmin.
 	 *  **/
 	@Deprecated
 	protected boolean performSelection;

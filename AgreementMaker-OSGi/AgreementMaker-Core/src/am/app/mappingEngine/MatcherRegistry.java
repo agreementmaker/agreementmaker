@@ -18,7 +18,7 @@ public abstract class MatcherRegistry {
 	 * @return A list of the matching algorithms currently available to the system.
 	 * 
 	 * <p>
-	 * TODO: Change this to return a List&lt;MatchingAlgorithm&gt; ?
+	 * TODO: Change this to return a List&lt;Matcher&gt; ?
 	 * </p>
 	 */
 	public abstract List<AbstractMatcher> getMatchers();
