@@ -3,7 +3,6 @@ package am.api.matching;
 import am.api.ontology.Ontology;
 
 import java.util.Properties;
-import java.util.concurrent.Future;
 
 /**
  * <p>
@@ -17,10 +16,14 @@ public interface Matcher {
      */
 	void configure(Properties properties);
 
+    /**
+     * {@link MatcherProperties} defines property keys used by AgreementMaker.
+     * @return The properties for this matcher.
+     */
+    Properties getProperties();
+
 	/**
-	 * The main work of the matching algorithm is expected to be done here. It
-	 * is a distinct call because it is expected to take a considerable amount
-	 * of time, therefore should be run in a separate thread, and monitored.
+	 * The work of the matching algorithm is expected to be done here.
 	 */
-	Future<MatcherResult> match(Ontology source, Ontology target);
+	MatcherResult match(Ontology source, Ontology target);
 }
