@@ -52,4 +52,12 @@
 		</plugins>
 	</build>
 
+	<dependencies>
+		<dependency>
+			<groupId>org.inferred</groupId>
+			<artifactId>freebuilder</artifactId>
+			<version>1.10.5</version>
+			<optional>true</optional>
+		</dependency>
+	</dependencies>
 </project>
