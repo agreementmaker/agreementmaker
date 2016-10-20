@@ -1,13 +1,36 @@
 package am.api.matching;
 
+import org.inferred.freebuilder.FreeBuilder;
+
+@FreeBuilder
 public interface MatcherProperties {
     /**
-     * Used for user-facing identification of the matcher.
+     * The minimum number of input matchers that a matcher can accept.
+     * Can be used to force input matchers to be configured.
+     * Value should not be greater than {@link #getMaxInputMatchers()}.
+     *
+     * @return Value from 0 to {@link Integer#MAX_VALUE}.
      */
-    String DISPLAY_NAME = "display_name";
+    int getMinInputMatchers();
 
     /**
-     * Used to organize this matcher into categories.
+     * The maximum number of input matchers that a matcher can accept.
+     * Can be used to force no input matchers.
+     * Value should not be less than {@link #getMinInputMatchers()}.
+     *
+     * @return Value from 0 to {@link Integer#MAX_VALUE}.
      */
-    String CATEGORY = "category";
+    int getMaxInputMatchers();
+
+    /**
+     * Used to categorize matchers in the UI.
+     */
+    MatcherCategory getCategory();
+
+    /**
+     * @return The display name of this matcher.
+     */
+    String getName();
+
+    class Builder extends MatcherProperties_Builder {}
 }
