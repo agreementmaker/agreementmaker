@@ -23,10 +23,11 @@ public class ArraySimilarityMatrixBuilder<I extends Entity> {
         similarityValues = new double[sourceList.size()][targetList.size()];
     }
 
-    public void set(I sourceEntity, I targetEntity, double value) {
+    public ArraySimilarityMatrixBuilder<I> set(I sourceEntity, I targetEntity, double value) {
         int sourceIndex = sourceIndexMap.get(sourceEntity);
         int targetIndex = targetIndexMap.get(targetEntity);
         similarityValues[sourceIndex][targetIndex] = value;
+        return this;
     }
 
     public ArraySimilarityMatrix<I> build() {
