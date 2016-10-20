@@ -1,18 +1,5 @@
 package am.app.mappingEngine;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Properties;
-
-import javax.swing.SwingWorker;
-
 import am.AMException;
 import am.Utility;
 import am.app.Core;
@@ -27,16 +14,28 @@ import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.app.mappingEngine.threaded.AbstractMatcherRunner;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
-
+import am.ds.matching.MatcherResultImpl;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
+
+import javax.swing.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Properties;
 
 /**
  * transient data are not taken into account while serializing/deserializing the matcher
  * taking transient keyword out of an object means that either you make sure that or you just make it serializable
  * Michele  
  */
-public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements MatchingAlgorithm {
+public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements MatchingAlgorithm, am.api.matching.Matcher {
 
 	/**
 	 * Version identifier for this serializable class
@@ -142,8 +141,24 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	}
 	public void setUseProgressDelay(boolean d ) { useProgressDelay = d; }
 
+    protected Properties properties = new Properties();
 
-	/**This enum is for the matching functions that take nodes as an input.  Because we are comparing two kinds of nodes (classes and properties), we need to know the kind of nodes we are comparing in order to lookup up the input similarities in the corrent matrix */
+    @Override
+    public void configure(Properties properties) {
+        this.properties = properties;
+    }
+
+    @Override
+    public Properties getProperties() {
+        return properties;
+    }
+
+    @Override
+    public am.api.matching.MatcherResult match(am.api.ontology.Ontology source, am.api.ontology.Ontology target) {
+        return new MatcherResultImpl(null, null, null);
+    }
+
+    /**This enum is for the matching functions that take nodes as an input.  Because we are comparing two kinds of nodes (classes and properties), we need to know the kind of nodes we are comparing in order to lookup up the input similarities in the corrent matrix */
 	public enum alignType implements Serializable {
 		aligningClasses("CLASSES"),
 		aligningProperties("PROPERTIES"),

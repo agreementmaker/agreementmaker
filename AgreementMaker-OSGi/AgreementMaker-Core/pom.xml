@@ -175,6 +175,13 @@
 			<scope>provided</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>edu.uic.cs.advis.am</groupId>
+			<artifactId>AgreementMaker-DataStructures</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+
         <dependency>
             <groupId>edu.uic.cs.advis.am</groupId>
             <artifactId>AgreementMaker-SimilarityMetrics</artifactId>
@@ -396,5 +403,5 @@
 			<artifactId>colt</artifactId>
 			<version>1.2.0</version>
 		</dependency>
-	</dependencies>
+    </dependencies>
 </project>
