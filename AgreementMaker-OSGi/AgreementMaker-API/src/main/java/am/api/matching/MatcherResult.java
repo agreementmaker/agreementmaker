@@ -3,6 +3,7 @@ package am.api.matching;
 import am.api.ontology.Class;
 import am.api.ontology.Instance;
 import am.api.ontology.Property;
+import org.inferred.freebuilder.FreeBuilder;
 
 import java.util.Optional;
 
@@ -17,6 +18,7 @@ import java.util.Optional;
  * matrix.
  * </p>
  */
+@FreeBuilder
 public interface MatcherResult {
 	/**
 	 * @return the computed classes similarity matrix
@@ -32,4 +34,6 @@ public interface MatcherResult {
 	 * @return the computed instances similarity matrix
 	 */
 	Optional<SimilarityMatrix<Instance>> getInstances();
+
+    class Builder extends MatcherResult_Builder {}
 }
