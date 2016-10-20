@@ -4,6 +4,7 @@ import am.api.matching.MatcherResult;
 import am.api.matching.SimilarityMatrix;
 import am.api.ontology.Class;
 import am.api.ontology.Ontology;
+import am.api.task.MatchingTask;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -40,7 +41,7 @@ public class AllZeroMatcherTest {
     @Test
     public void match_classes() {
         AllZeroMatcher matcher = new AllZeroMatcher();
-        MatcherResult result = matcher.match(o1, o2);
+        MatcherResult result = matcher.match(mock(MatchingTask.class));
 
         SimilarityMatrix<Class> classSimilarityMatrix = result.getClasses().get();
 
