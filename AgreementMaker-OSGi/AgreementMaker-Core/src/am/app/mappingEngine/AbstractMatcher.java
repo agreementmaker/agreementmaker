@@ -2,6 +2,7 @@ package am.app.mappingEngine;
 
 import am.AMException;
 import am.Utility;
+import am.api.matching.*;
 import am.app.Core;
 import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.oneToOneSelection.MappingMWBM;
@@ -14,7 +15,6 @@ import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.app.mappingEngine.threaded.AbstractMatcherRunner;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
-import am.ds.matching.MatcherResultImpl;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 
@@ -141,21 +141,13 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	}
 	public void setUseProgressDelay(boolean d ) { useProgressDelay = d; }
 
-    protected Properties properties = new Properties();
-
     @Override
-    public void configure(Properties properties) {
-        this.properties = properties;
-    }
-
-    @Override
-    public Properties getProperties() {
-        return properties;
-    }
-
-    @Override
-    public am.api.matching.MatcherResult match(am.api.ontology.Ontology source, am.api.ontology.Ontology target) {
-        return new MatcherResultImpl(null, null, null);
+    public am.api.matching.MatcherResult match(am.api.task.MatchingTask task) {
+        return new am.api.matching.MatcherResult.Builder()
+                .setClasses((s,t) -> 0)
+                .setProperties((s,t) -> 0)
+                .setInstances((s,t) -> 0)
+                .build();
     }
 
     /**This enum is for the matching functions that take nodes as an input.  Because we are comparing two kinds of nodes (classes and properties), we need to know the kind of nodes we are comparing in order to lookup up the input similarities in the corrent matrix */
@@ -283,16 +275,20 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		sourceOntology = Core.getInstance().getSourceOntology(); // moved initialization of sourceOntology to match().
 		targetOntology = Core.getInstance().getTargetOntology(); // moved initialization of targetOntology to match().
 		inputMatchers = new ArrayList<AbstractMatcher>();
-
-		setName("AbstractMatcher");
-		setCategory(MatcherCategory.UNCATEGORIZED);
 	}
 
+    @Override
+    public MatcherProperties getProperties() {
+        return new MatcherProperties.Builder()
+                .setMinInputMatchers(0)
+                .setMaxInputMatchers(0)
+                .setName("AbstractMatcher")
+                .setCategory(am.api.matching.MatcherCategory.UNCATEGORIZED)
+                .build();
+    }
 
 
-
-
-	//***************************ALL METHODS TO PERFORM THE ALIGNMENT**********************************
+    //***************************ALL METHODS TO PERFORM THE ALIGNMENT**********************************
 	/**
 	 * Match(), buildSimilarityMatrix() and select() are the only 3 public methods to be accessed by the system other then get and set methods
 	 * All other methods must be protected so that only subclasses may access them (can't be private because subclasses wouldn't be able to use them)

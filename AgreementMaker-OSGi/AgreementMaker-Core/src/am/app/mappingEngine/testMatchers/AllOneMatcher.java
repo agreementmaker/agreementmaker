@@ -5,7 +5,6 @@ import am.api.matching.MatcherProperties;
 import am.api.matching.MatcherResult;
 import am.api.task.MatchingTask;
 import am.app.mappingEngine.AbstractMatcher;
-import am.ds.matching.MatcherResultImpl;
 
 public class AllOneMatcher extends AbstractMatcher implements Matcher {
     @Override
@@ -20,9 +19,10 @@ public class AllOneMatcher extends AbstractMatcher implements Matcher {
 
     @Override
     public MatcherResult match(MatchingTask task) {
-        return new MatcherResultImpl(
-                (sourceEntity, targetEntity) -> 1,
-                (sourceEntity, targetEntity) -> 1,
-                (sourceEntity, targetEntity) -> 1);
+        return new MatcherResult.Builder()
+                .setClasses((sourceEntity, targetEntity) -> 1)
+                .setProperties((sourceEntity, targetEntity) -> 1)
+                .setInstances((sourceEntity, targetEntity) -> 1)
+                .build();
     }
 }
