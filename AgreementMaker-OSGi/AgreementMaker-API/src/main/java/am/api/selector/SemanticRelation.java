@@ -1,4 +1,4 @@
-package am.api.alignment;
+package am.api.selector;
 
 /**
  * The kind of relation a correspondence is describing.

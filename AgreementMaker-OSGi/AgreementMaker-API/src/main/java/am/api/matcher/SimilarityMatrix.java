@@ -1,4 +1,4 @@
-package am.api.matching;
+package am.api.matcher;
 
 
 import am.api.ontology.Entity;

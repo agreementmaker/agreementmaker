@@ -1,11 +1,10 @@
-package am.api.matching;
+package am.api.matcher;
 
-import am.api.matching.MatcherResult;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class MatcherResultBuilderTest {
+public class MatcherAlignmentResultBuilderTest {
     @Test
     public void should_accept_null() {
         MatcherResult result = new MatcherResult.Builder()

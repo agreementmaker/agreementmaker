@@ -1,4 +1,4 @@
-package am.api.alignment;
+package am.api.selector;
 
 import am.api.ontology.Class;
 import am.api.ontology.Instance;

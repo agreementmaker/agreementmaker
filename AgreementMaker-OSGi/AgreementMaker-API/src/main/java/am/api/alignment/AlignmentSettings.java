@@ -1,16 +1,16 @@
-package am.api.task;
+package am.api.alignment;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
 /**
- * Settings for configuring how the matching task is executed via
+ * Settings for configuring how the alignment task is executed via
  * custom settings.
  *
  * These are a mix of Matcher settings, Selector settings, and others.
  */
-public interface MatchingTaskSettings {
+public interface AlignmentSettings {
     /**
      * Retrieve a setting given its key.
      */
@@ -24,7 +24,7 @@ public interface MatchingTaskSettings {
             return this;
         }
 
-        public MatchingTaskSettings build() {
+        public AlignmentSettings build() {
             return key -> Optional.ofNullable(settings.get(key));
         }
     }

@@ -1,6 +1,6 @@
 package am.ds.matching;
 
-import am.api.matching.SimilarityMatrix;
+import am.api.matcher.SimilarityMatrix;
 import am.api.ontology.Entity;
 
 import java.util.HashMap;

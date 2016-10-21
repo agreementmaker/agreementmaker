@@ -1,4 +1,4 @@
-package am.api.alignment;
+package am.api.selector;
 
 import am.api.ontology.Entity;
 
@@ -12,13 +12,13 @@ import am.api.ontology.Entity;
  * 
  * <p>
  * The correspondence describes the strength of a
- * {@link am.api.alignment.SemanticRelation relation} that holds between the two
+ * {@link am.api.selector.SemanticRelation relation} that holds between the two
  * entities. The strength of the relation is modeled as a similarity value, a
  * number from 0 to 1, retrieved by {@link #getValue()}.
  * </p>
  * 
  * <p>
- * For relations that have a direction (such as {@link am.api.alignment.SemanticRelation#SUBCLASSOF subClassOf}) 
+ * For relations that have a direction (such as {@link am.api.selector.SemanticRelation#SUBCLASSOF subClassOf})
  * the direction is defined to be from the source entity to the target entity.
  * </p>
  */

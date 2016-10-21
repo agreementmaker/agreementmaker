@@ -1,13 +1,13 @@
-package am.api.task;
+package am.api.alignment;
 
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class MatchingTaskSettingsTest {
+public class AlignmentSettingsTest {
     @Test
     public void builder() {
-        MatchingTaskSettings setting = new MatchingTaskSettings.Builder()
+        AlignmentSettings setting = new AlignmentSettings.Builder()
                 .addSetting("key1", "val1")
                 .addSetting("key2", "val2")
                 .build();

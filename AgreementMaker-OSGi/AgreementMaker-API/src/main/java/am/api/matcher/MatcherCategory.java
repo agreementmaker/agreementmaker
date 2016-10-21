@@ -1,4 +1,4 @@
-package am.api.matching;
+package am.api.matcher;
 
 public enum MatcherCategory {
     SYNTACTIC,     // Syntactic Matchers

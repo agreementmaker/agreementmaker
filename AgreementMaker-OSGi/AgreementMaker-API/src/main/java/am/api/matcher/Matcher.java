@@ -1,6 +1,6 @@
-package am.api.matching;
+package am.api.matcher;
 
-import am.api.task.MatchingTask;
+import am.api.alignment.AlignmentContext;
 
 /**
  * An ontology matching algorithm.
@@ -14,5 +14,5 @@ public interface Matcher {
 	/**
 	 * The work of the matching algorithm is expected to be done here.
 	 */
-	MatcherResult match(MatchingTask task);
+	MatcherResult match(AlignmentContext task);
 }
