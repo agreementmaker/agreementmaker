@@ -1,4 +1,4 @@
-package am.app.mappingEngine.StringUtil;
+package am.stringutil;
 
 /****************************************************************
     PorterStemmer.java

@@ -1,0 +1,74 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>edu.uic.cs.advis.am</groupId>
+		<version>0.3.0-SNAPSHOT</version>
+		<artifactId>AgreementMaker-OSGi</artifactId>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+
+	<artifactId>AgreementMaker-StringUtil</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>bundle</packaging>
+	
+	<name>AgreementMaker StringUtil</name>
+	
+	<properties>
+		<bundle.namespace>am.stringutil</bundle.namespace>
+	</properties>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<version>${maven.bundle.plugin.version}</version>
+				<extensions>true</extensions>
+				<configuration>
+					<manifestLocation>META-INF</manifestLocation>
+					<instructions>
+						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+						<Bundle-Version>${project.version}</Bundle-Version>
+						<Export-Package>${bundle.namespace}.*</Export-Package>
+						<!-- <Bundle-Activator>${bundle.namespace}.Activator</Bundle-Activator> -->
+						<Import-Package>*</Import-Package>
+					</instructions>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-clean-plugin</artifactId>
+				<version>3.0.0</version>
+				<configuration>
+					<filesets>
+						<fileset>
+							<directory>META-INF</directory>
+						</fileset>
+					</filesets>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.inferred</groupId>
+			<artifactId>freebuilder</artifactId>
+			<version>1.10.5</version>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>secondstring</groupId>
+			<artifactId>secondstring</artifactId>
+			<version>20120620</version>
+		</dependency>
+
+		<dependency>
+			<groupId>simpack</groupId>
+			<artifactId>simpack</artifactId>
+			<version>0.91</version>
+		</dependency>
+	</dependencies>
+</project>
