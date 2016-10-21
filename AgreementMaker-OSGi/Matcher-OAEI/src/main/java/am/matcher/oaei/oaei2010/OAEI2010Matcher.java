@@ -286,7 +286,7 @@ public class OAEI2010Matcher extends AbstractMatcher{
 		for( MatchingProgressListener mpd : progressDisplays ) m.addProgressDisplay(mpd);
 		m.match();
 		for( MatchingProgressListener mpd : progressDisplays ) m.removeProgressDisplay(mpd);
-		if( m.isCancelled() ) { cancel(true); } // the user canceled the matching process  
+		if( m.isCancelled() ) { cancel(true); } // the user canceled the matching process
 		
 		endtime = System.nanoTime()/measure;
 	    time = (endtime-startime);

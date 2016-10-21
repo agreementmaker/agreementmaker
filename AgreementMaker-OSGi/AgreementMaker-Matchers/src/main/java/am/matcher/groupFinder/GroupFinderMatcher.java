@@ -44,7 +44,7 @@ public class GroupFinderMatcher extends AbstractMatcher {
 	public GroupFinderMatcher() {
 		super();
 		
-		// requires one (and only one) alignment 
+		// requires one (and only one) alignment
 		minInputMatchers = 1;
 		maxInputMatchers = 1;
 		
@@ -62,7 +62,7 @@ public class GroupFinderMatcher extends AbstractMatcher {
 	public GroupFinderMatcher(DefaultMatcherParameters params_new) {
 		super(params_new);
 		
-		// requires one (and only one) alignment 
+		// requires one (and only one) alignment
 		minInputMatchers = 1;
 		maxInputMatchers = 1;
 		

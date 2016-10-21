@@ -31,7 +31,6 @@ import am.app.mappingEngine.LexiconStore.LexiconRegistry;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.SelectionAlgorithm;
-import am.app.mappingEngine.manualMatcher.UserManualMatcher;
 import am.app.mappingEngine.oneToOneSelection.MwbmSelection;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
@@ -116,16 +115,9 @@ public class UIMenuListener implements ActionListener {
 					// create the User Manual Matcher
 					DefaultMatcherParameters matcherParams = new DefaultMatcherParameters();
 					matcherParams.setOntologies(Core.getInstance().getSourceOntology(), Core.getInstance().getTargetOntology());
-					
-					AbstractMatcher matcher = new UserManualMatcher();
-					
+
 					DefaultSelectionParameters selectionParams = new DefaultSelectionParameters();
 					SelectionAlgorithm selectionAlgorithm = new MwbmSelection();
-					
-					MatchingTask task = new MatchingTask(matcher, matcherParams, selectionAlgorithm, selectionParams);
-					task.match();
-					task.select();
-					Core.getInstance().addMatchingTask(task);
 				}
 				
 				if( Core.getInstance().sourceIsLoaded() ) {
@@ -496,19 +488,6 @@ public class UIMenuListener implements ActionListener {
 						if( !foundDuplicate ) combinedPropertiesSet.add(candidate);
 
 					}
-
-					AbstractMatcher newMatcher = new UserManualMatcher();
-
-					newMatcher.setClassesAlignmentSet(combinedClassSet);
-					newMatcher.setPropertiesAlignmentSet(combinedClassSet);
-					newMatcher.setID( Core.getInstance().getNextMatcherID());
-
-					//m.addMatcher(newMatcher);
-					
-					MatchingTask t = new MatchingTask(newMatcher, newMatcher.getParam(), 
-							new MwbmSelection(), new DefaultSelectionParameters());
-					Core.getInstance().addMatchingTask(t);
-
 				}
 
 

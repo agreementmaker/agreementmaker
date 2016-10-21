@@ -381,7 +381,7 @@ public class HierarchyMatcherModified extends AbstractMatcher
 	/**
 	 * This method uses information taken from other LOD ontologies to improve the match.
 	 * The idea is that we can use sub and superclasses of standard classes in LOD famous ontologies to
-	 * get more information to use in the matching process. 
+	 * get more information to use in the matching process.
 	 */
 	private void useOtherOntologies(List<Node> sourceClasses, List<Node> targetClasses, boolean invert) {
 		OntModel ontology;

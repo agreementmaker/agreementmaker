@@ -30,7 +30,7 @@ public class CandidateMappingEvaluation extends CandidateSelectionEvaluation {
 				
 		log.info("\tCandidate selection mapping: " + 
 				(referenceAlignment.contains(candidateMapping) ? "(in reference: yes) " : "(in reference: no) ") + 
-				(finalAlignment.contains(candidateMapping) ? "(in alignment: yes) " : "(in alignment: no) ") + 
+				(finalAlignment.contains(candidateMapping) ? "(in alignment: yes) " : "(in alignment: no) ") +
 				candidateMapping );
 		done();
 	}

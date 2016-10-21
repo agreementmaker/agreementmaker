@@ -6,7 +6,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,7 +31,6 @@ import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.ReferenceEvaluationData;
-import am.app.mappingEngine.manualMatcher.UserManualMatcher;
 import am.app.mappingEngine.oneToOneSelection.MwbmSelection;
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluationData;
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluator;
@@ -46,7 +44,6 @@ import am.ui.ExportDialog;
 import am.ui.ImportDialog;
 import am.ui.MatcherParametersDialog;
 import am.ui.MatcherProgressDialog;
-import am.ui.MatchingProgressDisplay;
 import am.ui.QualityEvaluationDialog;
 import am.ui.UICore;
 import am.ui.UIUtility;
@@ -254,40 +251,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 	}
 
 	public void newManual() throws Exception {
-		String matcherName = JOptionPane.showInputDialog("Name for the new matcher? (Cancel for default)", MatchersRegistry.UserManual.getMatcherName());
-		int lastIndex = Core.getInstance().getMatcherInstances().size();
-		final AbstractMatcher manualMatcher = MatcherFactory.getMatcherInstance(UserManualMatcher.class);
-		if( manualMatcher.needsParam() ) {
-			MatcherParametersDialog d = new MatcherParametersDialog(manualMatcher, false, true);
-			if( d.parametersSet() ) manualMatcher.setParam(d.getParameters());
-			else return;
-		}
-		if( matcherName != null ) manualMatcher.setName(matcherName);
-		
-		final MatchingTask t = new MatchingTask(manualMatcher, manualMatcher.getParam(), 
-				new MwbmSelection(), new DefaultSelectionParameters());
-		
-		// TODO: There must be a better way to do this!
-		manualMatcher.addProgressDisplay(new MatchingProgressDisplay() {
-			private boolean ignore = false;
-			@Override public void setProgressLabel(String label) {}
-			@Override public void setIndeterminate(boolean indeterminate) {}
-			@Override public void scrollToEndOfReport() {}
-			@Override public void propertyChange(PropertyChangeEvent evt) {}
-			@Override public void matchingStarted(AbstractMatcher m) {}
-			@Override public void matchingComplete() {
-				if( ignore ) return;
-				if(!manualMatcher.isCancelled()) {  // If the algorithm finished successfully, add it to the control panel.
-					Core.getInstance().addMatchingTask(t);
-				}
-				manualMatcher.removeProgressDisplay(this);
-			}
-			@Override public void ignoreComplete(boolean ignore) {this.ignore = ignore;}
-			@Override public void clearReport() {}
-			@Override public void appendToReport(String report) {}
-		});
-		
-		new MatcherProgressDialog(t);
+		String matcherName = JOptionPane.showInputDialog("Name for the new matcher? (Cancel for default)");
 	}
 	
 	public void btnDeleteClick() throws Exception {
@@ -306,9 +270,9 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 				final MatchingTask toBeDeleted = deleteList.get(i);
 				if(i == 0 && toBeDeleted.matchingAlgorithm.getName().equals("User Manual Matching")) {
 					//YOU CAN'T DELETE THE FIRST USER MATCHING just clear the matchings previusly created
-					Utility.displayMessagePane("The default "+MatchersRegistry.UserManual + " can't be deleted.\nOnly alignments will be cleared.", null);
+					Utility.displayMessagePane("The default matcher can't be deleted.\nOnly alignments will be cleared.", null);
 					try {
-						toBeDeleted.match();//reinitialize the user matching as an empty one
+						toBeDeleted.match();//reinitialize the user matcher as an empty one
 						matchersTablePanel.updatedRows(0, 0);
 					}
 					catch(Exception ex) {
@@ -658,25 +622,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 	 */
 	public void resetMatchings() {
 		try {
-			//Take the UserManualMatcher and run it for the first time to create empty matrix and alignmentSet
-			UserManualMatcher userMatcher=new UserManualMatcher();
-			userMatcher.setSourceOntology(Core.getInstance().getSourceOntology());
-			userMatcher.setTargetOntology(Core.getInstance().getTargetOntology());
-			try {
-				userMatcher.match();
-			}
-			catch(AMException ex){
-				Utility.displayMessagePane(ex.getMessage(), null);
-			}
-			
-			Core.getInstance().getMatcherResults().clear();
 			Core.getInstance().getMatchingTasks().clear();
-			
-			MatchingTask t = new MatchingTask(userMatcher, userMatcher.getParam(), 
-					new MwbmSelection(), new DefaultSelectionParameters());
-			Core.getInstance().addMatchingTask(t);
-			
-			//update the table
 			Core.getInstance().removeAllMatchingTasks();
 			matchersTablePanel.dataChanged();
 			UICore.getUI().getCanvas().clearAllSelections();

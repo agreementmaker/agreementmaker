@@ -533,8 +533,8 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 			}
 			
 			if( !checkboxes[2].isEnabled() ) {
-				checkboxes[2].setEnabled(false);  // Load predefined types alignment
-				labels[9].setEnabled(false); // File/URL: (predefined alignment)
+				checkboxes[2].setEnabled(false);  // Load predefined types selector
+				labels[9].setEnabled(false); // File/URL: (predefined selector)
 				textfields[3].setEditable(false); // [_____________]
 				buttons[3].setEnabled(false); // [...]
 				labels[10].setEnabled(false); // Format:

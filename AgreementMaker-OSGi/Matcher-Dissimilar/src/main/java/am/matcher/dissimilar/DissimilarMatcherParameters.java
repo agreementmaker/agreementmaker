@@ -4,7 +4,7 @@ import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.ontology.profiling.classification.OntologyClassifier.OAEI2011Configuration;
 
 /**
- * This year's matching algorithm uses a completely automatic configuration. 
+ * This year's matching algorithm uses a completely automatic configuration.
  *
  */
 public class DissimilarMatcherParameters extends DefaultMatcherParameters {

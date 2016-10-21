@@ -997,7 +997,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 		this.param = p;
 	}
 	
-	// check to see if a Candidate concept is in the reference alignment  
+	// check to see if a Candidate concept is in the reference alignment
 	public boolean isInReferenceAlignment( CandidateConcept nc ) {
 		if( referenceAlignmentMatcher == null ) { return false; } // we cannot check the reference alignment if it not loaded
 		Alignment<Mapping> cset = referenceAlignmentMatcher.getClassAlignmentSet();

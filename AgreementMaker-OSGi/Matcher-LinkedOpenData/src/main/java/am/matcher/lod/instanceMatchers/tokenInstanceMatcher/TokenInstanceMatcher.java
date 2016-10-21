@@ -111,7 +111,7 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher implements UsesKB 
 			throws Exception {
 		double sim = 0.0;
 
-		log.debug("TIM matching: " + source.getUri() + " " + target);		
+		log.debug("TIM matching: " + source.getUri() + " " + target);
 
 		TokenInstanceMatcherParameters timParam = (TokenInstanceMatcherParameters) param;
 		

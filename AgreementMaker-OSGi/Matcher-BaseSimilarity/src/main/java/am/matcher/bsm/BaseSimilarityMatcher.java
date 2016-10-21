@@ -144,7 +144,7 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 		 *  			Return a similarity based on that.
 		 *  
 		 *  Step 3b:	The user does not want to use a dictionary, perform a basic
-		 *  			string matching algorithm.	
+		 *  			string matching algorithm.
 		 */
 		
 		OntologyProfiler pro = Core.getInstance().getOntologyProfiler();

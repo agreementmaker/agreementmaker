@@ -1171,7 +1171,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		//m.setProgressDisplay(getProgressDisplay());
 		m.match();
 		//m.setProgressDisplay(null);
-		if( m.isCancelled() ) { cancel(true); } // the user canceled the matching process  
+		if( m.isCancelled() ) { cancel(true); } // the user canceled the matching process
 		
 		endtime = System.nanoTime()/measure;
 	    time = (endtime-startime);

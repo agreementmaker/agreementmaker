@@ -119,7 +119,7 @@ public class ExportDialog extends JDialog implements ActionListener{
 		cmbAlignmentFormat = new JComboBox( OutputController.getAlignmentFormatDescriptionList() );
 		cmbAlignmentFormat.setSelectedIndex( prefs.getExportAlignmentFormatIndex() );
 		
-		// a panel for the alignment format label + combo box 
+		// a panel for the alignment format label + combo box
 		JPanel pnlAlignmentFormat = new JPanel();
 		pnlAlignmentFormat.setBorder( BorderFactory.createEmptyBorder() );
 		//FlowLayout subLayout = new FlowLayout( FlowLayout.LEADING );

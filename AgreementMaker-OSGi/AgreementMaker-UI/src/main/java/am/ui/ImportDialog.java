@@ -112,7 +112,7 @@ public class ImportDialog extends JDialog implements ActionListener{
 			if( cmbAlignmentFormat.getItemCount() > 0 ) cmbAlignmentFormat.setSelectedIndex(0);
 		}
 		
-		// a panel for the alignment format label + combo box 
+		// a panel for the alignment format label + combo box
 		JPanel pnlAlignmentFormat = new JPanel();
 		pnlAlignmentFormat.setBorder( BorderFactory.createEmptyBorder() );
 		//FlowLayout subLayout = new FlowLayout( FlowLayout.LEADING );

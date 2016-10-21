@@ -24,7 +24,7 @@ public class OldDescendantsSimilarityInheritanceMatcher extends AbstractMatcher 
 		needsParam = true; // we need to set the MCP before running DSI
 		
 		
-		// requires base similarity result (but can work on any alignment result) 
+		// requires base similarity result (but can work on any alignment result)
 		minInputMatchers = 1;
 		maxInputMatchers = 1;
 		
