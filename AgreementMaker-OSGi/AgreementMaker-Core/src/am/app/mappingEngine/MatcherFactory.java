@@ -72,11 +72,4 @@ public class MatcherFactory {
 		}
 		return null;
 	}
-
-	public static boolean isTheUserMatcher(AbstractMatcher toBeDeleted) {
-		return toBeDeleted.getRegistryEntry() == MatchersRegistry.UserManual && toBeDeleted.getIndex() == 0;
-	}
-	
-	
-
 }

@@ -26,7 +26,7 @@ public class CopySelection extends AbstractSelectionAlgorithm {
 			}
 		}
 		else {
-			throw new RuntimeException("No matching task has been set in the selection parameters.");
+			throw new RuntimeException("No alignment task has been set in the selection parameters.");
 		}
 		
 		return null;

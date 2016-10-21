@@ -11,7 +11,6 @@ import javax.management.InstanceAlreadyExistsException;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 
@@ -80,7 +79,7 @@ public class Core {
 	/**
 	 * Keep a list of completed matching tasks currently in the system.
 	 * When two ontologies are to be aligned a matching task is created and then
-	 * executed.  The completed matching task is stored in this list, to be used by 
+	 * executed.  The completed matching task is stored in this list, to be used by
 	 * the various components in AgreementMaker (e.g., visualization).
 	 */
 	private final List<MatchingTask> completedMatchingTasks = new ArrayList<MatchingTask>();

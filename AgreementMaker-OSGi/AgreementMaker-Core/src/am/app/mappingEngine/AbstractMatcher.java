@@ -2,7 +2,8 @@ package am.app.mappingEngine;
 
 import am.AMException;
 import am.Utility;
-import am.api.matching.*;
+import am.api.matcher.*;
+import am.api.alignment.AlignmentContext;
 import am.app.Core;
 import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.oneToOneSelection.MappingMWBM;
@@ -35,7 +36,7 @@ import java.util.Properties;
  * taking transient keyword out of an object means that either you make sure that or you just make it serializable
  * Michele  
  */
-public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements MatchingAlgorithm, am.api.matching.Matcher {
+public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements MatchingAlgorithm, am.api.matcher.Matcher {
 
 	/**
 	 * Version identifier for this serializable class
@@ -142,8 +143,8 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	public void setUseProgressDelay(boolean d ) { useProgressDelay = d; }
 
     @Override
-    public am.api.matching.MatcherResult match(am.api.task.MatchingTask task) {
-        return new am.api.matching.MatcherResult.Builder()
+    public am.api.matcher.MatcherResult match(AlignmentContext task) {
+        return new am.api.matcher.MatcherResult.Builder()
                 .setClasses((s,t) -> 0)
                 .setProperties((s,t) -> 0)
                 .setInstances((s,t) -> 0)
@@ -283,7 +284,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
                 .setMinInputMatchers(0)
                 .setMaxInputMatchers(0)
                 .setName("AbstractMatcher")
-                .setCategory(am.api.matching.MatcherCategory.UNCATEGORIZED)
+                .setCategory(am.api.matcher.MatcherCategory.UNCATEGORIZED)
                 .build();
     }
 

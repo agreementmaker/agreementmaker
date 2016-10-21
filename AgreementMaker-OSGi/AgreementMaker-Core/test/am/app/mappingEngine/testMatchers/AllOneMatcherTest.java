@@ -1,10 +1,10 @@
 package am.app.mappingEngine.testMatchers;
 
-import am.api.matching.MatcherResult;
-import am.api.matching.SimilarityMatrix;
+import am.api.matcher.MatcherResult;
+import am.api.matcher.SimilarityMatrix;
 import am.api.ontology.Class;
 import am.api.ontology.Ontology;
-import am.api.task.MatchingTask;
+import am.api.alignment.AlignmentContext;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -41,7 +41,7 @@ public class AllOneMatcherTest {
     @Test
     public void match_classes() {
         AllOneMatcher matcher = new AllOneMatcher();
-        MatcherResult result = matcher.match(mock(MatchingTask.class));
+        MatcherResult result = matcher.match(mock(AlignmentContext.class));
 
         SimilarityMatrix<Class> classSimilarityMatrix = result.getClasses().get();
 

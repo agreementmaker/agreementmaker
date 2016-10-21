@@ -1,9 +1,9 @@
 package am.app.mappingEngine.testMatchers;
 
-import am.api.matching.Matcher;
-import am.api.matching.MatcherProperties;
-import am.api.matching.MatcherResult;
-import am.api.task.MatchingTask;
+import am.api.matcher.Matcher;
+import am.api.matcher.MatcherProperties;
+import am.api.matcher.MatcherResult;
+import am.api.alignment.AlignmentContext;
 import am.app.mappingEngine.AbstractMatcher;
 
 public class AllOneMatcher extends AbstractMatcher implements Matcher {
@@ -13,12 +13,12 @@ public class AllOneMatcher extends AbstractMatcher implements Matcher {
                 .setMinInputMatchers(0)
                 .setMaxInputMatchers(0)
                 .setName("AllOne Matcher")
-                .setCategory(am.api.matching.MatcherCategory.UTILITY)
+                .setCategory(am.api.matcher.MatcherCategory.UTILITY)
                 .build();
     }
 
     @Override
-    public MatcherResult match(MatchingTask task) {
+    public MatcherResult match(AlignmentContext task) {
         return new MatcherResult.Builder()
                 .setClasses((sourceEntity, targetEntity) -> 1)
                 .setProperties((sourceEntity, targetEntity) -> 1)

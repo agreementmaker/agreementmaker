@@ -32,7 +32,7 @@ public class DefaultMatcherParameters implements Serializable {
 	 * If this list contains two ontologies, the first ontology is taken to be
 	 * the source ontology and the second ontology is taken to be the target
 	 * ontology. If the list contains more than two ontologies, then it is
-	 * assumed that this is a multi-ontology matching task.
+	 * assumed that this is a multi-ontology alignment task.
 	 * </p>
 	 */
 	public Ontology[] ontologies;

@@ -1,7 +1,6 @@
 package am.app.mappingEngine;
 
 import am.app.mappingEngine.basicStructureSelector.BasicStructuralSelectorMatcher;
-import am.app.mappingEngine.manualMatcher.UserManualMatcher;
 import am.app.mappingEngine.testMatchers.AllOneMatcher;
 import am.app.mappingEngine.testMatchers.AllZeroMatcher;
 import am.app.mappingEngine.testMatchers.CopyMatcher;
@@ -80,7 +79,7 @@ public enum MatchersRegistry {
 //	WikipediaMatcher	("Wikipedia Matcher", WikiMatcher.class, true),
 	
 	//MATCHERS USED BY THE SYSTEM, usually not shown
-	UserManual			( "USER", "User Manual Matching", UserManualMatcher.class, false),
+	//UserManual			( "USER", "User Manual Matching", UserManualMatcher.class, false),
 //	UniqueMatchings		( "Unique Matchings", ReferenceAlignmentMatcher.class, false), // this is used by the "Remove Duplicate Alignments" UIMenu entry
 //	ImportAlignment		( "IMPORT", "Import Alignments", ReferenceAlignmentMatcher.class, true),
 	
