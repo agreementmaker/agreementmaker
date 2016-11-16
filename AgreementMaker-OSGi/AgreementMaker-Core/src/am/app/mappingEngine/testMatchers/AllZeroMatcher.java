@@ -1,12 +1,11 @@
 package am.app.mappingEngine.testMatchers;
 
+import am.api.alignment.AlignmentContext;
 import am.api.matcher.Matcher;
 import am.api.matcher.MatcherProperties;
 import am.api.matcher.MatcherResult;
-import am.api.alignment.AlignmentContext;
-import am.app.mappingEngine.AbstractMatcher;
 
-public class AllZeroMatcher extends AbstractMatcher implements Matcher {
+public class AllZeroMatcher implements Matcher {
     @Override
     public MatcherProperties getProperties() {
         return new MatcherProperties.Builder()

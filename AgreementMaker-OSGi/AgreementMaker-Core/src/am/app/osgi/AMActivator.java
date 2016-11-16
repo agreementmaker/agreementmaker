@@ -12,7 +12,6 @@ public class AMActivator implements BundleActivator {
 	@Override
 	public void start(BundleContext context) throws Exception {
 		this.context = context;
-		Core.getInstance().initializeOSGiRegistry(context);
 		System.out.println("AgreementMaker Core started...");
 	}
 

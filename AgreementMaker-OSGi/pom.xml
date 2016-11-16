@@ -41,6 +41,7 @@
 -->
         <module>AgreementMaker-API</module>
         <module>AgreementMaker-DataStructures</module>
+        <module>AgreementMaker-StringUtil</module>
         <module>AgreementMaker-Core</module>
         <module>AgreementMaker-GeoNames</module>
         <module>Matcher-BaseSimilarity</module>

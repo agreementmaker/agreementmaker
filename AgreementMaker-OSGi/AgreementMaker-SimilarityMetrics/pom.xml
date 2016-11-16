@@ -65,16 +65,24 @@
 	</build>
 
 	<dependencies>
+		<dependency>
+			<groupId>edu.uic.cs.advis.am</groupId>
+			<artifactId>AgreementMaker-API</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+		</dependency>
         <dependency>
             <groupId>edu.uic.cs.advis.am</groupId>
             <artifactId>AgreementMaker-WordNet</artifactId>
             <version>0.0.1-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
-		<dependency>
-			<groupId>simmetrics</groupId>
-			<artifactId>simmetrics</artifactId>
-			<version>1.6.2</version>
-		</dependency>
+        <dependency>
+            <groupId>edu.uic.cs.advis.am</groupId>
+            <artifactId>AgreementMaker-StringUtil</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>

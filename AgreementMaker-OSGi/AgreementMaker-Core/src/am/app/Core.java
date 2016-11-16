@@ -6,8 +6,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.management.InstanceAlreadyExistsException;
-
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -32,7 +30,6 @@ import am.app.ontology.OntologyChangeEvent;
 import am.app.ontology.OntologyChangeListener;
 import am.app.ontology.profiling.OntologyProfiler;
 import am.app.osgi.AMHost;
-import am.app.osgi.OSGiRegistry;
 import am.utility.AppPreferences;
 
 import com.hp.hpl.jena.rdf.model.Model;
@@ -55,7 +52,7 @@ public class Core {
 	// Program wide DEBUG flag. -- Deprecated, these flags will be removed and replaced with log4j!!! -- Cosmin Aug. 3, 2012.
 	@Deprecated public static final boolean DEBUG = false;
 	@Deprecated public static final boolean DEBUG_STACK_TRACE_MSG = false;
-	@Deprecated public static final boolean DEBUG_NORMALIZER = false;  // debug flag for the am.app.mappingEngine.StringUtil.Normalizer class
+	@Deprecated public static final boolean DEBUG_NORMALIZER = false;  // debug flag for the am.stringutil.Normalizer class
 	@Deprecated public static final boolean DEBUG_ONTOLOGYLEXICONSYNSET = false;
 	@Deprecated public static boolean DEBUG_PSM = true;
 	@Deprecated public static boolean DEBUG_VMM = false;
@@ -603,14 +600,6 @@ public class Core {
 	 */
 	public void setOntologyProfiler( OntologyProfiler p ) { currentProfiler = p; }
 
-	public void initializeOSGiRegistry(BundleContext context) throws InstanceAlreadyExistsException {
-		this.bundleContext = context;
-		if( registry != null )
-			throw new InstanceAlreadyExistsException("You've already instantiated an OSGiRegistry object.");
-		
-		registry = new OSGiRegistry(context);
-	}
-	
 	public MatcherRegistry getRegistry() {
 		return registry;
 	}

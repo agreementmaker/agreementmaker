@@ -85,8 +85,8 @@ public enum MatchersRegistry {
 	
 	//TEST MATCHERS 
 	Equals 				( "Local Name Equivalence Comparison", EqualsMatcher.class , false),
-	AllOne 				( "(Test) All One Similarities", AllOneMatcher.class, MatcherCategory.UTILITY, true ),
-	AllZero				( "(Test) All Zero Similarities", AllZeroMatcher.class, MatcherCategory.UTILITY, true ),
+	//AllOne 				( "(Test) All One Similarities", AllOneMatcher.class, MatcherCategory.UTILITY, true ),
+	//AllZero				( "(Test) All Zero Similarities", AllZeroMatcher.class, MatcherCategory.UTILITY, true ),
 	Copy				( "Copy Matcher", CopyMatcher.class, MatcherCategory.UTILITY, false ),
 	Random 				( "(Test) Random Similarities", RandomMatcher.class, MatcherCategory.UTILITY, true ),
 //	DSI2				( "OLD Descendant's Similarity Inheritance (DSI)", OldDescendantsSimilarityInheritanceMatcher.class, MatcherCategory.STRUCTURAL, false ),
