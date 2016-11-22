@@ -57,6 +57,7 @@
         <module>AgreementMaker-UIGlue</module>
         <module>Matcher-Benchmarks2013</module>
         <module>Matcher-IMEI2013</module>
+        <module>AgreementMaker-AlignmentServer</module>
         <!--
                 &lt;!&ndash; <module>VisualAnalytics-Graph</module> &ndash;&gt;
                 <module>AgreementMaker-IntegrationTests</module>
