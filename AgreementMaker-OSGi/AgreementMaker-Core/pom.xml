@@ -15,6 +15,7 @@
 	<properties>
 		<bundle.symbolicName>${project.artifactId}</bundle.symbolicName>
 		<bundle.namespace>am</bundle.namespace>
+                <skipTests>false</skipTests>
 	</properties>
 
 	<name>${bundle.symbolicName} [${bundle.namespace}]</name>
