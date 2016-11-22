@@ -12,13 +12,12 @@
 	<artifactId>AgreementMaker-SimilarityMetrics</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>bundle</packaging>
-	
+
 	<name>AgreementMaker Similarity Metrics</name>
-        <description>The string similarity metrics used by AgreementMaker</description>
-	
+	<description>The string similarity metrics used by AgreementMaker</description>
+
 	<properties>
 		<bundle.namespace>am.app.similarity</bundle.namespace>
-		<skipTests>false</skipTests>
 	</properties>
 
 	<build>
@@ -65,11 +64,11 @@
 	</build>
 
 	<dependencies>
-        <dependency>
-            <groupId>edu.uic.cs.advis.am</groupId>
-            <artifactId>AgreementMaker-WordNet</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
+		<dependency>
+			<groupId>edu.uic.cs.advis.am</groupId>
+			<artifactId>AgreementMaker-WordNet</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 		<dependency>
 			<groupId>simmetrics</groupId>
 			<artifactId>simmetrics</artifactId>
