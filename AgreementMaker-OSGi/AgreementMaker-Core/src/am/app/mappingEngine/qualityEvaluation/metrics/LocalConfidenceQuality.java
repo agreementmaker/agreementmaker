@@ -1,22 +1,3 @@
-/**    ________________________________________
- * ___/ Copyright Notice / Warranty Disclaimer \________________
- *
- * @copyright { Copyright (c) 2010
- * Advances in Information Systems Laboratory at the
- * University of Illinois at Chicago
- * All Rights Reserved. }
- * 
- * @disclaimer {
- * This work is distributed WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. }
- * 
- *     _____________________
- * ___/ Authors / Changelog \___________________________________          
- * 
- *  
- */
-
 package am.app.mappingEngine.qualityEvaluation.metrics;
 
 import am.app.mappingEngine.AbstractMatcher;
@@ -28,7 +9,8 @@ import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 public class LocalConfidenceQuality extends AbstractQualityMetric {
 	
 	public static final String PARAM_CONSIDER_THRESHOLD = "CONSIDER_THRESHOLD";
-	
+
+	@Override
 	public QualityEvaluationData getQuality(AbstractMatcher matcher) throws Exception {
 		
 		QualityEvaluationData q = new QualityEvaluationData();
@@ -95,8 +77,7 @@ public class LocalConfidenceQuality extends AbstractQualityMetric {
 		for(int i=0; i < localMeasure.length; i++) {
 			double avgOfNonSelected = 0;
 			double avgOfSelected = 0;
-			double finalAvg = 0;
-			
+
 			//get the numRelations max values for this row or column
 			if(localForSource) {
 				maxValues = matrix.getRowMaxValues(i, numRelations);
@@ -114,12 +95,12 @@ public class LocalConfidenceQuality extends AbstractQualityMetric {
 			 //let's start with all of them not selected
 			numberOfNonSelected = totalSelectable;
 			sumOfNonSelected = totalSum;
-			for(int j = 0; j < maxValues.length; j++) {
-				if(maxValues[j].getSimilarity() >= threshold) {//this is a selected value, I'm not using the fact that maxValues is ordered because the order may change later so i don't want to risk
-					sumOfNonSelected -= maxValues[j].getSimilarity();
-					numberOfNonSelected--;
-				}
-			}
+            for(Mapping maxValue : maxValues) {
+                if (maxValue.getSimilarity() >= threshold) {//this is a selected value, I'm not using the fact that maxValues is ordered because the order may change later so i don't want to risk
+                    sumOfNonSelected -= maxValue.getSimilarity();
+                    numberOfNonSelected--;
+                }
+            }
 			numberOfSelected = totalSelectable - numberOfNonSelected;
 			sumOfSelected = totalSum - sumOfNonSelected;
 			
@@ -130,7 +111,7 @@ public class LocalConfidenceQuality extends AbstractQualityMetric {
 				avgOfSelected =  sumOfSelected /(double)numberOfSelected; //else is 0
 			}
 			
-			finalAvg = avgOfSelected - avgOfNonSelected;
+			double finalAvg = avgOfSelected - avgOfNonSelected;
 			 //if i haven't selected anything the diffenrce would be negative
 			if(finalAvg >= 0) {
 				localMeasure[i] = finalAvg;
