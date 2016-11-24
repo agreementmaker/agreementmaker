@@ -2,4 +2,5 @@ language: java
 jdk:
     - oraclejdk8
 before_script: cd AgreementMaker-OSGi
-after_success: mvn jacoco:report coveralls:report
+script: ./mvnw verify
+after_success: ./mvnw jacoco:report coveralls:report
