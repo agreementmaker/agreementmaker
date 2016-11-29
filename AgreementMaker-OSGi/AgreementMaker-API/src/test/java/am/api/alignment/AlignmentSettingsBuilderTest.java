@@ -4,7 +4,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class AlignmentSettingsTest {
+public class AlignmentSettingsBuilderTest {
     @Test
     public void builder() {
         AlignmentSettings setting = new AlignmentSettings.Builder()
@@ -16,5 +16,4 @@ public class AlignmentSettingsTest {
         assertEquals("val2", setting.getSetting("key2").get());
         assertFalse(setting.getSetting("key3").isPresent());
     }
-
 }
