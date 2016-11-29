@@ -114,54 +114,21 @@ public class ArraySimilarityMatrix extends AbstractSimilarityMatrix {
     	
         data = new SimRel[this.rows][this.columns];
     }
+
+    public ArraySimilarityMatrix(Ontology source, Ontology target, alignType type, double[][] similarities) {
+        this(source, target, type);
+        for(int row = 0; row < similarities.length; row++) {
+            for(int col = 0; col < similarities[row].length; col++) {
+                data[row][col] = new SimRel(similarities[row][col]);
+            }
+        }
+    }
         
-    // create M-by-N matrix of 0's with equivalence relation
-    /*public ArraySimilarityMatrix(int M, int N, alignType type) throws AMException {
-    	//relation = MappingRelation.EQUIVALENCE;
-    	typeOfMatrix = type;
-        this.rows = M;
-        this.columns = N;
-        
-        Ontology source = Core.getInstance().getOntologyByID(sourceOntologyID);
-		if( source == null ) throw new AMException("No ontology found with ID = " + sourceOntologyID);
-    	
-		Ontology target = Core.getInstance().getOntologyByID(targetOntologyID);
-		if( target == null ) throw new AMException("No ontology found with ID = " + targetOntologyID);
-		
-    	if( typeOfMatrix == alignType.aligningClasses ) { 
-    		rowNodes = source.getClassesList();
-    		colNodes = target.getClassesList();
-    	} else if ( typeOfMatrix == alignType.aligningProperties ) {
-    		rowNodes = source.getPropertiesList();
-    		colNodes = target.getPropertiesList();
-    	} else {
-    		System.err.println("Invalid typeOfMatrix: " + typeOfMatrix + ".  Assuming aligningClasses.");
-    		rowNodes = source.getClassesList();
-    		colNodes = target.getClassesList();
-    	}
-        
-        data = new SimRel[M][N];
-    }*/
-     
-    // create M-by-N matrix of 0's
-    /*public ArraySimilarityMatrix(int M, int N, alignType type, MappingRelation rel) {
-    	relation = rel;
-    	typeOfMatrix = type;
-        this.rows = M;
-        this.columns = N;
-        
-        data = new SimRel[M][N];
-    }*/
-    
-    //junit constructor
-   //public ArraySimilarityMatrix(){}
-    //public void initData(int m, int n){data=new Mapping[m][n];}
-    
+
     @Override
     public Mapping get(int i, int j) {
     	if( data[i][j] == null ) return null;  
     	return new Mapping( rowNodes.get(i), colNodes.get(j), data[i][j].similarity, data[i][j].relation, data[i][j].provenance );
-    	//return data[i][j];
     }
     
     @Override
@@ -185,32 +152,6 @@ public class ArraySimilarityMatrix extends AbstractSimilarityMatrix {
     	if( data[i][j] == null ) { return 0.00d; }
     	return data[i][j].similarity;
     }
-    
-    /*@Override
-    public void setSimilarity(int i, int j, double d){
-    	if( data[i][j] == null ) {
-    		
-        	Core core = Core.getInstance();
-			Ontology sourceOntology = core.getSourceOntology();
-			Ontology targetOntology = core.getTargetOntology();
-			List<Node> sourceList;
-			List<Node> targetList;
-			if(typeOfMatrix.equals(alignType.aligningClasses)){
-				sourceList = sourceOntology.getClassesList();
-				targetList = targetOntology.getClassesList();
-			}
-			else{
-				sourceList = sourceOntology.getPropertiesList();
-				targetList = targetOntology.getPropertiesList();
-			}
-    		
-    		
-    		data[i][j] = new Mapping( sourceList.get(i), targetList.get(j), d , relation);
-    	}
-    	else {
-    		data[i][j].setSimilarity(d);
-    	}
-    }*/
     
     public int getRows() {
     	return rows;
@@ -304,11 +245,8 @@ public class ArraySimilarityMatrix extends AbstractSimilarityMatrix {
 	}
 	
 	public boolean isCellEmpty( int i, int j) {
-		if( data[i][j] == null ) {
-			return true;
-		}
-		return false;
-	}
+        return data[i][j] == null;
+    }
 	
 	@Override
 	public SimilarityMatrix clone() {
@@ -323,7 +261,7 @@ public class ArraySimilarityMatrix extends AbstractSimilarityMatrix {
     
 	@Override
 	public Vector<Mapping> toMappingArray(){
-		Vector<Mapping> mappingArray = new Vector<Mapping>();
+		Vector<Mapping> mappingArray = new Vector<>();
 		for(int i = 0; i < getRows(); i++){
 			for(int j = 0; j < getColumns(); j++){
 				if(this.get(i, j) != null){
@@ -335,14 +273,14 @@ public class ArraySimilarityMatrix extends AbstractSimilarityMatrix {
     }
 	
 	public Vector<Mapping> toMappingArray(FileWriter fw, int round){
-		Vector<Mapping> mappingArray = new Vector<Mapping>(getRows() * getColumns());
+		Vector<Mapping> mappingArray = new Vector<>(getRows() * getColumns());
 		for(int i = 0; i < getRows(); i++){
 			for(int j = 0; j < getColumns(); j++){
 				if(this.get(i, j) != null){
 					mappingArray.add(this.get(i, j));
 					if(round == 1)
 					try {
-						fw.append(this.get(i, j).toString() + "\n");
+						fw.append(this.get(i, j).toString()).append("\n");
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -355,7 +293,7 @@ public class ArraySimilarityMatrix extends AbstractSimilarityMatrix {
     
 	@Override
 	public List<Double> toSimilarityArray(List<Mapping> mapsArray){
-		Vector<Double> similarityArray = new Vector<Double>();
+		Vector<Double> similarityArray = new Vector<>();
 		for(int i = 0; i < mapsArray.size(); i++){
 			similarityArray.add(mapsArray.get(i).getSimilarity());
 		}
@@ -454,7 +392,7 @@ public class ArraySimilarityMatrix extends AbstractSimilarityMatrix {
             for (int j = 0; j < columns; j++) {
             	Mapping a = get(i,j);
             	if(a == null) {
-            		System.out.println("Break for null alignment"+a);
+            		System.out.println("Break for null alignment");
             		break;
             	}
             	System.out.println(j+": "+get(i,j));
@@ -488,7 +426,7 @@ public class ArraySimilarityMatrix extends AbstractSimilarityMatrix {
 	 */
 	@Override
 	public void initFromNodeList(List<Node> sourceList, List<Node> targetList) {
-		rowNodes = new ArrayList<Node>();
+		rowNodes = new ArrayList<>();
 		for( int i = 0; i < sourceList.size(); i++ ) {
 			rowNodes.add(sourceList.get(i));
 		}
@@ -517,7 +455,7 @@ public class ArraySimilarityMatrix extends AbstractSimilarityMatrix {
 		
 		// Creation of the output ArrayList and a copy of the matrix
 		int arraySize = Math.min(rowsIncludedList.size(), colsIncludedList.size());
-		ArrayList<Mapping> chosenMappings = new ArrayList<Mapping>(arraySize);
+		ArrayList<Mapping> chosenMappings = new ArrayList<>(arraySize);
 		//SimilarityMatrix input = new ArraySimilarityMatrix(this);
 
 		List<Integer> rowsIncluded = rowsIncludedList;
@@ -528,8 +466,8 @@ public class ArraySimilarityMatrix extends AbstractSimilarityMatrix {
 		{
 			double simValue = 0;
 			Mapping currentChoose = null;
-			Integer r = new Integer(0);
-			Integer c = new Integer(0);;
+			Integer r = 0;
+			Integer c = 0;
 			for(int i = 0; i < getRows(); i++) {
 				for(int j = 0; j < getColumns(); j++) {
 					
@@ -693,71 +631,7 @@ public class ArraySimilarityMatrix extends AbstractSimilarityMatrix {
 		
 		return topK;
 	}
-	/*
-	@Override
-	public int countNonNullValues() {
-		int count = 0;
-		for(int i = 0; i < this.getRows(); i++){
-			for(int j = 0; j < this.getColumns(); j++){
-				if(this.get(i, j) != null){
-					count++;
-				}
-			}
-		}
-		return count;
-	}
-	*/
-	/*
-	//junit test
-	@Test public void insertAndGet16000000() {
-		long start=System.currentTimeMillis();
-		for(int j=0;j<500;j++){
-			Random r=new Random();
-			ArrayList<Integer> xVals=new ArrayList<Integer>();
-			ArrayList<Integer> yVals=new ArrayList<Integer>();
-			
-			for(int i=0;i<4000;i++){
-				xVals.add(new Integer(i));
-				yVals.add(new Integer(i));
-			}
-			
-			ArraySimilarityMatrix m=new ArraySimilarityMatrix();
-			m.initData(4000, 4000);
-			int[] x=new int[16000000];
-			int[] y=new int[16000000];
-			double[] z=new double[16000000];
-			//insert 500 entries in the matrix and
-			for(int i=0;i<4000;i++){
-				int x1=r.nextInt(xVals.size());
-				int y1=r.nextInt(yVals.size());
-				double z1=r.nextDouble();
-				
-				//System.out.println("inserting i="+i+" : ("+xVals.get(x1)+","+yVals.get(y1)+","+z1+")");
-				m.set(xVals.get(x1), yVals.get(y1), new Mapping(z1));
-				x[i]=xVals.get(x1);
-				y[i]=yVals.get(y1);
-				z[i]=z1;
-				
-				xVals.remove(x1);
-				yVals.remove(y1);
-			}
-			/*
-			//check the entries
-			for(int i=0;i<4000;i++){
-				//System.out.println("getting i="+i+" : ("+x[i]+","+y[i]+")");
-				Mapping temp=m.get(x[i], y[i]);
-				//System.out.println(x[i]+","+ y[i]);
-				//System.out.println(temp);
-				assertTrue(temp.getSimilarity()==z[i]);
-			}
-			
-		}
-		long end=System.currentTimeMillis();
-		long total=end-start;
-		System.out.println("total time (in seconds): "+(total/100)/500);
-	}
-	*/
-	
+
 	/**
 	 * This method required to restore the ArraySimilarityMatrix
 	 * @param in

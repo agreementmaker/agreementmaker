@@ -16,7 +16,6 @@
 	<name>AgreementMaker API</name>
 	
 	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<bundle.namespace>am.api</bundle.namespace>
 	</properties>
 

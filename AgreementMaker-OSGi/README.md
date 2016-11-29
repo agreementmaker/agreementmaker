@@ -11,9 +11,9 @@ OSGi bundle.
 
 ## Building
 
-AgreementMaker uses the Maven build system.  To build it type:
+AgreementMaker uses the Maven build system, with [maven-wrapper](https://github.com/takari/maven-wrapper).  To build it type:
 
-    mvn install
+    ./mvnw install
 
 in the `AgreementMaker-OSGi` directory.
 
@@ -21,7 +21,7 @@ Run the bundles with your favorite OSGi implementation (for example, [Apache Fel
 
 ## Running
 
-After building, start AgreementMaker with:
+After `./mvnw install`, start AgreementMaker with:
 
-    mvn pax:provision
+    ./mvnw pax:provision
 

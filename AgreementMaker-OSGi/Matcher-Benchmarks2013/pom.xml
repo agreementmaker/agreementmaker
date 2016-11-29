@@ -15,7 +15,6 @@
 	<packaging>bundle</packaging>
 
 	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<bundle.symbolicName>${project.artifactId}</bundle.symbolicName>
 		<bundle.namespace>am.matcher.benchmark2013</bundle.namespace>
 	</properties>
