@@ -3,8 +3,8 @@ package test;
 
 import javax.swing.JOptionPane;
 
-import am.app.mappingEngine.StringUtil.Normalizer;
-import am.app.mappingEngine.StringUtil.NormalizerParameter;
+import am.stringutil.Normalizer;
+import am.stringutil.NormalizerParameter;
 
 public class ProcessStrings {
 

@@ -180,7 +180,18 @@
             <version>1.10.5</version>
             <optional>true</optional>
         </dependency>
-
+        <dependency>
+            <groupId>${project.parent.groupId}</groupId>
+            <artifactId>AgreementMaker-WordNet</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.parent.groupId}</groupId>
+            <artifactId>AgreementMaker-StringUtil</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>edu.uic.cs.advis.am</groupId>
             <artifactId>AgreementMaker-DataStructures</artifactId>

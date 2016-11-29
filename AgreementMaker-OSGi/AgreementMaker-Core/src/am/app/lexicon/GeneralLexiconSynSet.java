@@ -7,8 +7,8 @@ import java.util.List;
 
 import am.app.Core;
 import am.app.mappingEngine.LexiconStore.LexiconRegistry;
-import am.app.mappingEngine.StringUtil.Normalizer;
-import am.app.mappingEngine.StringUtil.NormalizerParameter;
+import am.stringutil.Normalizer;
+import am.stringutil.NormalizerParameter;
 import am.utility.StringUtility;
 
 import com.hp.hpl.jena.ontology.OntResource;
@@ -16,7 +16,7 @@ import com.hp.hpl.jena.ontology.OntResource;
 public class GeneralLexiconSynSet implements LexiconSynSet {
 
 	protected String gloss;  // aka Definition
-	protected List<String> synonyms = new LinkedList<String>(); // the SynSet
+	protected List<String> synonyms = new LinkedList<>(); // the SynSet
 	
 	protected OntResource concept;
 	protected LexiconRegistry type;

@@ -56,8 +56,8 @@
 		<dependency>
 			<groupId>org.inferred</groupId>
 			<artifactId>freebuilder</artifactId>
-			<version>1.10.5</version>
-			<optional>true</optional>
+			<version>1.10.8</version>
+			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 </project>
