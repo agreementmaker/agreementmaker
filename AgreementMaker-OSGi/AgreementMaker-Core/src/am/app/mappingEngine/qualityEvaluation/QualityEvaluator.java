@@ -26,7 +26,7 @@ public class QualityEvaluator {
 	
 	public static MappingQualityMetric getQM( QualityMetricRegistry regEntry ) {
 		try {
-			return (MappingQualityMetric) regEntry.getQMClass().newInstance();
+			return regEntry.getQMClass().newInstance();
 		} catch (InstantiationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
