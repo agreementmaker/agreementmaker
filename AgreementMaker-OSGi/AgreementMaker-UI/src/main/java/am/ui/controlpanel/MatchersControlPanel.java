@@ -189,12 +189,11 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 			QualityEvaluationDialog qDialog = new QualityEvaluationDialog();
 			if(qDialog.isSuccess()) {
 				QualityMetricRegistry quality = (QualityMetricRegistry) qDialog.qualCombo.getSelectedItem();
-				AbstractMatcher toBeEvaluated;
-				String report= "Quality Evaluation Complete\n\n";
+				String report = "Quality Evaluation Complete\n\n";
 				QualityEvaluationData q;
 				for(int i = 0; i < rowsIndex.length; i++) {
-					
-					toBeEvaluated = Core.getInstance().getMatcherInstances().get(rowsIndex[i]);
+
+					AbstractMatcher toBeEvaluated = Core.getInstance().getMatcherInstances().get(rowsIndex[i]);
 					report+=(i+1)+" "+toBeEvaluated.getName()+"\n\n";
 					q = QualityEvaluator.evaluate(toBeEvaluated, QualityEvaluator.getQM(quality));
 					if(!q.isLocal()) {
@@ -231,26 +230,14 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 						}
 						report+= "\n";	
 					}
-					toBeEvaluated.setQualEvaluation(q);
+
 					AbstractTableModel model = (AbstractTableModel)matchersTablePanel.getTable().getModel();
 					model.fireTableRowsUpdated(toBeEvaluated.getIndex(), toBeEvaluated.getIndex());
-					/*
-					else {
-						q = QualityEvaluator.evaluate(toBeEvaluated, QualityEvaluator.QUALITIES[j]);
-						report+= QualityEvaluator.QUALITIES[j]+"\n";
-						report+= "Average of local Classes Quality: "+Utility.getAverageOfArray(q.getLocalClassMeasures())+"\n" ;
-						report+= "Average of local Properties Quality: "+Utility.getAverageOfArray(q.getLocalPropMeasures())+"\n" ;
-						//Add the list of local qualities here
-						report+= "\n";
-					}
-					*/
 				}
 				Utility.displayTextAreaPane(report,"Quality Evaluation Report");
-
 			}
 			qDialog.dispose();
 		}
-		
 	}
 
 	public void newManual() throws Exception {
@@ -533,59 +520,6 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 		}
 		
 	}
-	
-
-/*	public void disagreementEval() throws Exception {
-		int[] rowsIndex = matchersTablePanel.getTable().getSelectedRows();
-		if(rowsIndex.length < 1) {
-			Utility.displayErrorPane("Select two or more matchers", null);
-		}
-		else if(Utility.displayConfirmPane("AgreementMaker will now perform disagreement evaluation on the selected matchers", null)) {
-			Core core = Core.getInstance();
-			int sourceDim = core.getSourceOntology().getClassesList().size(),
-				targetDim = core.getTargetOntology().getClassesList().size();
-			
-			SimilarityMatrix localMatrix = new SimilarityMatrix(sourceDim, targetDim, alignType.aligningClasses);
-			
-			for(int i = 0; i < sourceDim; i++){
-				for(int j = 0; j < targetDim; j++){
-					localMatrix.set(i, j, new Mapping(core.getSourceOntology().getClassesList().get(i),
-														core.getTargetOntology().getClassesList().get(j),
-														disagreementComp(i, j, core.getMatcherInstances())));
-					System.out.println(disagreementComp(i, j, core.getMatcherInstances()));
-				}
-			}
-			
-			// to be managed better overall (we should not need the selected matcher here
-			AbstractMatcher selectedMatcher = Core.getInstance().getMatcherInstances().get(0);			
-			MatrixPlotPanel mp = new MatrixPlotPanel( selectedMatcher, localMatrix, null);
-			
-			mp.getPlot().draw(false);
-			JPanel plotPanel = new JPanel();
-			plotPanel.add(mp);
-			Core.getUI().addTab("Disagreement Tab", null , plotPanel , selectedMatcher.getName().getMatcherName());
-		}
-	}
-	
-	public double disagreementComp(int row, int column, ArrayList<AbstractMatcher> involvedMatchers){
-		int totalMatchers = matchersTablePanel.getTable().getSelectedRows().length;
-		double mean = 0.0, var = 0.0;
-		for(int i = 0; i < totalMatchers; i++){
-			mean += involvedMatchers.get(i).getClassesMatrix().getSimilarity(row, column);
-		}
-		mean /= totalMatchers;
-		for(int i = 0; i < totalMatchers; i++){
-			var += (mean - involvedMatchers.get(i).getClassesMatrix().getSimilarity(row, column)) *
-					(mean - involvedMatchers.get(i).getClassesMatrix().getSimilarity(row, column));
-		}
-		return mean;
-	}*/
-	
-		
-	
-	/////////////////////////////////////////////////PANEL METHODS
-	
-	
 
 	// TODO: Need to implement methods so we don't have to expose the matchers table panel if we need to get which matchers are selected
 	public MatchersTablePanel getTablePanel() {
@@ -618,29 +552,6 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 			e.printStackTrace();
 		}
 	}
-	
-
-	/**
-	 * This method takes care of the action perfromed by one of the check boxes
-	 *
-	 * @param e ActionEvent object
-	 */
-/*	public void itemStateChanged(ItemEvent e) {
-		Object obj = e.getItemSelectable();
-		if(obj == matcherCombo) {
-			setDefaultCommonParameters();
-			
-		}
-	}*/
-
-	
-/*	public void setDefaultCommonParameters() {
-		String matcherName = (String) matcherCombo.getSelectedItem();
-		AbstractMatcher a = MatcherFactory.getMatcherInstance(MatcherFactory.getMatchersRegistryEntry(matcherName), 0); //i'm just using a fake instance so the algorithm code is not important i put 0 but maybe anythings
-		thresholdCombo.setSelectedItem(Utility.getNoDecimalPercentFromDouble(a.getDefaultThreshold()));
-		sRelationCombo.setSelectedItem(Utility.getStringFromNumRelInt(a.getDefaultMaxSourceRelations()));
-		tRelationCombo.setSelectedItem(Utility.getStringFromNumRelInt(a.getDefaultMaxTargetRelations()));
-	}*/
 	
 	public boolean clearAll() {
 		//don't put this code into resetMatchings because resetMatching is used by the system also in other situation when the confirmation is not required by the user.

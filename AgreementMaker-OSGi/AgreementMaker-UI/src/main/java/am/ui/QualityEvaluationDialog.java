@@ -19,27 +19,14 @@ import am.app.mappingEngine.qualityEvaluation.QualityMetricRegistry;
 
 
 
-public class QualityEvaluationDialog extends JDialog implements ActionListener{
-	
-	/**
-	 * 
-	 */
+public class QualityEvaluationDialog extends JDialog implements ActionListener {
 	private static final long serialVersionUID = 7150332604304262664L;
-	/**
-	 * @param args
-	 */
-	
 	private JButton cancel, run;
 	private boolean success = false;
-	
 	private JLabel topLabel;
 	private JLabel qualLabel;
 	public JComboBox qualCombo;
 	
-	/**
-	 * @param ontoType
-	 * @param userInterface
-	 */
 	public QualityEvaluationDialog() {
 		
 		setTitle("Quality Evaluation");
@@ -70,7 +57,6 @@ public class QualityEvaluationDialog extends JDialog implements ActionListener{
 		add(bottom, BorderLayout.SOUTH);
 		
 		
-		//frame.addWindowListener(new WindowEventHandler());//THIS SHOULD BE CHANGED THE PROGRAM SHOULD NOT CLOSE
 		pack(); // automatically set the frame size
 		//set the width equals to title dimension
 		FontMetrics fm = getFontMetrics(getFont());
@@ -84,11 +70,6 @@ public class QualityEvaluationDialog extends JDialog implements ActionListener{
 		setVisible(true);
 	}
 	
-
-	/* (non-Javadoc)
-	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
-	 */
-
 	public void actionPerformed (ActionEvent ae){
 		Object obj = ae.getSource();
 		
@@ -104,10 +85,8 @@ public class QualityEvaluationDialog extends JDialog implements ActionListener{
 		}
 		
 	}
-	
-	
+
 	public boolean isSuccess() {
 		return success;
 	}
-	
 }

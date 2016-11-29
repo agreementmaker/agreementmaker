@@ -1,7 +1,5 @@
 package am.matcher.Combination;
 
-import com.hp.hpl.jena.ontology.OntResource;
-
 import am.Utility;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
@@ -12,22 +10,15 @@ import am.app.mappingEngine.qualityEvaluation.QualityEvaluator;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.ontology.Node;
 
-
+import java.util.HashMap;
+import java.util.Map;
 
 public class CombinationMatcher extends AbstractMatcher {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 6298803128635729082L;
+	private Map<AbstractMatcher, QualityEvaluationData> qeMap = new HashMap<>();
 
 	public CombinationMatcher() {
 		super();
 		needsParam = true; // need the parameters
-		// I can't initialize the parametersPanel in here because i need to pass
-		// the inputmatchers as parameters
-		// but the input matchers will be set later so I will initialize the
-		// panel in the getParametersPanel() method
 	}
 
 	public CombinationMatcher(CombinationParameters param_new) {
@@ -46,20 +37,17 @@ public class CombinationMatcher extends AbstractMatcher {
 	@Override
 	protected void beforeAlignOperations() throws Exception {
 		super.beforeAlignOperations();
-
-		int size = inputMatchers.size();
 		CombinationParameters cp = (CombinationParameters) param;
-		AbstractMatcher a;
 
 		// if weights are manually assigned then they are already created in the
 		// parameters we just have to create a fake quality evaluation with that
 		// weight
 		// if not, we have to run the quality evaluation for each matcher
-		for (int i = 0; i < size; i++) {
+		for (int i = 0; i < inputMatchers.size(); i++) {
+		    final AbstractMatcher a = inputMatchers.get(i);
 			QualityEvaluationData manual = null;
 			QualityEvaluationData automatic = null;
 			QualityEvaluationData finalQuality = null;
-			a = inputMatchers.get(i);
 			// is important to be if if if without else
 			if (cp.qualityEvaluation) {
 				automatic = QualityEvaluator.evaluate(a,
@@ -85,7 +73,7 @@ public class CombinationMatcher extends AbstractMatcher {
 						automatic);
 			}
 
-			a.setQualEvaluation(finalQuality);
+			qeMap.put(a,finalQuality);
 		}
 	}
 
@@ -110,12 +98,9 @@ public class CombinationMatcher extends AbstractMatcher {
 		double sigmoidSim;
 		double weightedSigmoidSim;
 		double sigmoidSum = 0;
-		AbstractMatcher a;
 		QualityEvaluationData q;
-		for (int i = 0; i < inputMatchers.size(); i++) {
-			// for each input matcher...
-			a = inputMatchers.get(i);
-			q = a.getQualEvaluation();
+		for (AbstractMatcher a : inputMatchers) {
+			q = qeMap.get(a);
 			// get the sim for this two nodes in the input matcher matrix
 			if (typeOfNodes != alignType.aligningClasses
 					&& typeOfNodes != alignType.aligningProperties)
@@ -188,28 +173,6 @@ public class CombinationMatcher extends AbstractMatcher {
 			throw new RuntimeException(
 					"DEVELOPMENT ERROR: combination type selected is not implemented");
 		return new Mapping(source, target, sim, MappingRelation.EQUIVALENCE);
-	}
-
-	private String getstring(OntResource str) {
-		String stringuri;
-		if (str == null)
-			return "";
-		else
-			stringuri=str.toString();
-		// TODO Auto-generated method stub
-		String result;
-
-		int loc = 0, j = 0;
-		for (int i = 0; i < stringuri.length(); i++) {
-			if (stringuri.charAt(i) == '#') {
-				loc = i + 1;
-				break;
-			}
-		}
-
-		result = stringuri.substring(loc).toLowerCase();
-
-		return result;
 	}
 
 	@Override
