@@ -6,7 +6,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class BaseSimilarityTest {
-    private StringSimilarityMeasure bsim;
+    private BaseSimilarity bsim;
 
     private void assertEq(double expected, double actual) {
         assertEquals(expected, actual, 0.000_000_001);

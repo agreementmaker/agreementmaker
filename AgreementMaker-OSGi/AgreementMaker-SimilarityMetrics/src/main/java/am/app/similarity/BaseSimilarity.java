@@ -60,7 +60,7 @@ public class BaseSimilarity implements StringSimilarityMeasure, IsConfigurable {
 
     @Override
     public double getSimilarity(String s1, String s2) {
-        return 0;
+        return calculateSimilarity(s1, s2);
     }
 
     /**
@@ -235,8 +235,8 @@ public class BaseSimilarity implements StringSimilarityMeasure, IsConfigurable {
 
         if(d1.equalsIgnoreCase(d2)) return 1; // the definitions are exactly equal
 
-        ArrayList<String> d1Tokens = new ArrayList<String>();
-        ArrayList<String> d2Tokens = new ArrayList<String>();
+        ArrayList<String> d1Tokens = new ArrayList<>();
+        ArrayList<String> d2Tokens = new ArrayList<>();
         PorterStemmer ps = new PorterStemmer();
 
         String word;
