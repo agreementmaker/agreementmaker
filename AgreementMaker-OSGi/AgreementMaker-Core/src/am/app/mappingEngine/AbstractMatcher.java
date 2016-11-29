@@ -113,8 +113,6 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	protected long executionTime;
 	/**Keeps info about reference evaluation of the matcher. is null until the algorithm gets evaluated*/
 	protected transient ReferenceEvaluationData refEvaluation;
-	/**Keeps info about the quality eval of the matcher. null if the algo is not evaluated*/
-	protected transient QualityEvaluationData qualEvaluation;
 
 	/**
 	 * the matchers combined for example in the LWC matcher can have this set to false, because the partial matchings are not needed. 
@@ -394,7 +392,6 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		classesMatrix = null;
 		propertiesMatrix = null;
 		modifiedByUser = false;
-		qualEvaluation = null;
 		refEvaluation = null;
 	}
 	//TEMPLATE METHOD TO ALLOW DEVELOPERS TO ADD CODE: call super when overriding
@@ -405,7 +402,6 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	public void beforeSelectionOperations() {
 		classesAlignmentSet = null;
 		propertiesAlignmentSet = null;
-		qualEvaluation = null;
 		refEvaluation = null;
 
 		for( MatchingProgressListener mpd : progressDisplays ) {
@@ -1286,19 +1282,6 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	 public boolean isRefEvaluated() {
 		 return refEvaluation != null;
 	 }
-
-	 public QualityEvaluationData getQualEvaluation() {
-		 return qualEvaluation;
-	 }
-
-	 public void setQualEvaluation(QualityEvaluationData qualEvaluation) {
-		 this.qualEvaluation = qualEvaluation;
-	 }
-
-	 public boolean isQualEvaluated() {
-		 return qualEvaluation != null;
-	 }
-
 
 	 public boolean isAlignProp() {
 		 return alignProp;
