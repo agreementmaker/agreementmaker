@@ -2,9 +2,9 @@ package am.matcher.LexicalMatcherJAWS;
 
 import java.util.ArrayList;
 
-import edu.smu.tspell.wordnet.Synset;
-import edu.smu.tspell.wordnet.SynsetType;
-import edu.smu.tspell.wordnet.WordNetDatabase;
+import edu.smu.tspell.wordnet.api.Synset;
+import edu.smu.tspell.wordnet.api.SynsetType;
+import edu.smu.tspell.wordnet.api.WordNetDatabase;
 
 public class WNLexicon implements Lexicon{
 

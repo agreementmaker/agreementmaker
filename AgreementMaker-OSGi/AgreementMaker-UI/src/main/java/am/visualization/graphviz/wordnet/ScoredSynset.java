@@ -2,7 +2,7 @@ package am.visualization.graphviz.wordnet;
 
 import java.util.List;
 
-import edu.smu.tspell.wordnet.NounSynset;
+import edu.smu.tspell.wordnet.api.NounSynset;
 
 public class ScoredSynset {
 	private NounSynset synset;

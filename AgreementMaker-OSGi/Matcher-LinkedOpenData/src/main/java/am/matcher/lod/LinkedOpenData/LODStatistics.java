@@ -8,7 +8,7 @@ import java.util.Scanner;
 
 import am.matcher.lod.hierarchy.Utilities;
 import am.app.wordnet.WordNetUtils;
-import edu.smu.tspell.wordnet.Synset;
+import edu.smu.tspell.wordnet.api.Synset;
 
 public class LODStatistics {
 	

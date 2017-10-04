@@ -8,14 +8,14 @@ import java.util.Queue;
 
 import am.app.Core;
 import am.ui.UIUtility;
-import edu.smu.tspell.wordnet.AdjectiveSynset;
-import edu.smu.tspell.wordnet.AdverbSynset;
-import edu.smu.tspell.wordnet.NounSynset;
-import edu.smu.tspell.wordnet.Synset;
-import edu.smu.tspell.wordnet.SynsetType;
-import edu.smu.tspell.wordnet.VerbSynset;
-import edu.smu.tspell.wordnet.WordNetDatabase;
-import edu.smu.tspell.wordnet.WordSense;
+import edu.smu.tspell.wordnet.api.AdjectiveSynset;
+import edu.smu.tspell.wordnet.api.AdverbSynset;
+import edu.smu.tspell.wordnet.api.NounSynset;
+import edu.smu.tspell.wordnet.api.Synset;
+import edu.smu.tspell.wordnet.api.SynsetType;
+import edu.smu.tspell.wordnet.api.VerbSynset;
+import edu.smu.tspell.wordnet.api.WordNetDatabase;
+import edu.smu.tspell.wordnet.api.WordSense;
 import edu.smu.tspell.wordnet.impl.file.synset.AdjectiveSatelliteReferenceSynset;
 
 public class WordNetUtils {
@@ -452,7 +452,9 @@ public class WordNetUtils {
 
 		return false;
 	}
-	private	boolean bCompareTwoSynsets(Synset srcSynset, Synset tarSynset){
+
+
+	private	boolean bCompareTwoSynsets(Synset srcSynset, Synset tarSynset){
 		return srcSynset == tarSynset ? true : false;
 	}
 

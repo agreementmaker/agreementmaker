@@ -6,8 +6,8 @@ import java.util.HashMap;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import edu.smu.tspell.wordnet.Synset;
-import edu.smu.tspell.wordnet.WordNetDatabase;
+import edu.smu.tspell.wordnet.api.Synset;
+import edu.smu.tspell.wordnet.api.WordNetDatabase;
 
 public class WordNetUtils {
 	
@@ -15,7 +15,7 @@ public class WordNetUtils {
 	
 	private static WordNetDatabase wordNet; 
 	
-	HashMap<String, Boolean> isSynonym = new HashMap<String, Boolean>();
+	private HashMap<String, Boolean> isSynonym = new HashMap<>();
 	
 	public WordNetUtils(){
 		initWordnet();
@@ -44,12 +44,6 @@ public class WordNetUtils {
 			}
 		}
 
-		if( wordnetDir == null ) {
-			Logger log = Logger.getLogger(WordNetUtils.class);
-			log.error("Could not find WordNet directory!");
-			return;
-		}
-		
 		System.setProperty("wordnet.database.dir", wordnetDir);
 		// Instantiate 
 		try {
@@ -70,10 +64,10 @@ public class WordNetUtils {
 		
 		Synset[] sourceSynsets = wordNet.getSynsets(source);
 		Synset[] targetSynsets = wordNet.getSynsets(target);
-		
-		for (int i = 0; i < sourceSynsets.length; i++) {
-			for (int j = 0; j < targetSynsets.length; j++) {
-				if(sourceSynsets[i] == targetSynsets[j]){
+
+		for (Synset sourceSynset : sourceSynsets) {
+			for (Synset targetSynset : targetSynsets) {
+				if (sourceSynset == targetSynset) {
 					//System.out.println(source + " " + target + " synonyms!!");
 					isSynonym.put(key, true);
 					return true;

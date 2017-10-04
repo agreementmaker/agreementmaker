@@ -29,10 +29,10 @@ import am.visualization.graphviz.wordnet.WordnetVisualizer;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.wcohen.ss.api.StringWrapper;
 
-import edu.smu.tspell.wordnet.NounSynset;
-import edu.smu.tspell.wordnet.Synset;
-import edu.smu.tspell.wordnet.SynsetType;
-import edu.smu.tspell.wordnet.WordNetDatabase;
+import edu.smu.tspell.wordnet.api.NounSynset;
+import edu.smu.tspell.wordnet.api.Synset;
+import edu.smu.tspell.wordnet.api.SynsetType;
+import edu.smu.tspell.wordnet.api.WordNetDatabase;
 
 public class WordnetSubclassMatcher extends AbstractMatcher{
 
