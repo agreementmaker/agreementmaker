@@ -26,7 +26,7 @@ For Windows:
 
 # Sample Ontologies
 
-We can use the [OAEI 2012 ontology dataset](http://oaei.ontologymatching.org/2012/benchmarks/benchmarks.zip) for matching.
+We can use the [OAEI 2012 ontology dataset](http://oaei.ontologymatching.org/2012/benchmarks/benchmarks.zip) for matching from the [2012 OAEI Campaign](http://oaei.ontologymatching.org/2012/benchmarks/index.html#datasets) page.
 
 1. Download and unzip the `benchmarks.zip`.
 2. Start AgreementMaker with `./mvnw pax:provision`.
