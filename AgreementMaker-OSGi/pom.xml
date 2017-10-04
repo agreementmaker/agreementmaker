@@ -66,12 +66,8 @@
     <!-- Repositories from where we get our dependencies. -->
     <repositories>
         <repository>
-            <id>AgreementMaker Maven Repo</id>
-            <url>http://cdn.agreementmaker.org/m2</url>
-        </repository>
-        <repository>
-            <id>bliki</id>
-            <url>https://gwtwiki.googlecode.com/svn/maven-repository/</url>
+            <id>Maven Repo</id>
+            <url>http://onawh.im/maven</url>
         </repository>
     </repositories>
 
