@@ -59,10 +59,10 @@ import am.ui.api.impl.AMTabSupportPanel;
 import am.visualization.graphviz.GraphViz;
 import am.visualization.graphviz.wordnet.NavigableImagePanel;
 import am.visualization.graphviz.wordnet.WordnetVisualizer;
-import edu.smu.tspell.wordnet.NounSynset;
-import edu.smu.tspell.wordnet.Synset;
-import edu.smu.tspell.wordnet.SynsetType;
-import edu.smu.tspell.wordnet.WordNetDatabase;
+import edu.smu.tspell.wordnet.api.NounSynset;
+import edu.smu.tspell.wordnet.api.Synset;
+import edu.smu.tspell.wordnet.api.SynsetType;
+import edu.smu.tspell.wordnet.api.WordNetDatabase;
 
 public class WordNetLookupPanel extends AMTabSupportPanel implements ActionListener, KeyListener {
 

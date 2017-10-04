@@ -13,10 +13,10 @@ import org.apache.log4j.Logger;
 
 import am.ui.UIUtility;
 import am.visualization.graphviz.GraphViz;
-import edu.smu.tspell.wordnet.NounSynset;
-import edu.smu.tspell.wordnet.Synset;
-import edu.smu.tspell.wordnet.SynsetType;
-import edu.smu.tspell.wordnet.WordNetDatabase;
+import edu.smu.tspell.wordnet.api.NounSynset;
+import edu.smu.tspell.wordnet.api.Synset;
+import edu.smu.tspell.wordnet.api.SynsetType;
+import edu.smu.tspell.wordnet.api.WordNetDatabase;
 
 public class WordnetVisualizer {
 	private WordNetDatabase WordNet;

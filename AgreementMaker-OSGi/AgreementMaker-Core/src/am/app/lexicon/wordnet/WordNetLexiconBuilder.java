@@ -18,9 +18,9 @@ import am.app.ontology.Ontology;
 
 import com.hp.hpl.jena.ontology.OntResource;
 
-import edu.smu.tspell.wordnet.Synset;
-import edu.smu.tspell.wordnet.SynsetType;
-import edu.smu.tspell.wordnet.WordNetDatabase;
+import edu.smu.tspell.wordnet.api.Synset;
+import edu.smu.tspell.wordnet.api.SynsetType;
+import edu.smu.tspell.wordnet.api.WordNetDatabase;
 
 /**
  * Enriches an ontology lexicon with synonyms from WordNet.

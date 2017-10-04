@@ -262,19 +262,19 @@
         </dependency>
 
         <dependency>
-            <groupId>secondstring</groupId>
+            <groupId>com.github.agreementmaker</groupId>
             <artifactId>secondstring</artifactId>
             <version>20120620</version>
         </dependency>
 
         <dependency>
-            <groupId>simpack</groupId>
+            <groupId>com.github.agreementmaker</groupId>
             <artifactId>simpack</artifactId>
             <version>0.91</version>
         </dependency>
 
         <dependency>
-            <groupId>cluster-gvm</groupId>
+            <groupId>com.github.agreementmaker</groupId>
             <artifactId>cluster-gvm</artifactId>
             <version>1.1</version>
         </dependency>

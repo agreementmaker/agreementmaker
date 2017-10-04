@@ -7,7 +7,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import am.app.ontology.Node;
-import edu.smu.tspell.wordnet.WordNetDatabase;
+import edu.smu.tspell.wordnet.api.WordNetDatabase;
 
 /**
  * Author: Cosmin Stroe.

@@ -6,6 +6,7 @@ import java.io.File;
 
 import org.apache.log4j.Logger;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import am.app.Core;
@@ -49,6 +50,7 @@ public class OAEI2013TurtleDatasetTests {
 	}
 	
 	@Test
+	@Ignore("RDF files are not available")
 	public void loadOriginal() throws Exception {
 		
 		OntoTreeBuilder builder = new OntoTreeBuilder(defOriginal);
@@ -63,6 +65,7 @@ public class OAEI2013TurtleDatasetTests {
 	 * This test makes sure we can properly load all the RDFT_DATASET_2013 contest test cases.
 	 */
 	@Test
+	@Ignore("RDF files are not available")
 	public void loadTestCases() throws Exception {
 		for( int i = 0; i < defTestcases.length; i++ ) {
 			LOG.info("Loading " + defTestcases[i].instanceSourceFile);

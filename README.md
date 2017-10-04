@@ -24,3 +24,6 @@ For Windows:
     ./mvnw.cmd install pax:provision
 
 
+# Sample Ontologies
+
+We can use the [OAEI 2012 ontology dataset](http://oaei.ontologymatching.org/2012/benchmarks/benchmarks.zip) for matching.

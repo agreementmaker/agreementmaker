@@ -131,7 +131,7 @@
 		</dependency>
 
 		<dependency>
-			<groupId>javaplot</groupId>
+			<groupId>com.github.agreementmaker</groupId>
 			<artifactId>javaplot</artifactId>
 			<version>0.4.0</version>
 		</dependency>		

@@ -70,7 +70,7 @@
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>simmetrics</groupId>
+			<groupId>com.github.agreementmaker</groupId>
 			<artifactId>simmetrics</artifactId>
 			<version>1.6.2</version>
 		</dependency>
