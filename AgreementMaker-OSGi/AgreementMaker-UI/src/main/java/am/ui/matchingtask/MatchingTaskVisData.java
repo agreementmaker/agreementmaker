@@ -1,8 +1,8 @@
 package am.ui.matchingtask;
 
-import java.awt.Color;
-
 import am.app.mappingEngine.MatchingTask;
+
+import java.awt.*;
 
 /**
  * Keeps track of visualization data for a {@link MatchingTask}. 
@@ -10,8 +10,27 @@ import am.app.mappingEngine.MatchingTask;
  * @author Cosmin Stroe
  */
 public class MatchingTaskVisData {
-	
-	public boolean isShown = true;
-	
-	public Color color = Color.ORANGE;
+    private boolean isShown;
+    private Color color;
+
+    public MatchingTaskVisData() {
+        this.isShown = true;
+        this.color = Color.ORANGE;
+    }
+
+    public boolean isShown() {
+        return isShown;
+    }
+
+    public void setShown(boolean shown) {
+        isShown = shown;
+    }
+
+    public Color getColor() {
+        return color;
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
+    }
 }

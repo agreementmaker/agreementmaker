@@ -1,14 +1,15 @@
 package am.ui.canvas2.graphical;
 
-import java.awt.Color;
-
 import am.app.Core;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatchingTask;
 import am.ui.Colors;
+import am.ui.UICore;
 import am.ui.canvas2.utility.Canvas2Layout;
-
+import am.ui.matchingtask.MatchingTaskVisData;
 import com.hp.hpl.jena.ontology.OntResource;
+
+import java.awt.*;
 
 public class MappingData extends GraphicalData {
 
@@ -29,26 +30,21 @@ public class MappingData extends GraphicalData {
 	public MappingType mappingType;
 	public Mapping alignment = null;
 	
-	public MappingData(int x1, int y1, int width, int height, Canvas2Layout l, 
-						OntResource res1, OntResource res2, int OntID1, int OntID2, int mID, MappingType t ) {
-		super(x1, y1, width, height, res1, NodeType.MAPPING, l, 0);
+    public MappingData(Core core, UICore uiCore, int x1, int y1, int width, int height, Canvas2Layout l,
+                        OntResource res1, OntResource res2, int OntID1, int OntID2, int mID, MappingType t ) {
+        super(x1, y1, width, height, res1, NodeType.MAPPING, l, 0);
 
-		r2 = res2;
-		ontologyID = OntID1;
-		ontologyID2 = OntID2;
-		matcherID = mID;
-		
-		MatchingTask m = Core.getInstance().getMatchingTaskByID(matcherID);
-		/*if( m != null ) {
-			color = m.visData.color;
-		}*/
-		color = Colors.matchersColors[0];
-		
-		mappingType = t;
-		
-	}
+        r2 = res2;
+        ontologyID = OntID1;
+        ontologyID2 = OntID2;
+        matcherID = mID;
 
-	public MappingData(int x1, int y1, int width, int height, Canvas2Layout l, 
+        this.color = getColor(core, uiCore, matcherID);
+        
+        mappingType = t;
+    }
+
+	public MappingData(Core core, UICore uiCore, int x1, int y1, int width, int height, Canvas2Layout l,
 			OntResource res1, Mapping a, int OntID1, int OntID2, int mID, MappingType t ) {
 		super(x1, y1, width, height, res1, NodeType.MAPPING, l);
 
@@ -70,13 +66,22 @@ public class MappingData extends GraphicalData {
 		ontologyID2 = OntID2;
 		matcherID = mID;
 
-		MatchingTask m = Core.getInstance().getMatchingTaskByID(matcherID);
-		/*if( m != null ) {
-			color = m.visData.color;
-		}*/
-		color = Colors.matchersColors[0];
-
+        color = getColor(core, uiCore, matcherID);
 		mappingType = t;
 
 	}
+
+    private Color getColor(Core core, UICore uiCore, int matcherID) {
+        MatchingTask m = core.getMatchingTaskByID(matcherID);
+        if(m == null) {
+            return Colors.matchersColors[0];
+        }
+
+        MatchingTaskVisData data = uiCore.getVisData(m);
+        if(data != null) {
+            return data.getColor();
+        }
+
+        return Colors.matchersColors[0];
+    }
 }

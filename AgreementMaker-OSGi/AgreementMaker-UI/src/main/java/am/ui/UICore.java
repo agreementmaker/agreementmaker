@@ -1,5 +1,6 @@
 package am.ui;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -10,6 +11,7 @@ import java.util.TreeMap;
 
 import am.app.mappingEngine.MatchingTask;
 import am.app.ontology.Node;
+import am.ui.matchingtask.MatchingTaskColorAssigner;
 import am.ui.matchingtask.MatchingTaskVisData;
 import am.ui.ontology.OntologyConceptGraphics;
 
@@ -125,6 +127,7 @@ public class UICore {
 	public MatchingTaskVisData getVisData(MatchingTask task) {
 		if( !visualizationData.containsKey(task) ) {
 			MatchingTaskVisData data = new MatchingTaskVisData();
+			data.setColor(MatchingTaskColorAssigner.assignColor(task, visualizationData));
 			visualizationData.put(task, data);
 			return data;
 		}
