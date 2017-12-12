@@ -3,6 +3,7 @@ package am.utility;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.HeadlessException;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
@@ -144,7 +145,7 @@ public class AMFileChooser extends JFileChooser {
 	 * 
 	 * @author cosmin
 	 */
-	private class AMFileChooserDoubleclickListener implements MouseListener {
+	private class AMFileChooserDoubleclickListener extends MouseAdapter {
 
 		private MouseListener handler;
 
@@ -159,11 +160,6 @@ public class AMFileChooser extends JFileChooser {
 				handler.mouseClicked(e);
 			}
 		}
-
-		@Override public void mouseEntered(MouseEvent e) { }
-		@Override public void mouseExited(MouseEvent e) { }
-    	@Override public void mousePressed(MouseEvent e) { }
-		@Override public void mouseReleased(MouseEvent e) { }
 	}
 	
 	/*

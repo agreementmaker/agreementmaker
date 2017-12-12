@@ -153,7 +153,6 @@ public class MediatingMatcherParametersPanel extends
 	
 	@Override
 	public DefaultMatcherParameters getParameters() {
-		
 		MediatingMatcherParameters param = new MediatingMatcherParameters();
 		
 		param.mediatingOntology = textfields[0].getText();

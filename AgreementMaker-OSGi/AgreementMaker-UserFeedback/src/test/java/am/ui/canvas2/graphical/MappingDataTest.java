@@ -8,16 +8,15 @@ import am.ui.UICore;
 import am.ui.canvas2.utility.Canvas2Layout;
 import am.ui.matchingtask.MatchingTaskVisData;
 import com.hp.hpl.jena.ontology.OntResource;
-import com.hp.hpl.jena.rdf.model.Resource;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import java.awt.*;
 
-import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertNotNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-@DisplayName("Mapping Data")
 public class MappingDataTest {
     private Core mockCore = mock(Core.class);
     private UICore mockUICore = mock(UICore.class);
@@ -25,7 +24,6 @@ public class MappingDataTest {
     private OntResource mockResource = mock(OntResource.class);
 
     @Test
-    @DisplayName("should inherit color from MatchingTask")
     public void setColorCorrectly() {
         MatchingTask mockTask = mock(MatchingTask.class);
         MatchingTaskVisData mockData = mock(MatchingTaskVisData.class);
@@ -38,8 +36,8 @@ public class MappingDataTest {
                     mockCore, mockUICore, 0, 0, 0, 0, mockLayout, mockResource, mockResource, 0, 0, 25673,
                     MappingData.MappingType.NOT_SET);
 
-            assertNotNull(data.color, "Color should be set.");
-            assertEquals(data.color, Color.RED, "Color should be inherited from matcher.");
+            assertNotNull("Color should be set.", data.color);
+            assertEquals("Color should be inherited from matcher.", data.color, Color.RED);
         }{
             Mapping mockMapping = mock(Mapping.class);
             Node mockNode = mock(Node.class);
@@ -51,8 +49,8 @@ public class MappingDataTest {
                     mockCore, mockUICore,
                     0, 0, 0, 0, mockLayout, mockResource, mockMapping, 0, 0, 25673,
                     MappingData.MappingType.NOT_SET);
-            assertNotNull(data.color, "Color should be set.");
-            assertEquals(data.color, Color.RED, "Color should be inherited from matcher.");
+            assertNotNull("Color should be set.", data.color);
+            assertEquals("Color should be inherited from matcher.", data.color, Color.RED);
         }
     }
 }
