@@ -12,6 +12,7 @@ import java.util.Iterator;
 import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.Mapping;
+import am.ui.UICore;
 import am.ui.canvas2.graphical.GraphicalData;
 import am.ui.canvas2.graphical.GraphicalData.NodeType;
 import am.ui.canvas2.graphical.MappingData;
@@ -25,81 +26,82 @@ public class LegacyMapping extends Canvas2Edge {
 
 	Line2D.Double line; // the line formed by the mapping
 	
-	public LegacyMapping(Canvas2Vertex orig, Canvas2Vertex dest, GraphicalData o, int matcherID, String label ) {
-		super(orig, dest, o);
-		
-		GraphicalData source = orig.getObject();
-		GraphicalData target = dest.getObject();
-		
-		int sourceX = source.x + source.width;
-		int sourceY = source.y + (source.height / 2);
-		
-		int targetX = target.x + LegacyNode.circlePadding;
-		int targetY = target.y + (target.height / 2); 
-		
-		int width = targetX - sourceX;
-		int height = targetY - sourceY;
-		
-		MappingType mappingType = MappingType.NOT_SET; 
-		if( source.type == GraphicalData.NodeType.CLASS_NODE || source.type == GraphicalData.NodeType.CLASSES_ROOT ) {
-			mappingType = MappingType.ALIGNING_CLASSES;
-		} else if( source.type == GraphicalData.NodeType.PROPERTY_NODE || source.type == GraphicalData.NodeType.PROPERTIES_ROOT ) {
-			mappingType = MappingType.ALIGNING_PROPERTIES;
-		}
-		
-		MappingData data = new MappingData( sourceX, sourceY, width, height, source.layout, 
-											source.r, target.r, source.ontologyID, target.ontologyID, matcherID, mappingType );
-		data.label = label;
-		
-		setObject( data );
-		
-		Point2D.Double startPoint = new Point2D.Double(d.x, d.y);
-		Point2D.Double endPoint =   new Point2D.Double(d.x+d.width, d.y+d.height);
-		
-		line = new Line2D.Double( startPoint, endPoint );
-		
-	}
+    public LegacyMapping(Canvas2Vertex orig, Canvas2Vertex dest, GraphicalData o, int matcherID, String label ) {
+        super(orig, dest, o);
+        
+        GraphicalData source = orig.getObject();
+        GraphicalData target = dest.getObject();
+        
+        int sourceX = source.x + source.width;
+        int sourceY = source.y + (source.height / 2);
+        
+        int targetX = target.x + LegacyNode.circlePadding;
+        int targetY = target.y + (target.height / 2); 
+        
+        int width = targetX - sourceX;
+        int height = targetY - sourceY;
+        
+        MappingType mappingType = MappingType.NOT_SET; 
+        if( source.type == GraphicalData.NodeType.CLASS_NODE || source.type == GraphicalData.NodeType.CLASSES_ROOT ) {
+            mappingType = MappingType.ALIGNING_CLASSES;
+        } else if( source.type == GraphicalData.NodeType.PROPERTY_NODE || source.type == GraphicalData.NodeType.PROPERTIES_ROOT ) {
+            mappingType = MappingType.ALIGNING_PROPERTIES;
+        }
+        
+        MappingData data = new MappingData(Core.getInstance(), UICore.getInstance(),
+                sourceX, sourceY, width, height, source.layout, 
+                source.r, target.r, source.ontologyID, target.ontologyID, matcherID, mappingType );
+        data.label = label;
+        
+        setObject( data );
+        
+        Point2D.Double startPoint = new Point2D.Double(d.x, d.y);
+        Point2D.Double endPoint =   new Point2D.Double(d.x+d.width, d.y+d.height);
+        
+        line = new Line2D.Double( startPoint, endPoint );
+    }
 
 	
-	public LegacyMapping(Canvas2Vertex orig, Canvas2Vertex dest, Mapping a , int matcherID ) {
-		super(orig, dest, null);
-		
-		//AppPreferences pref = Core.getAppPreferences();
-		String label = Utility.getNoDecimalPercentFromDouble(a.getSimilarity()); 
-		
-		GraphicalData source = orig.getObject();
-		GraphicalData target = dest.getObject();
-		
-		int sourceX = source.x + source.width;
-		int sourceY = source.y + (source.height / 2);
-		
-		int targetX = target.x + LegacyNode.circlePadding;
-		int targetY = target.y + (target.height / 2); 
-		
-		int width = targetX - sourceX;
-		int height = targetY - sourceY;
-		
-		MappingType mappingType = MappingType.NOT_SET; 
-		if( source.type == GraphicalData.NodeType.CLASS_NODE || source.type == GraphicalData.NodeType.CLASSES_ROOT ) {
-			mappingType = MappingType.ALIGNING_CLASSES;
-		} else if( source.type == GraphicalData.NodeType.PROPERTY_NODE || source.type == GraphicalData.NodeType.PROPERTIES_ROOT ) {
-			mappingType = MappingType.ALIGNING_PROPERTIES;
-		}
-		
-		MappingData data = new MappingData( sourceX, sourceY, width, height, source.layout, 
-											source.r, a, source.ontologyID, target.ontologyID, matcherID, mappingType );
-		
-		// if we need to show the short name of the matcher with the mappings
-		data.label = label;
+    public LegacyMapping(Canvas2Vertex orig, Canvas2Vertex dest, Mapping a , int matcherID ) {
+        super(orig, dest, null);
+        
+        //AppPreferences pref = Core.getAppPreferences();
+        String label = Utility.getNoDecimalPercentFromDouble(a.getSimilarity()); 
+        
+        GraphicalData source = orig.getObject();
+        GraphicalData target = dest.getObject();
+        
+        int sourceX = source.x + source.width;
+        int sourceY = source.y + (source.height / 2);
+        
+        int targetX = target.x + LegacyNode.circlePadding;
+        int targetY = target.y + (target.height / 2); 
+        
+        int width = targetX - sourceX;
+        int height = targetY - sourceY;
+        
+        MappingType mappingType = MappingType.NOT_SET; 
+        if( source.type == GraphicalData.NodeType.CLASS_NODE || source.type == GraphicalData.NodeType.CLASSES_ROOT ) {
+            mappingType = MappingType.ALIGNING_CLASSES;
+        } else if( source.type == GraphicalData.NodeType.PROPERTY_NODE || source.type == GraphicalData.NodeType.PROPERTIES_ROOT ) {
+            mappingType = MappingType.ALIGNING_PROPERTIES;
+        }
+        
+        MappingData data = new MappingData(Core.getInstance(), UICore.getInstance(),
+                sourceX, sourceY, width, height, source.layout,
+                source.r, a, source.ontologyID, target.ontologyID, matcherID, mappingType );
+        
+        // if we need to show the short name of the matcher with the mappings
+        data.label = label;
 
-		setObject( data );
-		
-		Point2D.Double startPoint = new Point2D.Double(d.x, d.y);
-		Point2D.Double endPoint =   new Point2D.Double(d.x+d.width, d.y+d.height);
-		
-		line = new Line2D.Double( startPoint, endPoint );
-		
-	}
+        setObject( data );
+        
+        Point2D.Double startPoint = new Point2D.Double(d.x, d.y);
+        Point2D.Double endPoint =   new Point2D.Double(d.x+d.width, d.y+d.height);
+        
+        line = new Line2D.Double( startPoint, endPoint );
+        
+    }
 
 	
 	// Used when the line endpoints have changed.

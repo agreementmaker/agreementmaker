@@ -234,8 +234,8 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 		super.paintComponent(g);
 		
 		Rectangle currentView = viewport.getViewRect();
-		visibleVertices = new ArrayList<Canvas2Vertex>();  // throw away the old list on every repaint
-		visibleEdges = new ArrayList<Canvas2Edge>();  // same as above comment
+		visibleVertices = new ArrayList<>();  // throw away the old list on every repaint
+		visibleEdges = new ArrayList<>();  // same as above comment
 		
 		/* Get ready for a paint() */
 		layout.getReadyForRepaint(currentView);
@@ -363,7 +363,7 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 		case MATCHER_VISIBILITY_CHANGED:
 			int matcherID11 = taskID;
 			Iterator<CanvasGraph> graphIter11 = graphs.iterator();
-			final boolean visible = UICore.getInstance().getVisData(task).isShown;
+			final boolean visible = UICore.getInstance().getVisData(task).isShown();
 			while( graphIter11.hasNext() ) {
 				CanvasGraph gr = graphIter11.next();
 				if( gr.getID() == matcherID11 ) {
@@ -382,7 +382,7 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 			log.debug("Color change event from task ID: " + e.getTaskID());
 			Iterator<CanvasGraph> graphIter11c = graphs.iterator();
 			
-			final Color taskColor = UICore.getInstance().getVisData(task).color;
+			final Color taskColor = UICore.getInstance().getVisData(task).getColor();
 			
 			while( graphIter11c.hasNext() ) {
 				CanvasGraph gr = graphIter11c.next();
