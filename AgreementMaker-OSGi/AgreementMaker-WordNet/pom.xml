@@ -11,57 +11,10 @@
 
 	<artifactId>AgreementMaker-WordNet</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>bundle</packaging>
+	<packaging>jar</packaging>
 	
 	<name>AgreementMaker WordNet</name>
-        <description>AgreementMaker's WordNet wrapper</description>
-	
-	<properties>
-		<bundle.namespace>am.app.wordnet</bundle.namespace>
-	</properties>
-
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.felix</groupId>
-				<artifactId>maven-bundle-plugin</artifactId>
-				<version>${maven.bundle.plugin.version}</version>
-				<extensions>true</extensions>
-				<configuration>
-					<manifestLocation>META-INF</manifestLocation>
-					<instructions>
-						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-						<Bundle-Version>${project.version}</Bundle-Version>
-						<Export-Package>${bundle.namespace}.*</Export-Package>
-						<Import-Package>*</Import-Package>
-					</instructions>
-				</configuration>
-			</plugin>
-
-			<plugin>
-				<artifactId>maven-clean-plugin</artifactId>
-				<version>3.0.0</version>
-				<configuration>
-					<filesets>
-						<fileset>
-							<directory>META-INF</directory>
-						</fileset>
-					</filesets>
-				</configuration>
-			</plugin>
-
-			<!-- Specify our Java version here. -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.0</version>
-				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+	<description>AgreementMaker's WordNet wrapper</description>
 
 	<dependencies>
 		<dependency>
@@ -72,11 +25,6 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.21</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
             <version>1.7.21</version>
         </dependency>
     </dependencies>
