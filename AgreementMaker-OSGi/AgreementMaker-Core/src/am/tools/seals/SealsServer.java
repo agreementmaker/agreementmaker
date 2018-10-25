@@ -23,19 +23,6 @@
 
 package am.tools.seals;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.Arrays;
-
-import javax.jws.WebService;
-
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.DefaultMatcherParameters;
@@ -48,15 +35,24 @@ import am.app.ontology.ontologyParser.OntologyDefinition.OntologyLanguage;
 import am.app.ontology.ontologyParser.OntologyDefinition.OntologySyntax;
 import am.app.osgi.MatcherNotFoundException;
 import am.parsing.AlignmentOutput;
-import eu.sealsproject.omt.ws.matcher.AlignmentWS;
+
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.Arrays;
 
 /**
  * This class handles the align requests from the published Endpoint.
  * @author cosmin
  *
  */
-@WebService(endpointInterface="eu.sealsproject.omt.ws.matcher.AlignmentWS")
-public class SealsServer implements AlignmentWS {
+public class SealsServer {
 
 //	private AbstractMatcher matcher;
 	
@@ -74,7 +70,7 @@ public class SealsServer implements AlignmentWS {
 	}
 	
 	
-	@Override
+	//@Override
 	public String align(URI source, URI target) {
 
 		// 0. Instantiate the matcher.

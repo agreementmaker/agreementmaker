@@ -1,20 +1,5 @@
 package am.app;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.management.InstanceAlreadyExistsException;
-
-import org.apache.commons.io.FilenameUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleException;
-
 import am.AMException;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.LexiconStore;
@@ -32,11 +17,17 @@ import am.app.ontology.Ontology;
 import am.app.ontology.OntologyChangeEvent;
 import am.app.ontology.OntologyChangeListener;
 import am.app.ontology.profiling.OntologyProfiler;
-import am.app.osgi.AMHost;
-import am.app.osgi.OSGiRegistry;
 import am.utility.AppPreferences;
-
 import com.hp.hpl.jena.rdf.model.Model;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * SINGLETON JAVA PATTERN
@@ -268,8 +259,6 @@ public class Core {
 	 * return them as a list. </p>
 	 * 
 	 * @return An empty list if no matchers are registered in the system.
-	 * 
-	 * @see {@link AMHost#getRegistry()}
 	 */
 	public List<AbstractMatcher> getMatchingAlgorithms() {
 		List<AbstractMatcher> matchers = null;
@@ -402,7 +391,7 @@ public class Core {
 	 * at the beginning there will be only one matcher in the modifiedList that is a
 	 * anytime we find another matcher a2 with a as input we have to invoke a2.match() and we have to add a2 to the modifiedmatchings
 	 * so that all other matchers with a and/or a2 as input will be updated to and so on.
-	 * @param a the matcher that has been modified and generates a chain reaction on other matchings
+	 * @param t the matcher that has been modified and generates a chain reaction on other matchings
 	 * @throws AMException 
 	 */
 	public void selectAndUpdateMatchers(MatchingTask t) throws Exception{
@@ -588,11 +577,6 @@ public class Core {
 	private OntologyProfiler currentProfiler;
 
 	/**
-	 * If we're running an OSGi framework, keep track of the bundle context.
-	 */
-	private BundleContext bundleContext;
-	
-	/**
 	 * Ontology profiler.  Set the profiler by using the Ontology -> Profiling... menu.
 	 * @return  The current ontology profiling algorithm set.
 	 */
@@ -604,14 +588,6 @@ public class Core {
 	 */
 	public void setOntologyProfiler( OntologyProfiler p ) { currentProfiler = p; }
 
-	public void initializeOSGiRegistry(BundleContext context) throws InstanceAlreadyExistsException {
-		this.bundleContext = context;
-		if( registry != null )
-			throw new InstanceAlreadyExistsException("You've already instantiated an OSGiRegistry object.");
-		
-		registry = new OSGiRegistry(context);
-	}
-	
 	public MatcherRegistry getRegistry() {
 		return registry;
 	}
@@ -620,24 +596,5 @@ public class Core {
 	 * Gracefully shutdown AgreementMaker. This was introduced mainly to
 	 * handle OSGi shutdowns.
 	 */
-	public void shutdown() {
-		if( bundleContext != null ) {
-			try {
-				bundleContext.getBundle(0).stop();
-				//EclipseStarter.shutdown();
-			} catch (BundleException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (NullPointerException e) {
-				System.exit(0);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-	}
-	
-	public BundleContext getBundleContext() {
-		return bundleContext;
-	}
+	public void shutdown() { }
 }
