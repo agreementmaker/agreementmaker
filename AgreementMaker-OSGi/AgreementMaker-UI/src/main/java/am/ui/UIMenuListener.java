@@ -16,9 +16,6 @@ import javax.swing.JSplitPane;
 import javax.swing.SwingUtilities;
 import javax.swing.border.LineBorder;
 
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-
 import am.AMException;
 import am.Utility;
 import am.app.Core;
@@ -731,29 +728,29 @@ public class UIMenuListener implements ActionListener {
 			}
 			else if( obj == menu.mnuListBundles ) {
 				
-				BundleContext bundleContext = Core.getInstance().getBundleContext();
-				StringBuilder strBuilder = new StringBuilder();
-				if( bundleContext != null ) {
-					Bundle[] bundles = bundleContext.getBundles(); 
-					strBuilder.append("Installed bundles in the embedded framework:\n");
-					for( Bundle b : bundles ) {
-						strBuilder.append(b.getSymbolicName());
-						strBuilder.append("\n");
-					}
-				}
-				else {
-					strBuilder.append("No bundle context is available (bundleContext==null)");
-				}
-				strBuilder.append("\n\nMatcher names:\n");
+				//BundleContext bundleContext = Core.getInstance().getBundleContext();
+//				StringBuilder strBuilder = new StringBuilder();
+//				if( bundleContext != null ) {
+//					Bundle[] bundles = bundleContext.getBundles();
+//					strBuilder.append("Installed bundles in the embedded framework:\n");
+//					for( Bundle b : bundles ) {
+//						strBuilder.append(b.getSymbolicName());
+//						strBuilder.append("\n");
+//					}
+//				}
+//				else {
+//					strBuilder.append("No bundle context is available (bundleContext==null)");
+//				}
+//				strBuilder.append("\n\nMatcher names:\n");
 				List<AbstractMatcher> matcherNames=Core.getInstance().getRegistry().getMatchers();
-				for(AbstractMatcher s:matcherNames){
-					strBuilder.append(s.getName());
-					strBuilder.append("\n");
-				}
+//				for(AbstractMatcher s:matcherNames){
+//					strBuilder.append(s.getName());
+//					strBuilder.append("\n");
+//				}
 				//strBuilder.append("existing services in the system\n");
 				//Core.getInstance().getContext().getServiceReference(AbstractMatcher.class);
 
-				JOptionPane.showMessageDialog(null, strBuilder.toString());
+				JOptionPane.showMessageDialog(null, "");
 			}
 
 
