@@ -12,69 +12,38 @@
 
 	<artifactId>VisualAnalytics-Graph</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
-	<packaging>bundle</packaging>
-
-	<properties>
-		<bundle.namespace>am.va.graph</bundle.namespace>
-	</properties>
-
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.felix</groupId>
-				<artifactId>maven-bundle-plugin</artifactId>
-				<version>${maven.bundle.plugin.version}</version>
-				<extensions>true</extensions>
-				<configuration>
-					<manifestLocation>META-INF</manifestLocation>
-					<instructions>
-						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-						<Bundle-Version>${project.version}</Bundle-Version>
-						<Export-Package>${bundle.namespace}.*</Export-Package>
-						<Bundle-Activator>${bundle.namespace}.Activator</Bundle-Activator>
-						<Import-Package>javafx.*;version=2.0.0,*</Import-Package>
-					</instructions>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+	<packaging>jar</packaging>
 
 	<dependencies>
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>AgreementMaker-Core</artifactId>
 			<version>${project.parent.version}</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>AgreementMaker-Matchers</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>Matcher-AdvancedSimilarity</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>Matcher-BaseSimilarity</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>Matcher-OAEI</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>Matcher-PRA</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.oracle</groupId>

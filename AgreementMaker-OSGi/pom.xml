@@ -27,7 +27,6 @@
     <properties>
         <org.osgi.service.http.port>8080</org.osgi.service.http.port>
         <org.osgi.service.http.port.secure>8443</org.osgi.service.http.port.secure>
-        <maven.bundle.plugin.version>3.0.1</maven.bundle.plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit.jupiter.version>5.0.1</junit.jupiter.version>
         <junit.vintage.version>4.12.2</junit.vintage.version>
