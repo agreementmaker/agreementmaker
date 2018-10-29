@@ -49,6 +49,7 @@ module am.core {
     exports am.app.mappingEngine.similarityMatrix;
     exports am.app.mappingEngine.utility;
     exports am.app.lexicon;
+    exports am.app.lexicon.subconcept;
     exports am.app.ontology;
     exports am.app.ontology.instance;
     exports am.app.ontology.instance.endpoint;
@@ -71,4 +72,7 @@ module am.core {
     exports am.evaluation.clustering.gvm;
     exports am.evaluation.disagreement;
     exports am.evaluation.disagreement.variance;
+    exports am.output.console;
+    exports am.output.alignment.oaei;
+    exports am.app.mappingEngine.abstractMatcherNew;
 }
