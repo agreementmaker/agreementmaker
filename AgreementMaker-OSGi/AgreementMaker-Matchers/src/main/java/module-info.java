@@ -1,5 +1,10 @@
 module am.matchers {
     exports am.matcher.parametricStringMatcher;
+    exports am.matcher.Combination;
+    exports am.matcher.IterativeInstanceStructuralMatcher;
+    exports am.matcher.LexicalSynonymMatcher;
+    exports am.matcher.groupFinder;
+    exports am.matcher.multiWords;
 
     requires java.desktop;
     requires java.prefs;
