@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.log4j.Logger;
-
 import am.app.Core;
 import am.app.lexicon.Lexicon;
 import am.app.lexicon.LexiconSynSet;
@@ -23,6 +21,8 @@ import am.app.ontology.Node;
 import am.app.wordnet.WordNetUtils;
 
 import com.hp.hpl.jena.ontology.OntResource;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class LexicalSynonymMatcherWeighted extends AbstractMatcher {
 
@@ -433,7 +433,7 @@ public class LexicalSynonymMatcherWeighted extends AbstractMatcher {
 				e.printStackTrace();
 			}
 		} else {
-			Logger log = Logger.getLogger(this.getClass());
+			Logger log = LogManager.getLogger(this.getClass());
 			log.error("LSM needs to be fixed. " + sourceSet + " " + targetSet);
 		}
 

@@ -1,32 +1,24 @@
 package am.extension.collaborationClient;
 
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.util.Queue;
+import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
+import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
+import am.extension.collaborationClient.api.CollaborationAPI;
+import am.utility.WrapLayout;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JRootPane;
-
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-
-import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
-import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
-import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
-import am.extension.collaborationClient.api.CollaborationAPI;
-import am.utility.WrapLayout;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class CollaborationServerExperiment extends JFrame implements ActionListener {
 
 	private static final long serialVersionUID = 7271738846789890792L;
 
-	private static final Logger sLog = Logger.getLogger(CollaborationServerExperiment.class);
+	private static final Logger sLog = LogManager.getLogger(CollaborationServerExperiment.class);
 
 	private JButton btnCreateServer, btnCandidateSelection, btnRunUsersExperiment;
 	private CollaborationAPI cs;
@@ -62,9 +54,8 @@ public class CollaborationServerExperiment extends JFrame implements ActionListe
 	public void actionPerformed(ActionEvent e) {
 		
 		if( e.getSource() == btnCreateServer ) {
-			Logger log = Logger.getLogger(this.getClass());
-			log.setLevel(Level.DEBUG);
-			
+			Logger log = LogManager.getLogger(this.getClass());
+
 			//cs = new CollaborationServerImpl();
 			
 			log.debug("Loading and matching ontologies ...");
@@ -75,9 +66,8 @@ public class CollaborationServerExperiment extends JFrame implements ActionListe
 		
 		if( e.getSource() == btnCandidateSelection ) {
 			
-			Logger log = Logger.getLogger(this.getClass());
-			log.setLevel(Level.DEBUG);
-			
+			Logger log = LogManager.getLogger(this.getClass());
+
 			ReferenceAlignmentMatcher ram = new ReferenceAlignmentMatcher();
 			
 			//CollaborationOntologyPair cop = cs.getPair(ontoPair);

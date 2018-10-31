@@ -3,15 +3,15 @@
  */
 package am.app.geo.oneStepLoadProcess;
 
+import am.app.geo.IFileToDatabaseConverter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
-
-import org.apache.log4j.Logger;
-
-import am.app.geo.IFileToDatabaseConverter;
 
 /**
  * @author Michele Caci
@@ -19,7 +19,7 @@ import am.app.geo.IFileToDatabaseConverter;
  */
 public abstract class OneStepConverter implements IFileToDatabaseConverter {
 
-	private static final Logger sLog = Logger.getLogger(OneStepConverter.class);
+	private static final Logger sLog = LogManager.getLogger(OneStepConverter.class);
 	
 	// information needed by the database
 	protected Connection connect = null;

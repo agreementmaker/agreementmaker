@@ -59,6 +59,7 @@
         <module>AgreementMaker-UIGlue</module>
         <module>Matcher-Benchmarks2013</module>
         <module>Matcher-IMEI2013</module>
+        <module>AgreementMaker-AlignmentRepair</module>
         <!--
                 &lt;!&ndash; <module>VisualAnalytics-Graph</module> &ndash;&gt;
                 <module>AgreementMaker-IntegrationTests</module>
@@ -81,8 +82,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.0</version>
                 <configuration>
-                    <source>10</source>
-                    <target>10</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
                 </configuration>
             </plugin>
             <plugin>

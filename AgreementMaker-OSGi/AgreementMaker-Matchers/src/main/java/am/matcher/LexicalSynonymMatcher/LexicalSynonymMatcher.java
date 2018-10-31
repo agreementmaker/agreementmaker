@@ -1,11 +1,5 @@
 package am.matcher.LexicalSynonymMatcher;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
-
-import org.apache.log4j.Logger;
-
 import am.app.Core;
 import am.app.lexicon.Lexicon;
 import am.app.lexicon.LexiconSynSet;
@@ -18,8 +12,13 @@ import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.ontology.Node;
 import am.app.wordnet.WordNetUtils;
-
 import com.hp.hpl.jena.ontology.OntResource;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
 
 public class LexicalSynonymMatcher extends AbstractMatcher {
 
@@ -417,7 +416,7 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 				e.printStackTrace();
 			}
 		} else {
-			Logger log = Logger.getLogger(this.getClass());
+			Logger log = LogManager.getLogger(this.getClass());
 			log.error("LSM needs to be fixed. "  + sourceSet + " " + targetSet);
 		}
 			
