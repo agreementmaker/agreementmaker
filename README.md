@@ -13,16 +13,7 @@ The currently supported version of AgreementMaker is under the [AgreementMaker-O
 
 # Running
 
-You can run AgreementMaker using the Maven Pax Runner plugin:
-
-    cd AgreementMaker-OSGi
-    ./mvnw install pax:provision -Dmaven.test.skip=true
-
-For Windows:
-
-    cd AgreementMaker-OSGi
-    ./mvnw.cmd install pax:provision -Dmaven.test.skip=true
-
+See https://github.com/agreementmaker/agreementmaker/tree/master/AgreementMaker-OSGi#running
 
 # Sample Ontologies
 
