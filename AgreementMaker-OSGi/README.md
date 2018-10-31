@@ -6,22 +6,20 @@ matching algorithms.
 
 # AgreementMaker-OSGi
 
-This is an OSGi version of AgremeentMaker.  All the sub-directories are each an
-OSGi bundle.
+AgremeentMaker is split up into many modules, each contained in a sub directory of this directory.
 
 ## Building
 
-AgreementMaker uses the Maven build system, with [maven-wrapper](https://github.com/takari/maven-wrapper).  To build it type:
+AgreementMaker uses the [Apache Maven](https://maven.apache.org) build system, with [maven-wrapper](https://github.com/takari/maven-wrapper).  To build it type:
 
     ./mvnw install
 
 in the `AgreementMaker-OSGi` directory.
 
-Run the bundles with your favorite OSGi implementation (for example, [Apache Felix](http://felix.apache.org/)).  To see how to run AgreementMaker in an IDE, please refer to the [wiki](https://github.com/agreementmaker/agreementmaker/wiki).
-
 ## Running
 
-After `./mvnw install`, start AgreementMaker with:
+The main entrypoint to AgreementMaker is currently in the `AgreementMaker-UIGlue` module, in the `am.ui.glue.StartAgreementMaker` class.  Navigate to that class and start the program from there using an IDE.
 
-    ./mvnw pax:provision
+## Getting Wordnet
 
+Some matching algorithms require a local copy of [WordNet 3.0](https://wordnet.princeton.edu).  You can get it from [the official site](http://wordnetcode.princeton.edu/3.0/).  Extract `WordNet-3.0.tar.bz2` and put the contents of the `dict` sub directory in `AM_ROOT/wordnet-3.0`.
