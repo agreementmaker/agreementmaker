@@ -11,9 +11,10 @@ import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Set;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import jdk.internal.jline.internal.TestAccessible;
 import org.apache.log4j.xml.DOMConfigurator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.semanticweb.HermiT.Reasoner;
 import org.semanticweb.HermiT.Reasoner.ReasonerFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -57,7 +58,7 @@ import com.clarkparsia.owlapi.explanation.BlackBoxExplanation;
  */
 public class HermitReasonerTest {
 
-	private static Logger log = Logger.getLogger(HermitReasonerTest.class);
+	private static Logger log = LogManager.getLogger(HermitReasonerTest.class);
 	
 	private File referenceFile = new File("../Ontologies/OAEI/2011/anatomy/reference_2011.rdf");
 	private File sourceOwl = new File("../Ontologies/OAEI/2011/anatomy/mouse.owl");
@@ -70,10 +71,9 @@ public class HermitReasonerTest {
 	HashMap<OWLClass,Set<OWLAxiom>> conflictingAxiomsMap = null;
 	
 	SimilarityMatrix matrix = null;
-	
-	public static void main(String[] args) throws OWLOntologyCreationException {
+
+	public void test01() throws OWLOntologyCreationException {
 		DOMConfigurator.configure("log4j.xml");
-		log.setLevel(Level.DEBUG);
 
 		new HermitReasonerTest().repairAlignment();
 	}
