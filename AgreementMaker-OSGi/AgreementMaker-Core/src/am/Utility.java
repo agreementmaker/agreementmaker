@@ -113,7 +113,7 @@ public class Utility {
 	/**
 	 * Return a percent value with 0 decimal value and the % at the end. used in display alignments function in the canvas
 	 * Used also to manage the threshold value
-	 * @param inValue a double value between 0 & 1
+	 * @param d a double value between 0 & 1
 	 * @return
 	 */
 	public static String getNoDecimalPercentFromDouble(double d) {

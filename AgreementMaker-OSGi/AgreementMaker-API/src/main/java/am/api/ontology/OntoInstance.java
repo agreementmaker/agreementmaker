@@ -8,7 +8,7 @@ package am.api.ontology;
  * 
  * @author <a href="http://cstroe.com">Cosmin Stroe</a>
  * 
- * @param <C> The underlying object that represents an ontology instance (or individual).
+ * @param <I> The underlying object that represents an ontology instance (or individual).
  */
 public interface OntoInstance<I> extends OntoEntity {
 

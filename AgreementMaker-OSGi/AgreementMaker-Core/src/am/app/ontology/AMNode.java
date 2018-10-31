@@ -12,8 +12,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
-
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 
@@ -32,6 +30,9 @@ import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.hp.hpl.jena.vocabulary.RDFS;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 /**
  * This class represents an element of the ontology to be aligned.
  * we could use the Resource class of Jena directly, but accessing information would be slower
@@ -42,7 +43,7 @@ public class AMNode extends AbstractNode implements Serializable {
 	
 	private static final long serialVersionUID = -7629984078559964658L;
 
-	private static final Logger LOG = Logger.getLogger(AMNode.class);
+	private static final Logger LOG = LogManager.getLogger(AMNode.class);
 	
 	/** The OWL/RDF uri identifier, that is namespace#localname.
 	 * This info is kept in the resource variable but we keep them separate to access them easily. TODO - Should we really be duplicating this information? - Cosmin.

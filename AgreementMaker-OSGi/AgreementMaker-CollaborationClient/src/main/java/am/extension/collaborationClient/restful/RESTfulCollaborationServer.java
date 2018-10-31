@@ -10,9 +10,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
 
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
-
 import am.app.Core;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
@@ -26,6 +23,9 @@ import am.extension.collaborationClient.api.CollaborationCandidateMapping;
 import am.extension.collaborationClient.api.CollaborationFeedback;
 import am.extension.collaborationClient.api.CollaborationTask;
 import am.extension.collaborationClient.api.CollaborationUser;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.ReferenceType;
+import com.fasterxml.jackson.databind.type.TypeBase;
 
 public class RESTfulCollaborationServer implements CollaborationAPI {
 
@@ -113,7 +113,7 @@ public class RESTfulCollaborationServer implements CollaborationAPI {
 			while( (i = s.read()) != -1 ) content.append((char)i);
 			System.out.println("Read from server:\n" + content.toString());*/
 			
-			return mapper.readValue(s, new TypeReference<List<RESTfulTask>>() {});
+			return null;
 		} catch (IOException e) {
 			e.printStackTrace();
 			return null;

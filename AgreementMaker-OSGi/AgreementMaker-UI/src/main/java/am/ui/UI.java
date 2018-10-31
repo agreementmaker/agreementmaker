@@ -20,8 +20,6 @@ import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JViewport;
 
-import org.apache.log4j.Logger;
-
 import am.app.Core;
 import am.app.mappingEngine.MatchingTask;
 import am.app.ontology.Ontology;
@@ -33,6 +31,8 @@ import am.ui.classic.AgreementMakerClassic;
 import am.ui.controlpanel.MatchersControlPanel;
 import am.ui.controlpanel.table.MatchersControlPanelTableModel;
 import am.ui.sidebar.vertex.VertexDescriptionPane;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 
 /**
@@ -46,8 +46,8 @@ import am.ui.sidebar.vertex.VertexDescriptionPane;
  */
 public class UI {
 
-	private final Logger log = Logger.getLogger(UI.class);
-	
+	private final Logger log = LogManager.getLogger(UI.class);
+
 	static final long serialVersionUID = 1;
 
 	// this is the current UI Panel
@@ -214,10 +214,6 @@ public class UI {
 
 	/**
 	 * Adds a tab to the main AgreementMaker window and selects it.
-	 * @param tabName The displayed name of the tab.
-	 * @param icon An icon shown in the tab before the name.
-	 * @param panel The panel that the tab will contain.
-	 * @param toolTip The tooltip text for this tab.
 	 */
 	public void addTab( AMTab tab ) {
 		tabbedPane.addTab( tab.getLabel(), tab.getIcon(), tab.getTab(), tab.getTooltip());

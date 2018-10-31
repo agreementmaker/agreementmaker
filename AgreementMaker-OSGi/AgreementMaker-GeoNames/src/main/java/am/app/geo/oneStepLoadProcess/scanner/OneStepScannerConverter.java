@@ -3,17 +3,16 @@
  */
 package am.app.geo.oneStepLoadProcess.scanner;
 
+import am.app.geo.oneStepLoadProcess.OneStepConverter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import javax.swing.JFileChooser;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.sql.SQLException;
 import java.util.Scanner;
-
-import javax.swing.JFileChooser;
-
-import org.apache.log4j.Logger;
-
-import am.app.geo.oneStepLoadProcess.OneStepConverter;
 
 /**
  * @author Michele Caci
@@ -21,7 +20,7 @@ import am.app.geo.oneStepLoadProcess.OneStepConverter;
  */
 public class OneStepScannerConverter extends OneStepConverter {
 
-	private static final Logger sLog = Logger.getLogger(OneStepScannerConverter.class);
+	private static final Logger sLog = LogManager.getLogger(OneStepScannerConverter.class);
 	
 	public static void main(String args[])
 	{

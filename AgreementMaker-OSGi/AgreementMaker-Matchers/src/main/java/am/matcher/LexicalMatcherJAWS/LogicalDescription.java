@@ -3,11 +3,11 @@ package am.matcher.LexicalMatcherJAWS;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-
 import am.app.ontology.Node;
 import edu.smu.tspell.wordnet.api.WordNetDatabase;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Author: Cosmin Stroe.
@@ -43,11 +43,8 @@ public class LogicalDescription {
 	
 	public LogicalDescription( Node c ) {
 
-		Logger log = null;
-		
-		log = Logger.getLogger(this.getClass());
-		log.setLevel(Level.DEBUG);
-	
+		Logger log = LogManager.getLogger(this.getClass());
+
 		WordNet = WordNetDatabase.getFileInstance();  // setup wordnet
 		
 		concept = c; // save the Node reference for later use.
@@ -172,7 +169,6 @@ public class LogicalDescription {
 						} else {
 							mostProbableCandidate = commonWordsBetweenCommon;
 					
-							log.setLevel(Level.DEBUG);
 							log.debug("------------------------------------------------------");
 							for( int j = 0; j < commonWordsBetweenCommon.length; j++ ) {
 								log.debug("commonWordsBetweenCommon["+j+"]:"+commonWordsBetweenCommon[j]);
@@ -193,7 +189,6 @@ public class LogicalDescription {
 					mostGeneralConcept = step2_createSimpleWordOrderConcept( words );
 				} else {
 					
-					log.setLevel(Level.DEBUG);
 					log.debug("------------------------------------------------------");
 					for( int i = 0; i < mostProbableCandidate.length; i++ ) {
 						log.debug("mostProbableCandidate["+i+"]:"+mostProbableCandidate[i]);
@@ -257,8 +252,7 @@ public class LogicalDescription {
 	 * @return
 	 */
 	private String[] getArrayWithoutNeedles( String[] haystack, String[] needle ) {
-		Logger log = Logger.getLogger(this.getClass());
-		log.setLevel(Level.DEBUG);
+		Logger log = LogManager.getLogger(this.getClass());
 		log.debug("------------------------------------------------------");
 		for( int i = 0; i < haystack.length; i++ ) {
 			log.debug("haystack["+i+"]:"+haystack[i]);

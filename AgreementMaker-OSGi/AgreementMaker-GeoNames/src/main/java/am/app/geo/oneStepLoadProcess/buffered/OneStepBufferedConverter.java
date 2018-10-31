@@ -3,6 +3,11 @@
  */
 package am.app.geo.oneStepLoadProcess.buffered;
 
+import am.app.geo.oneStepLoadProcess.OneStepConverter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import javax.swing.JFileChooser;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -10,19 +15,13 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.sql.SQLException;
 
-import javax.swing.JFileChooser;
-
-import org.apache.log4j.Logger;
-
-import am.app.geo.oneStepLoadProcess.OneStepConverter;
-
 /**
  * @author Michele Caci
  * Use Buffered input to parse the file and convert it into database
  */
 public class OneStepBufferedConverter extends OneStepConverter {
 
-	public static final Logger sLog = Logger.getLogger(OneStepBufferedConverter.class);
+	public static final Logger sLog = LogManager.getLogger(OneStepBufferedConverter.class);
 	
 	public static void main(String args[])
 	{

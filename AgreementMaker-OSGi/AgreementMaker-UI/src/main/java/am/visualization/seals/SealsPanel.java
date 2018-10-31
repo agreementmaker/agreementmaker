@@ -47,9 +47,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.text.Document;
-import javax.xml.ws.Endpoint;
 
-import am.Utility;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchingProgressListener;
@@ -78,7 +76,7 @@ public class SealsPanel extends AMTabSupportPanel
 	private JScrollPane sclReport;
 	
 	private AbstractMatcher matcherToPublish;
-	private Endpoint endpoint;
+	//private Endpoint endpoint;
 	
 	private int valueBeforeAppend;
 	private int maxValueBeforeAppend;
@@ -367,10 +365,10 @@ public class SealsPanel extends AMTabSupportPanel
 				
 				matcherToPublish = null; // don't need this object anymore.
 				
-				endpoint = Endpoint.create(sealsServer);
+				//endpoint = Endpoint.create(sealsServer);
 				String endpointDescription = "http://" + txtHost.getText().trim() + ":" + txtPort.getText().trim() + "/" + txtEndpoint.getText().trim();
 				try {
-					endpoint.publish(endpointDescription);
+					//endpoint.publish(endpointDescription);
 				} catch ( Exception e ) {
 					
 					if( e.getCause() instanceof BindException ) {
@@ -386,7 +384,7 @@ public class SealsPanel extends AMTabSupportPanel
 						
 					} else if ( e.getCause() instanceof URISyntaxException ) {
 						UIUtility.displayErrorPane(e.getMessage() + "\nYour endpoint name contains invalid characters.", "Cannot Publish Endpoint");
-						endpoint.stop();
+						//endpoint.stop();
 					}else {
 						UIUtility.displayErrorPane(e.getMessage(), "Cannot Publish Endpoint");
 					}
@@ -419,13 +417,13 @@ public class SealsPanel extends AMTabSupportPanel
 				// the user wants to stop the publishing of the service.
 				
 				// 1. Stop the endpoint.
-				endpoint.stop();
+				//endpoint.stop();
 				
 				// 2. Stop the matcher.
 				appendToReport("Publishing stopped. Matcher stopped.\n");
 				
 				// 3. Dereference anything we don't need anymore.
-				endpoint = null;
+				//endpoint = null;
 				
 				// 4. Update the Stop button to a Publish button.
 				txtHost.setEnabled(true);

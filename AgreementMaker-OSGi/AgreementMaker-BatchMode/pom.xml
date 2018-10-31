@@ -11,81 +11,33 @@
 
 	<artifactId>AgreementMaker-BatchMode</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
-	<packaging>bundle</packaging>
-	
-	<properties>
-		<bundle.namespace>am.extension.batchmode</bundle.namespace>
-	</properties>
-	
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.felix</groupId>
-				<artifactId>maven-bundle-plugin</artifactId>
-				<version>${maven.bundle.plugin.version}</version>
-				<extensions>true</extensions>
-				<configuration>
-					<manifestLocation>META-INF</manifestLocation>
-					<instructions>
-                        <Bundle-Activator>${bundle.namespace}.Activator</Bundle-Activator>
-						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-						<Bundle-Version>${project.version}</Bundle-Version>
-						<Export-Package>${bundle.namespace}.*</Export-Package>
-						<Import-Package>
-							!javax.xml.namespace,
-                            !javax.xml.parsers,
-                            !org.w3c.dom,
-                            !org.xml.sax,
-                            am.app.mappingEngine.oneToOneSelection,
-							*
-						</Import-Package>
-					</instructions>
-				</configuration>
-			</plugin>
-            <plugin>
-                <artifactId>maven-clean-plugin</artifactId>
-                <version>3.0.0</version>
-                <configuration>
-                    <filesets>
-                        <fileset>
-                            <directory>META-INF</directory>
-                        </fileset>
-                    </filesets>
-                </configuration>
-            </plugin>
-		</plugins>
-	</build>
-	
+	<packaging>jar</packaging>
+
 	<dependencies>
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>AgreementMaker-Core</artifactId>
 			<version>${project.parent.version}</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>Matcher-OAEI</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
-			<scope>provided</scope>
 		</dependency>
         <dependency>
             <groupId>${project.parent.groupId}</groupId>
             <artifactId>AgreementMaker-Matchers</artifactId>
             <version>1.0.0-SNAPSHOT</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>${project.parent.groupId}</groupId>
             <artifactId>Matcher-AdvancedSimilarity</artifactId>
             <version>1.0.0-SNAPSHOT</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>${project.parent.groupId}</groupId>
             <artifactId>Matcher-PRA</artifactId>
             <version>1.0.0-SNAPSHOT</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -104,6 +56,19 @@
             <artifactId>guava</artifactId>
             <version>18.0</version>
             <scope>test</scope>
+        </dependency>
+
+        <!-- https://jesperdj.com/2018/09/30/jaxb-on-java-9-10-11-and-beyond/ -->
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+            <version>2.3.1</version>
+            <scope>runtime</scope>
         </dependency>
 	</dependencies>
 

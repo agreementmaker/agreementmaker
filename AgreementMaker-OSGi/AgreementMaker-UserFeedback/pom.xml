@@ -12,55 +12,10 @@
 
 	<artifactId>AgreementMaker-UserFeedback</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
-	<packaging>bundle</packaging>
-
-	<properties>
-		<bundle.namespace>am.extension.userfeedback</bundle.namespace>
-	</properties>
+	<packaging>jar</packaging>
 
 	<build>
 		<plugins>
-			<plugin>
-				<groupId>org.apache.felix</groupId>
-				<artifactId>maven-bundle-plugin</artifactId>
-				<version>${maven.bundle.plugin.version}</version>
-				<extensions>true</extensions>
-				<configuration>
-					<manifestLocation>META-INF</manifestLocation>
-					<instructions>
-						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-						<Bundle-Version>${project.version}</Bundle-Version>
-						<Export-Package>${bundle.namespace}.*,am.extension.feedback.*</Export-Package>
-						<Bundle-Activator>${bundle.namespace}.Activator</Bundle-Activator>
-						<Import-Package>
-							!org.joda.time.*,
-							!com.bea.xml.stream.*,
-							!net.sf.cglib.proxy.*,
-							!org.codehaus.jettison.*,
-							!org.jdom.*,
-							!org.jdom2.*,
-							!org.kxml2.io.*,
-							!nu.xom.*,
-							!sun.misc.*,
-							!javax.xml.namespace,
-							!com.ctc.wstx.stax,
-							!javax.xml.transform,
-                            !javax.xml.transform.sax,
-                            !javax.xml.transform.stream,
-							!javax.xml.stream,
-                            !javax.xml.parsers,
-                            !org.w3c.dom,
-                            !org.xml.sax,
-                            !org.w3c.dom.*,
-							*
-						</Import-Package>
-						<Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
-						<Embed-Directory>target/dependency</Embed-Directory>
-						<Embed-StripGroup>true</Embed-StripGroup>
-						<Embed-Transitive>true</Embed-Transitive>
-					</instructions>
-				</configuration>
-			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
@@ -72,17 +27,6 @@
 					</excludes>
 				</configuration>
 			</plugin>
-			<plugin>
-				<artifactId>maven-clean-plugin</artifactId>
-				<version>3.0.0</version>
-				<configuration>
-					<filesets>
-						<fileset>
-							<directory>META-INF</directory>
-						</fileset>
-					</filesets>
-				</configuration>
-			</plugin>
 		</plugins>
 	</build>
 
@@ -91,43 +35,36 @@
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>AgreementMaker-Core</artifactId>
 			<version>${project.parent.version}</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>AgreementMaker-UI</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>AgreementMaker-Matchers</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>Matcher-BaseSimilarity</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>Matcher-AdvancedSimilarity</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>AgreementMaker-CollaborationClient</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>AgreementMaker-BatchMode</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
-			<scope>provided</scope>
 		</dependency>
 
 		<dependency>

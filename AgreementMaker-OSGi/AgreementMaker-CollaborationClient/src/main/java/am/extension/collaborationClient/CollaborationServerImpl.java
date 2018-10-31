@@ -7,11 +7,6 @@ import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
-import javax.ws.rs.Path;
-import javax.xml.ws.Endpoint;
-
-import org.apache.log4j.Logger;
-
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
@@ -25,6 +20,8 @@ import am.extension.collaborationClient.api.CollaborationUser;
 import am.extension.collaborationClient.api.CollaborationAPI;
 import am.matcher.oaei.oaei2011.OAEI2011Matcher;
 import am.matcher.oaei.oaei2011.OAEI2011Matcher.SubMatcherID;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 // If you get errors because unresolved imports go here:
 // http://tech.amikelive.com/node-269/eclipse-quick-tip-resolving-error-the-import-javaxservlet-cannot-be-resolved/
@@ -38,10 +35,9 @@ import am.matcher.oaei.oaei2011.OAEI2011Matcher.SubMatcherID;
  * @deprecated This class is here only for historical documentation.  It will be removed in the future.
  */
 @Deprecated
-@Path("/collaborationServer")
 public class CollaborationServerImpl implements CollaborationAPI {
 	
-	private static final Logger sLog = Logger.getLogger(CollaborationServerImpl.class);
+	private static final Logger sLog = LogManager.getLogger(CollaborationServerImpl.class);
 
 	List<String> users = new ArrayList<String>();
 	List<CollaborationOntologyPair> ontologyPairs = new ArrayList<CollaborationOntologyPair>();
@@ -158,7 +154,7 @@ public class CollaborationServerImpl implements CollaborationAPI {
 		System.out.println("Starting Server");
 		CollaborationAPI implementor = new CollaborationServerImpl();
 		String address = "http://localhost:9000/helloWorld";
-		Endpoint.publish(address, implementor);
+		//Endpoint.publish(address, implementor);
 		
 	}
 

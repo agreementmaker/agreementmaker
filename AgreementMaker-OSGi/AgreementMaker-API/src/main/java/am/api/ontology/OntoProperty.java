@@ -8,7 +8,7 @@ package am.api.ontology;
  * 
  * @author <a href="http://cstroe.com">Cosmin Stroe</a>
  * 
- * @param <C> The underlying object that represents an ontology property.
+ * @param <P> The underlying object that represents an ontology property.
  */
 public interface OntoProperty<P> extends OntoEntity {
 

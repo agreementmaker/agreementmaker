@@ -1,22 +1,19 @@
 package am.evaluation.clustering;
 
+import am.app.mappingEngine.MatchingTask;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JDialog;
+import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
-
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JDialog;
-import javax.swing.JPanel;
-
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
-import am.app.mappingEngine.MatcherResult;
-import am.app.mappingEngine.MatchingTask;
 
 
 public class ClusterFactoryDialog extends JDialog implements ActionListener {

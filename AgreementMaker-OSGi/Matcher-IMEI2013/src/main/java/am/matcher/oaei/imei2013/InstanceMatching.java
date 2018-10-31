@@ -3,8 +3,6 @@ package am.matcher.oaei.imei2013;
 import java.io.File;
 import java.io.FileReader;
 
-import org.apache.log4j.Logger;
-
 import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.MatchingPairAlignment;
@@ -18,10 +16,12 @@ import am.matcher.lod.instanceMatchers.InstanceMatcherFedeNewParameters;
 import am.output.alignment.oaei.OAEIAlignmentFormat;
 import am.output.alignment.oaei.TSVAlignmentFormat;
 import am.utility.RunTimer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class InstanceMatching {
 
-	private static Logger LOG = Logger.getLogger(InstanceMatching.class);
+	private static Logger LOG = LogManager.getLogger(InstanceMatching.class);
 	
 	private String root;
 	private OntologyDefinition defOriginal; // ontology definition for the 2013 original instance set
