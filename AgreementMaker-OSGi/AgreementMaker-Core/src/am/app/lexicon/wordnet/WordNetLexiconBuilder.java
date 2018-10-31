@@ -57,8 +57,11 @@ public class WordNetLexiconBuilder implements LexiconBuilder {
 		// Instantiate wordnet.
 		try {
 			WordNet = WordNetDatabase.getFileInstance();
+			WordNet.getSynsets("test");
 		} catch( Exception e ) {
-			LOG.error("Cannot open WordNet files.\nWordNet should be in the following directory:\n" + wordnetdir, e);
+			String message = "Cannot open WordNet files.\nWordNet should be in the following directory:\n" + wordnetdir;
+			LOG.error(message, e);
+			throw new RuntimeException(message + "\n" + e.getMessage(), e);
 		}
 	}
 	

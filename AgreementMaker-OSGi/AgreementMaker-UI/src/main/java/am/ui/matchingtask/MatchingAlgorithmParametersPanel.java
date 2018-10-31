@@ -62,10 +62,6 @@ public class MatchingAlgorithmParametersPanel extends JPanel implements ActionLi
 	
 	private MessageDispatch<Object> dispatch;
 	
-	/**
-	 * @param ontoType
-	 * @param userInterface
-	 */
 	public MatchingAlgorithmParametersPanel(MessageDispatch<Object> dispatch) {
 		super();
 

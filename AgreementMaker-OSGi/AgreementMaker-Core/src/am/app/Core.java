@@ -591,7 +591,11 @@ public class Core {
 	public MatcherRegistry getRegistry() {
 		return registry;
 	}
-	
+
+	public void setRegistry(MatcherRegistry registry) {
+		this.registry = registry;
+	}
+
 	/**
 	 * Gracefully shutdown AgreementMaker. This was introduced mainly to
 	 * handle OSGi shutdowns.

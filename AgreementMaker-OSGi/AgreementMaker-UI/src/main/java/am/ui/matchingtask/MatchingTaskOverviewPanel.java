@@ -86,7 +86,9 @@ public class MatchingTaskOverviewPanel extends JPanel implements MessageConsumer
 		
 		if( message.getKey().equals(MatchingTaskCreatorDialogMessages.SELECT_SELECTION_ALGORITHM.name()) ) {
 			SelectionAlgorithm algorithm = (SelectionAlgorithm) message.getPayload();
-			lblMatchingAlgorithmValue.setText(algorithm.getName());
+			if(algorithm != null) {
+				lblSelectionAlgorithmValue.setText(String.valueOf(algorithm.getName()));
+			}
 			return;
 		}
 	}
