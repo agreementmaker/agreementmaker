@@ -5,6 +5,12 @@ module am.matchers {
     exports am.matcher.LexicalSynonymMatcher;
     exports am.matcher.groupFinder;
     exports am.matcher.multiWords;
+    exports am.matcher.FilterMatcher;
+    exports am.matcher.mediatingMatcher;
+    exports am.matcher.boosting;
+    exports am.matcher.LexicalMatcherJWNL;
+    exports am.matcher.dsi;
+    exports am.matcher.ssc;
 
     requires java.desktop;
     requires java.prefs;

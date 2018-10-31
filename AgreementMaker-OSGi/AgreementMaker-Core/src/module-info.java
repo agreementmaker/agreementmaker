@@ -56,6 +56,7 @@ module am.core {
     exports am.app.ontology.profiling;
     exports am.app.ontology.profiling.manual;
     exports am.app.ontology.profiling.metrics;
+    exports am.app.ontology.profiling.classification;
     exports am.app.triplestore.jenatdb;
     exports am.app.osgi;
     exports am.utility;
@@ -75,4 +76,14 @@ module am.core {
     exports am.output.console;
     exports am.output.alignment.oaei;
     exports am.app.mappingEngine.abstractMatcherNew;
+    exports am.app.mappingEngine.instance;
+    exports am.app.ontology.instance.datasets;
+    exports am.utility.referenceAlignment;
+    exports am.app.ontology.profiling.ontologymetrics;
+    exports am.app.mappingEngine.threaded;
+    exports am.evaluation.alignment;
+    exports am.app.mappingEngine.qualityEvaluation.metrics;
+    exports am.app.mappingEngine.qualityEvaluation.metrics.ufl;
+    exports am.app.mappingEngine.qualityEvaluation.metrics.ufl.shi;
+    exports am.app.mappingEngine.persistance;
 }

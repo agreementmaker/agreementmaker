@@ -6,4 +6,9 @@ module am.matcher.oaei {
     requires java.desktop;
     requires am.core;
     requires am.matchers;
+    requires am.app.similarity;
+    requires am.matcher.bsm;
+    requires am.matcher.asm;
+    requires am.matcher.pra;
+    requires jena.core;
 }

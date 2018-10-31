@@ -18,7 +18,6 @@ import am.extension.batchmode.api.BatchModeSpec;
 import am.ui.UICore;
 import am.ui.UIMenu;
 import am.ui.api.AMMenuItem;
-import org.osgi.framework.ServiceReference;
 
 public class BatchModeMenuItem extends JMenuItem implements AMMenuItem {
 
@@ -82,14 +81,14 @@ public class BatchModeMenuItem extends JMenuItem implements AMMenuItem {
 			Runnable sbm = new Runnable() {
 				@Override public void run() {
 					try {
-                        ServiceReference<BatchModeFileReader> readerServicereference = Activator.getContext().getServiceReference(BatchModeFileReader.class);
-                        BatchModeFileReader reader = Activator.getContext().getService(readerServicereference);
+//                        ServiceReference<BatchModeFileReader> readerServicereference = Activator.getContext().getServiceReference(BatchModeFileReader.class);
+//                        BatchModeFileReader reader = Activator.getContext().getService(readerServicereference);
 
-                        ServiceReference<BatchModeRunner> runnerServiceReference = Activator.getContext().getServiceReference(BatchModeRunner.class);
-                        BatchModeRunner runner = Activator.getContext().getService(runnerServiceReference);
+//                        ServiceReference<BatchModeRunner> runnerServiceReference = Activator.getContext().getServiceReference(BatchModeRunner.class);
+//                        BatchModeRunner runner = Activator.getContext().getService(runnerServiceReference);
 
-                        BatchModeSpec spec = reader.read(new FileInputStream(selectedFile));
-                        runner.run(spec);
+//                        BatchModeSpec spec = reader.read(new FileInputStream(selectedFile));
+//                        runner.run(spec);
 					} catch (Exception e) {
 						e.printStackTrace();
 						JOptionPane.showMessageDialog(

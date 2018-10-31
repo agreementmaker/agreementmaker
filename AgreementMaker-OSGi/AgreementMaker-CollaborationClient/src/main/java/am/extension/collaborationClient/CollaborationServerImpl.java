@@ -7,9 +7,6 @@ import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
-import javax.ws.rs.Path;
-import javax.xml.ws.Endpoint;
-
 import org.apache.log4j.Logger;
 
 import am.app.mappingEngine.AbstractMatcher;
@@ -38,7 +35,6 @@ import am.matcher.oaei.oaei2011.OAEI2011Matcher.SubMatcherID;
  * @deprecated This class is here only for historical documentation.  It will be removed in the future.
  */
 @Deprecated
-@Path("/collaborationServer")
 public class CollaborationServerImpl implements CollaborationAPI {
 	
 	private static final Logger sLog = Logger.getLogger(CollaborationServerImpl.class);
@@ -158,7 +154,7 @@ public class CollaborationServerImpl implements CollaborationAPI {
 		System.out.println("Starting Server");
 		CollaborationAPI implementor = new CollaborationServerImpl();
 		String address = "http://localhost:9000/helloWorld";
-		Endpoint.publish(address, implementor);
+		//Endpoint.publish(address, implementor);
 		
 	}
 
