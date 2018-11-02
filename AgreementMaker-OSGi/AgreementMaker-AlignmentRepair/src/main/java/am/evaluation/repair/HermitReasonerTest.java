@@ -1,17 +1,15 @@
 package am.evaluation.repair;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.PriorityQueue;
-import java.util.Set;
-
-import jdk.internal.jline.internal.TestAccessible;
+import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.Mapping.MappingRelation;
+import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
+import am.app.mappingEngine.utility.MatchingPair;
+import am.app.ontology.Ontology;
+import am.app.ontology.ontologyParser.OntoTreeBuilder;
+import am.output.similaritymatrix.SimilarityMatrixOutput;
+import am.utility.referenceAlignment.AlignmentUtilities;
+import am.utility.referenceAlignment.MappingsOutput;
+import com.clarkparsia.owlapi.explanation.BlackBoxExplanation;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -37,17 +35,16 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 import org.semanticweb.owlapi.reasoner.Node;
 
-import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.Mapping.MappingRelation;
-import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
-import am.app.mappingEngine.utility.MatchingPair;
-import am.app.ontology.Ontology;
-import am.app.ontology.ontologyParser.OntoTreeBuilder;
-import am.output.similaritymatrix.SimilarityMatrixOutput;
-import am.utility.referenceAlignment.AlignmentUtilities;
-import am.utility.referenceAlignment.MappingsOutput;
-
-import com.clarkparsia.owlapi.explanation.BlackBoxExplanation;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.PriorityQueue;
+import java.util.Set;
 
 /**
  * @author Renu Srinivasan 
