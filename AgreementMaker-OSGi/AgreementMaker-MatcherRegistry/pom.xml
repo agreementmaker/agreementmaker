@@ -35,11 +35,6 @@
 		</dependency>
 		<dependency>
 			<groupId>edu.uic.cs.advis.am</groupId>
-			<artifactId>Matcher-Benchmarks2013</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>edu.uic.cs.advis.am</groupId>
 			<artifactId>Matcher-PRA</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
