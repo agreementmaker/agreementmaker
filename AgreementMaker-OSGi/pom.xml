@@ -70,7 +70,7 @@
     <repositories>
         <repository>
             <id>Maven Repo</id>
-            <url>http://onawh.im/maven</url>
+            <url>https://www.onawh.im/maven</url>
         </repository>
     </repositories>
 
