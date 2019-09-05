@@ -1,7 +1,7 @@
 package am.app.similarity;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 
@@ -24,7 +24,7 @@ public enum StringMetrics {
 	AMSUB_AND_EDIT("AMsubstring + editDistance", AMSubEditSim.class), //0.6*amsub + 0.4*editdistance
 	AMSUB_AND_EDIT_WITH_WORDNET("AMsubstring + editDistance with WordNet Synonyms", AMSubEditSim.class); 
 
-	private static final Logger sLog = LoggerFactory.getLogger(StringMetrics.class);
+	private static final Logger sLog = LogManager.getLogger(StringMetrics.class);
 	
 	private String name;
 	private Class<? extends StringSimilarityMeasure> clazz;

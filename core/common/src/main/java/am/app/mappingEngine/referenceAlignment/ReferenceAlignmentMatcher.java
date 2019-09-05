@@ -1,23 +1,5 @@
 package am.app.mappingEngine.referenceAlignment;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.Element;
-import org.dom4j.io.SAXReader;
-
 import am.Utility;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
@@ -29,6 +11,22 @@ import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.app.mappingEngine.utility.MatchingPair;
 import am.app.ontology.Node;
 import am.parsing.OutputController;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
 public class ReferenceAlignmentMatcher extends AbstractMatcher {
 
@@ -184,7 +182,6 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 	/**
 	 * Parse the reference file: the file gets opened, depending on fileformat the file gets parsed differently, invoking a specific parse for that format
 	 * If a developer is going to add a new format file, should add an if case and invokes the specific new parser.
-	 * @param filename
 	 * @return ArrayList of refpairs
 	 */
 	public ArrayList<MatchingPair> readReferenceFile() throws Exception{
@@ -368,8 +365,7 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 		    		r.relation = MappingRelation.parseRelation(split[1]);
 		    	}
 		    	else {
-		    		Logger log = Logger.getLogger(this.getClass());
-		    		log.setLevel(Level.ERROR);
+		    		Logger log = LogManager.getLogger(this.getClass());
 		    		log.error("Reference file parse error (line " + linenum + "): " + line);
 		    	}
 		    	//else System.out.println("Some lines in the reference are not in the correct format. Check result please");

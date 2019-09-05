@@ -4,12 +4,16 @@ include(
         "api",
         "wordnet",
         "alignment-repair",
-        "common"
+        "common",
+        "similarity-metrics"
 )
 
 for (project in rootProject.children) {
     project.apply {
-        projectDir = file("core/$name")
+        if (File("${rootProject.projectDir.absolutePath}/core/$name").exists()) {
+            projectDir = file("core/$name")
+        }
+
         buildFileName = "$name.gradle.kts"
     }
 }

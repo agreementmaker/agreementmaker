@@ -10,7 +10,6 @@ import am.output.similaritymatrix.SimilarityMatrixOutput;
 import am.utility.referenceAlignment.AlignmentUtilities;
 import am.utility.referenceAlignment.MappingsOutput;
 import com.clarkparsia.owlapi.explanation.BlackBoxExplanation;
-import org.apache.log4j.xml.DOMConfigurator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.semanticweb.HermiT.Reasoner;
@@ -70,8 +69,6 @@ public class HermitReasonerTest {
 	SimilarityMatrix matrix = null;
 
 	public void test01() throws OWLOntologyCreationException {
-		DOMConfigurator.configure("log4j.xml");
-
 		new HermitReasonerTest().repairAlignment();
 	}
 	

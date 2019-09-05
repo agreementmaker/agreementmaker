@@ -21,7 +21,7 @@ import am.app.ontology.instance.Instance;
 import am.app.ontology.instance.datasets.SeparateFileInstanceDataset;
 import am.utility.HTTPUtility;
 
-import com.hp.hpl.jena.rdf.arp.JenaReader;
+import com.hp.hpl.jena.rdfxml.xmlinput.JenaReader;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
