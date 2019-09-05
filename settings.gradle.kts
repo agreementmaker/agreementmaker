@@ -2,7 +2,9 @@ rootProject.name = "agreementmaker"
 
 include(
         "api",
-        "wordnet"
+        "wordnet",
+        "alignment-repair",
+        "common"
 )
 
 for (project in rootProject.children) {
