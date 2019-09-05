@@ -2,15 +2,15 @@ package am.app.wordnet;
 
 import edu.smu.tspell.wordnet.api.Synset;
 import edu.smu.tspell.wordnet.api.WordNetDatabase;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.util.HashMap;
 
 public class WordNetUtils {
 	
-	private static final Logger LOG = LoggerFactory.getLogger(WordNetUtils.class);
+	private static final Logger LOG = LogManager.getLogger(WordNetUtils.class);
 	
 	private static WordNetDatabase wordNet; 
 	

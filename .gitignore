@@ -47,3 +47,7 @@ AgreementMaker-OSGi/*.iml
 AgreementMaker-OSGi/*/*.iml
 .idea
 **/*.iml
+
+# Gradle
+/.gradle/
+build/
