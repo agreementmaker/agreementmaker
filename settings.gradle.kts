@@ -9,6 +9,7 @@ include(
         "matchers-common",
         "matcher-advanced-similarity",
         "matcher-base-similarity",
+        "matcher-pra",
         "ui"
 )
 
