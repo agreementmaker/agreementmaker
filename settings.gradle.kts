@@ -1,11 +1,10 @@
 rootProject.name = "agreementmaker"
 
 include(
-        "api",
-        "wordnet",
         "alignment-repair",
+        "api",
+        "batch-mode",
         "core",
-        "similarity-metrics",
         "matchers-common",
         "matcher-advanced-similarity",
         "matcher-base-similarity",
@@ -14,7 +13,9 @@ include(
         "matcher-oaei",
         "matcher-pra",
         "matcher-registry",
-        "ui"
+        "similarity-metrics",
+        "ui",
+        "wordnet"
 )
 
 for (project in rootProject.children) {
