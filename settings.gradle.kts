@@ -10,10 +10,7 @@ include(
 
 for (project in rootProject.children) {
     project.apply {
-        if (File("${rootProject.projectDir.absolutePath}/core/$name").exists()) {
-            projectDir = file("core/$name")
-        }
-
+        projectDir = file("projects/$name")
         buildFileName = "$name.gradle.kts"
     }
 }
