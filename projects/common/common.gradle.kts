@@ -36,7 +36,7 @@ dependencies {
 
     api("nz.ac.waikato.cms.weka:weka-stable:3.6.7")
 
-    implementation("com.github.agreementmaker:cluster-gvm:1.1")
+    api("com.github.agreementmaker:cluster-gvm:1.1")
 
     implementation("com.github.agreementmaker:secondstring:20120620")
 

@@ -7,7 +7,8 @@ include(
         "common",
         "similarity-metrics",
         "matchers-common",
-        "matcher-base-similarity"
+        "matcher-base-similarity",
+        "ui"
 )
 
 for (project in rootProject.children) {
