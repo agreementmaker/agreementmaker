@@ -16,6 +16,7 @@ include(
         "matcher-registry",
         "similarity-metrics",
         "ui",
+        "ui-glue",
         "user-feedback",
         "wordnet"
 )

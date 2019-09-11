@@ -600,5 +600,7 @@ public class Core {
 	 * Gracefully shutdown AgreementMaker. This was introduced mainly to
 	 * handle OSGi shutdowns.
 	 */
-	public void shutdown() { }
+	public void shutdown() {
+		System.exit(0); // not graceful
+	}
 }
