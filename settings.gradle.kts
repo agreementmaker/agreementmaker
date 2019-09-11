@@ -7,6 +7,7 @@ include(
         "common",
         "similarity-metrics",
         "matchers-common",
+        "matcher-advanced-similarity",
         "matcher-base-similarity",
         "ui"
 )
