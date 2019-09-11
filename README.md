@@ -9,13 +9,24 @@ at the University of Illinois at Chicago, under the supervision of [Professor Is
 It has competed multiple times in the [Ontology Alignment Evaluation Initiative](http://oaei.ontologymatching.org/) 
 and presented impressive results.
 
-The currently supported version of AgreementMaker is under the [AgreementMaker-OSGi](AgreementMaker-OSGi) directory.
+## Project Organization
 
-# Running
+AgreementMaker is split into multiple projects, all in the `projects` sub-directory.
+To build Agreementmaker, use Gradle:
 
-See https://github.com/agreementmaker/agreementmaker/tree/master/AgreementMaker-OSGi#running
+```shell script
+./gradlew build
+```
 
-# Sample Ontologies
+## Running
+
+To run AgreementMaker, use the `run` Gradle task:
+
+```shell script
+./gradlew run
+```
+
+## Sample Ontologies
 
 We can use the [OAEI 2012 ontology dataset](http://oaei.ontologymatching.org/2012/benchmarks/benchmarks.zip) for matching from the [2012 OAEI Campaign](http://oaei.ontologymatching.org/2012/benchmarks/index.html#datasets) page.
 
