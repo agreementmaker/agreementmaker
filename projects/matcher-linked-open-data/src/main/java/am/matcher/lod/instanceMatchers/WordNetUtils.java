@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Queue;
 
 import am.app.Core;
-import am.ui.UIUtility;
+import am.matcher.lod.hierarchy.HierarchyMatcher;
 import edu.smu.tspell.wordnet.api.AdjectiveSynset;
 import edu.smu.tspell.wordnet.api.AdverbSynset;
 import edu.smu.tspell.wordnet.api.NounSynset;
@@ -17,8 +17,12 @@ import edu.smu.tspell.wordnet.api.VerbSynset;
 import edu.smu.tspell.wordnet.api.WordNetDatabase;
 import edu.smu.tspell.wordnet.api.WordSense;
 import edu.smu.tspell.wordnet.impl.file.synset.AdjectiveSatelliteReferenceSynset;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class WordNetUtils {
+	private Logger log = LogManager.getLogger(HierarchyMatcher.class);
+
 	WordNetDatabase wordNet; 
 	//Map<String, Boolean> isSynonym = new ConcurrentHashMap<String, Boolean>();
 
@@ -36,7 +40,8 @@ public class WordNetUtils {
 			wordNet = WordNetDatabase.getFileInstance();
 		}
 		catch( Exception e ) {
-			UIUtility.displayErrorPane(e.getMessage(), "Cannot open WordNet files.\nWordNet should be in the following directory:\n" + wordnetdir);
+			log.error("Cannot open WordNet files.\nWordNet should be in the following directory:\n" + wordnetdir);
+			e.printStackTrace();
 		}
 	}
 

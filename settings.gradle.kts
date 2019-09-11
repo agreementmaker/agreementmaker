@@ -9,8 +9,10 @@ include(
         "matchers-common",
         "matcher-advanced-similarity",
         "matcher-base-similarity",
-        "matcher-pra",
+        "matcher-linked-open-data",
         "matcher-oaei",
+        "matcher-pra",
+        "matcher-imei2013",
         "ui"
 )
 

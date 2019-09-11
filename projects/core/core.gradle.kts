@@ -13,12 +13,12 @@ dependencies {
     implementation("dom4j:dom4j:1.6.1")
     implementation("xml-apis:xml-apis:1.4.01")
 
-    implementation("commons-lang:commons-lang:2.6")
+    api("commons-lang:commons-lang:2.6")
     implementation("commons-io:commons-io:2.3")
     implementation("commons-collections:commons-collections:3.2.2")
     implementation("org.apache.commons:commons-compress:1.18")
 
-    api("org.apache.jena:jena-core:2.12.0")
+    api("org.apache.jena:jena-core:2.13.0")
     api("org.apache.jena:jena-tdb:1.1.2")
     api("org.apache.jena:jena-sdb:1.5.2")
 
@@ -38,7 +38,7 @@ dependencies {
 
     api("com.github.agreementmaker:cluster-gvm:1.1")
 
-    implementation("com.github.agreementmaker:secondstring:20120620")
+    api("com.github.agreementmaker:secondstring:20120620")
 
     implementation("net.sf.jopt-simple:jopt-simple:4.3")
 

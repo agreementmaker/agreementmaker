@@ -8,7 +8,6 @@ import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.ontology.Node;
-import am.ui.UIUtility;
 
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntClass;
@@ -24,7 +23,8 @@ import edu.smu.tspell.wordnet.api.NounSynset;
 import edu.smu.tspell.wordnet.api.Synset;
 import edu.smu.tspell.wordnet.api.SynsetType;
 import edu.smu.tspell.wordnet.api.WordNetDatabase;
-
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 
 /*The aim of this matcher is to find the subClassOf and superClassOf relationships between the classes that have been mapped by equivalence
@@ -32,7 +32,9 @@ import edu.smu.tspell.wordnet.api.WordNetDatabase;
 public class HierarchyMatcher extends AbstractMatcher
 {
 	private static final long serialVersionUID = -4604443382266064387L;
-	
+
+	private Logger log = LogManager.getLogger(HierarchyMatcher.class);
+
 	private List<Node> ListOfClassesSource;
 	private List<Node> ListOfClassesTarget;
 	private List<Node> sourceClassList;
@@ -76,7 +78,8 @@ public class HierarchyMatcher extends AbstractMatcher
 		}
 		catch( Exception e ) 
 		{
-			UIUtility.displayErrorPane(e.getMessage(), "Cannot open WordNet files.\nWordNet should be in the following directory:\n" + wordnetdir);
+			log.error("Cannot open WordNet files.\nWordNet should be in the following directory:\n" + wordnetdir);
+			e.printStackTrace();
 		}
 		
 		setName("Hierarchy Matcher");
