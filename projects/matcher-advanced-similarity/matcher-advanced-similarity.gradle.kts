@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":common"))
+    implementation(project(":core"))
     implementation(project(":similarity-metrics"))
     implementation(project(":matchers-common"))
     implementation(project(":matcher-base-similarity"))

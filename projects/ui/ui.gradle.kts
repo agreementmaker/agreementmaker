@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":common"))
+    implementation(project(":core"))
     implementation(project(":matchers-common"))
 
     implementation("com.jidesoft:jide-oss:2.11.1")

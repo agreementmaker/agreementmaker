@@ -4,7 +4,7 @@ include(
         "api",
         "wordnet",
         "alignment-repair",
-        "common",
+        "core",
         "similarity-metrics",
         "matchers-common",
         "matcher-advanced-similarity",
