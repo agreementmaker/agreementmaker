@@ -17,9 +17,9 @@ dependencies {
     implementation("commons-collections:commons-collections:3.2.2")
     implementation("org.apache.commons:commons-compress:1.18")
 
-    implementation("org.apache.jena:jena-core:2.12.0")
-    implementation("org.apache.jena:jena-tdb:1.1.2")
-    implementation("org.apache.jena:jena-sdb:1.5.2")
+    api("org.apache.jena:jena-core:2.12.0")
+    api("org.apache.jena:jena-tdb:1.1.2")
+    api("org.apache.jena:jena-sdb:1.5.2")
 
     implementation("org.openrdf.sesame:sesame-repository-sail:2.6.10")
     implementation("org.openrdf.sesame:sesame-repository-http:2.6.10")
@@ -33,7 +33,7 @@ dependencies {
 
     implementation("colt:colt:1.2.0")
 
-    implementation("nz.ac.waikato.cms.weka:weka-stable:3.6.7")
+    api("nz.ac.waikato.cms.weka:weka-stable:3.6.7")
 
     implementation("com.github.agreementmaker:cluster-gvm:1.1")
 

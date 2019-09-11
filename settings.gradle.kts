@@ -5,7 +5,8 @@ include(
         "wordnet",
         "alignment-repair",
         "common",
-        "similarity-metrics"
+        "similarity-metrics",
+        "matchers-common"
 )
 
 for (project in rootProject.children) {
