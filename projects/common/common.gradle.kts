@@ -6,7 +6,8 @@ dependencies {
     implementation("org.apache.logging.log4j:log4j-api:2.11.1")
     implementation(project(":api"))
 
-    implementation(project(":wordnet"))
+    api(project(":wordnet"))
+
     implementation("net.sf.jwordnet:jwnl:1.4_rc3")
 
     implementation("dom4j:dom4j:1.6.1")

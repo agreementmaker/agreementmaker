@@ -6,7 +6,8 @@ include(
         "alignment-repair",
         "common",
         "similarity-metrics",
-        "matchers-common"
+        "matchers-common",
+        "matcher-base-similarity"
 )
 
 for (project in rootProject.children) {
