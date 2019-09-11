@@ -3,6 +3,7 @@ package am.extension.userfeedback.analysis;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import am.app.mappingEngine.AbstractMatcher.alignType;
@@ -33,6 +34,7 @@ public class ReferenceAlignmentAnalysis extends AnalysisBase {
 	 * How many mappings in the reference alignments, and what kind of mappings are they?
 	 */
 	@Test
+	@Ignore("fix org.apache.jena.riot.RiotNotFoundException")
 	public void analyzeReferenceAlignments() {
 		// setup a basic log4j configuration that logs to the console
 		setupLogging();
