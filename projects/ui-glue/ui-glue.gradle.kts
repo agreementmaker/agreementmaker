@@ -1,5 +1,10 @@
 plugins {
     java
+    application
+}
+
+application {
+    mainClassName = "am.ui.glue.StartAgreementMaker"
 }
 
 dependencies {
