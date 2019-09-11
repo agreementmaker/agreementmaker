@@ -4,6 +4,7 @@ include(
         "alignment-repair",
         "api",
         "batch-mode",
+        "collaboration-client",
         "core",
         "matchers-common",
         "matcher-advanced-similarity",
