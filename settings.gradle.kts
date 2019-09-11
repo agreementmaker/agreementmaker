@@ -9,10 +9,11 @@ include(
         "matchers-common",
         "matcher-advanced-similarity",
         "matcher-base-similarity",
+        "matcher-imei2013",
         "matcher-linked-open-data",
         "matcher-oaei",
         "matcher-pra",
-        "matcher-imei2013",
+        "matcher-registry",
         "ui"
 )
 
