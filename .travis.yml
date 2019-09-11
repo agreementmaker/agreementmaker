@@ -1,7 +1,6 @@
 language: java
 jdk:
-    - oraclejdk8
-before_script: cd AgreementMaker-OSGi
+    - openjdk8
 script: ./gradlew build
 # TODO: Publish code coverage again.
 #after_success: ./mvnw jacoco:report coveralls:report
