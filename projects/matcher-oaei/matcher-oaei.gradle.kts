@@ -4,7 +4,10 @@ plugins {
 
 dependencies {
     implementation(project(":core"))
-    api(project(":similarity-metrics"))
     implementation(project(":matchers-common"))
     implementation(project(":matcher-base-similarity"))
+    implementation(project(":matcher-advanced-similarity"))
+    implementation(project(":matcher-pra"))
+
+    testImplementation("junit:junit:4.11")
 }

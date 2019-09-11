@@ -10,6 +10,7 @@ include(
         "matcher-advanced-similarity",
         "matcher-base-similarity",
         "matcher-pra",
+        "matcher-oaei",
         "ui"
 )
 
