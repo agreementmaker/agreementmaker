@@ -38,6 +38,7 @@ import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
+import am.output.similaritymatrix.SimilarityMatrixOutput;
 import am.parsing.OutputController;
 import am.utility.AppPreferences;
 import am.utility.AppPreferences.FileType;
@@ -50,9 +51,9 @@ import am.utility.AppPreferences.FileType;
  * 
  * (1) Alignments in RDF and text format.
  * (2) Similarity matrices in CSV format.
- * 
- * TODO: Save complete matchers.
- * 
+ * (3) Complete matcher in Java Serialization format.
+ * (4) Similarity matrices in text format.
+ *
  * @author Cosmin Stroe
  *
  */
@@ -69,6 +70,7 @@ public class ExportDialog extends JDialog implements ActionListener{
 	private JCheckBox boxSort, boxIsolines, boxSkipZeros;
 	
 	private JRadioButton radAlignmentOnly, radMatrixAsCSV, radCompleteMatcher, radClassesMatrix, radPropertiesMatrix;
+	private JRadioButton radMatrixAsText, radClassesMatrix2, radPropertiesMatrix2;
 	
 	/**
 	 * Helper function to create the export options panel.
@@ -88,7 +90,11 @@ public class ExportDialog extends JDialog implements ActionListener{
 		radCompleteMatcher = new JRadioButton("Complete Matcher", prefs.isExportTypeSelected( FileType.COMPLETE_MATCHER ) );
 		radCompleteMatcher.setActionCommand( FileType.COMPLETE_MATCHER.getKey() );
 		radCompleteMatcher.addActionListener(this);
-		
+
+		radMatrixAsText = new JRadioButton("Similarity matrix as Text", prefs.isExportTypeSelected( FileType.MATRIX_AS_TEXT ) );
+		radMatrixAsText.setActionCommand( FileType.MATRIX_AS_TEXT.getKey() );
+		radMatrixAsText.addActionListener(this);
+
 		radClassesMatrix = new JRadioButton("Classes Matrix", prefs.isExportClassesMatrix() );
 		radPropertiesMatrix = new JRadioButton("Properties Matrix", !prefs.isExportClassesMatrix() );
 		boxSort = new JCheckBox("Sort by similarity");
@@ -102,17 +108,25 @@ public class ExportDialog extends JDialog implements ActionListener{
 		boxSkipZeros = new JCheckBox("Skip Zeros");
 		boxSkipZeros.setToolTipText("Do not write points which have a similarity of 0.0.  Useful for plotting reference alignments.");
 		boxSkipZeros.setSelected( prefs.getExportSkipZeros() );
-		
+
+		radClassesMatrix2 = new JRadioButton("Classes Matrix", prefs.isExportClassesMatrix2() );
+		radPropertiesMatrix2 = new JRadioButton("Properties Matrix", !prefs.isExportClassesMatrix2() );
+
 		// create a button group for the radio buttons
 		ButtonGroup grpType = new ButtonGroup();
 		grpType.add(radAlignmentOnly);
 		grpType.add(radMatrixAsCSV);
 		grpType.add(radCompleteMatcher);
+		grpType.add(radMatrixAsText);
 		
 		ButtonGroup grpMatrix = new ButtonGroup();
 		grpMatrix.add(radClassesMatrix);
 		grpMatrix.add(radPropertiesMatrix);
-		
+
+		ButtonGroup grpMatrix2 = new ButtonGroup();
+		grpMatrix2.add(radClassesMatrix2);
+		grpMatrix2.add(radPropertiesMatrix2);
+
 		// we need to create a subpanel to group the "Alignment only" radio button with the format label and combobox.
 		lblFileFormat = new JLabel("Format: ");
 		
@@ -142,42 +156,13 @@ public class ExportDialog extends JDialog implements ActionListener{
 		pnlAlignmentFormat.setLayout(layAlignmentFormat);
 		
 		// a panel for the classes matrix and properties matrix radio buttons
-		JPanel pnlMatrices = new JPanel();
-		pnlMatrices.setBorder( BorderFactory.createEmptyBorder() );
-		
-		GroupLayout layMatrices = new GroupLayout(pnlMatrices);
-		layMatrices.setAutoCreateGaps(true);
-		
-		layMatrices.setHorizontalGroup(  layMatrices.createSequentialGroup()
-				.addGap(30)
-				.addGroup( layMatrices.createParallelGroup()
-						.addComponent(radClassesMatrix)
-						.addComponent(radPropertiesMatrix)
-				)
-				.addGap(10)
-				.addGroup( layMatrices.createParallelGroup()
-						.addComponent(boxSort)
-						.addComponent(boxIsolines)
-						.addComponent(boxSkipZeros)
-				)
-				.addGap(30)
-		);
-		layMatrices.setVerticalGroup(  layMatrices.createParallelGroup()
-				.addGroup(layMatrices.createSequentialGroup()
-						.addComponent(radClassesMatrix)
-						.addComponent(radPropertiesMatrix)
-				)
-				.addGroup( layMatrices.createSequentialGroup()
-						.addComponent(boxSort)
-						.addComponent(boxIsolines)
-						.addComponent(boxSkipZeros)
-				)
-		);
-		pnlMatrices.setLayout(layMatrices);
-		
+		JPanel pnlMatrices = createMatrixAsCSVConfigPanel(
+				radClassesMatrix, radPropertiesMatrix, boxSort, boxIsolines, boxSkipZeros);
+
+		JPanel pnlMatrices2 = createMatrixAsTextConfigPanel(radClassesMatrix2, radPropertiesMatrix2);
 		
 		GroupLayout layMain = new GroupLayout(panel);
-		layMatrices.setAutoCreateGaps(true);
+		layMain.setAutoCreateGaps(true);
 		
 		layMain.setHorizontalGroup( layMain.createParallelGroup()
 				.addComponent(radAlignmentOnly)
@@ -185,6 +170,8 @@ public class ExportDialog extends JDialog implements ActionListener{
 				.addComponent(radMatrixAsCSV)
 				.addComponent(pnlMatrices)
 				.addComponent(radCompleteMatcher)
+				.addComponent(radMatrixAsText)
+				.addComponent(pnlMatrices2)
 		);
 		
 		layMain.setVerticalGroup( layMain.createSequentialGroup() 
@@ -196,10 +183,91 @@ public class ExportDialog extends JDialog implements ActionListener{
 				.addGap(10)
 				.addComponent(radCompleteMatcher)
 				.addGap(10)
+				.addComponent(radMatrixAsText)
+				.addComponent(pnlMatrices2)
+				.addGap(10)
 		);
 		
 		panel.setLayout(layMain);
 		return panel;
+	}
+
+	/**
+	 * Creates a panel for configuring the "Similarity matrix as CSV" selection.
+	 */
+	private JPanel createMatrixAsCSVConfigPanel(
+			JRadioButton radClassesMatrix,
+			JRadioButton radPropertiesMatrix,
+			JCheckBox boxSort,
+			JCheckBox boxIsolines,
+			JCheckBox boxSkipZeros
+	) {
+		JPanel pnlMatrices = new JPanel();
+		pnlMatrices.setBorder( BorderFactory.createEmptyBorder() );
+
+		GroupLayout layMatrices = new GroupLayout(pnlMatrices);
+		layMatrices.setAutoCreateGaps(true);
+
+		layMatrices.setHorizontalGroup(layMatrices.createSequentialGroup()
+				.addGap(30)
+				.addGroup(layMatrices.createParallelGroup()
+						.addComponent(radClassesMatrix)
+						.addComponent(radPropertiesMatrix)
+				)
+				.addGap(10)
+				.addGroup(layMatrices.createParallelGroup()
+						.addComponent(boxSort)
+						.addComponent(boxIsolines)
+						.addComponent(boxSkipZeros)
+				)
+				.addGap(30)
+		);
+		layMatrices.setVerticalGroup(layMatrices.createParallelGroup()
+				.addGroup(layMatrices.createSequentialGroup()
+						.addComponent(radClassesMatrix)
+						.addComponent(radPropertiesMatrix)
+				)
+				.addGroup(layMatrices.createSequentialGroup()
+						.addComponent(boxSort)
+						.addComponent(boxIsolines)
+						.addComponent(boxSkipZeros)
+				)
+		);
+		pnlMatrices.setLayout(layMatrices);
+
+		return pnlMatrices;
+	}
+
+	/**
+	 * Creates a panel for configuring the "Similarity matrix as Text" selection.
+	 */
+	private JPanel createMatrixAsTextConfigPanel(
+			JRadioButton radClassesMatrix2,
+			JRadioButton radPropertiesMatrix2
+	) {
+		JPanel pnlMatrices = new JPanel();
+		pnlMatrices.setBorder( BorderFactory.createEmptyBorder() );
+
+		GroupLayout layMatrices = new GroupLayout(pnlMatrices);
+		layMatrices.setAutoCreateGaps(true);
+
+		layMatrices.setHorizontalGroup(layMatrices.createSequentialGroup()
+				.addGap(30)
+				.addGroup(layMatrices.createParallelGroup()
+						.addComponent(radClassesMatrix2)
+						.addComponent(radPropertiesMatrix2)
+				)
+				.addGap(30)
+		);
+		layMatrices.setVerticalGroup(layMatrices.createParallelGroup()
+				.addGroup(layMatrices.createSequentialGroup()
+						.addComponent(radClassesMatrix2)
+						.addComponent(radPropertiesMatrix2)
+				)
+		);
+		pnlMatrices.setLayout(layMatrices);
+
+		return pnlMatrices;
 	}
 
 	/**
@@ -307,6 +375,7 @@ public class ExportDialog extends JDialog implements ActionListener{
 		// some ease of use code
 		setAlignmentOnlyEnabled( radAlignmentOnly.isSelected() );		
 		setMatrixRadioButtonsEnable( radMatrixAsCSV.isSelected() );
+		setMatrixRadioButtonsEnable2(radMatrixAsText.isSelected());
 	
 		getRootPane().setDefaultButton(btnSave);
 		
@@ -350,10 +419,11 @@ public class ExportDialog extends JDialog implements ActionListener{
 		}
 		else if(obj == btnSave){
 			save();
-		} else if( obj == radAlignmentOnly || obj == radMatrixAsCSV || obj == radCompleteMatcher ) {
+		} else if( obj == radAlignmentOnly || obj == radMatrixAsCSV || obj == radCompleteMatcher || obj == radMatrixAsText) {
 			// enables/disables controls depending on which radio button is selected
 			setAlignmentOnlyEnabled(radAlignmentOnly.isSelected());
-			setMatrixRadioButtonsEnable(radMatrixAsCSV.isSelected());	
+			setMatrixRadioButtonsEnable(radMatrixAsCSV.isSelected());
+			setMatrixRadioButtonsEnable2(radMatrixAsText.isSelected());
 		}
 	}
 	
@@ -368,7 +438,12 @@ public class ExportDialog extends JDialog implements ActionListener{
 		boxIsolines.setEnabled(en);
 		boxSkipZeros.setEnabled(en);
 	}
-	
+
+	private void setMatrixRadioButtonsEnable2( boolean en ) {
+		radClassesMatrix2.setEnabled(en);
+		radPropertiesMatrix2.setEnabled(en);
+	}
+
 	/**
 	 * TODO: This is a mess, we need to fix it. -- Cosmin, Oct. 21, 2013.
 	 */
@@ -377,7 +452,8 @@ public class ExportDialog extends JDialog implements ActionListener{
 			// what kind of export are we doing?
 			FileType outputType;
 			if( radCompleteMatcher.isSelected() ) { outputType = FileType.COMPLETE_MATCHER; }
-			else if( radMatrixAsCSV.isSelected() ) { outputType = FileType.MATRIX_AS_CSV; }
+			else if(radMatrixAsCSV.isSelected() ) { outputType = FileType.MATRIX_AS_CSV; }
+			else if(radMatrixAsText.isSelected()) { outputType = FileType.MATRIX_AS_TEXT; }
 			else { outputType = FileType.ALIGNMENT_ONLY; } // use Alignment_ONLY as default.
 			
 			// directory, filename, fileformat ?
@@ -462,25 +538,25 @@ public class ExportDialog extends JDialog implements ActionListener{
 					String fullFileName = outDirectory + File.separator + outFileName;
 					
 					if( radClassesMatrix.isSelected() ) {
-						if( selectedMatcher.getClassesMatrix() == null ) {
+						if (selectedMatcher.getClassesMatrix() == null) {
 							// create a new matrix
-							if( selectedMatcher.getSourceOntology() == null || selectedMatcher.getTargetOntology() == null ) { 
+							if (selectedMatcher.getSourceOntology() == null || selectedMatcher.getTargetOntology() == null) {
 								throw new Exception("Matcher does not have Source or Target ontologies set.");
 							}
-							SimilarityMatrix m = new ArraySimilarityMatrix(selectedMatcher.getSourceOntology(), 
-																	selectedMatcher.getTargetOntology(), 
-																	alignType.aligningClasses);
-							if( selectedMatcher.getClassAlignmentSet() == null ) 
+							SimilarityMatrix m = new ArraySimilarityMatrix(selectedMatcher.getSourceOntology(),
+									selectedMatcher.getTargetOntology(),
+									alignType.aligningClasses);
+							if (selectedMatcher.getClassAlignmentSet() == null)
 								throw new Exception("Matcher does not have a Classes Matrix nor a Classes Alignment Set.  Cannot do anything.");
-							
-							for( int i = 0; i < selectedMatcher.getClassAlignmentSet().size(); i++ ) {
+
+							for (int i = 0; i < selectedMatcher.getClassAlignmentSet().size(); i++) {
 								am.app.mappingEngine.Mapping currentAlignment = selectedMatcher.getClassAlignmentSet().get(i);
 								m.set(currentAlignment.getEntity1().getIndex(), currentAlignment.getEntity2().getIndex(), currentAlignment);
 							}
-							
+
 							OutputController.saveMatrixAsCSV(m, fullFileName, boxSort.isSelected(), boxIsolines.isSelected(), boxSkipZeros.isSelected());
-							
-						} else { 
+
+						} else {
 							OutputController.saveMatrixAsCSV(selectedMatcher.getClassesMatrix(), fullFileName, boxSort.isSelected(), boxIsolines.isSelected(), boxSkipZeros.isSelected());
 						}
 					} else {
@@ -507,6 +583,12 @@ public class ExportDialog extends JDialog implements ActionListener{
 					}
 					Utility.displayMessagePane("File saved successfully.\nLocation: "+fullFileName+"\n", null);
 					setVisible(false);
+				} else if(outputType == FileType.MATRIX_AS_TEXT) {
+					prefs.saveExportClassesMatrix( radClassesMatrix.isSelected() );
+					prefs.saveExportSort(boxSort.isSelected());
+					prefs.saveExportIsolines(boxIsolines.isSelected());
+					prefs.saveExportSkipZeros(boxSkipZeros.isSelected());
+					saveMatrixAsText();
 				} else if( outputType == FileType.COMPLETE_MATCHER ) {
 					//throw new Exception("Michele, implement this function.");
 					String fullFileName = outDirectory+ "/" + outFileName + ".bin";
@@ -568,10 +650,7 @@ public class ExportDialog extends JDialog implements ActionListener{
 		}
 	}
 
-	public static void main(String[] args) {
-		
-		new ExportDialog(null);
-		
+	private void saveMatrixAsText() {
+		throw new UnsupportedOperationException("Not implemented");
 	}
-	
 }

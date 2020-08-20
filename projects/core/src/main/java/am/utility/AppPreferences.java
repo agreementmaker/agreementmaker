@@ -74,6 +74,7 @@ public class AppPreferences {
 	private static final String 	PREF_EXPORTLASTDIR = "pref_export_last_dir_output";
 	private static final String 	PREF_EXPORTLASTFILENAME = "pref_export_last_filename";
 	private static final String 	PREF_EXPORT_CLASSESMATRIX = "pref_export_classes_matrix";
+	private static final String 	PREF_EXPORT_CLASSESMATRIX2 = "pref_export_classes_matrix2";
 	private static final String		PREF_EXPORT_SORT = "pref_export_sort";
 	private static final String		PREF_EXPORT_ISOLINES = "pref_export_isolines";
 	private static final String		PREF_EXPORT_SKIPZERO = "pref_export_skipzero";
@@ -84,7 +85,7 @@ public class AppPreferences {
 	private static final String		PREF_IMPORT_ALIGNMENT_FORMAT = "pref_export_alignment_format";
 	
 	public static enum FileType { 
-		ALIGNMENT_ONLY("1"), MATRIX_AS_CSV("2"), COMPLETE_MATCHER("3");
+		ALIGNMENT_ONLY("1"), MATRIX_AS_CSV("2"), COMPLETE_MATCHER("3"), MATRIX_AS_TEXT("4");
 		//----------------------- Implementation Details ------------------
 		String key;
 		FileType(String k) { key = k; }
@@ -520,6 +521,7 @@ public class AppPreferences {
 	public void saveExportSkipZeros( boolean sort ) {	appPrefs.putBoolean(PREF_EXPORT_SKIPZERO, sort); }
 	public void saveExportClassesMatrix( boolean c ) { appPrefs.putBoolean(PREF_EXPORT_CLASSESMATRIX, c); }
 	public boolean isExportClassesMatrix() { return appPrefs.getBoolean(PREF_EXPORT_CLASSESMATRIX, true); }
+	public boolean isExportClassesMatrix2() { return appPrefs.getBoolean(PREF_EXPORT_CLASSESMATRIX2, true); }
 	public void saveExportType( FileType t ) { appPrefs.put(PREF_EXPORT_TYPE, t.getKey() ); }
 	public void saveImportType( FileType t ) { appPrefs.put(PREF_IMPORT_TYPE, t.getKey() ); }
 	
