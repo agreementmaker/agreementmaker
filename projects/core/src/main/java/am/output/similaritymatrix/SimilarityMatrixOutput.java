@@ -1,27 +1,21 @@
 package am.output.similaritymatrix;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.util.List;
-
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
-import am.app.ontology.ontologyParser.OntoTreeBuilder;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.util.List;
 
 public class SimilarityMatrixOutput {
-
-	
-	//private AbstractMatcher matcher;
 	private final Ontology sourceOntology;
 	private final Ontology targetOntology;
 	
@@ -29,27 +23,24 @@ public class SimilarityMatrixOutput {
 		this.sourceOntology = sourceOntology;
 		this.targetOntology = targetOntology;
 	}
-	
-	
+
 	/**
 	 * Save the classes similarity matrix.
-	 * @param file The output file to which to save the similarity matrix.
+	 * @param os The output stream to which to save the similarity matrix.
 	 */
-	public void saveClassesMatrix(SimilarityMatrix matrix, String file) {
+	public void saveClassesMatrix(SimilarityMatrix matrix, OutputStream os) {
 		
 		List<Node> sourceClassesList = sourceOntology.getClassesList();
 		List<Node> targetClassesList = targetOntology.getClassesList();
 		
 		try {
-			BufferedWriter bwr = new BufferedWriter(new FileWriter(new File(file)));
-			
-			
+			BufferedWriter bwr = new BufferedWriter(new OutputStreamWriter(os));
+
 			bwr.write("@source_classes " + sourceClassesList.size() + "\n");
 			
 			for( Node sourceClass : sourceClassesList ) {
 				bwr.write(sourceClass.getUri() + "\n");
 			}
-			
 			
 			bwr.write("@target_classes " + targetClassesList.size() + "\n");
 			for( Node targetClass : targetClassesList ) {
@@ -148,39 +139,4 @@ public class SimilarityMatrixOutput {
 		return matrix;
 		
 	}
-
-	public static void main(String[] args) {
-		
-		Logger log = Logger.getLogger(SimilarityMatrixOutput.class.getName());
-		log.setLevel(Level.DEBUG);
-		
-		String prefix = "H:/Work/Eclipse Workspace/Ontologies/OAEI/2011/anatomy/";
-		String sourceFile = prefix + "mouse.owl";
-		String targetFile = prefix + "human.owl";
-
-		log.debug("Loading source ontology...");
-		Ontology sourceOntology = OntoTreeBuilder.loadOWLOntology(sourceFile);
-		
-		log.debug("Loading target ontology...");
-		Ontology targetOntology = OntoTreeBuilder.loadOWLOntology(targetFile);
-
-//		log.debug("Matching source and target ontologies ...");
-//		try {
-//			oaei2011.match();
-//		} catch( Exception e ) {
-//			e.printStackTrace();
-//		}
-		
-		
-//		log.debug("Saving classes matrix ...");
-		
-		SimilarityMatrixOutput simout = new SimilarityMatrixOutput(sourceOntology, targetOntology);
-		
-//		simout.saveClassesMatrix("/home/cosmin/Documents/Eclipse/ADVIS-Main/Ontologies/OAEI/2011/test/oaei2011-classmatrix.mtx");	
-		
-		System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
-		
-		simout.loadClassesMatrix("H:/Work/Eclipse Workspace/Ontologies/OAEI/2011/test/oaei2011-classmatrix.mtx");
-	}
-	
 }

@@ -2,6 +2,10 @@ plugins {
     `java-library`
 }
 
+tasks.test {
+    useJUnitPlatform()
+}
+
 dependencies {
     implementation("org.apache.logging.log4j:log4j-api:2.11.1")
     implementation(project(":api"))
@@ -44,5 +48,7 @@ dependencies {
 
     testImplementation("junit:junit:4.11")
     testImplementation("org.hamcrest:hamcrest-all:1.3")
-    testImplementation("org.mockito:mockito-core:3.0.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.6.2")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.6.2")
+    testImplementation("org.mockito:mockito-core:3.5.2")
 }
