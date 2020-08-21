@@ -62,8 +62,46 @@ public class SimilarityMatrixOutput {
 			e.printStackTrace();
 		}
 	}
-	
-	
+
+	/**
+	 * Save the properties similarity matrix.
+	 * @param os The output stream to which to save the similarity matrix.
+	 */
+	public void savePropertiesMatrix(SimilarityMatrix matrix, OutputStream os) {
+
+		List<Node> sourcePropertiesList = sourceOntology.getPropertiesList();
+		List<Node> targetPropertiesList = targetOntology.getPropertiesList();
+
+		try {
+			BufferedWriter bwr = new BufferedWriter(new OutputStreamWriter(os));
+
+			bwr.write("@source_properties " + sourcePropertiesList.size() + "\n");
+
+			for( Node targetProperty : sourcePropertiesList ) {
+				bwr.write(targetProperty.getUri() + "\n");
+			}
+
+			bwr.write("@target_properties " + targetPropertiesList.size() + "\n");
+			for( Node targetProperty : targetPropertiesList ) {
+				bwr.write(targetProperty.getUri() + "\n");
+			}
+
+			bwr.write("@similarity_matrix\n");
+
+			for( int i = 0; i < matrix.getRows(); i++ ) {
+				for( int j = 0; j < matrix.getColumns(); j++ ) {
+					double sim = matrix.getSimilarity(i, j);
+					bwr.write(Double.toString(sim) + "\n");
+				}
+			}
+
+			bwr.close();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	/**
 	 * Read in a similarity matrix file.
 	 * @param file

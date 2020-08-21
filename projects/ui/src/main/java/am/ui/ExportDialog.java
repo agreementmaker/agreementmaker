@@ -527,7 +527,7 @@ public class ExportDialog extends JDialog implements ActionListener{
 					prefs.saveExportSort(boxSort.isSelected());
 					prefs.saveExportIsolines(boxIsolines.isSelected());
 					prefs.saveExportSkipZeros(boxSkipZeros.isSelected());
-					
+
 					// append extension
 					if( !outFileName.endsWith("." + OutputController.getAlignmentFormatExtension(outFormatIndex)) ) {
 						outFileName+= "." + OutputController.getAlignmentFormatExtension(outFormatIndex);
@@ -588,15 +588,16 @@ public class ExportDialog extends JDialog implements ActionListener{
 					prefs.saveExportSort(boxSort.isSelected());
 					prefs.saveExportIsolines(boxIsolines.isSelected());
 					prefs.saveExportSkipZeros(boxSkipZeros.isSelected());
-					saveMatrixAsText();
+					String fullFileName = outDirectory + File.separator + outFileName;
+					saveMatrixAsText(selectedMatcher, fullFileName);
+					Utility.displayMessagePane("File saved successfully.\nLocation: "+fullFileName+"\n", null);
+					this.setVisible(false);
 				} else if( outputType == FileType.COMPLETE_MATCHER ) {
-					//throw new Exception("Michele, implement this function.");
-					String fullFileName = outDirectory+ "/" + outFileName + ".bin";
+					String fullFileName = outDirectory + "/" + outFileName + ".bin";
 					FileOutputStream fos = new FileOutputStream(fullFileName);
-					ObjectOutputStream oos = new ObjectOutputStream(fos);
-					selectedMatcher.writeObject(oos);
-					oos.flush();
-					oos.close();
+					try(ObjectOutputStream oos = new ObjectOutputStream(fos)) {
+						selectedMatcher.writeObject(oos);
+					}
 					Utility.displayMessagePane("File saved successfully.\nLocation: "+fullFileName+"\n", null);
 					this.setVisible(false);
 				} else {
@@ -650,7 +651,53 @@ public class ExportDialog extends JDialog implements ActionListener{
 		}
 	}
 
-	private void saveMatrixAsText() {
-		throw new UnsupportedOperationException("Not implemented");
+	private void saveMatrixAsText(AbstractMatcher selectedMatcher, String fullFileName) throws Exception {
+		if (selectedMatcher.getSourceOntology() == null) {
+			throw new RuntimeException("Matcher does not have Source ontology set.");
+		}
+
+		if (selectedMatcher.getTargetOntology() == null) {
+			throw new RuntimeException("Matcher does not have Target ontology set.");
+		}
+
+		SimilarityMatrixOutput smo = new SimilarityMatrixOutput(selectedMatcher.getSourceOntology(), selectedMatcher.getTargetOntology());
+
+		if(radClassesMatrix2.isSelected()) {
+			SimilarityMatrix m = selectedMatcher.getClassesMatrix();
+			if (m == null) {
+				m = new ArraySimilarityMatrix(selectedMatcher.getSourceOntology(),
+						selectedMatcher.getTargetOntology(),
+						alignType.aligningClasses);
+				if (selectedMatcher.getClassAlignmentSet() == null)
+					throw new RuntimeException("Matcher does not have a Classes Matrix nor a Classes Alignment Set.  Cannot do anything.");
+
+				for (int i = 0; i < selectedMatcher.getClassAlignmentSet().size(); i++) {
+					am.app.mappingEngine.Mapping currentAlignment = selectedMatcher.getClassAlignmentSet().get(i);
+					m.set(currentAlignment.getEntity1().getIndex(), currentAlignment.getEntity2().getIndex(), currentAlignment);
+				}
+			}
+
+			try(FileOutputStream fos = new FileOutputStream(new File(fullFileName))) {
+				smo.saveClassesMatrix(m, fos);
+			}
+		} else {
+			SimilarityMatrix m = selectedMatcher.getPropertiesMatrix();
+			if (m == null) {
+				m = new ArraySimilarityMatrix(selectedMatcher.getSourceOntology(),
+						selectedMatcher.getTargetOntology(),
+						alignType.aligningProperties);
+				if (selectedMatcher.getPropertyAlignmentSet() == null)
+					throw new RuntimeException("Matcher does not have a Properties Matrix nor a Properties Alignment Set.  Cannot do anything.");
+
+				for (int i = 0; i < selectedMatcher.getPropertyAlignmentSet().size(); i++) {
+					am.app.mappingEngine.Mapping currentAlignment = selectedMatcher.getPropertyAlignmentSet().get(i);
+					m.set(currentAlignment.getEntity1().getIndex(), currentAlignment.getEntity2().getIndex(), currentAlignment);
+				}
+			}
+
+			try(FileOutputStream fos = new FileOutputStream(new File(fullFileName))) {
+				smo.savePropertiesMatrix(m, fos);
+			}
+		}
 	}
 }
