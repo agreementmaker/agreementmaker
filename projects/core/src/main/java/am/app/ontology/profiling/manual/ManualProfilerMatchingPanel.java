@@ -95,12 +95,11 @@ public class ManualProfilerMatchingPanel extends OntologyProfilerPanel {
 	}
 
 	private String getCoverageString(CoverageTriple t ) {
-		//String s = "(" + t.count + " - " + Utility.getOneDecimalPercentFromDouble(t.coverage) + ")";
-		if( t.coverage > 1.0 ) {
-			System.out.println("..");
+		if (t == null) {
+			return "(0)";
 		}
-		String s = "(" + Utility.getOneDecimalPercentFromDouble(t.coverage) + ")";
-		return s;
+
+		return "(" + Utility.getOneDecimalPercentFromDouble(t.coverage) + ")";
 	}
 
 	private void initializeLayout() {

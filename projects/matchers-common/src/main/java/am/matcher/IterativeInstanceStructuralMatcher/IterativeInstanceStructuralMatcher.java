@@ -1,9 +1,6 @@
 package am.matcher.IterativeInstanceStructuralMatcher;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import am.AMException;
 import am.app.Core;
@@ -72,7 +69,6 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 	private final String RANGE_DOMAIN = "Range Domain";
 	private final String SYNTACTIC = "Syntactic";
 
-	
 	IterativeInstanceStructuralParameters parameters;
 	
 	public IterativeInstanceStructuralMatcher(){
@@ -96,21 +92,54 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 		/*if(printMappingTable)
 			evaluate();*/
 	}
-	
-//	@SuppressWarnings("unchecked")
+
+	@Override
+	protected void setupProgress() {
+		if (parameters == null) {
+			return;
+		}
+
+		stepsTotal++; // initHashmaps
+		stepsTotal++; // initSimilarityMatrices
+
+		if (parameters.useRangeDomain) {
+			stepsTotal += sourcePropList.size() * targetPropList.size(); // useRangeDomain
+			stepsTotal += sourcePropList.size() * targetPropList.size(); // matchPropertyUsage
+		}
+
+		if (individuals) {
+			stepsTotal += sourceClassList.size() * targetClassList.size();
+		}
+
+		if (parameters.useSuperclasses) {
+			stepsTotal += sourceClassList.size() * targetClassList.size(); // matchSuperclasses
+		}
+
+		stepsTotal += sourceClassList.size() * targetClassList.size(); // matchSubClasses
+		stepsTotal += sourcePropList.size() * targetPropList.size(); // matchSubProperties
+		stepsTotal += sourceClassList.size() * targetClassList.size(); // findNewAlignments
+		stepsTotal += sourcePropList.size() * targetPropList.size(); // findNewAlignments
+
+		stepsTotal++; // matchUnionClasses
+		setProgress(0);
+	}
+
 	@Override
 	protected void align() throws Exception {
 		if (sourceOntology == null || targetOntology == null)
 			return; // cannot align just one ontology
 		
-		if(param!=null)
-			parameters = (IterativeInstanceStructuralParameters)param;
+		if(param != null) {
+			parameters = (IterativeInstanceStructuralParameters) param;
+		}
 		
 		sourceClassList = sourceOntology.getClassesList();
 		targetClassList = targetOntology.getClassesList();
 		sourcePropList = sourceOntology.getPropertiesList();
 		targetPropList = targetOntology.getPropertiesList();
-		
+
+		setupProgress(); // need to do this after initializing the parameters and the lists
+
 		//Initialize maps for information about restrictions
 		initHashMaps();
 		
@@ -124,7 +153,7 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 		}
 		
 		printPropValues();
-		
+
 		if(individuals){
 			//Match properties by similar values
 			if(parameters.usePropertyUsage)
@@ -141,8 +170,11 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 						m.setProvenance(RECURSIVE_INDIVIDUALS);
 						classesMatrix.set(i, j, m);
 					}
-						
+
+					stepDone();
 				}
+
+				updateProgress();
 			}
 		}
 			
@@ -170,17 +202,15 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 				if( Core.DEBUG_FCM ) System.out.println("CONVERGED IN "+(i+1)+" ITERATIONS");
 				break;
 			}
-				
 		}
 		
-		if( matchUnionClasses ) matchUnionClasses();
+		if (matchUnionClasses) {
+			matchUnionClasses();
+			stepDone();
+			updateProgress();
+		}
 		
 		filterNonOntologyAlignments();
-		
-		//printAllSimilarities();
-		
-		//evaluate();
-		
 	}
 	
 	private void findNewAlignments() {
@@ -193,7 +223,11 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 					m.setProvenance(COMBINATION);
 					classesMatrix.set(i, j, m);
 				}
+
+				stepDone();
 			}
+
+			updateProgress();
 		}
 		for (int i = 0; i < propSimilarities.length; i++) {
 			for (int j = 0; j < propSimilarities[0].length; j++) {
@@ -204,8 +238,11 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 					m.setProvenance(COMBINATION);
 					propertiesMatrix.set(i, j, m);
 				}
-					
+
+				stepDone();
 			}
+
+			updateProgress();
 		}
 	}
 
@@ -228,7 +265,9 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 				propSimilarities[i][j].setSyntactic(propertiesMatrix.getSimilarity(i, j));
 			}
 		}
-		
+
+		stepDone();
+		updateProgress();
 	}
 
 	private void receiveInputMatrices() {
@@ -456,6 +495,8 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 
 						if( Core.DEBUG_FCM ) System.out.println("ALIGNMENT:"+sSub.get(0).getLocalName()+" "+
 								tSub.get(0).getLocalName()+" BY SUBPROPERTIES");
+
+						stepDone();
 						continue;
 					}
 					
@@ -483,10 +524,13 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 					if(verbose){
 						Utils.printMatrix(sims);
 					}
+
+					stepDone();
 				}
+
+				updateProgress();
 			}
 		}
-		return;
 	}
 
 	private double rangeAndDomainSimilarity(OntProperty sProp,
@@ -554,24 +598,32 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 			System.out.println("MATCH SUBCLASSES");
 		}
 		ArrayList<OntClass> sSub;
-		ArrayList<OntClass> tSub;
+
+		Map<OntClass, List<OntClass>> targetSubClasses = new HashMap<>();
+
 		for (int i = 0; i < sourceClassList.size(); i++) {
-			sSub = new ArrayList<OntClass>();
-			OntClass cl1 = (OntClass)sourceClassList.get(i).getResource().as(OntClass.class);
+			sSub = new ArrayList<>();
+			OntClass cl1 = sourceClassList.get(i).getResource().as(OntClass.class);
 			ExtendedIterator it1 = cl1.listSubClasses();
 			while(it1.hasNext()){
 				sSub.add((OntClass)it1.next());
 			}
 			for (int j = 0; j < targetClassList.size(); j++){
-				tSub = new ArrayList<OntClass>();
-				OntClass cl2 = (OntClass)targetClassList.get(j).getResource().as(OntClass.class);
-				ExtendedIterator it2 = cl2.listSubClasses();
-				while(it2.hasNext()){
-					tSub.add((OntClass)it2.next());
+				OntClass cl2 = targetClassList.get(j).getResource().as(OntClass.class);
+
+				if (!targetSubClasses.containsKey(cl2)) {
+					List<OntClass> subclasses = new ArrayList<>();
+					ExtendedIterator it2 = cl2.listSubClasses();
+					while(it2.hasNext()){
+						subclasses.add((OntClass)it2.next());
+					}
+					targetSubClasses.put(cl2, subclasses);
 				}
-				
-				if(alignedClass(cl1.getURI(),cl2.getURI())>=CLASS_THRESHOLD &&
-						sSub.size()==tSub.size() && sSub.size()>0){
+
+				List<OntClass> tSub = targetSubClasses.get(cl2);
+
+				if(sSub.size() > 0 && sSub.size() == tSub.size() &&
+						alignedClass(cl1.getURI(),cl2.getURI())>=CLASS_THRESHOLD){
 					
 					if(verbose){
 						System.out.println("size: "+sSub.size());
@@ -603,6 +655,8 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 						m.setProvenance(SUBCLASSES);
 						classesMatrix.set(row, col, m);
 						if( Core.DEBUG_FCM ) System.out.println("ALIGNMENT:"+sSub.get(0)+" "+tSub.get(0)+" BY SUBCLASSES");
+
+						stepDone();
 						continue;
 					}
 					
@@ -621,8 +675,12 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 						System.out.println("class2: "+cl2.getLocalName());
 						Utils.printMatrix(sims);
 					}
+
+					stepDone();
 				}
 			}
+
+			updateProgress();
 		}
 	}
 
@@ -638,6 +696,9 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 			targetRestrictions.put(targetPropList.get(i), 
 					getRestrictionsOnProperty(targetClassList, targetPropList.get(i)));
 		}
+
+		stepDone();
+		updateProgress();
 	}
 
 	private void matchPropertyUsage() {
@@ -665,6 +726,8 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 				if((sp.isDatatypeProperty() && !tp.isDatatypeProperty())||
 						(!sp.isObjectProperty() && tp.isObjectProperty())){
 					similarities.add(0.0);
+
+					stepDone();
 					continue;
 				}
 								
@@ -672,6 +735,8 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 				
 				if(l1.size()!=l2.size() || l1.size()==0){
 					similarities.add(0.0);
+
+					stepDone();
 					continue;
 				}
 				
@@ -698,6 +763,8 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 				if(verbose){
 					System.out.println("subSim: "+usSim);
 				}
+
+				stepDone();
 			}
 			
 			//System.out.println(similarities);
@@ -717,6 +784,8 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 				propertiesMatrix.set(i, index, m);
 				if( Core.DEBUG_FCM ) System.out.println("ALIGNMENT:"+sProp.getLocalName()+" "+targetPropList.get(index).getLocalName()+" BY PROPERTY USAGE");
 			}
+
+			updateProgress();
 		}	
 	}
 
@@ -1046,7 +1115,8 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 				
 				sim = superclassesComparison(source,target);
 				classSimilarities[i][j].setSuperclasses(sim);
-				similarities.add(sim);				
+				similarities.add(sim);
+				stepDone();
 			}
 			
 			if(verbose)	System.out.println(similarities);
@@ -1067,6 +1137,8 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 						+targetClassList.get(index).getLocalName()+" BY SUBCLASSOF");
 			}
 			verbose = false;
+
+			updateProgress();
 		}			
 	}
 	
@@ -1201,10 +1273,13 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 					m.setProvenance(RANGE_DOMAIN);
 					if(parameters.boostRangeDomain) m.setSimilarity(1.0d);
 					propertiesMatrix.set(i,j, m);				
-				}			
+				}
+
+				stepDone();
 			}
+
+			updateProgress();
 		}		
-		return;
 	}
 	
 	private double rangeAndDomainSimilarity(Node source, Node target) {

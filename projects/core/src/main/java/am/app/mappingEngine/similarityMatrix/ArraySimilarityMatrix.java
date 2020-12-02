@@ -132,11 +132,13 @@ public class ArraySimilarityMatrix extends AbstractSimilarityMatrix {
     }
     
     @Override
-    public void set(int i, int j, Mapping d) { 
+    public void set(int i, int j, Mapping d) {
+    	if (data == null || i >= data.length || data[i] == null || j >= data[i].length) {
+    		return;
+		}
+
     	if( d != null ) {
-	    	//if( rowNodes[i] == null ) rowNodes[i] = d.getEntity1();
-	    	//if( colNodes[j] == null ) colNodes[j] = d.getEntity2();
-	    	data[i][j] = new SimRel(d.getSimilarity(), d.getRelation(), d.getProvenance()); 
+	    	data[i][j] = new SimRel(d.getSimilarity(), d.getRelation(), d.getProvenance());
     	} else {
     		data[i][j] = null;
     	}
@@ -148,8 +150,10 @@ public class ArraySimilarityMatrix extends AbstractSimilarityMatrix {
 	}
     
     @Override
-    public double getSimilarity(int i, int j){
-    	if( data[i][j] == null ) { return 0.00d; }
+    public double getSimilarity(int i, int j) {
+    	if (data == null || i >= data.length || data[i] == null || j >= data[i].length || data[i][j] == null ) {
+    		return 0.00d;
+    	}
     	return data[i][j].similarity;
     }
     

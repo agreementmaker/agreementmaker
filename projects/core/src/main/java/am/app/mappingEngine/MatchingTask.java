@@ -100,8 +100,20 @@ public class MatchingTask {
 	public String getMatchingReport() {
 		StringBuilder report = new StringBuilder();
 		report.append("Matching Process Complete Succesfully!\n\n");
-		report.append("Classes alignments found: ").append(selectionResult.classesAlignment.size()).append("\n");
-		report.append("Properties alignments found: ").append(selectionResult.propertiesAlignment.size()).append("\n");
+		if (selectionResult != null) {
+			if (selectionResult.classesAlignment != null) {
+				report.append("Classes alignments found: ").append(selectionResult.classesAlignment.size()).append("\n");
+			} else {
+				report.append("Classes alignments found: 0").append("\n");
+			}
+
+			if (selectionResult.propertiesAlignment != null) {
+				report.append("Properties alignments found: ").append(selectionResult.propertiesAlignment.size()).append("\n");
+			} else {
+				report.append("Properties alignments found: 0").append("\n");
+			}
+
+		}
 		
 		return report.toString();
 	}
