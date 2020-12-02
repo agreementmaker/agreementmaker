@@ -17,6 +17,7 @@ import am.app.mappingEngine.StringUtil.PorterStemmer;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.ontology.Node;
 import am.app.ontology.profiling.OntologyProfiler;
+import am.app.wordnet.WordNetUtils;
 import am.utility.Pair;
 import edu.smu.tspell.wordnet.api.Synset;
 import edu.smu.tspell.wordnet.api.SynsetType;
@@ -30,8 +31,8 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 	private static final long serialVersionUID = 1L;
 
 	// JAWS WordNet interface
-	private transient WordNetDatabase wordnet  = null;
-	
+	private final transient WordNetDatabase wordnet;
+
 	private transient NormalizerParameter param1;
 	private transient NormalizerParameter param2;
 	private transient NormalizerParameter param3;
@@ -41,25 +42,30 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 	
 	public BaseSimilarityMatcher() {
 		// warning, param is not available at the time of the constructor (when creating a matcher from the User Interface)
-		super(); initializeVariables();
+		super();
+
+		WordNetUtils wnUtils = new WordNetUtils(Core.getInstance().getRootFile());
+		wordnet = wnUtils.getWordNet();
+
+		initializeVariables();
 	}
 	
 	// Constructor used when the parameters are available at the time of matcher initialization
 	public BaseSimilarityMatcher( BaseSimilarityParameters param_new ) {  
-		super(param_new); initializeVariables();
+		super(param_new);
+
+		WordNetUtils wnUtils = new WordNetUtils(Core.getInstance().getRootFile());
+		wordnet = wnUtils.getWordNet();
+
+		initializeVariables();
 	}
 	
 	@Override
 	protected void initializeVariables() {
 		super.initializeVariables();
-		
+
 		needsParam = true;
-		
-		// Initialize the WordNet interface.
-		String cwd = System.getProperty("user.dir");
-		String wordnetdir = cwd + "/wordnet-3.0";
-		System.setProperty("wordnet.database.dir", wordnetdir);
-		
+
 		// setup the different normalizers
 		param1 = new NormalizerParameter();
 		param1.setAllTrue();
@@ -228,10 +234,7 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 			if( sourceName.equalsIgnoreCase(targetName) ) {
 				return new Mapping(source, target, 1.0d, MappingRelation.EQUIVALENCE, typeOfNode);
 			}
-			// if we haven't initialized our wordnet database, do it
-			if( wordnet == null )
-				wordnet = WordNetDatabase.getFileInstance();
-			
+
 			// The user wants us to use a dictionary to find related words
 			
 			Synset[] sourceNouns = wordnet.getSynsets(sourceName, SynsetType.NOUN );
@@ -380,11 +383,6 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 		if( sourceName.equalsIgnoreCase(targetName) ) return 0.99d;
 
 		if( ((BaseSimilarityParameters)param).useDictionary ) {
-			
-			// if we haven't initialized our wordnet database, do it
-			if( wordnet == null )
-				wordnet = WordNetDatabase.getFileInstance();
-			
 			// The user wants us to use a dictionary to find related words
 			
 			Synset[] sourceNouns = wordnet.getSynsets(sourceName, SynsetType.NOUN );

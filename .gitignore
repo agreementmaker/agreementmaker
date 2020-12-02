@@ -48,6 +48,9 @@ AgreementMaker-OSGi/*/*.iml
 .idea
 **/*.iml
 
+# AM_ROOT is a machine-specific work space for AgreementMaker
+/AM_ROOT/
+
 # Gradle
 /.gradle/
 build/

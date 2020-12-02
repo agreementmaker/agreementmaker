@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import am.app.Core;
 import am.matcher.lod.hierarchy.Utilities;
 import am.app.wordnet.WordNetUtils;
 import edu.smu.tspell.wordnet.api.Synset;
@@ -13,7 +14,7 @@ import edu.smu.tspell.wordnet.api.Synset;
 public class LODStatistics {
 	
 	public static void computeClassStatistics(List<String> classNames){
-		WordNetUtils utils = new WordNetUtils();		
+		WordNetUtils utils = new WordNetUtils(new File(Core.getInstance().getRoot()));
 		
 		int covered = 0;
 		for (String string : classNames) {
