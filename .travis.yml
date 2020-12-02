@@ -1,7 +1,0 @@
-language: java
-jdk:
-    - openjdk11
-install: skip
-script: ./gradlew build
-# TODO: Publish code coverage again.
-#after_success: ./mvnw jacoco:report coveralls:report
