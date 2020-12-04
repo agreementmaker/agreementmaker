@@ -1246,6 +1246,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	 /**
 	  * @deprecated Use {@link #addInputTask(MatchingTask)}
 	  */
+	 @Deprecated
 	 public void addInputMatcher(AbstractMatcher a) {
 		 if( inputMatchers == null ) inputMatchers = new ArrayList<AbstractMatcher>();
 		 inputMatchers.add(a);
@@ -1639,7 +1640,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 			 if( p > 100 && p > 0 ) { p = 100; }
 			 if( p < 0 ) { p = 0; }
 			 setProgress(p);  // this function does the actual work ( via Swingworker, which uses the PropertyChangeListener )
-		 } else if( stepsDone == stepsTotal ) {
+		 } else if( stepsDone >= stepsTotal ) {
 			 // we're done here.
 			 setProgress(100);
 		 }

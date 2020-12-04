@@ -37,6 +37,7 @@ import joptsimple.OptionSet;
  * 
  * @deprecated No longer necessary after conversion to OSGi.
  */
+@Deprecated
 public class Main
 {
 	

@@ -278,7 +278,7 @@ public class LexicalSynonymMatcherWeighted extends AbstractMatcher {
 
 		sourceLabel = treatString(source.getLabel());
 		targetLabel = treatString(target.getLabel());
-		WordNetUtils W = new WordNetUtils();
+		WordNetUtils W = new WordNetUtils(Core.getInstance().getRootFile());
 		double finalSim = 0.0;
 
 		boolean flag;

@@ -106,7 +106,7 @@ public class Core {
 	//private static UI ui; 	// A reference to the userinterface instance, canvas and table can be accessed anytime. 
 							// It used often to invoke the method redisplayCanvas()
 	
-	private static Core core  = new Core(); // Singleton pattern: unique instance
+	private static final Core core  = new Core(); // Singleton pattern: unique instance
 
 	private MatcherRegistry registry;
 	
@@ -122,9 +122,6 @@ public class Core {
 	 * It's private because it's not possible to create new instances of this class
 	 */
 	private Core() {
-		
-		//System.setProperty("log4j.debug","strue" );  // Use this to see what log4j gets configured to.
-	
 		amRoot = System.getenv("AM_ROOT");
 
 		if( amRoot == null ) {
@@ -132,62 +129,55 @@ public class Core {
 		}
 		
 		if( amRoot == null ) {
-			
-			// First, check if AM_ROOT is a sibling project in the Eclipse Workspace, which is a typical setup
-			if( !checkRootDirectory("../AM_ROOT") ) {
-				// Second, check if AM_ROOT is a directory in the current working directory.
-				if( !checkRootDirectory("AM_ROOT") ) {
-					// Give up, and just use the current working directory.
-					log.warn("The environment variable AM_ROOT is not set.  Using working directory as our root.");
-					amRoot = System.getProperty("user.dir", (new File(".")).getAbsolutePath());
-				}
+			String cwd = System.getProperty("user.dir", (new File(".")).getAbsolutePath());
+			String foundRoot = findAmRoot(cwd);
+			if (foundRoot != null) {
+				amRoot = foundRoot;
+			} else {
+				amRoot = cwd;
 			}
 		}
-		
+
 		amRoot = FilenameUtils.normalize(amRoot);
-		
 		log.info("AgreementMaker root directory: " + amRoot);
-		
-		
+
 		loadedOntologies = new ArrayList<Ontology>();  // initialize the arraylist of ontologies.
 		ontologyListeners    = new ArrayList<OntologyChangeListener>();  // new list of listeners
 		matcherListeners	= new ArrayList<MatcherChangeListener>(); // another list of listeners
-		//visualizationListeners = new ArrayList<VisualizationChangeListener>();
-		
+
 		lexstore = new LexiconStore();
 		addOntologyChangeListener(lexstore);
 		
 		prefs = new AppPreferences();
+	}
 
-	}
-	
-	/**
-	 * Check for the existance of the root directory, and set it if it exists.
-	 * 
-	 * TODO: Should not be setting amRoot here.
-	 * 
-	 * @param relativePath The path to the AM_ROOT directory
-	 * @return true if the amRoot has been set, false otherwise.
-	 */
-	private boolean checkRootDirectory(String relativePath) {
-		final File dir = new File(relativePath);
-		if( dir.exists() ) {
-			if( !dir.isDirectory() ) {
-				log.warn("Cannot use directory for AM_ROOT because it is a file: " + dir.getAbsolutePath());
-				return false;
-			}
-			else if( !dir.canRead() ) {
-				log.warn("Cannot use directory for AM_ROOT because it does not have read permissions: " + dir.getAbsolutePath());
-				return false;
-			}
-			else {
-				amRoot = dir.getAbsolutePath();
-				return true;
-			}
+	private String findAmRoot(String currentDirectory) {
+		File possibleRoot = new File(currentDirectory + File.separator + "AM_ROOT");
+
+		if (currentDirectory == null) {
+			return null;
 		}
-		return false;
+
+		if (possibleRoot.canRead() && possibleRoot.isDirectory()) {
+			return possibleRoot.getAbsolutePath();
+		} else {
+			String parent = new File(currentDirectory).getParent();
+
+			boolean isRoot = false;
+			for (File root : File.listRoots()) {
+				if (root.getAbsolutePath().equals(parent)) {
+					isRoot = true;
+				}
+			}
+
+			if (isRoot) {
+				return null;
+			}
+
+			return findAmRoot(parent);
+		}
 	}
-	
+
 	/**
 	 * @return The root directory for AgreementMaker data files. All code should
 	 *         reference this root when accessing configuration files, training
@@ -201,6 +191,10 @@ public class Core {
 		else {
 			return amRoot + File.separator;
 		}
+	}
+
+	public File getRootFile() {
+		return new File(getRoot());
 	}
 	
 	// deprecated by multiple-ontology interface (TODO: Finish implementing multiple-ontology interface. - Cosmin 10/17/2010)
