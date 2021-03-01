@@ -20,6 +20,25 @@ To build Agreementmaker, use Gradle:
 
 ## Running
 
+### WordNet Dictionary Files
+
+AgreementMaker requires the WordNet dictionary files at application startup.  If it cannot find them it will show an error like this:
+
+```
+ERROR WordNetUtils java.lang.RuntimeException: Cannot find WordNet dictionary files. Expected the files to exist in this directory: /path/to/agreementmaker/AM_ROOT/wordnet-3.0
+```
+
+NOTE: On your computer the path `/path/to/agreementmaker/AM_ROOT/wordnet-3.0` will be a real path.
+
+You can ensure that the files are there by downloading them from the [WordNet website](https://wordnet.princeton.edu/download/current-version) (substitute `/path/to/agreementmaker/AM_ROOT/wordnet-3.0` with the real path in the error message):
+
+```shell script
+mkdir -p /path/to/agreementmaker/AM_ROOT/wordnet-3.0
+cd /path/to/agreementmaker/AM_ROOT/wordnet-3.0
+wget http://wordnetcode.princeton.edu/wn3.1.dict.tar.gz
+tar --strip-components=1 -xvzf wn3.1.dict.tar.gz
+```
+
 To run AgreementMaker, use the `run` Gradle task:
 
 ```shell script
