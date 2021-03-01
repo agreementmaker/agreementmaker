@@ -35,7 +35,7 @@ You can ensure that the files are there by downloading them from the [WordNet we
 ```shell script
 mkdir -p /path/to/agreementmaker/AM_ROOT/wordnet-3.0
 cd /path/to/agreementmaker/AM_ROOT/wordnet-3.0
-wget http://wordnetcode.princeton.edu/wn3.1.dict.tar.gz
+wget https://wordnetcode.princeton.edu/wn3.1.dict.tar.gz
 tar --strip-components=1 -xvzf wn3.1.dict.tar.gz
 ```
 
