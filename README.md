@@ -32,7 +32,7 @@ NOTE: On your computer the path `/path/to/agreementmaker/AM_ROOT/wordnet-3.0` wi
 
 You can ensure that the files are there by downloading them from the [WordNet website](https://wordnet.princeton.edu/download/current-version) (substitute `/path/to/agreementmaker/AM_ROOT/wordnet-3.0` with the real path in the error message):
 
-```
+```shell script
 mkdir -p /path/to/agreementmaker/AM_ROOT/wordnet-3.0
 cd /path/to/agreementmaker/AM_ROOT/wordnet-3.0
 wget http://wordnetcode.princeton.edu/wn3.1.dict.tar.gz
